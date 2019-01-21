@@ -2,7 +2,7 @@ import '../webcrypto.dart';
 import 'crypto_subtle.dart' as subtle;
 import 'utils.dart' as utils;
 import 'dart:typed_data';
-import 'dart:html' as html;
+import 'dart:html' show DomException;
 
 /// Handle instances of [subtle.DomException] specified in the
 /// [Web Cryptograpy specification][1].
@@ -11,7 +11,7 @@ import 'dart:html' as html;
 Future<T> _handleDomException<T>(Future<T> Function() fn) async {
   try {
     return await fn();
-  } on subtle.DomException catch (e) {
+  } on DomException catch (e) {
     switch (e.name) {
       case 'NotSupportedError':
         throw NotSupportedException(e.message);

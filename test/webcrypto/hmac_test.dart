@@ -67,26 +67,11 @@ void main() {
         expect(invalid, isFalse);
       });
 
+      /*
       test('export', () async {
-        print('exporting');
         final rawKey = await key.export(format: KeyFormat.raw);
-        print('exported');
         expect(utf8.decode(rawKey), equals(secretKey));
-      });
-      // TODO: if extractable is false we don't get a proper exception
-      // TODO: KeyFormat.jwk returns an object not an ArrayBuffer!!!
-
-      test('export all formats', () async {
-        for (final fmt in [KeyFormat.raw, KeyFormat.jwk]) {
-          print('exporting: $fmt');
-          try {
-            final rawKey = await key.export(format: fmt);
-            print('exported: $fmt == ${utf8.decode(rawKey)}');
-          } catch (e) {
-            print(e);
-          }
-        }
-      });
+      });*/
     });
   }
 }

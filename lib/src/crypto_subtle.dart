@@ -7,14 +7,7 @@ import '../webcrypto.dart' show HashAlgorithm, KeyFormat, KeyUsage;
 import 'dart:async';
 import 'package:js/js.dart';
 import 'dart:typed_data';
-import 'dart:html' as html;
-
-/// Exposing the DOMException
-@JS('DOMException')
-class DomException {
-  external String get message;
-  external String get name;
-}
+import 'dart:html' show DomException;
 
 /// Minimal interface for promises as returned from the browsers WebCrypto API.
 @JS('Promise')
