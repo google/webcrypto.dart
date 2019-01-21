@@ -32,8 +32,7 @@ void main() {
     group('with hash: $hash', () {
       HmacSecretKey key;
       test('importKey', () async {
-        key = await HmacSecretKey.importKey(
-          format: KeyFormat.raw,
+        key = await HmacSecretKey.importRawKey(
           keyData: Uint8List.fromList(utf8.encode(secretKey)),
           extractable: true,
           usages: [KeyUsage.sign, KeyUsage.verify],
@@ -67,11 +66,10 @@ void main() {
         expect(invalid, isFalse);
       });
 
-      /*
       test('export', () async {
-        final rawKey = await key.export(format: KeyFormat.raw);
+        final rawKey = await key.exportRawKey();
         expect(utf8.decode(rawKey), equals(secretKey));
-      });*/
+      });
     });
   }
 }

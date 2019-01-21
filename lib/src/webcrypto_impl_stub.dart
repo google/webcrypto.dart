@@ -1,37 +1,27 @@
+import 'dart:typed_data';
 import '../webcrypto.dart';
+
+///////////////////////////// Random Bytes
+
+void getRandomValues(TypedData destination) {
+  throw UnimplementedError('getRandomValues stub');
+}
 
 ///////////////////////////// Hash Algorithms
 
-Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) => null;
+Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) =>
+    throw UnimplementedError('digest stub');
 
 ///////////////////////////// HMAC
 
-Future<HmacSecretKey> importHmacSecretKey({
-  KeyFormat format,
+Future<HmacSecretKey> hmacSecretImportRawKey({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,
   HashAlgorithm hash,
   int length,
 }) async {
-  return _HmacSecretKey();
-}
-
-class _HmacSecretKey implements HmacSecretKey {
-  @override
-  Future<List<int>> sign({Stream<List<int>> data}) => null;
-
-  @override
-  Future<bool> verify({List<int> signature, Stream<List<int>> data}) => null;
-
-  @override
-  Future<List<int>> export({KeyFormat format}) => null;
-
-  @override
-  bool get extractable => null;
-
-  @override
-  List<KeyUsage> get usages => null;
+  throw UnimplementedError('importRawKey stub');
 }
 
 ///////////////////////////// RSASSA_PKCS1_v1_5

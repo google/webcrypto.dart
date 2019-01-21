@@ -4,34 +4,36 @@ import 'utils.dart' as utils;
 import 'dart:typed_data';
 import 'dart:html' show DomException;
 
+void _throwAsErrorOrException(DomException e) {
+  switch (e.name) {
+    case 'NotSupportedError':
+      throw NotSupportedException(e.message);
+    case 'SyntaxError':
+      // SyntaxError is thrown as ArgumentError
+      throw ArgumentError(e.message);
+    case 'InvalidAccessError':
+      // InvalidAccessError is thrown as StateError
+      throw StateError(e.message);
+    case 'DataError':
+      throw DataException(e.message);
+    case 'OperationError':
+      throw OperationException(e.message);
+    case 'QuotaExceededError':
+      throw ArgumentError(e.message);
+  }
+  throw AssertionError('Unexpected exception from web cryptography'
+      '"${e.name}", message: ${e.message}');
+}
+
 /// Handle instances of [subtle.DomException] specified in the
 /// [Web Cryptograpy specification][1].
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#SubtleCrypto-Exceptions
-Future<T> _handleDomException<T>(Future<T> Function() fn) async {
+Future<T> _catchDomException<T>(Future<T> Function() fn) async {
   try {
     return await fn();
   } on DomException catch (e) {
-    switch (e.name) {
-      case 'NotSupportedError':
-        throw NotSupportedException(e.message);
-      case 'SyntaxError':
-        // SyntaxError is thrown as ArgumentError
-        throw ArgumentError(e.message);
-      case 'InvalidAccessError':
-        // InvalidAccessError is thrown as StateError
-        throw StateError(e.message);
-      case 'DataError':
-        throw DataException(e.message);
-      case 'OperationError':
-        throw OperationException(e.message);
-    }
-    throw AssertionError('Unexpected exception from web cryptography'
-        '"${e.name}", message: ${e.message}');
-  } catch (e) {
-    print('handling thing:');
-    print(e);
-    rethrow;
+    _throwAsErrorOrException(e);
   }
 }
 
@@ -53,15 +55,15 @@ abstract class _BrowserCryptoKeyBase implements CryptoKey {
 
 /// Adapt `crypto.subtle.importKey` to dart types.
 Future<subtle.CryptoKey> _importKey(
-  KeyFormat format,
+  String format,
   List<int> keyData,
   subtle.Algorithm algorithm,
   bool extractable,
   List<KeyUsage> usages,
 ) {
-  return _handleDomException(() async {
+  return _catchDomException(() async {
     return subtle.promiseAsFuture(subtle.importKey(
-      subtle.keyFormatToString(format),
+      format,
       Uint8List.fromList(keyData),
       algorithm,
       extractable,
@@ -78,7 +80,7 @@ Future<List<int>> _sign(
 ) {
   ArgumentError.checkNotNull(data, 'data');
 
-  return _handleDomException(() async {
+  return _catchDomException(() async {
     final result = await subtle.promiseAsFuture(subtle.sign(
       algorithm,
       key,
@@ -98,7 +100,7 @@ Future<bool> _verify(
   ArgumentError.checkNotNull(signature, 'signature');
   ArgumentError.checkNotNull(data, 'data');
 
-  return _handleDomException(() async {
+  return _catchDomException(() async {
     return await subtle.promiseAsFuture(subtle.verify(
       algorithm,
       key,
@@ -110,25 +112,32 @@ Future<bool> _verify(
 
 /// Adapt `crypto.subtle.export` to dart types.
 Future<List<int>> _exportKey(
-  KeyFormat format,
+  String format,
   subtle.CryptoKey key,
 ) {
   ArgumentError.checkNotNull(format, 'format');
 
-  return _handleDomException(() async {
-    final result = await subtle.promiseAsFuture(subtle.exportKey(
-      subtle.keyFormatToString(format),
-      key,
-    ));
+  return _catchDomException(() async {
+    final result = await subtle.promiseAsFuture(subtle.exportKey(format, key));
     return result.asUint8List();
   });
+}
+
+///////////////////////////// Random Bytes
+
+void getRandomValues(TypedData destination) {
+  try {
+    subtle.getRandomValues(destination);
+  } on DomException catch (e) {
+    _throwAsErrorOrException(e);
+  }
 }
 
 ///////////////////////////// HashAlgorithms
 
 /// Wrap `crypto.subtle.digest`.
 Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) {
-  return _handleDomException(() async {
+  return _catchDomException(() async {
     final algorithm = subtle.hashAlgorithmToString(hash);
     final input = await utils.asBuffer(data);
 
@@ -144,8 +153,7 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) {
 
 /// Wrap `crypto.subtle.importKey` for use in importing keys with the `HMAC`
 /// algorithm, and return the result wrapped as [HmacSecretKey].
-Future<HmacSecretKey> importHmacSecretKey({
-  KeyFormat format,
+Future<HmacSecretKey> hmacSecretImportRawKey({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,
@@ -156,10 +164,10 @@ Future<HmacSecretKey> importHmacSecretKey({
   final algorithm = subtle.Algorithm(
     name: 'HMAC',
     hash: subtle.hashAlgorithmToString(hash),
-    //length: length,
+    //length: length, //TODO: try with this again!!!!
   );
 
-  final k = await _importKey(format, keyData, algorithm, extractable, usages);
+  final k = await _importKey('raw', keyData, algorithm, extractable, usages);
   assert(k.type == 'secret', 'expected a "secret" key');
   return _HmacSecretKey(k);
 }
@@ -180,8 +188,8 @@ class _HmacSecretKey extends _BrowserCryptoKeyBase implements HmacSecretKey {
   }
 
   @override
-  Future<List<int>> export({KeyFormat format}) {
-    return _exportKey(format, _key);
+  Future<List<int>> exportRawKey() {
+    return _exportKey('raw', _key);
   }
 }
 

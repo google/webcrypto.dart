@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:meta/meta.dart';
 
 import 'src/webcrypto_impl_stub.dart'
@@ -9,7 +10,19 @@ import 'src/cryptokey.dart';
 export 'src/exceptions.dart';
 export 'src/cryptokey.dart';
 
-// TODO: Expose random source for cryptographically safe random bytes!!!
+/// Fill [destination] with cryptographically random values.
+///
+/// Throws [ArgumentError] the size of [destination] is more than `65536`, to
+/// extract many bytes simply make repeated calls.
+void getRandomValues(TypedData destination) {
+  ArgumentError.checkNotNull(destination, 'destination');
+  if (destination.lengthInBytes > 65536) {
+    throw ArgumentError.value(destination, 'destination',
+        'array of more than 65536 bytes is not allowed');
+  }
+
+  impl.getRandomValues(destination);
+}
 
 enum HashAlgorithm {
   sha1,
@@ -51,23 +64,20 @@ void _checkAllowedUsages(
 }
 
 abstract class HmacSecretKey implements CryptoKey {
-  static Future<HmacSecretKey> importKey({
-    @required KeyFormat format,
+  static Future<HmacSecretKey> importRawKey({
     @required List<int> keyData,
     @required bool extractable,
     @required List<KeyUsage> usages,
     @required HashAlgorithm hash,
     int length,
   }) {
-    ArgumentError.checkNotNull(format, 'format');
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
     _checkAllowedUsages('HMAC', usages, [
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
-    return impl.importHmacSecretKey(
-      format: format,
+    return impl.hmacSecretImportRawKey(
       keyData: keyData,
       extractable: extractable,
       usages: usages,
@@ -85,9 +95,7 @@ abstract class HmacSecretKey implements CryptoKey {
     @required Stream<List<int>> data,
   });
 
-  Future<List<int>> export({
-    KeyFormat format,
-  });
+  Future<List<int>> exportRawKey();
 }
 
 /*

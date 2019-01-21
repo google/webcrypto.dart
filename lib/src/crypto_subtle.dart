@@ -3,7 +3,7 @@
 @JS()
 library common;
 
-import '../webcrypto.dart' show HashAlgorithm, KeyFormat, KeyUsage;
+import '../webcrypto.dart' show HashAlgorithm, KeyUsage;
 import 'dart:async';
 import 'package:js/js.dart';
 import 'dart:typed_data';
@@ -42,24 +42,6 @@ String hashAlgorithmToString(HashAlgorithm hash) {
   // This is an invariant we want to check in production.
   throw AssertionError(
     'HashAlgorithm value with index: ${hash.index} is unknown',
-  );
-}
-
-/// Convert [KeyFormat] to a Web Cryptography compatible string.
-String keyFormatToString(KeyFormat format) {
-  switch (format) {
-    case KeyFormat.raw:
-      return 'raw';
-    case KeyFormat.pkcs8:
-      return 'pkcs8';
-    case KeyFormat.spki:
-      return 'spki';
-    case KeyFormat.jwk:
-      return 'jwk';
-  }
-  // This is an invariant we want to check in production.
-  throw AssertionError(
-    'KeyFormat value with index: ${format.index} is unknown',
   );
 }
 
@@ -195,6 +177,9 @@ class Algorithm {
     int iterations,
   });
 }
+
+@JS('crypto.getRandomValues')
+external Promise<ByteBuffer> getRandomValues(TypedData array);
 
 @JS('crypto.subtle.decrypt')
 external Promise<ByteBuffer> decrypt(
