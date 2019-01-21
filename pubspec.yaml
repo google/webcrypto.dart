@@ -1,0 +1,12 @@
+name: webcrypto
+publish_to: None
+description: Dartified interface for web cryptography APIs
+author: Jonas Finnemann Jensen <jonasfj@google.com>
+homepage: https://user.git.corp.google.com/jonasfj/dart-webcrypto
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+dependencies:
+  js: ^0.6.1
+  meta: ^1.1.7
+dev_dependencies:
+  test: ^1.5.2
