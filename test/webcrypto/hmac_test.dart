@@ -70,6 +70,17 @@ void main() {
         final rawKey = await key.exportRawKey();
         expect(utf8.decode(rawKey), equals(secretKey));
       });
+
+      test('importKey (length: 28)', () async {
+        // You can only use this to slice the last bits off the key
+        await HmacSecretKey.importRawKey(
+          keyData: Uint8List.fromList([1, 2, 3, 4]),
+          extractable: true,
+          usages: [KeyUsage.sign, KeyUsage.verify],
+          hash: hash,
+          length: 28,
+        );
+      });
     });
   }
 }

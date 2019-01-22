@@ -77,6 +77,18 @@ abstract class HmacSecretKey implements CryptoKey {
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
+    if (length != null && length > keyData.length * 8) {
+      ArgumentError.value(
+          length, 'length', 'must be less than number of bits in keyData');
+    }
+    if (length != null && length <= (keyData.length - 1) * 8) {
+      ArgumentError.value(
+        length,
+        'length',
+        'must be greater than number of bits in keyData - 8, you can attain '
+            'the same effect by removing bytes from keyData',
+      );
+    }
 
     return impl.hmacSecretImportRawKey(
       keyData: keyData,

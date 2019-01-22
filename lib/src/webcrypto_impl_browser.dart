@@ -206,11 +206,19 @@ Future<HmacSecretKey> hmacSecretImportRawKey({
   int length,
 }) async {
   // Construct object with algorithm specific options
-  final algorithm = subtle.Algorithm(
-    name: 'HMAC',
-    hash: subtle.hashAlgorithmToString(hash),
-    //length: length, //TODO: try with this again!!!!
-  );
+  subtle.Algorithm algorithm;
+  if (length == null) {
+    algorithm = subtle.Algorithm(
+      name: 'HMAC',
+      hash: subtle.hashAlgorithmToString(hash),
+    );
+  } else {
+    algorithm = subtle.Algorithm(
+      name: 'HMAC',
+      hash: subtle.hashAlgorithmToString(hash),
+      length: length,
+    );
+  }
 
   final k = await _importKey('raw', keyData, algorithm, extractable, usages);
   assert(k.type == 'secret', 'expected a "secret" key');
