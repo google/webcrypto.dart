@@ -90,8 +90,32 @@ abstract class HmacSecretKey implements CryptoKey {
       );
     }
 
-    return impl.hmacSecretImportRawKey(
+    return impl.hmacSecret_importRawKey(
       keyData: keyData,
+      extractable: extractable,
+      usages: usages,
+      hash: hash,
+      length: length,
+    );
+  }
+
+  static Future<HmacSecretKey> generateKey({
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+    @required HashAlgorithm hash,
+    int length,
+  }) {
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    ArgumentError.checkNotNull(hash, 'hash');
+    _checkAllowedUsages('HMAC', usages, [
+      KeyUsage.sign,
+      KeyUsage.verify,
+    ]);
+    if (length != null && length <= 0) {
+      ArgumentError.value(length, 'length', 'must be positive');
+    }
+
+    return impl.hmacSecret_generateKey(
       extractable: extractable,
       usages: usages,
       hash: hash,
@@ -112,17 +136,19 @@ abstract class HmacSecretKey implements CryptoKey {
 }
 
 abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
-  static Future<RSASSA_PKCS1_v1_5PrivateKey> importRawKey({
-    List<int> keyData,
-    bool extractable,
-    List<KeyUsage> usages,
-    HashAlgorithm hash,
+  static Future<RSASSA_PKCS1_v1_5PrivateKey> importPkcs8Key({
+    @required List<int> keyData,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+    @required HashAlgorithm hash,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
-    ArgumentError.checkNotNull(usages, 'usages');
+    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [
+      KeyUsage.sign,
+    ]);
 
-    return impl.RSASSA_PKCS1_v1_5ImportRawPrivateKey(
+    return impl.RSASSA_PKCS1_v1_5PrivateKey_importPkcs8Key(
       keyData: keyData,
       extractable: extractable,
       usages: usages,
@@ -133,35 +159,51 @@ abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
   static Future<
       CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey,
           RSASSA_PKCS1_v1_5PublicKey>> generateKey({
-    int modulusLength,
-    BigInt publicExponent,
-    HashAlgorithm hash,
-    bool extractable,
-    List<KeyUsage> usages,
-  }) =>
-      impl.RSASSA_PKCS1_v15GenerateKey(
-        modulusLength: modulusLength,
-        publicExponent: publicExponent,
-        hash: hash,
-        extractable: extractable,
-        usages: usages,
-      );
+    @required int modulusLength,
+    @required BigInt publicExponent,
+    @required HashAlgorithm hash,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(modulusLength, 'modulusLength');
+    ArgumentError.checkNotNull(publicExponent, 'publicExponent');
+    ArgumentError.checkNotNull(hash, 'hash');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [
+      KeyUsage.sign,
+      KeyUsage.verify,
+    ]);
 
-  Future<List<int>> sign({Stream<List<int>> data});
+    return impl.RSASSA_PKCS1_v15PrivateKey_generateKey(
+      modulusLength: modulusLength,
+      publicExponent: publicExponent,
+      hash: hash,
+      extractable: extractable,
+      usages: usages,
+    );
+  }
+
+  Future<List<int>> sign({
+    @required Stream<List<int>> data,
+  });
+  Future<List<int>> exportPkcs8Key();
 }
 
 abstract class RSASSA_PKCS1_v1_5PublicKey implements CryptoKey {
-  static Future<RSASSA_PKCS1_v1_5PublicKey> importKey({
-    List<int> keyData,
-    bool extractable,
-    List<KeyUsage> usages,
-    HashAlgorithm hash,
+  static Future<RSASSA_PKCS1_v1_5PublicKey> importSpkiKey({
+    @required List<int> keyData,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+    @required HashAlgorithm hash,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
     ArgumentError.checkNotNull(usages, 'usages');
+    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [
+      KeyUsage.verify,
+    ]);
 
-    return impl.RSASSA_PKCS1_v1_5ImportPublicKey(
+    return impl.RSASSA_PKCS1_v1_5PublicKey_importSpkiKey(
       keyData: keyData,
       extractable: extractable,
       usages: usages,
@@ -169,5 +211,9 @@ abstract class RSASSA_PKCS1_v1_5PublicKey implements CryptoKey {
     );
   }
 
-  Future<bool> verify({List<int> signature, Stream<List<int>> data});
+  Future<bool> verify({
+    @required List<int> signature,
+    @required Stream<List<int>> data,
+  });
+  Future<List<int>> exportSpkiKey();
 }

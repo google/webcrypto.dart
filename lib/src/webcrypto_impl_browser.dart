@@ -198,7 +198,7 @@ final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 
 /// Wrap `crypto.subtle.importKey` for use in importing keys with the `HMAC`
 /// algorithm, and return the result wrapped as [HmacSecretKey].
-Future<HmacSecretKey> hmacSecretImportRawKey({
+Future<HmacSecretKey> hmacSecret_importRawKey({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,
@@ -221,6 +221,32 @@ Future<HmacSecretKey> hmacSecretImportRawKey({
   }
 
   final k = await _importKey('raw', keyData, algorithm, extractable, usages);
+  assert(k.type == 'secret', 'expected a "secret" key');
+  return _HmacSecretKey(k);
+}
+
+Future<HmacSecretKey> hmacSecret_generateKey({
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+  int length,
+}) async {
+  // Construct object with algorithm specific options
+  subtle.Algorithm algorithm;
+  if (length == null) {
+    algorithm = subtle.Algorithm(
+      name: 'HMAC',
+      hash: subtle.hashAlgorithmToString(hash),
+    );
+  } else {
+    algorithm = subtle.Algorithm(
+      name: 'HMAC',
+      hash: subtle.hashAlgorithmToString(hash),
+      length: length,
+    );
+  }
+
+  final k = await _generateKey(algorithm, extractable, usages);
   assert(k.type == 'secret', 'expected a "secret" key');
   return _HmacSecretKey(k);
 }
@@ -248,7 +274,7 @@ class _HmacSecretKey extends _BrowserCryptoKeyBase implements HmacSecretKey {
 
 final _RSASSA_PKCS1_v1_5Algorithm = subtle.Algorithm(name: 'RSASSA-PKCS1-v1_5');
 
-Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5ImportRawPrivateKey({
+Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5PrivateKey_importPkcs8Key({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,
@@ -259,7 +285,7 @@ Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5ImportRawPrivateKey({
     hash: subtle.hashAlgorithmToString(hash),
   );
 
-  final k = await _importKey('raw', keyData, algorithm, extractable, usages);
+  final k = await _importKey('pkcs8', keyData, algorithm, extractable, usages);
 
   // Ensure that we have a private key
   if (k.type != 'private') {
@@ -270,7 +296,7 @@ Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5ImportRawPrivateKey({
   return _RSASSA_PKCS1_v1_5PrivateKey(k);
 }
 
-Future<RSASSA_PKCS1_v1_5PublicKey> RSASSA_PKCS1_v1_5ImportPublicKey({
+Future<RSASSA_PKCS1_v1_5PublicKey> RSASSA_PKCS1_v1_5PublicKey_importSpkiKey({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,
@@ -281,7 +307,7 @@ Future<RSASSA_PKCS1_v1_5PublicKey> RSASSA_PKCS1_v1_5ImportPublicKey({
     hash: subtle.hashAlgorithmToString(hash),
   );
 
-  final k = await _importKey('raw', keyData, algorithm, extractable, usages);
+  final k = await _importKey('spki', keyData, algorithm, extractable, usages);
 
   // Ensure that we have a private key
   if (k.type != 'private') {
@@ -293,7 +319,7 @@ Future<RSASSA_PKCS1_v1_5PublicKey> RSASSA_PKCS1_v1_5ImportPublicKey({
 }
 
 Future<CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey, RSASSA_PKCS1_v1_5PublicKey>>
-    RSASSA_PKCS1_v15GenerateKey({
+    RSASSA_PKCS1_v15PrivateKey_generateKey({
   int modulusLength,
   BigInt publicExponent,
   HashAlgorithm hash,
@@ -326,6 +352,11 @@ class _RSASSA_PKCS1_v1_5PrivateKey extends _BrowserCryptoKeyBase
   Future<List<int>> sign({Stream<List<int>> data}) {
     return _sign(_RSASSA_PKCS1_v1_5Algorithm, _key, data);
   }
+
+  @override
+  Future<List<int>> exportPkcs8Key() {
+    return _exportKey('pkcs8', _key);
+  }
 }
 
 class _RSASSA_PKCS1_v1_5PublicKey extends _BrowserCryptoKeyBase
@@ -335,5 +366,10 @@ class _RSASSA_PKCS1_v1_5PublicKey extends _BrowserCryptoKeyBase
   @override
   Future<bool> verify({List<int> signature, Stream<List<int>> data}) {
     return _verify(_RSASSA_PKCS1_v1_5Algorithm, _key, signature, data);
+  }
+
+  @override
+  Future<List<int>> exportSpkiKey() {
+    return _exportKey('spki', _key);
   }
 }
