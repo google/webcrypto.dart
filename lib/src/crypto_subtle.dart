@@ -17,9 +17,11 @@ class Promise<T> {
 }
 
 /// Convert a promise to a future.
-Future<T> promiseAsFuture<T>(Promise<T> p) {
+Future<T> promiseAsFuture<T>(Promise<T> promise) {
+  ArgumentError.checkNotNull(promise, 'promise');
+
   final c = Completer<T>();
-  p.then(allowInterop(Zone.current.bindUnaryCallback((T result) {
+  promise.then(allowInterop(Zone.current.bindUnaryCallback((T result) {
     c.complete(result);
   })), allowInterop(Zone.current.bindUnaryCallback((DomException e) {
     c.completeError(e);
@@ -29,6 +31,8 @@ Future<T> promiseAsFuture<T>(Promise<T> p) {
 
 /// Convert [HashAlgorithm] to Web Cryptography compatible string.
 String hashAlgorithmToString(HashAlgorithm hash) {
+  ArgumentError.checkNotNull(hash, 'hash');
+
   switch (hash) {
     case HashAlgorithm.sha1:
       return 'SHA-1';
@@ -47,6 +51,8 @@ String hashAlgorithmToString(HashAlgorithm hash) {
 
 /// Convert [List<KeyUsage>] to list of Web Cryptography compatible strings.
 List<String> keyUsagesToStrings(List<KeyUsage> usages) {
+  ArgumentError.checkNotNull(usages, 'usages');
+
   return usages.map((usage) {
     switch (usage) {
       case KeyUsage.encrypt:
@@ -75,6 +81,8 @@ List<String> keyUsagesToStrings(List<KeyUsage> usages) {
 
 /// Convert [List<String>] to list of [KeyUsage] ignoring unknown values.
 List<KeyUsage> stringsToKeyUsages(List<String> usages) {
+  ArgumentError.checkNotNull(usages, 'usages');
+
   return usages
       .map((usage) {
         switch (usage) {
@@ -102,6 +110,18 @@ List<KeyUsage> stringsToKeyUsages(List<String> usages) {
       .toList();
 }
 
+/// Convert [BigInt] to [Uint8List] formatted as [BigInteger][1] following
+/// the Web Cryptography specification.
+///
+/// [1]: https://www.w3.org/TR/WebCryptoAPI/#big-integer
+Uint8List bigIntToUint8ListBigInteger(BigInt integer) {
+  // TODO: Implement bigIntToUint8ListBigInteger for all positive integers
+  if (integer != BigInt.from(65537)) {
+    throw UnimplementedError('Only supports 65537 for now');
+  }
+  return Uint8List.fromList([0x01, 0x00, 0x01]); // 65537
+}
+
 /// Minimal interface for the CryptoKey type.
 @JS('CryptoKey')
 class CryptoKey {
@@ -126,6 +146,15 @@ class CryptoKey {
   external List<String> get usages;
 }
 
+/// Interface for the [CryptoKeyPair][1].
+///
+/// [1]: https://www.w3.org/TR/WebCryptoAPI/#keypair
+@JS('CryptoKeyPair')
+class CryptoKeyPair {
+  external CryptoKey get privateKey;
+  external CryptoKey get publicKey;
+}
+
 /// Anonymous object to be used for constructing the `algorithm` parameter in
 /// `subtle.crypto` methods.
 ///
@@ -143,7 +172,7 @@ class CryptoKey {
 class Algorithm {
   external String get name;
   external int get modulusLength;
-  external int get publicExponent;
+  external Uint8List get publicExponent;
   external String get hash;
   external int get saltLength;
   external TypedData get label;
@@ -161,7 +190,7 @@ class Algorithm {
   external factory Algorithm({
     String name,
     int modulusLength,
-    int publicExponent,
+    Uint8List publicExponent,
     String hash,
     int saltLength,
     TypedData label,
@@ -203,6 +232,13 @@ external Promise<ByteBuffer> exportKey(
 
 @JS('crypto.subtle.generateKey')
 external Promise<CryptoKey> generateKey(
+  Algorithm algorithm,
+  bool extractable,
+  List<String> usages,
+);
+
+@JS('crypto.subtle.generateKey')
+external Promise<CryptoKeyPair> generateKeyPair(
   Algorithm algorithm,
   bool extractable,
   List<String> usages,

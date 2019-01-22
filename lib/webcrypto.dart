@@ -77,6 +77,7 @@ abstract class HmacSecretKey implements CryptoKey {
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
+
     return impl.hmacSecretImportRawKey(
       keyData: keyData,
       extractable: extractable,
@@ -98,32 +99,40 @@ abstract class HmacSecretKey implements CryptoKey {
   Future<List<int>> exportRawKey();
 }
 
-/*
 abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
-  static Future<RSASSA_PKCS1_v1_5PrivateKey> importKey({
-    KeyFormat format,
+  static Future<RSASSA_PKCS1_v1_5PrivateKey> importRawKey({
     List<int> keyData,
     bool extractable,
     List<KeyUsage> usages,
-  }) =>
-      impl.importRSASSA_PKCS1_v1_5PrivateKey(
-        format: format,
-        keyData: keyData,
-        extractable: extractable,
-        usages: usages,
-      );
+    HashAlgorithm hash,
+  }) {
+    ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    ArgumentError.checkNotNull(usages, 'usages');
+
+    return impl.RSASSA_PKCS1_v1_5ImportRawPrivateKey(
+      keyData: keyData,
+      extractable: extractable,
+      usages: usages,
+      hash: hash,
+    );
+  }
 
   static Future<
       CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey,
           RSASSA_PKCS1_v1_5PublicKey>> generateKey({
     int modulusLength,
-    List<int> publicExponent,
+    BigInt publicExponent,
     HashAlgorithm hash,
+    bool extractable,
+    List<KeyUsage> usages,
   }) =>
-      impl.generateRSASSA_PKCS1_v15Key(
+      impl.RSASSA_PKCS1_v15GenerateKey(
         modulusLength: modulusLength,
         publicExponent: publicExponent,
         hash: hash,
+        extractable: extractable,
+        usages: usages,
       );
 
   Future<List<int>> sign({Stream<List<int>> data});
@@ -131,18 +140,22 @@ abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
 
 abstract class RSASSA_PKCS1_v1_5PublicKey implements CryptoKey {
   static Future<RSASSA_PKCS1_v1_5PublicKey> importKey({
-    KeyFormat format,
     List<int> keyData,
     bool extractable,
     List<KeyUsage> usages,
-  }) =>
-      impl.importRSASSA_PKCS1_v1_5PublicKey(
-        format: format,
-        keyData: keyData,
-        extractable: extractable,
-        usages: usages,
-      );
+    HashAlgorithm hash,
+  }) {
+    ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    ArgumentError.checkNotNull(usages, 'usages');
+
+    return impl.RSASSA_PKCS1_v1_5ImportPublicKey(
+      keyData: keyData,
+      extractable: extractable,
+      usages: usages,
+      hash: hash,
+    );
+  }
 
   Future<bool> verify({List<int> signature, Stream<List<int>> data});
 }
-*/

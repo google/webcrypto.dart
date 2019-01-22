@@ -4,24 +4,24 @@ import 'utils.dart' as utils;
 import 'dart:typed_data';
 import 'dart:html' show DomException;
 
-void _throwAsErrorOrException(DomException e) {
+Object _asErrorOrException(DomException e) {
   switch (e.name) {
     case 'NotSupportedError':
-      throw NotSupportedException(e.message);
+      return NotSupportedException(e.message);
     case 'SyntaxError':
       // SyntaxError is thrown as ArgumentError
-      throw ArgumentError(e.message);
+      return ArgumentError(e.message);
     case 'InvalidAccessError':
       // InvalidAccessError is thrown as StateError
-      throw StateError(e.message);
+      return StateError(e.message);
     case 'DataError':
-      throw DataException(e.message);
+      return DataException(e.message);
     case 'OperationError':
-      throw OperationException(e.message);
+      return OperationException(e.message);
     case 'QuotaExceededError':
-      throw ArgumentError(e.message);
+      return ArgumentError(e.message);
   }
-  throw AssertionError('Unexpected exception from web cryptography'
+  return AssertionError('Unexpected exception from web cryptography'
       '"${e.name}", message: ${e.message}');
 }
 
@@ -33,7 +33,18 @@ Future<T> _catchDomException<T>(Future<T> Function() fn) async {
   try {
     return await fn();
   } on DomException catch (e) {
-    _throwAsErrorOrException(e);
+    throw _asErrorOrException(e);
+  }
+}
+
+/// Implementation of CryptoKeyPair.
+class _CryptoKeyPair<S, T> implements CryptoKeyPair<S, T> {
+  final S privateKey;
+  final T publicKey;
+
+  _CryptoKeyPair(this.privateKey, this.publicKey) {
+    assert(privateKey != null, 'privateKey cannot be "null"');
+    assert(publicKey != null, 'publicKey cannot be "null"');
   }
 }
 
@@ -42,7 +53,9 @@ abstract class _BrowserCryptoKeyBase implements CryptoKey {
   /// CryptoKey object being wrapped.
   final subtle.CryptoKey _key;
 
-  _BrowserCryptoKeyBase(this._key);
+  _BrowserCryptoKeyBase(this._key) {
+    assert(_key != null, 'expected a key, instead got "null"'); // sanity check
+  }
 
   @override
   bool get extractable => _key.extractable;
@@ -123,13 +136,43 @@ Future<List<int>> _exportKey(
   });
 }
 
+/// Adapt `crypto.subtle.generateKey` to dart types.
+Future<subtle.CryptoKey> _generateKey(
+  subtle.Algorithm algorithm,
+  bool extractable,
+  List<KeyUsage> usages,
+) {
+  return _catchDomException(() async {
+    return subtle.promiseAsFuture(subtle.generateKey(
+      algorithm,
+      extractable,
+      subtle.keyUsagesToStrings(usages),
+    ));
+  });
+}
+
+/// Adapt `crypto.subtle.generateKey` to dart types.
+Future<subtle.CryptoKeyPair> _generateKeyPair(
+  subtle.Algorithm algorithm,
+  bool extractable,
+  List<KeyUsage> usages,
+) {
+  return _catchDomException(() async {
+    return subtle.promiseAsFuture(subtle.generateKeyPair(
+      algorithm,
+      extractable,
+      subtle.keyUsagesToStrings(usages),
+    ));
+  });
+}
+
 ///////////////////////////// Random Bytes
 
 void getRandomValues(TypedData destination) {
   try {
     subtle.getRandomValues(destination);
   } on DomException catch (e) {
-    _throwAsErrorOrException(e);
+    throw _asErrorOrException(e);
   }
 }
 
@@ -150,6 +193,8 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) {
 }
 
 ///////////////////////////// HMAC
+
+final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 
 /// Wrap `crypto.subtle.importKey` for use in importing keys with the `HMAC`
 /// algorithm, and return the result wrapped as [HmacSecretKey].
@@ -172,8 +217,6 @@ Future<HmacSecretKey> hmacSecretImportRawKey({
   return _HmacSecretKey(k);
 }
 
-final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
-
 class _HmacSecretKey extends _BrowserCryptoKeyBase implements HmacSecretKey {
   _HmacSecretKey(subtle.CryptoKey key) : super(key);
 
@@ -194,3 +237,95 @@ class _HmacSecretKey extends _BrowserCryptoKeyBase implements HmacSecretKey {
 }
 
 ///////////////////////////// RSASSA_PKCS1_v1_5
+
+final _RSASSA_PKCS1_v1_5Algorithm = subtle.Algorithm(name: 'RSASSA-PKCS1-v1_5');
+
+Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5ImportRawPrivateKey({
+  List<int> keyData,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  final algorithm = subtle.Algorithm(
+    name: _RSASSA_PKCS1_v1_5Algorithm.name,
+    hash: subtle.hashAlgorithmToString(hash),
+  );
+
+  final k = await _importKey('raw', keyData, algorithm, extractable, usages);
+
+  // Ensure that we have a private key
+  if (k.type != 'private') {
+    ArgumentError.value(keyData, 'keyData',
+        'must be a "private" key, instead we got a "${k.type}" key');
+  }
+
+  return _RSASSA_PKCS1_v1_5PrivateKey(k);
+}
+
+Future<RSASSA_PKCS1_v1_5PublicKey> RSASSA_PKCS1_v1_5ImportPublicKey({
+  List<int> keyData,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  final algorithm = subtle.Algorithm(
+    name: _RSASSA_PKCS1_v1_5Algorithm.name,
+    hash: subtle.hashAlgorithmToString(hash),
+  );
+
+  final k = await _importKey('raw', keyData, algorithm, extractable, usages);
+
+  // Ensure that we have a private key
+  if (k.type != 'private') {
+    ArgumentError.value(keyData, 'keyData',
+        'must be a "private" key, instead we got a "${k.type}" key');
+  }
+
+  return _RSASSA_PKCS1_v1_5PublicKey(k);
+}
+
+Future<CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey, RSASSA_PKCS1_v1_5PublicKey>>
+    RSASSA_PKCS1_v15GenerateKey({
+  int modulusLength,
+  BigInt publicExponent,
+  HashAlgorithm hash,
+  bool extractable,
+  List<KeyUsage> usages,
+}) async {
+  final algorithm = subtle.Algorithm(
+    name: _RSASSA_PKCS1_v1_5Algorithm.name,
+    hash: subtle.hashAlgorithmToString(hash),
+    publicExponent: subtle.bigIntToUint8ListBigInteger(publicExponent),
+    modulusLength: modulusLength,
+  );
+
+  final pair = await _generateKeyPair(algorithm, extractable, usages);
+  // Sanity check the generated keys
+  assert(pair.privateKey.type == 'private');
+  assert(pair.publicKey.type == 'public');
+
+  return _CryptoKeyPair(
+    _RSASSA_PKCS1_v1_5PrivateKey(pair.privateKey),
+    _RSASSA_PKCS1_v1_5PublicKey(pair.publicKey),
+  );
+}
+
+class _RSASSA_PKCS1_v1_5PrivateKey extends _BrowserCryptoKeyBase
+    implements RSASSA_PKCS1_v1_5PrivateKey {
+  _RSASSA_PKCS1_v1_5PrivateKey(subtle.CryptoKey key) : super(key);
+
+  @override
+  Future<List<int>> sign({Stream<List<int>> data}) {
+    return _sign(_RSASSA_PKCS1_v1_5Algorithm, _key, data);
+  }
+}
+
+class _RSASSA_PKCS1_v1_5PublicKey extends _BrowserCryptoKeyBase
+    implements RSASSA_PKCS1_v1_5PublicKey {
+  _RSASSA_PKCS1_v1_5PublicKey(subtle.CryptoKey key) : super(key);
+
+  @override
+  Future<bool> verify({List<int> signature, Stream<List<int>> data}) {
+    return _verify(_RSASSA_PKCS1_v1_5Algorithm, _key, signature, data);
+  }
+}
