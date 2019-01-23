@@ -1,3 +1,5 @@
+@TestOn('browser')
+
 import 'dart:typed_data';
 
 import 'package:webcrypto/webcrypto.dart';
