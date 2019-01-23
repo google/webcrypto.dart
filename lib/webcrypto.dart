@@ -186,6 +186,7 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
   Future<List<int>> sign({
     @required Stream<List<int>> data,
   });
+
   Future<List<int>> exportPkcs8Key();
 }
 
@@ -215,5 +216,6 @@ abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
     @required List<int> signature,
     @required Stream<List<int>> data,
   });
+
   Future<List<int>> exportSpkiKey();
 }
