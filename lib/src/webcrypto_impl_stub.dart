@@ -39,7 +39,7 @@ Future<HmacSecretKey> hmacSecret_generateKey({
 
 ///////////////////////////// RSASSA_PKCS1_v1_5
 
-Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5PrivateKey_importPkcs8Key({
+Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,
@@ -48,8 +48,8 @@ Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5PrivateKey_importPkcs8Key({
   throw _notImplemented;
 }
 
-Future<CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey, RSASSA_PKCS1_v1_5PublicKey>>
-    RSASSA_PKCS1_v15PrivateKey_generateKey({
+Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
+    rsassaPkcs1V15PrivateKey_generateKey({
   int modulusLength,
   BigInt publicExponent,
   HashAlgorithm hash,
@@ -59,7 +59,7 @@ Future<CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey, RSASSA_PKCS1_v1_5PublicKey>>
   throw _notImplemented;
 }
 
-Future<RSASSA_PKCS1_v1_5PublicKey> RSASSA_PKCS1_v1_5PublicKey_importSpkiKey({
+Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,

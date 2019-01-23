@@ -135,8 +135,8 @@ abstract class HmacSecretKey implements CryptoKey {
   Future<List<int>> exportRawKey();
 }
 
-abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
-  static Future<RSASSA_PKCS1_v1_5PrivateKey> importPkcs8Key({
+abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
+  static Future<RsassaPkcs1V15PrivateKey> importPkcs8Key({
     @required List<int> keyData,
     @required bool extractable,
     @required List<KeyUsage> usages,
@@ -148,7 +148,7 @@ abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
       KeyUsage.sign,
     ]);
 
-    return impl.RSASSA_PKCS1_v1_5PrivateKey_importPkcs8Key(
+    return impl.rsassaPkcs1V15PrivateKey_importPkcs8Key(
       keyData: keyData,
       extractable: extractable,
       usages: usages,
@@ -157,8 +157,8 @@ abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
   }
 
   static Future<
-      CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey,
-          RSASSA_PKCS1_v1_5PublicKey>> generateKey({
+          CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
+      generateKey({
     @required int modulusLength,
     @required BigInt publicExponent,
     @required HashAlgorithm hash,
@@ -174,7 +174,7 @@ abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
       KeyUsage.verify,
     ]);
 
-    return impl.RSASSA_PKCS1_v15PrivateKey_generateKey(
+    return impl.rsassaPkcs1V15PrivateKey_generateKey(
       modulusLength: modulusLength,
       publicExponent: publicExponent,
       hash: hash,
@@ -189,8 +189,8 @@ abstract class RSASSA_PKCS1_v1_5PrivateKey implements CryptoKey {
   Future<List<int>> exportPkcs8Key();
 }
 
-abstract class RSASSA_PKCS1_v1_5PublicKey implements CryptoKey {
-  static Future<RSASSA_PKCS1_v1_5PublicKey> importSpkiKey({
+abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
+  static Future<RsassaPkcs1V15PublicKey> importSpkiKey({
     @required List<int> keyData,
     @required bool extractable,
     @required List<KeyUsage> usages,
@@ -203,7 +203,7 @@ abstract class RSASSA_PKCS1_v1_5PublicKey implements CryptoKey {
       KeyUsage.verify,
     ]);
 
-    return impl.RSASSA_PKCS1_v1_5PublicKey_importSpkiKey(
+    return impl.rsassaPkcs1V15PublicKey_importSpkiKey(
       keyData: keyData,
       extractable: extractable,
       usages: usages,

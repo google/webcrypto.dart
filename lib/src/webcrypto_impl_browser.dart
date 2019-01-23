@@ -272,16 +272,16 @@ class _HmacSecretKey extends _BrowserCryptoKeyBase implements HmacSecretKey {
 
 ///////////////////////////// RSASSA_PKCS1_v1_5
 
-final _RSASSA_PKCS1_v1_5Algorithm = subtle.Algorithm(name: 'RSASSA-PKCS1-v1_5');
+final _rsassaPkcs1V15Algorithm = subtle.Algorithm(name: 'RSASSA-PKCS1-v1_5');
 
-Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5PrivateKey_importPkcs8Key({
+Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,
   HashAlgorithm hash,
 }) async {
   final algorithm = subtle.Algorithm(
-    name: _RSASSA_PKCS1_v1_5Algorithm.name,
+    name: _rsassaPkcs1V15Algorithm.name,
     hash: subtle.hashAlgorithmToString(hash),
   );
 
@@ -293,17 +293,17 @@ Future<RSASSA_PKCS1_v1_5PrivateKey> RSASSA_PKCS1_v1_5PrivateKey_importPkcs8Key({
         'must be a "private" key, instead we got a "${k.type}" key');
   }
 
-  return _RSASSA_PKCS1_v1_5PrivateKey(k);
+  return _RsassaPkcs1V15PrivateKey(k);
 }
 
-Future<RSASSA_PKCS1_v1_5PublicKey> RSASSA_PKCS1_v1_5PublicKey_importSpkiKey({
+Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   List<int> keyData,
   bool extractable,
   List<KeyUsage> usages,
   HashAlgorithm hash,
 }) async {
   final algorithm = subtle.Algorithm(
-    name: _RSASSA_PKCS1_v1_5Algorithm.name,
+    name: _rsassaPkcs1V15Algorithm.name,
     hash: subtle.hashAlgorithmToString(hash),
   );
 
@@ -315,11 +315,11 @@ Future<RSASSA_PKCS1_v1_5PublicKey> RSASSA_PKCS1_v1_5PublicKey_importSpkiKey({
         'must be a "private" key, instead we got a "${k.type}" key');
   }
 
-  return _RSASSA_PKCS1_v1_5PublicKey(k);
+  return _RsassaPkcs1V15PublicKey(k);
 }
 
-Future<CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey, RSASSA_PKCS1_v1_5PublicKey>>
-    RSASSA_PKCS1_v15PrivateKey_generateKey({
+Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
+    rsassaPkcs1V15PrivateKey_generateKey({
   int modulusLength,
   BigInt publicExponent,
   HashAlgorithm hash,
@@ -327,7 +327,7 @@ Future<CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey, RSASSA_PKCS1_v1_5PublicKey>>
   List<KeyUsage> usages,
 }) async {
   final algorithm = subtle.Algorithm(
-    name: _RSASSA_PKCS1_v1_5Algorithm.name,
+    name: _rsassaPkcs1V15Algorithm.name,
     hash: subtle.hashAlgorithmToString(hash),
     publicExponent: subtle.bigIntToUint8ListBigInteger(publicExponent),
     modulusLength: modulusLength,
@@ -339,18 +339,18 @@ Future<CryptoKeyPair<RSASSA_PKCS1_v1_5PrivateKey, RSASSA_PKCS1_v1_5PublicKey>>
   assert(pair.publicKey.type == 'public');
 
   return _CryptoKeyPair(
-    _RSASSA_PKCS1_v1_5PrivateKey(pair.privateKey),
-    _RSASSA_PKCS1_v1_5PublicKey(pair.publicKey),
+    _RsassaPkcs1V15PrivateKey(pair.privateKey),
+    _RsassaPkcs1V15PublicKey(pair.publicKey),
   );
 }
 
-class _RSASSA_PKCS1_v1_5PrivateKey extends _BrowserCryptoKeyBase
-    implements RSASSA_PKCS1_v1_5PrivateKey {
-  _RSASSA_PKCS1_v1_5PrivateKey(subtle.CryptoKey key) : super(key);
+class _RsassaPkcs1V15PrivateKey extends _BrowserCryptoKeyBase
+    implements RsassaPkcs1V15PrivateKey {
+  _RsassaPkcs1V15PrivateKey(subtle.CryptoKey key) : super(key);
 
   @override
   Future<List<int>> sign({Stream<List<int>> data}) {
-    return _sign(_RSASSA_PKCS1_v1_5Algorithm, _key, data);
+    return _sign(_rsassaPkcs1V15Algorithm, _key, data);
   }
 
   @override
@@ -359,13 +359,13 @@ class _RSASSA_PKCS1_v1_5PrivateKey extends _BrowserCryptoKeyBase
   }
 }
 
-class _RSASSA_PKCS1_v1_5PublicKey extends _BrowserCryptoKeyBase
-    implements RSASSA_PKCS1_v1_5PublicKey {
-  _RSASSA_PKCS1_v1_5PublicKey(subtle.CryptoKey key) : super(key);
+class _RsassaPkcs1V15PublicKey extends _BrowserCryptoKeyBase
+    implements RsassaPkcs1V15PublicKey {
+  _RsassaPkcs1V15PublicKey(subtle.CryptoKey key) : super(key);
 
   @override
   Future<bool> verify({List<int> signature, Stream<List<int>> data}) {
-    return _verify(_RSASSA_PKCS1_v1_5Algorithm, _key, signature, data);
+    return _verify(_rsassaPkcs1V15Algorithm, _key, signature, data);
   }
 
   @override
