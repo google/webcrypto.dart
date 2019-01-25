@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 
 import 'src/webcrypto_impl_stub.dart'
-    // if (dart.library.io) 'src/webcrypto_impl_native.dart'
+    if (dart.library.io) 'src/webcrypto_impl_native.dart'
     if (dart.library.html) 'src/webcrypto_impl_browser.dart' as impl;
 import 'src/utils.dart' as utils;
 import 'src/cryptokey.dart';
