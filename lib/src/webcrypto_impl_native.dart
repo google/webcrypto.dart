@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'dart:typed_data';
 import '../webcrypto.dart';
-import 'webcrypto_extension/webcrypto_extension.dart' as extension;
+import 'webcrypto_extension/webcrypto_extension.dart' as ext;
 
 final _notImplemented = UnimplementedError(
   'webcrypto not availble on this platform',
@@ -11,7 +12,7 @@ final _notImplemented = UnimplementedError(
 void getRandomValues(TypedData destination) {
   ArgumentError.checkNotNull(destination, 'destination');
 
-  final err = extension.getRandomValues(destination.buffer.asUint8List());
+  final err = ext.getRandomValues(destination.buffer.asUint8List());
   if (err != null) {
     throw OperationException(err);
   }
@@ -19,8 +20,41 @@ void getRandomValues(TypedData destination) {
 
 ///////////////////////////// Hash Algorithms
 
-Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) =>
-    throw _notImplemented;
+Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) async {
+  ArgumentError.checkNotNull(hash, 'hash');
+  ArgumentError.checkNotNull(data, 'data');
+
+  // Create a digest context
+  final ctx = ext.digest_create(ext.hashAlgorithmToHashIdentifier(hash));
+  if (ctx is String) {
+    throw OperationException(ctx);
+  }
+
+  try {
+    // Feed ctx with data
+    await for (var chunk in data) {
+      if (!(chunk is Uint8List)) {
+        chunk = Uint8List.fromList(chunk);
+      }
+      final ret = ext.digest_write(ctx, chunk);
+      if (ret is String) {
+        throw OperationException(ctx);
+      }
+    }
+
+    // Extract the result
+    final ret = ext.digest_result(ctx);
+    if (ret is String) {
+      throw OperationException(ret);
+    }
+    return ret as Uint8List;
+  } finally {
+    final ret = ext.digest_destroy(ctx);
+    if (ret is String) {
+      throw OperationException(ctx);
+    }
+  }
+}
 
 ///////////////////////////// HMAC
 

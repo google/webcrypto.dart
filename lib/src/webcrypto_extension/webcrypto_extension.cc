@@ -13,6 +13,10 @@ struct FunctionEntry {
 FunctionEntry functions[] = {
     {"SystemRand", SystemRand},
     {"getRandomValues", getRandomValues},
+    {"digest_create", digest_create},
+    {"digest_write", digest_write},
+    {"digest_result", digest_result},
+    {"digest_destroy", digest_destroy},
     {nullptr, nullptr},
 };
 

@@ -1,4 +1,4 @@
-@TestOn('browser')
+@TestOn('browser || linux')
 
 import 'dart:convert';
 import 'dart:typed_data';

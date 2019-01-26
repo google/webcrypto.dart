@@ -2,7 +2,8 @@ TARGET := libwebcrypto_extension.so
 SOURCES := \
 	webcrypto_extension.cc \
 	digest.cc \
-	random.cc
+	random.cc \
+	utils.cc
 
 DART_SDK ?= /usr/lib/dart
 CC := g++

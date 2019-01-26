@@ -6,4 +6,9 @@
 
 void SystemRand(Dart_NativeArguments arguments);
 
+void digest_create(Dart_NativeArguments args);
+void digest_write(Dart_NativeArguments args);
+void digest_result(Dart_NativeArguments args);
+void digest_destroy(Dart_NativeArguments args);
+
 #endif /* WEBCRYPTO_EXTENSION_DIGEST_H */
