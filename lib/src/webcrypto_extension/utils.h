@@ -5,6 +5,8 @@
 #include <include/dart_native_api.h>
 #include <openssl/err.h>
 
+void compare(Dart_NativeArguments args);
+
 /// Create a Dart scope.
 class DartScope {
  public:
@@ -85,7 +87,7 @@ class TypedDataScope {
       return;                                                               \
     }                                                                       \
     name = (uint8_t *)_##name##_scope.data;                                 \
-    length = (size_t)_##name##_scope.length;                                \
+    length = (size_t)_##name##_scope.len##gth;                              \
   } while (0)
 
 #define NOT_ERROR_OR_RETURN(handle)      \

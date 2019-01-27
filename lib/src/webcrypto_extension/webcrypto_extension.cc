@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "digest.h"
+#include "hmac.h"
 #include "random.h"
 #include "utils.h"
 
@@ -11,12 +12,16 @@ struct FunctionEntry {
 };
 
 FunctionEntry functions[] = {
-    {"SystemRand", SystemRand},
+    {"compare", compare},
     {"getRandomValues", getRandomValues},
     {"digest_create", digest_create},
     {"digest_write", digest_write},
     {"digest_result", digest_result},
     {"digest_destroy", digest_destroy},
+    {"hmac_create", hmac_create},
+    {"hmac_write", hmac_write},
+    {"hmac_result", hmac_result},
+    {"hmac_destroy", hmac_destroy},
     {nullptr, nullptr},
 };
 

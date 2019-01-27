@@ -3,6 +3,7 @@ SOURCES := \
 	webcrypto_extension.cc \
 	digest.cc \
 	random.cc \
+	hmac.cc \
 	utils.cc
 
 DART_SDK ?= /usr/lib/dart

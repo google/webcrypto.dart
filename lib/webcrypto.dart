@@ -1,6 +1,7 @@
 /// Web crypto package provides bindings for web cryptography specificaiton.
 library webcrypto;
 
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:meta/meta.dart';
 
