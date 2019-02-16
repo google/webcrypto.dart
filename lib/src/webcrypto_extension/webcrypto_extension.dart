@@ -98,3 +98,29 @@ dynamic hmac_result(int ctx) native "hmac_result";
 
 /// Signature: (int ctx) -> Null | String
 dynamic hmac_destroy(int ctx) native "hmac_destroy";
+
+///////////////////////////// RSASSA_PKCS1_v1_5
+
+/// Import public key in 'spki' format and associated it with the given
+/// [keyHandle].
+/// 
+/// The [keyHandle] is an object that the external memory will be associated
+/// with. Memory will be released when the [keyHandle] is garbage collected.
+/// 
+/// Signature: (keyhandle, keyData) -> Null | String
+dynamic rsassa_importSpkiKey(Object keyHandle, Uint8List keyData) native "rsassa_importSpkiKey";
+
+/// See documentation for `digest_*` methods, other that [rsassa_verify_create]
+/// taking [keyhandle] these are very similar.
+///
+/// Signature: (int hashIdentifier, Uint8List keyData) -> int | String
+dynamic rsassa_verify_create(int hashIdentifier, Object keyHandle) native "rsassa_verify_create";
+
+/// Signature: (int ctx, Uint8List data) -> Null | String
+dynamic rsassa_verify_write(int ctx, Uint8List data) native "rsassa_verify_write";
+
+/// Signature: (int ctx) -> Uint8List | String
+dynamic rsassa_verify_result(int ctx) native "rsassa_verify_result";
+
+/// Signature: (int ctx) -> Null | String
+dynamic rsassa_verify_destroy(int ctx) native "rsassa_verify_destroy";

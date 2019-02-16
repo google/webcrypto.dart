@@ -189,8 +189,8 @@ Future<HmacSecretKey> hmacSecret_generateKey({
 }
 
 class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
-  int _hash;
-  Uint8List _keyData;
+  final int _hash;
+  final Uint8List _keyData;
 
   _HmacSecretKey(this._hash, this._keyData, extractable, List<KeyUsage> usages)
       : super(extractable, usages);
@@ -271,5 +271,55 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   List<KeyUsage> usages,
   HashAlgorithm hash,
 }) async {
-  throw _notImplemented;
+  final keyHandle = Object();
+
+  final ret = ext.rsassa_importSpkiKey(keyHandle, _ensureUint8List(keyData));
+  _throwOperationExceptionIfString(ret);
+
+  throw _RsassaPkcs1V15PublicKey(
+    keyHandle,
+    ext.hashAlgorithmToHashIdentifier(hash),
+    extractable,
+    usages,
+  );
 }
+
+class _RsassaPkcs1V15PublicKey extends _CryptoKeyBase
+    implements RsassaPkcs1V15PublicKey {
+  final Object _keyHandle;
+  final int _hash;
+
+  _RsassaPkcs1V15PublicKey(
+    this._keyHandle,
+    this._hash,
+    extractable,
+    List<KeyUsage> usages,
+  ) : super(extractable, usages);
+
+  @override
+  Future<bool> verify({List<int> signature, Stream<List<int>> data}) {
+    return null;
+  }
+
+  @override
+  Future<List<int>> exportSpkiKey() {
+    return null;
+  }
+}
+
+/*
+class _RsassaPkcs1V15PrivateKey extends _BrowserCryptoKeyBase
+    implements RsassaPkcs1V15PrivateKey {
+  _RsassaPkcs1V15PrivateKey(subtle.CryptoKey key) : super(key);
+
+  @override
+  Future<List<int>> sign({Stream<List<int>> data}) {
+    return _sign(_rsassaPkcs1V15Algorithm, _key, data);
+  }
+
+  @override
+  Future<List<int>> exportPkcs8Key() {
+    return _exportKey('pkcs8', _key);
+  }
+}
+*/

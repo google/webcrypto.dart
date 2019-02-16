@@ -73,6 +73,19 @@ class TypedDataScope {
     }                                                                       \
   } while (0)
 
+#define DEFINE_OBJECT_ARG_OR_RETURN(index, handle)                       \
+  Dart_Handle handle = Dart_GetNativeArgument(args, index);              \
+  do {                                                                   \
+    if (Dart_IsError(handle)) {                                          \
+      Dart_SetReturnValue(args, handle);                                 \
+      return;                                                            \
+    }                                                                    \
+    if (Dart_IsNull(handle)) {                                           \
+      Dart_SetReturnValue(args, Dart_NewApiError("expected an Object")); \
+      return;                                                            \
+    }                                                                    \
+  } while (0)
+
 #define ACCESS_UINT8LIST_OR_RETURN(handle, name, length)                    \
   uint8_t *name;                                                            \
   size_t length;                                                            \
