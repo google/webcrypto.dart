@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 
 import 'src/webcrypto_impl_stub.dart'
+    if (dart.library.ffi) 'src/webcrypto_impl_ffi.dart'
     if (dart.library.io) 'src/webcrypto_impl_native.dart'
     if (dart.library.html) 'src/webcrypto_impl_browser.dart' as impl;
 import 'src/utils.dart' as utils;
@@ -70,12 +71,13 @@ void _checkAllowedUsages(
 abstract class HmacSecretKey implements CryptoKey {
   static Future<HmacSecretKey> importRawKey({
     @required List<int> keyData,
+    @required HashAlgorithm hash,
     @required bool extractable,
     @required List<KeyUsage> usages,
-    @required HashAlgorithm hash,
     int length,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(hash, 'hash');
     ArgumentError.checkNotNull(extractable, 'extractable');
     _checkAllowedUsages('HMAC', usages, [
       KeyUsage.sign,
@@ -104,13 +106,13 @@ abstract class HmacSecretKey implements CryptoKey {
   }
 
   static Future<HmacSecretKey> generateKey({
+    @required HashAlgorithm hash,
     @required bool extractable,
     @required List<KeyUsage> usages,
-    @required HashAlgorithm hash,
     int length,
   }) {
-    ArgumentError.checkNotNull(extractable, 'extractable');
     ArgumentError.checkNotNull(hash, 'hash');
+    ArgumentError.checkNotNull(extractable, 'extractable');
     _checkAllowedUsages('HMAC', usages, [
       KeyUsage.sign,
       KeyUsage.verify,
@@ -148,9 +150,8 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
-    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [
-      KeyUsage.sign,
-    ]);
+    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.sign]);
+    ArgumentError.checkNotNull(hash, 'hash');
 
     return impl.rsassaPkcs1V15PrivateKey_importPkcs8Key(
       keyData: keyData,
@@ -203,10 +204,8 @@ abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
-    ArgumentError.checkNotNull(usages, 'usages');
-    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [
-      KeyUsage.verify,
-    ]);
+    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.verify]);
+    ArgumentError.checkNotNull(hash, 'hash');
 
     return impl.rsassaPkcs1V15PublicKey_importSpkiKey(
       keyData: keyData,
