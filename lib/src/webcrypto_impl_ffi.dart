@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 import '../webcrypto.dart';
+import 'dart:math' as math;
 import 'dart:async' show FutureOr;
 import 'dart:ffi' as ffi;
+import 'dart:convert' show utf8;
 import 'boringssl_ffi/boringssl_ffi.dart' as ssl;
 
 final _notImplemented = UnimplementedError(
@@ -20,12 +22,35 @@ void _check(
 }) {
   if (!condition) {
     // Always extract the error to ensure we clear the error queue.
-    final err = ssl.extractError();
+    final err = _extractError();
     message ??= err ?? fallback ?? 'unknown error';
     if (data) {
       throw DataException(message);
     }
     throw OperationException(message);
+  }
+}
+
+/// Extract latest error on this thread as [String] and clear the error queue
+/// for this thread.
+///
+/// Returns `null` if there is no error.
+String _extractError() {
+  try {
+    // Get the error.
+    final err = ssl.ERR_get_error();
+    if (err == 0) {
+      return null;
+    }
+    const N = 4096; // Max error message size
+    final data = _withOutPointer(N, (ssl.Bytes p) {
+      ssl.ERR_error_string_n(err, p, N);
+    });
+    // Take everything until '\0'
+    return utf8.decode(data.takeWhile((i) => i != 0).toList());
+  } finally {
+    // Always clear error queue, so we continue
+    ssl.ERR_clear_error();
   }
 }
 
@@ -99,26 +124,32 @@ ssl.EVP_MD _hash(HashAlgorithm hash) {
     throw NotSupportedException('HashAlgorithm not supported: $hash');
   }
   final md = MD();
-  _check(md.address != 0);
+  _check(md.address != 0, fallback: 'failed to instantiate hash algorithm');
   return md;
 }
 
-// TODO: Move all the with... methods in here, and make every Future-proof
+/// Copy bytes from [source] to [target].
+void _copyToPointer(
+  ffi.Pointer<ffi.Uint8> target,
+  List<int> source, [
+  int start = 0,
+  int end,
+]) {
+  end ??= source.length;
+  for (int i = start; i < end; i++) {
+    target.elementAt(i).store(source[i]);
+  }
+}
 
-/// Invoke [fn] with a newly allocated [ssl.EVP_MD_CTX] and release it when
-/// [fn] returns.
-Future<R> withEVP_MD_CTX<R>(FutureOr<R> Function(ssl.EVP_MD_CTX) fn) async {
-  final ctx = ssl.EVP_MD_CTX_new();
-  _check(ctx.address != 0, fallback: 'allocation error');
-  try {
-    return await fn(ctx);
-  } finally {
-    ssl.EVP_MD_CTX_free(ctx);
+/// Copy bytes from [source] to [target], relying on size from [target].
+void _copyFromPointer(List<int> target, ffi.Pointer<ffi.Uint8> source) {
+  for (int i = 0; i < target.length; i++) {
+    target[i] = source.elementAt(i).load<int>();
   }
 }
 
 /// Invoke [fn] with pointer to count of [T] and release it when [fn] returns.
-R withAllocate<T extends ffi.NativeType, R>(
+R _withAllocation<T extends ffi.NativeType, R>(
   int count,
   R Function(ffi.Pointer<T>) fn,
 ) {
@@ -130,6 +161,119 @@ R withAllocate<T extends ffi.NativeType, R>(
   }
 }
 
+/// Load [data] into a [ffi.Pointer] of type [T] and call [fn], and free the
+/// pointer when [fn] returns.
+///
+/// This is an auxiliary function for getting a [ffi.Pointer] representation of
+/// an [Uint8List] without risk of memory leaks.
+R _withDataAsPointer<T extends ffi.Pointer, R>(
+    List<int> data, R Function(T) fn) {
+  final p = ffi.allocate<ffi.Uint8>(count: data.length);
+  try {
+    _copyToPointer(p, data);
+    return fn(p.cast<T>());
+  } finally {
+    p.free();
+  }
+}
+
+/// Allocated a [size] bytes [ffi.Pointer] of type [T] and call [fn], and copy
+/// the data from the pointer to an [Uint8List] when [fn] returns. Freeing the
+/// pointer when [fn] returns.
+///
+/// This is an auxiliary function for getting data out of functions that takes
+/// an output buffer.
+Uint8List _withOutPointer<T extends ffi.Pointer>(
+  int size,
+  void Function(T) fn,
+) {
+  final p = ffi.allocate<ffi.Uint8>(count: size);
+  try {
+    fn(p.cast<T>());
+    final result = Uint8List(size);
+    _copyFromPointer(result, p);
+    return result;
+  } finally {
+    p.free();
+  }
+}
+
+/// Pipe bytes from [source] to [update] with [ctx], useful for streaming
+/// algorithms. Notice that chunk size from [data] may be altered.
+Future<void> _pipeToUpdate<T, S extends ffi.Pointer>(
+  Stream<List<int>> source,
+  T ctx,
+  int Function(T, S, int) update,
+) async {
+  const maxChunk = 4096;
+  final bytes = ffi.allocate<ffi.Uint8>(count: maxChunk);
+  try {
+    final ptr = bytes.cast<S>();
+    await for (final data in source) {
+      int offset = 0;
+      while (offset < data.length) {
+        final n = math.min(data.length - offset, maxChunk);
+        _copyToPointer(bytes, data, offset, offset + n);
+        _check(update(ctx, ptr, n) == 1);
+        offset += n;
+      }
+    }
+  } finally {
+    bytes.free();
+  }
+}
+
+/// Invoke [fn] with an [ssl.EVP_MD_CTX] that is free'd when [fn] returns.
+Future<R> _withEVP_MD_CTX<R>(FutureOr<R> Function(ssl.EVP_MD_CTX) fn) async {
+  final ctx = ssl.EVP_MD_CTX_new();
+  _check(ctx.address != 0, fallback: 'allocation error');
+  try {
+    return await fn(ctx);
+  } finally {
+    ssl.EVP_MD_CTX_free(ctx);
+  }
+}
+
+/// Invoke [fn] with [data] loaded into a [ssl.CBS].
+///
+/// Both the [ssl.CBS] and the [ssl.Bytes] pointer allocated will be released
+/// when [fn] returns.
+R _withDataAsCBS<R>(List<int> data, R Function(ssl.CBS) fn) {
+  return _withDataAsPointer(data, (ssl.Bytes p) {
+    final size = ssl.CBS.sizeOf();
+    final cbs = ffi.allocate<ffi.Uint8>(count: size).cast<ssl.CBS>();
+    ssl.CBS_init(cbs, p, data.length);
+    try {
+      return fn(cbs);
+    } finally {
+      cbs.free();
+    }
+  });
+}
+
+/// Call [fn] with an initialized [ssl.CBB] and return the result as
+/// [Uint8List].
+Uint8List _withOutCBB(void Function(ssl.CBB) fn) {
+  final cbb = ffi.allocate<ffi.Uint8>(count: ssl.CBB.sizeOf()).cast<ssl.CBB>();
+  try {
+    ssl.CBB_zero(cbb);
+    try {
+      _check(ssl.CBB_init(cbb, 4096) == 1, fallback: 'allocation failure');
+      fn(cbb);
+      _check(ssl.CBB_flush(cbb) == 1);
+      final bytes = ssl.CBB_data(cbb);
+      final len = ssl.CBB_len(cbb);
+      final result = Uint8List(len);
+      _copyFromPointer(result, bytes);
+      return result;
+    } finally {
+      ssl.CBB_cleanup(cbb);
+    }
+  } finally {
+    cbb.free();
+  }
+}
+
 ///////////////////////////// Random Bytes
 
 void getRandomValues(TypedData destination) {
@@ -137,9 +281,7 @@ void getRandomValues(TypedData destination) {
   final p = ffi.allocate<ffi.Uint8>(count: dest.length).cast<ssl.Bytes>();
   try {
     _check(ssl.RAND_bytes(p, dest.length) == 1);
-    for (int i = 0; i < dest.length; i++) {
-      dest[i] = p.elementAt(i).load<int>();
-    }
+    _copyFromPointer(dest, p);
   } finally {
     p.free();
   }
@@ -148,16 +290,11 @@ void getRandomValues(TypedData destination) {
 ///////////////////////////// Hash Algorithms
 
 Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) async {
-  return withEVP_MD_CTX((ctx) async {
+  return await _withEVP_MD_CTX((ctx) async {
     _check(ssl.EVP_DigestInit(ctx, _hash(hash)) == 1);
-    await for (final chunk in data) {
-      ssl.withInputPointer(chunk, (ssl.Data p) {
-        _check(ssl.EVP_DigestUpdate(ctx, p, chunk.length) == 1);
-      });
-    }
+    await _pipeToUpdate(data, ctx, ssl.EVP_DigestUpdate);
     final size = ssl.EVP_MD_CTX_size(ctx);
-    _check(size > 0);
-    return ssl.withOutputPointer(size, (ssl.Bytes p) {
+    return _withOutPointer(size, (ssl.Bytes p) {
       _check(ssl.EVP_DigestFinal(ctx, p, null) == 1);
     });
   });
@@ -225,20 +362,16 @@ class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
     final ctx = ssl.HMAC_CTX_new();
     _check(ctx.address != 0, fallback: 'allocation error');
     try {
-      ssl.withInputPointer(_keyData, (ssl.Data p) {
+      _withDataAsPointer(_keyData, (ssl.Data p) {
         _check(ssl.HMAC_Init_ex(ctx, p, _keyData.length, _hash, null) == 1);
       });
-      await for (final chunk in data) {
-        ssl.withInputPointer(chunk, (ssl.Bytes p) {
-          _check(ssl.HMAC_Update(ctx, p, chunk.length) == 1);
-        });
-      }
+      await _pipeToUpdate(data, ctx, ssl.HMAC_Update);
 
       final size = ssl.HMAC_size(ctx);
       _check(size > 0);
-      return await withAllocate(1, (ffi.Pointer<ffi.Uint32> psize) async {
+      return _withAllocation(1, (ffi.Pointer<ffi.Uint32> psize) async {
         psize.store(size);
-        return ssl.withOutputPointer(size, (ssl.Bytes p) {
+        return _withOutPointer(size, (ssl.Bytes p) {
           _check(ssl.HMAC_Final(ctx, p, psize) == 1);
         }).sublist(0, psize.load<int>());
       });
@@ -261,8 +394,8 @@ class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
     if (signature.length != other.length) {
       return false;
     }
-    return ssl.withInputPointer(signature, (ssl.Data s) {
-      return ssl.withInputPointer(other, (ssl.Data o) {
+    return _withDataAsPointer(signature, (ssl.Data s) {
+      return _withDataAsPointer(other, (ssl.Data o) {
         return ssl.CRYPTO_memcmp(s, o, other.length) == 0;
       });
     });
@@ -283,9 +416,7 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   List<KeyUsage> usages,
   HashAlgorithm hash,
 }) async {
-  final key = ssl.withInputCBS(keyData, (cbs) {
-    return ssl.EVP_parse_private_key(cbs);
-  });
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
   _check(key.address == 0, fallback: 'unable to parse key', data: true);
 
   try {
@@ -307,9 +438,7 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   List<KeyUsage> usages,
   HashAlgorithm hash,
 }) async {
-  final key = ssl.withInputCBS(keyData, (cbs) {
-    return ssl.EVP_parse_public_key(cbs);
-  });
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
   _check(key.address == 0, fallback: 'unable to parse key', data: true);
 
   try {
@@ -358,17 +487,13 @@ class _RsassaPkcs1V15PrivateKey extends _CryptoKeyBase
     ArgumentError.checkNotNull(data, 'data');
     _checkUsage(KeyUsage.sign);
 
-    return withEVP_MD_CTX((ctx) async {
+    return _withEVP_MD_CTX((ctx) async {
       _check(ssl.EVP_DigestSignInit(ctx, null, _hash, null, _key) == 1);
-      await for (final chunk in data) {
-        ssl.withInputPointer(chunk, (ssl.Data p) {
-          _check(ssl.EVP_DigestSignUpdate(ctx, p, chunk.length) == 1);
-        });
-      }
-      return withAllocate(1, (ffi.Pointer<ffi.IntPtr> len) {
+      _pipeToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+      return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
         len.store(0);
         _check(ssl.EVP_DigestSignFinal(ctx, null, len) == 1);
-        return ssl.withOutputPointer(len.load<int>(), (ssl.Bytes p) {
+        return _withOutPointer(len.load<int>(), (ssl.Bytes p) {
           _check(ssl.EVP_DigestSignFinal(ctx, p, len) == 1);
         }).sublist(0, len.load<int>());
       });
@@ -378,7 +503,7 @@ class _RsassaPkcs1V15PrivateKey extends _CryptoKeyBase
   @override
   Future<List<int>> exportPkcs8Key() async {
     _checkExtractable();
-    return ssl.withOutputCBB((cbb) {
+    return _withOutCBB((cbb) {
       _check(ssl.EVP_marshal_private_key(cbb, _key) == 1);
     });
   }
@@ -407,14 +532,10 @@ class _RsassaPkcs1V15PublicKey extends _CryptoKeyBase
     ArgumentError.checkNotNull(data, 'data');
     _checkUsage(KeyUsage.verify);
 
-    return withEVP_MD_CTX((ctx) async {
+    return _withEVP_MD_CTX((ctx) async {
       _check(ssl.EVP_DigestVerifyInit(ctx, null, _hash, null, _key) == 1);
-      await for (final chunk in data) {
-        ssl.withInputPointer(chunk, (ssl.Data p) {
-          _check(ssl.EVP_DigestVerifyUpdate(ctx, p, chunk.length) == 1);
-        });
-      }
-      return ssl.withInputPointer(signature, (ssl.Bytes p) {
+      _pipeToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+      return _withDataAsPointer(signature, (ssl.Bytes p) {
         final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
         return result == 1;
       });
@@ -424,7 +545,7 @@ class _RsassaPkcs1V15PublicKey extends _CryptoKeyBase
   @override
   Future<List<int>> exportSpkiKey() async {
     _checkExtractable();
-    return ssl.withOutputCBB((cbb) {
+    return _withOutCBB((cbb) {
       _check(ssl.EVP_marshal_public_key(cbb, _key) == 1);
     });
   }

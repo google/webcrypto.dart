@@ -1,5 +1,4 @@
 import 'dart:ffi';
-import 'dart:convert' show utf8;
 import 'types.dart';
 import 'helpers.dart';
 
@@ -45,26 +44,3 @@ final ERR_error_string_n = lookup('ERR_error_string_n')
 final ERR_clear_error = lookup('ERR_clear_error')
     .lookupFunc<Void Function()>()
     .asFunction<void Function()>();
-
-/// Extract latest error on this thread as [String] and clear the error queue
-/// for this thread.
-///
-/// Returns `null` if there is no error.
-String extractError() {
-  try {
-    // Get the error.
-    final err = ERR_get_error();
-    if (err == 0) {
-      return null;
-    }
-    const N = 4096; // Max error message size
-    final data = withOutputPointer(N, (Bytes p) {
-      ERR_error_string_n(err, p, N);
-    });
-    // Take everything until '\0'
-    return utf8.decode(data.takeWhile((i) => i != 0).toList());
-  } finally {
-    // Always clear error queue, so we continue
-    ERR_clear_error();
-  }
-}

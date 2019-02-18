@@ -1,5 +1,4 @@
 import 'dart:ffi';
-import 'dart:typed_data';
 
 /// digest algorithm.
 class EVP_MD extends Pointer<Void> {}
@@ -36,40 +35,3 @@ class Data extends Pointer<Void> {}
 
 /// Type for `uint8_t*` used to represent byte data.
 class Bytes extends Pointer<Uint8> {}
-
-/// Load [data] into a [Pointer] of type [T] and call [fn], and free the pointer
-/// when [fn] returns.
-///
-/// This is an auxiliary function for getting a [Pointer] representation of
-/// an [Uint8List] without risk of memory leaks.
-R withInputPointer<T extends Pointer, R>(List<int> data, R Function(T) fn) {
-  final p = allocate<Uint8>(count: data.length);
-  for (int i = 0; i < data.length; i++) {
-    p.elementAt(i).store(data[i]);
-  }
-  try {
-    return fn(p.cast<T>());
-  } finally {
-    p.free();
-  }
-}
-
-/// Allocated a [size] bytes [Pointer] of type [T] and call [fn], and copy the
-/// data from the pointer to an [Uint8List] when [fn] returns. Freeing the
-/// pointer when [fn] returns.
-///
-/// This is an auxiliary function for getting data out of functions that takes
-/// an output buffer.
-Uint8List withOutputPointer<T extends Pointer>(int size, void Function(T) fn) {
-  final p = allocate<Uint8>(count: size);
-  try {
-    fn(p.cast<T>());
-    final result = Uint8List(size);
-    for (int i = 0; i < size; i++) {
-      result[i] = p.elementAt(i).load<int>();
-    }
-    return result;
-  } finally {
-    p.free();
-  }
-}

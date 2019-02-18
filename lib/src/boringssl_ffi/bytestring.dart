@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:ffi';
 import 'types.dart';
 import 'helpers.dart';
@@ -35,22 +34,6 @@ class CBS extends Pointer<Void> {
 final CBS_init = lookup('CBS_init')
     .lookupFunc<Void Function(CBS, Bytes, IntPtr)>()
     .asFunction<void Function(CBS, Bytes, int)>();
-
-/// Invoke [fn] with [data] loaded into a [CBS].
-///
-/// Both the [CBS] and the [Bytes] pointer allocated will be released when
-/// [fn] returns.
-R withInputCBS<R>(List<int> data, R Function(CBS) fn) {
-  return withInputPointer(data, (Bytes p) {
-    final cbs = allocate<Uint8>(count: CBS.sizeOf()).cast<CBS>();
-    CBS_init(cbs, p, data.length);
-    try {
-      return fn(cbs);
-    } finally {
-      cbs.free();
-    }
-  });
-}
 
 /// A "CBB" (CRYPTO ByteBuilder) is a memory buffer that grows as needed and
 /// provides utility functions for building length-prefixed messages.
@@ -167,34 +150,3 @@ final CBB_data = lookup('CBB_data')
 final CBB_len = lookup('CBB_len')
     .lookupFunc<IntPtr Function(CBB)>()
     .asFunction<int Function(CBB)>();
-
-/// Call [fn] with an initialized [CBB] and return the result as [Uint8List].
-///
-/// Return `null` if an error happens during operation, in this event call
-/// must clear the error queue and possibly throw appropriate exception.
-Uint8List withOutputCBB(void Function(CBB) fn) {
-  final cbb = allocate<Uint8>(count: CBB.sizeOf()).cast<CBB>();
-  try {
-    CBB_zero(cbb);
-    try {
-      if (CBB_init(cbb, 4096) != 1) {
-        return null;
-      }
-      fn(cbb);
-      if (CBB_flush(cbb) != 1) {
-        return null;
-      }
-      final bytes = CBB_data(cbb);
-      final len = CBB_len(cbb);
-      final result = Uint8List(len);
-      for (int i = 0; i < len; i++) {
-        result[i] = bytes.elementAt(i).load<int>();
-      }
-      return result;
-    } finally {
-      CBB_cleanup(cbb);
-    }
-  } finally {
-    cbb.free();
-  }
-}
