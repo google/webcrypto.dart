@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import '../webcrypto.dart';
-import 'dart:async' show Future;
+import 'dart:async' show FutureOr;
 import 'dart:ffi' as ffi;
 import 'boringssl_ffi/boringssl_ffi.dart' as ssl;
 
@@ -103,13 +103,15 @@ ssl.EVP_MD _hash(HashAlgorithm hash) {
   return md;
 }
 
+// TODO: Move all the with... methods in here, and make every Future-proof
+
 /// Invoke [fn] with a newly allocated [ssl.EVP_MD_CTX] and release it when
 /// [fn] returns.
-R withEVP_MD_CTX<R>(R Function(ssl.EVP_MD_CTX) fn) {
+Future<R> withEVP_MD_CTX<R>(FutureOr<R> Function(ssl.EVP_MD_CTX) fn) async {
   final ctx = ssl.EVP_MD_CTX_new();
   _check(ctx.address != 0, fallback: 'allocation error');
   try {
-    return fn(ctx);
+    return await fn(ctx);
   } finally {
     ssl.EVP_MD_CTX_free(ctx);
   }
@@ -156,7 +158,7 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) async {
     final size = ssl.EVP_MD_CTX_size(ctx);
     _check(size > 0);
     return ssl.withOutputPointer(size, (ssl.Bytes p) {
-      _check(ssl.EVP_DigestFinal(ctx, p, size) == 1);
+      _check(ssl.EVP_DigestFinal(ctx, p, null) == 1);
     });
   });
 }
@@ -231,10 +233,14 @@ class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
           _check(ssl.HMAC_Update(ctx, p, chunk.length) == 1);
         });
       }
+
       final size = ssl.HMAC_size(ctx);
       _check(size > 0);
-      return ssl.withOutputPointer(size, (ssl.Bytes p) {
-        _check(ssl.HMAC_Final(ctx, p, size) == 1);
+      return await withAllocate(1, (ffi.Pointer<ffi.Uint32> psize) async {
+        psize.store(size);
+        return ssl.withOutputPointer(size, (ssl.Bytes p) {
+          _check(ssl.HMAC_Final(ctx, p, psize) == 1);
+        }).sublist(0, psize.load<int>());
       });
     } finally {
       ssl.HMAC_CTX_free(ctx);

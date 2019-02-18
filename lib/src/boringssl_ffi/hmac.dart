@@ -62,8 +62,8 @@ final HMAC_Update = lookup('HMAC_Update')
 ///                               unsigned int *out_len);
 /// ```
 final HMAC_Final = lookup('HMAC_Final')
-    .lookupFunc<Uint32 Function(HMAC_CTX, Bytes, Uint32)>()
-    .asFunction<int Function(HMAC_CTX, Bytes, int)>();
+    .lookupFunc<Uint32 Function(HMAC_CTX, Bytes, Pointer<Uint32>)>()
+    .asFunction<int Function(HMAC_CTX, Bytes, Pointer<Uint32>)>();
 
 /// HMAC_size returns the size, in bytes, of the HMAC that will be produced by
 /// ctx. On entry, ctx must have been setup with HMAC_Init_ex.

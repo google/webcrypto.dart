@@ -85,8 +85,8 @@ final EVP_DigestUpdate = lookup('EVP_DigestUpdate')
 ///                                    unsigned int *out_size);
 /// ```
 final EVP_DigestFinal = lookup('EVP_DigestFinal')
-    .lookupFunc<Int32 Function(EVP_MD_CTX, Bytes, IntPtr)>()
-    .asFunction<int Function(EVP_MD_CTX, Bytes, int)>();
+    .lookupFunc<Int32 Function(EVP_MD_CTX, Bytes, Pointer<Uint32>)>()
+    .asFunction<int Function(EVP_MD_CTX, Bytes, Pointer<Uint32>)>();
 
 /// EVP_MD_CTX_size returns the digest size of ctx, in bytes. It will crash if
 /// a digest hasn't been set on ctx.
