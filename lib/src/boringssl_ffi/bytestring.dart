@@ -101,7 +101,7 @@ class CBB extends Pointer<Void> {
 /// OPENSSL_EXPORT void CBB_zero(CBB *cbb);
 /// ```
 final CBB_zero = lookup('CBB_zero')
-    .lookupFunc<void Function(CBB)>()
+    .lookupFunc<Void Function(CBB)>()
     .asFunction<void Function(CBB)>();
 
 /// CBB_init initialises cbb with initial_capacity. Since a CBB grows as needed,
@@ -127,7 +127,7 @@ final CBB_init = lookup('CBB_init')
 /// OPENSSL_EXPORT void CBB_cleanup(CBB *cbb);
 /// ```
 final CBB_cleanup = lookup('CBB_cleanup')
-    .lookupFunc<void Function(CBB)>()
+    .lookupFunc<Void Function(CBB)>()
     .asFunction<void Function(CBB)>();
 
 /// CBB_flush causes any pending length prefixes to be written out and any child

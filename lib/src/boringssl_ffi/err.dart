@@ -34,7 +34,7 @@ final ERR_get_error = lookup('ERR_get_error')
 ///                                        size_t len);
 /// ```
 final ERR_error_string_n = lookup('ERR_error_string_n')
-    .lookupFunc<void Function(Uint32, Bytes, IntPtr)>()
+    .lookupFunc<Void Function(Uint32, Bytes, IntPtr)>()
     .asFunction<void Function(int, Bytes, int)>();
 
 /// ERR_clear_error clears the error queue for the current thread.
@@ -43,7 +43,7 @@ final ERR_error_string_n = lookup('ERR_error_string_n')
 /// OPENSSL_EXPORT void ERR_clear_error(void);
 ///```
 final ERR_clear_error = lookup('ERR_clear_error')
-    .lookupFunc<void Function()>()
+    .lookupFunc<Void Function()>()
     .asFunction<void Function()>();
 
 /// Extract latest error on this thread as [String] and clear the error queue

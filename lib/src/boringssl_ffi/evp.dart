@@ -15,7 +15,7 @@ import 'bytestring.dart';
 /// OPENSSL_EXPORT void EVP_PKEY_free(EVP_PKEY *pkey);
 /// ```
 final EVP_PKEY_free = lookup('EVP_PKEY_free')
-    .lookupFunc<void Function(EVP_PKEY)>()
+    .lookupFunc<Void Function(EVP_PKEY)>()
     .asFunction<void Function(EVP_PKEY)>();
 
 ///

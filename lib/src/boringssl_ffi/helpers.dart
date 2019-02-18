@@ -1,7 +1,11 @@
 import 'dart:ffi';
 
+// TODO: detect this dynamically using Isolate.resolvePackageUri, this will be async :(
+final _boringsslPath =
+    '/jonasfj/projects/webcrypto/third_party/boringssl/build/ssl/libssl.so';
+
 /// Dynamically loaded boringssl library.
-final _boringssl = DynamicLibrary.open('ssl');
+final _boringssl = DynamicLibrary.open(_boringsslPath);
 
 /// Auxiliary for loading functions from [_boringssl].
 class _Resolver {

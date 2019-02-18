@@ -23,7 +23,7 @@ final EVP_sha1 = lookup('EVP_sha1')
     EVP_sha384 = lookup('EVP_sha384')
         .lookupFunc<EVP_MD Function()>()
         .asFunction<EVP_MD Function()>(),
-    EVP_sha512 = lookup('EVP512')
+    EVP_sha512 = lookup('EVP_sha512')
         .lookupFunc<EVP_MD Function()>()
         .asFunction<EVP_MD Function()>();
 

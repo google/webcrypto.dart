@@ -21,7 +21,7 @@ final HMAC_CTX_new = lookup('HMAC_CTX_new')
 /// OPENSSL_EXPORT void HMAC_CTX_free(HMAC_CTX *ctx);
 /// ```
 final HMAC_CTX_free = lookup('HMAC_CTX_free')
-    .lookupFunc<void Function(HMAC_CTX)>()
+    .lookupFunc<Void Function(HMAC_CTX)>()
     .asFunction<void Function(HMAC_CTX)>();
 
 /// HMAC_Init_ex sets up an initialised HMAC_CTX to use md as the hash function
