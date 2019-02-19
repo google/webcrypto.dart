@@ -110,6 +110,17 @@ abstract class _CryptoKeyBase extends CryptoKey {
   }
 }
 
+/// Implementation of CryptoKeyPair.
+class _CryptoKeyPair<S, T> implements CryptoKeyPair<S, T> {
+  final S privateKey;
+  final T publicKey;
+
+  _CryptoKeyPair(this.privateKey, this.publicKey) {
+    assert(privateKey != null, 'privateKey cannot be "null"');
+    assert(publicKey != null, 'publicKey cannot be "null"');
+  }
+}
+
 final _hashAlgorithms = {
   HashAlgorithm.sha1: ssl.EVP_sha1,
   HashAlgorithm.sha256: ssl.EVP_sha256,
@@ -454,6 +465,18 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   }
 }
 
+/// Invoke [fn] with a new [ssl.BIGNUM] instance that is free'd when [fn]
+/// returns.
+R _withBIGNUM<R>(R Function(ssl.BIGNUM) fn) {
+  final bn = ssl.BN_new();
+  _check(bn.address != 0, fallback: 'allocation failure');
+  try {
+    return fn(bn);
+  } finally {
+    ssl.BN_free(bn);
+  }
+}
+
 Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
     rsassaPkcs1V15PrivateKey_generateKey({
   int modulusLength,
@@ -462,7 +485,83 @@ Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
   bool extractable,
   List<KeyUsage> usages,
 }) async {
-  throw _notImplemented;
+  // Sanity check for the modulusLength
+  if (modulusLength < 256 || modulusLength > 16384) {
+    throw NotSupportedException(
+      'modulusLength must between 256 and 16k, $modulusLength is not supported',
+    );
+  }
+  if ((modulusLength % 8) != 0) {
+    throw NotSupportedException(
+        'modulusLength: $modulusLength is not a multiple of 8');
+  }
+
+  // Limit publicExponent whitelist as in chromium:
+  // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
+  if (publicExponent != BigInt.from(3) &&
+      publicExponent != BigInt.from(65537)) {
+    throw NotSupportedException(
+        'publicExponent is not supported, try 3 or 65537');
+  }
+
+  ssl.RSA privRSA, pubRSA;
+  ssl.EVP_PKEY privKey, pubKey;
+  try {
+    // Generate private RSA key
+    privRSA = ssl.RSA_new();
+    _check(privRSA.address != 0, fallback: 'allocation failure');
+    _withBIGNUM((e) {
+      _check(ssl.BN_set_word(e, publicExponent.toInt()) == 1);
+      _check(ssl.RSA_generate_key_ex(privRSA, modulusLength, e, null) == 1);
+    });
+
+    // Copy out the public RSA key
+    final pubRSA = ssl.RSAPublicKey_dup(privRSA);
+    _check(pubRSA.address != 0);
+
+    // Create private key
+    privKey = ssl.EVP_PKEY_new();
+    _check(privKey.address != 0, fallback: 'allocation failure');
+    _check(ssl.EVP_PKEY_set1_RSA(privKey, privRSA) == 1);
+
+    // Create public key
+    pubKey = ssl.EVP_PKEY_new();
+    _check(pubKey.address != 0, fallback: 'allocation failure');
+    _check(ssl.EVP_PKEY_set1_RSA(pubKey, pubRSA) == 1);
+
+    final md = _hash(hash);
+    return _CryptoKeyPair(
+      _RsassaPkcs1V15PrivateKey(
+        privKey,
+        md,
+        extractable,
+        usages.where([KeyUsage.sign].contains).toList(),
+      ),
+      _RsassaPkcs1V15PublicKey(
+        pubKey,
+        md,
+        extractable,
+        usages.where([KeyUsage.verify].contains).toList(),
+      ),
+    );
+  } on Object {
+    // Free privKey/pubKey on exception
+    if (privKey != null) {
+      ssl.EVP_PKEY_free(privKey);
+    }
+    if (pubKey != null) {
+      ssl.EVP_PKEY_free(pubKey);
+    }
+    rethrow;
+  } finally {
+    // Always free RSA keys, we create a new reference with set1 method
+    if (privRSA != null) {
+      ssl.RSA_free(privRSA);
+    }
+    if (pubRSA != null) {
+      ssl.RSA_free(pubRSA);
+    }
+  }
 }
 
 class _RsassaPkcs1V15PrivateKey extends _CryptoKeyBase

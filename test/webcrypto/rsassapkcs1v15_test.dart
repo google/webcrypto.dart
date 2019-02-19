@@ -1,4 +1,4 @@
-@TestOn('browser')
+@TestOn('browser || linux')
 
 import 'dart:convert';
 import 'dart:typed_data';
@@ -35,9 +35,6 @@ void main() {
   RsassaPkcs1V15PublicKey publicKey;
   List<int> sig;
 
-  print('TODO: Enable RSA tests');
-  return;
-
   test('importSpkiKey', () async {
     final key = await RsassaPkcs1V15PublicKey.importSpkiKey(
       keyData: _samplePublicKey,
@@ -46,9 +43,8 @@ void main() {
       usages: [KeyUsage.verify],
     );
     // Compare two exports of the key
-    // TODO: Enable export of key check
-    //final keyData = await key.exportSpkiKey();
-    //expect(base64.encode(keyData), equals(base64.encode(_samplePublicKey)));
+    final keyData = await key.exportSpkiKey();
+    expect(base64.encode(keyData), equals(base64.encode(_samplePublicKey)));
 
     // Test verify
     final result = await key.verify(
@@ -58,7 +54,7 @@ void main() {
     expect(result, isTrue);
   });
 
-  print('TODO: Enable the rest of the RSA tests');
+  print('TODO: Enable more test');
   return;
 
   test('generateKey', () async {

@@ -1,3 +1,4 @@
+export 'bn.dart';
 export 'bytestring.dart';
 export 'digest.dart';
 export 'err.dart';

@@ -68,6 +68,13 @@ void _checkAllowedUsages(
   }
 }
 
+/// Remove duplicate [usages] and sort according to index in enum.
+List<KeyUsage> _normalizeUsages(List<KeyUsage> usages) {
+  usages = usages.toSet().toList();
+  usages.sort((a, b) => a.index.compareTo(b.index));
+  return usages;
+}
+
 abstract class HmacSecretKey implements CryptoKey {
   static Future<HmacSecretKey> importRawKey({
     @required List<int> keyData,
@@ -83,6 +90,7 @@ abstract class HmacSecretKey implements CryptoKey {
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
+    usages = _normalizeUsages(usages);
     if (length != null && length > keyData.length * 8) {
       ArgumentError.value(
           length, 'length', 'must be less than number of bits in keyData');
@@ -117,6 +125,7 @@ abstract class HmacSecretKey implements CryptoKey {
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
+    usages = _normalizeUsages(usages);
     if (length != null && length <= 0) {
       ArgumentError.value(length, 'length', 'must be positive');
     }
@@ -151,6 +160,7 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
     _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.sign]);
+    usages = _normalizeUsages(usages);
     ArgumentError.checkNotNull(hash, 'hash');
 
     return impl.rsassaPkcs1V15PrivateKey_importPkcs8Key(
@@ -178,6 +188,7 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
+    usages = _normalizeUsages(usages);
 
     return impl.rsassaPkcs1V15PrivateKey_generateKey(
       modulusLength: modulusLength,
@@ -205,6 +216,7 @@ abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
     _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.verify]);
+    usages = _normalizeUsages(usages);
     ArgumentError.checkNotNull(hash, 'hash');
 
     return impl.rsassaPkcs1V15PublicKey_importSpkiKey(

@@ -6,10 +6,19 @@ import 'bytestring.dart';
 // See:
 // https://commondatastorage.googleapis.com/chromium-boringssl-docs/evp.h.html
 
-///////////////////////////// Public key objects.
+//---------------------- Public key objects.
+
+/// EVP_PKEY_new creates a new, empty public-key object and returns it or NULL
+/// on allocation failure.
+///
+/// ```c
+/// OPENSSL_EXPORT EVP_PKEY *EVP_PKEY_new(void);
+/// ```
+final EVP_PKEY_new = lookup('EVP_PKEY_new')
+    .lookupFunc<EVP_PKEY Function()>()
+    .asFunction<EVP_PKEY Function()>();
 
 /// EVP_PKEY_free frees all data referenced by pkey and then frees pkey itself.
-///
 ///
 /// ```c
 /// OPENSSL_EXPORT void EVP_PKEY_free(EVP_PKEY *pkey);
@@ -18,12 +27,7 @@ final EVP_PKEY_free = lookup('EVP_PKEY_free')
     .lookupFunc<Void Function(EVP_PKEY)>()
     .asFunction<void Function(EVP_PKEY)>();
 
-///
-///
-/// ```c
-/// ```
-
-///////////////////////////// Getting and setting concrete public key types.
+//---------------------- Getting and setting concrete public key types
 
 /// The following functions get and set the underlying public key in an EVP_PKEY
 /// object. The set1 functions take an additional reference to the underlying
@@ -52,11 +56,15 @@ final EVP_PKEY_free = lookup('EVP_PKEY_free')
 /// OPENSSL_EXPORT EC_KEY *EVP_PKEY_get0_EC_KEY(const EVP_PKEY *pkey);
 /// OPENSSL_EXPORT EC_KEY *EVP_PKEY_get1_EC_KEY(const EVP_PKEY *pkey);
 /// ```
+final EVP_PKEY_set1_RSA = lookup('EVP_PKEY_set1_RSA')
+    .lookupFunc<Int32 Function(EVP_PKEY, RSA)>()
+    .asFunction<int Function(EVP_PKEY, RSA)>();
+
 final EVP_PKEY_get0_RSA = lookup('EVP_PKEY_get0_RSA')
     .lookupFunc<RSA Function(EVP_PKEY)>()
     .asFunction<RSA Function(EVP_PKEY)>();
 
-///////////////////////////// ASN.1 functions
+//---------------------- ASN.1 functions
 
 /// EVP_parse_public_key decodes a DER-encoded SubjectPublicKeyInfo structure
 /// (RFC 5280) from cbs and advances cbs. It returns a newly-allocated
@@ -115,7 +123,7 @@ final EVP_marshal_private_key = lookup('EVP_marshal_private_key')
     .lookupFunc<Int32 Function(CBB, EVP_PKEY)>()
     .asFunction<int Function(CBB, EVP_PKEY)>();
 
-///////////////////////////// Signing
+//---------------------- Signing
 
 /// EVP_DigestSignInit sets up ctx for a signing operation with type and pkey.
 /// The ctx argument must have been initialised with EVP_MD_CTX_init. If pctx
@@ -188,7 +196,7 @@ final EVP_DigestSignFinal = lookup('EVP_DigestSignFinal')
     .lookupFunc<Int32 Function(EVP_MD_CTX, Bytes, Pointer<IntPtr>)>()
     .asFunction<int Function(EVP_MD_CTX, Bytes, Pointer<IntPtr>)>();
 
-///////////////////////////// Verifying
+//---------------------- Verifying
 
 /// EVP_DigestVerifyInit sets up ctx for a signature verification operation
 /// with type and pkey. The ctx argument must have been initialised with

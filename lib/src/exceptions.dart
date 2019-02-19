@@ -24,6 +24,11 @@ abstract class WebCryptoException implements Exception {
 /// Attempts to extract key that can be extracted results in a [StateError].
 /// Providing incorrect invalid parameters results in a [ArgumentError].
 class NotSupportedException extends WebCryptoException {
+  // Note: We could use UnsupportedError from 'dart:core' instead, but in
+  //       webcrypto an unsupported feature is not an error but an exception.
+  //       It's possible we change this as few people want to do feature
+  //       detection this way, and you technically can catch errors if needed.
+
   NotSupportedException(String message) : super(message);
 }
 

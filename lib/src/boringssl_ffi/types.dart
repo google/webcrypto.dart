@@ -23,6 +23,14 @@ class EVP_PKEY extends Pointer<Void> {}
 /// encrypting) that uses a public key.
 class EVP_PKEY_CTX extends Pointer<Void> {}
 
+/// Big number.
+class BIGNUM extends Pointer<Void> {}
+
+/// bn_gencb_st, or BN_GENCB, holds a callback function that is used by
+/// generation functions that can take a very long time to complete.
+/// Use BN_GENCB_set to initialise a BN_GENCB structure.
+class BN_GENCB extends Pointer<Void> {}
+
 /// An RSA object represents a public or private RSA key. A given object may be
 /// used concurrently on multiple threads by non-mutating functions, provided no
 /// other thread is concurrently calling a mutating function. Unless otherwise
