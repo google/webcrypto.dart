@@ -428,11 +428,11 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   HashAlgorithm hash,
 }) async {
   final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
-  _check(key.address == 0, fallback: 'unable to parse key', data: true);
+  _check(key.address != 0, fallback: 'unable to parse key', data: true);
 
   try {
     final rsa = ssl.EVP_PKEY_get0_RSA(key);
-    _check(rsa.address == 0, fallback: 'key is not an RSA key', data: true);
+    _check(rsa.address != 0, fallback: 'key is not an RSA key', data: true);
     _check(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key', data: true);
 
     return _RsassaPkcs1V15PrivateKey(key, _hash(hash), extractable, usages);
@@ -450,11 +450,11 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   HashAlgorithm hash,
 }) async {
   final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
-  _check(key.address == 0, fallback: 'unable to parse key', data: true);
+  _check(key.address != 0, fallback: 'unable to parse key', data: true);
 
   try {
     final rsa = ssl.EVP_PKEY_get0_RSA(key);
-    _check(rsa.address == 0, fallback: 'key is not an RSA key', data: true);
+    _check(rsa.address != 0, fallback: 'key is not an RSA key', data: true);
     _check(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key', data: true);
 
     return _RsassaPkcs1V15PublicKey(key, _hash(hash), extractable, usages);
@@ -588,7 +588,7 @@ class _RsassaPkcs1V15PrivateKey extends _CryptoKeyBase
 
     return _withEVP_MD_CTX((ctx) async {
       _check(ssl.EVP_DigestSignInit(ctx, null, _hash, null, _key) == 1);
-      _pipeToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+      await _pipeToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
       return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
         len.store(0);
         _check(ssl.EVP_DigestSignFinal(ctx, null, len) == 1);
@@ -633,7 +633,7 @@ class _RsassaPkcs1V15PublicKey extends _CryptoKeyBase
 
     return _withEVP_MD_CTX((ctx) async {
       _check(ssl.EVP_DigestVerifyInit(ctx, null, _hash, null, _key) == 1);
-      _pipeToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+      await _pipeToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
       return _withDataAsPointer(signature, (ssl.Bytes p) {
         final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
         return result == 1;
