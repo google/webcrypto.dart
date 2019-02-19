@@ -5,18 +5,18 @@ final _notImplemented = UnimplementedError(
   'webcrypto not availble on this platform',
 );
 
-///////////////////////////// Random Bytes
+//---------------------- Random Bytes
 
 void getRandomValues(TypedData destination) {
   throw _notImplemented;
 }
 
-///////////////////////////// Hash Algorithms
+//---------------------- Hash Algorithms
 
 Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) =>
     throw _notImplemented;
 
-///////////////////////////// HMAC
+//---------------------- HMAC
 
 Future<HmacSecretKey> hmacSecret_importRawKey({
   List<int> keyData,
@@ -37,7 +37,7 @@ Future<HmacSecretKey> hmacSecret_generateKey({
   throw _notImplemented;
 }
 
-///////////////////////////// RSASSA_PKCS1_v1_5
+//---------------------- RSASSA_PKCS1_v1_5
 
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   List<int> keyData,

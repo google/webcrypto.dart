@@ -65,7 +65,7 @@ abstract class _BrowserCryptoKeyBase implements CryptoKey {
   List<KeyUsage> get usages => subtle.stringsToKeyUsages(_key.usages);
 }
 
-///////////////////////////// Wrappers
+//---------------------- Wrappers
 
 /// Adapt `crypto.subtle.importKey` to dart types.
 Future<subtle.CryptoKey> _importKey(
@@ -167,7 +167,7 @@ Future<subtle.CryptoKeyPair> _generateKeyPair(
   });
 }
 
-///////////////////////////// Random Bytes
+//---------------------- Random Bytes
 
 void getRandomValues(TypedData destination) {
   try {
@@ -177,7 +177,7 @@ void getRandomValues(TypedData destination) {
   }
 }
 
-///////////////////////////// HashAlgorithms
+//---------------------- HashAlgorithms
 
 /// Wrap `crypto.subtle.digest`.
 Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) {
@@ -193,7 +193,7 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) {
   });
 }
 
-///////////////////////////// HMAC
+//---------------------- HMAC
 
 final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 
@@ -271,7 +271,7 @@ class _HmacSecretKey extends _BrowserCryptoKeyBase implements HmacSecretKey {
   }
 }
 
-///////////////////////////// RSASSA_PKCS1_v1_5
+//---------------------- RSASSA_PKCS1_v1_5
 
 final _rsassaPkcs1V15Algorithm = subtle.Algorithm(name: 'RSASSA-PKCS1-v1_5');
 

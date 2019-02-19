@@ -16,7 +16,7 @@ import 'dart-ext:webcrypto_extension';
 // The simplest way to call native code: top-level functions.
 int systemRand() native "SystemRand";
 
-///////////////////////////// Utilities
+//---------------------- Utilities
 
 /// Constant-time comparison on [a] and [b].
 ///
@@ -24,7 +24,7 @@ int systemRand() native "SystemRand";
 /// message for the [OperationException] to be thrown.
 dynamic compare(Uint8List a, Uint8List b) native "compare";
 
-///////////////////////////// Random Bytes
+//---------------------- Random Bytes
 
 /// Fills [data] with random values.
 ///
@@ -32,7 +32,7 @@ dynamic compare(Uint8List a, Uint8List b) native "compare";
 /// for the [OperationException] to be thrown.
 dynamic getRandomValues(Uint8List data) native "getRandomValues";
 
-///////////////////////////// Hash Algorithms
+//---------------------- Hash Algorithms
 
 /// Convert [hash] to integer identifier for [hash] as used in [digest_create].
 int hashAlgorithmToHashIdentifier(HashAlgorithm hash) {
@@ -82,7 +82,7 @@ dynamic digest_result(int ctx) native "digest_result";
 /// a [String] message for the [OperationException] to be thrown.
 dynamic digest_destroy(int ctx) native "digest_destroy";
 
-///////////////////////////// HMAC
+//---------------------- HMAC
 
 /// See documentation for `digest_*` methods, other that [hmac_create] taking
 /// [keyData] these are very similar.
@@ -99,25 +99,28 @@ dynamic hmac_result(int ctx) native "hmac_result";
 /// Signature: (int ctx) -> Null | String
 dynamic hmac_destroy(int ctx) native "hmac_destroy";
 
-///////////////////////////// RSASSA_PKCS1_v1_5
+//---------------------- RSASSA_PKCS1_v1_5
 
 /// Import public key in 'spki' format and associated it with the given
 /// [keyHandle].
-/// 
+///
 /// The [keyHandle] is an object that the external memory will be associated
 /// with. Memory will be released when the [keyHandle] is garbage collected.
-/// 
+///
 /// Signature: (keyhandle, keyData) -> Null | String
-dynamic rsassa_importSpkiKey(Object keyHandle, Uint8List keyData) native "rsassa_importSpkiKey";
+dynamic rsassa_importSpkiKey(Object keyHandle, Uint8List keyData)
+    native "rsassa_importSpkiKey";
 
 /// See documentation for `digest_*` methods, other that [rsassa_verify_create]
 /// taking [keyhandle] these are very similar.
 ///
 /// Signature: (int hashIdentifier, Uint8List keyData) -> int | String
-dynamic rsassa_verify_create(int hashIdentifier, Object keyHandle) native "rsassa_verify_create";
+dynamic rsassa_verify_create(int hashIdentifier, Object keyHandle)
+    native "rsassa_verify_create";
 
 /// Signature: (int ctx, Uint8List data) -> Null | String
-dynamic rsassa_verify_write(int ctx, Uint8List data) native "rsassa_verify_write";
+dynamic rsassa_verify_write(int ctx, Uint8List data)
+    native "rsassa_verify_write";
 
 /// Signature: (int ctx) -> Uint8List | String
 dynamic rsassa_verify_result(int ctx) native "rsassa_verify_result";

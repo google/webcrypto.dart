@@ -95,7 +95,7 @@ int _hashAlgorithmLength(HashAlgorithm hash) {
   throw AssertionError('Unknown HashAlgorithm with index: ${hash.index}');
 }
 
-///////////////////////////// Random Bytes
+//---------------------- Random Bytes
 
 void getRandomValues(TypedData destination) {
   ArgumentError.checkNotNull(destination, 'destination');
@@ -106,7 +106,7 @@ void getRandomValues(TypedData destination) {
   }
 }
 
-///////////////////////////// Hash Algorithms
+//---------------------- Hash Algorithms
 
 Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) async {
   ArgumentError.checkNotNull(hash, 'hash');
@@ -135,7 +135,7 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) async {
   }
 }
 
-///////////////////////////// HMAC
+//---------------------- HMAC
 
 /// Convert [data] to [Uint8List] and zero to [lengthInBits] if given.
 Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int lengthInBits]) {
@@ -243,7 +243,7 @@ class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
   }
 }
 
-///////////////////////////// RSASSA_PKCS1_v1_5
+//---------------------- RSASSA_PKCS1_v1_5
 
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   List<int> keyData,
