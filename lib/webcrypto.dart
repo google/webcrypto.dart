@@ -17,8 +17,24 @@ export 'src/cryptokey.dart';
 
 /// Fill [destination] with cryptographically random values.
 ///
-/// Throws [ArgumentError] the size of [destination] is more than `65536`, to
-/// extract many bytes simply make repeated calls.
+/// Does not accept a [destination] larger than `65536` bytes, use multiple
+/// calls to obtain more random bytes.
+///
+/// **Example**
+/// ```dart
+/// import 'dart:convert' show base64;
+/// import 'dart:typed_data' show Uint8List;
+/// import 'package:webcrypto/webcrypto.dart';
+///
+/// // Allocated a byte array of 64 bytes.
+/// final bytes = Uint8List(64);
+///
+/// // Fill with random bytes.
+/// getRandomValues(bytes);
+///
+/// // Print base64 encoded random bytes.
+/// print(base64.encode(bytes));
+/// ```
 void getRandomValues(TypedData destination) {
   ArgumentError.checkNotNull(destination, 'destination');
   if (destination.lengthInBytes > 65536) {
@@ -29,14 +45,66 @@ void getRandomValues(TypedData destination) {
   impl.getRandomValues(destination);
 }
 
+/// A hash algorithm supported by other methods in this package.
+///
+/// See [digest] for how to compute the hash sum of a byte stream.
 enum HashAlgorithm {
+  /// SHA-1 as specified in [FIPS PUB 180-4][1].
+  ///
+  /// **This algorithm is considered weak** and should not be used in new
+  /// cryptographic applications.
+  ///
+  /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
   sha1,
+
+  /// SHA-256 as specified in [FIPS PUB 180-4][1].
+  ///
+  /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
   sha256,
+
+  /// SHA-384 as specified in [FIPS PUB 180-4][1].
+  ///
+  /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
   sha384,
+
+  /// SHA-512 as specified in [FIPS PUB 180-4][1].
+  ///
+  /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
   sha512,
 }
 
+/// Compute a cryptographic hash-sum of [data] stream using [hash].
+///
+///
+///
+/// **Example**
+/// ```dart
+/// import 'dart:convert' show base64, utf8;
+/// import 'package:webcrypto/webcrypto.dart';
+///
+/// // Function that creates a stream of data we can hash.
+/// Stream<List<int>> dataStream() async* {
+///   yield utf8.encode('hello world');
+/// }
+///
+/// // Hash of the dataStream with sha-256
+/// List<int> hash = await digest(
+///   hash: HashAlgorithm.sha256,
+///   data: dataStream(),
+/// );
+///
+/// // Print the base64 encoded hash
+/// print(base64.encode(hash));
+/// ```
+///
+/// This package does not provide a convenient function for hashing a
+/// byte array. But as illustrated in the example above this can be achieved by
+/// creating a function that wraps the byte array in a byte stream.
 Future<List<int>> digest({
+  // Note: It's tempting to use positional arguments, but this could cause
+  //       problems if future iterations of the Web Cryptography Specification
+  //       defines new digest algorithms with additional parameters.
+  //       meta-note: I could probably convinced otherwise too.
   @required HashAlgorithm hash,
   @required Stream<List<int>> data,
 }) {

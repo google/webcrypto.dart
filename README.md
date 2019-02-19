@@ -22,6 +22,7 @@ paths, which prevents publication on pub.
  * Get random bytes
  * digest (sha-1/sha-256/sha-384/sha-512)
    * Has bugs in Firefox (to be investigated)
+   * Only import/export from raw key, JSON Web Key is not supported yet.
  * HMAC (sign/verify)
  * RSASSA-PKCS1-v1_5 (sign/verify)
    * Only import/export from pkcs8/spki, JSON Web Key is not supported yet.
