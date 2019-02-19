@@ -12,7 +12,7 @@ import 'bytestring.dart';
 /// on allocation failure.
 ///
 /// ```c
-/// OPENSSL_EXPORT EVP_PKEY *EVP_PKEY_new(void);
+/// EVP_PKEY *EVP_PKEY_new(void);
 /// ```
 final EVP_PKEY_new = lookup('EVP_PKEY_new')
     .lookupFunc<EVP_PKEY Function()>()
@@ -21,7 +21,7 @@ final EVP_PKEY_new = lookup('EVP_PKEY_new')
 /// EVP_PKEY_free frees all data referenced by pkey and then frees pkey itself.
 ///
 /// ```c
-/// OPENSSL_EXPORT void EVP_PKEY_free(EVP_PKEY *pkey);
+/// void EVP_PKEY_free(EVP_PKEY *pkey);
 /// ```
 final EVP_PKEY_free = lookup('EVP_PKEY_free')
     .lookupFunc<Void Function(EVP_PKEY)>()
@@ -43,18 +43,18 @@ final EVP_PKEY_free = lookup('EVP_PKEY_free')
 /// be called concurrently with other operations on the EVP_PKEY.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_PKEY_set1_RSA(EVP_PKEY *pkey, RSA *key);
-/// OPENSSL_EXPORT int EVP_PKEY_assign_RSA(EVP_PKEY *pkey, RSA *key);
-/// OPENSSL_EXPORT RSA *EVP_PKEY_get0_RSA(const EVP_PKEY *pkey);
-/// OPENSSL_EXPORT RSA *EVP_PKEY_get1_RSA(const EVP_PKEY *pkey);
-/// OPENSSL_EXPORT int EVP_PKEY_set1_DSA(EVP_PKEY *pkey, DSA *key);
-/// OPENSSL_EXPORT int EVP_PKEY_assign_DSA(EVP_PKEY *pkey, DSA *key);
-/// OPENSSL_EXPORT DSA *EVP_PKEY_get0_DSA(const EVP_PKEY *pkey);
-/// OPENSSL_EXPORT DSA *EVP_PKEY_get1_DSA(const EVP_PKEY *pkey);
-/// OPENSSL_EXPORT int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey, EC_KEY *key);
-/// OPENSSL_EXPORT int EVP_PKEY_assign_EC_KEY(EVP_PKEY *pkey, EC_KEY *key);
-/// OPENSSL_EXPORT EC_KEY *EVP_PKEY_get0_EC_KEY(const EVP_PKEY *pkey);
-/// OPENSSL_EXPORT EC_KEY *EVP_PKEY_get1_EC_KEY(const EVP_PKEY *pkey);
+/// int EVP_PKEY_set1_RSA(EVP_PKEY *pkey, RSA *key);
+/// int EVP_PKEY_assign_RSA(EVP_PKEY *pkey, RSA *key);
+/// RSA *EVP_PKEY_get0_RSA(const EVP_PKEY *pkey);
+/// RSA *EVP_PKEY_get1_RSA(const EVP_PKEY *pkey);
+/// int EVP_PKEY_set1_DSA(EVP_PKEY *pkey, DSA *key);
+/// int EVP_PKEY_assign_DSA(EVP_PKEY *pkey, DSA *key);
+/// DSA *EVP_PKEY_get0_DSA(const EVP_PKEY *pkey);
+/// DSA *EVP_PKEY_get1_DSA(const EVP_PKEY *pkey);
+/// int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey, EC_KEY *key);
+/// int EVP_PKEY_assign_EC_KEY(EVP_PKEY *pkey, EC_KEY *key);
+/// EC_KEY *EVP_PKEY_get0_EC_KEY(const EVP_PKEY *pkey);
+/// EC_KEY *EVP_PKEY_get1_EC_KEY(const EVP_PKEY *pkey);
 /// ```
 final EVP_PKEY_set1_RSA = lookup('EVP_PKEY_set1_RSA')
     .lookupFunc<Int32 Function(EVP_PKEY, RSA)>()
@@ -76,7 +76,7 @@ final EVP_PKEY_get0_RSA = lookup('EVP_PKEY_get0_RSA')
 /// size or EC curve.
 ///
 /// ```c
-/// OPENSSL_EXPORT EVP_PKEY *EVP_parse_public_key(CBS *cbs);
+/// EVP_PKEY *EVP_parse_public_key(CBS *cbs);
 /// ```
 final EVP_parse_public_key = lookup('EVP_parse_public_key')
     .lookupFunc<EVP_PKEY Function(CBS)>()
@@ -87,7 +87,7 @@ final EVP_parse_public_key = lookup('EVP_parse_public_key')
 /// success and zero on error.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_marshal_public_key(CBB *cbb, const EVP_PKEY *key);
+/// int EVP_marshal_public_key(CBB *cbb, const EVP_PKEY *key);
 /// ```
 final EVP_marshal_public_key = lookup('EVP_marshal_public_key')
     .lookupFunc<Int32 Function(CBB, EVP_PKEY)>()
@@ -106,7 +106,7 @@ final EVP_marshal_public_key = lookup('EVP_marshal_public_key')
 /// the structure.
 ///
 /// ```c
-/// OPENSSL_EXPORT EVP_PKEY *EVP_parse_private_key(CBS *cbs);
+/// EVP_PKEY *EVP_parse_private_key(CBS *cbs);
 /// ```
 final EVP_parse_private_key = lookup('EVP_parse_private_key')
     .lookupFunc<EVP_PKEY Function(CBS)>()
@@ -117,7 +117,7 @@ final EVP_parse_private_key = lookup('EVP_parse_private_key')
 /// success and zero on error.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_marshal_private_key(CBB *cbb, const EVP_PKEY *key);
+/// int EVP_marshal_private_key(CBB *cbb, const EVP_PKEY *key);
 /// ```
 final EVP_marshal_private_key = lookup('EVP_marshal_private_key')
     .lookupFunc<Int32 Function(CBB, EVP_PKEY)>()
@@ -139,7 +139,7 @@ final EVP_marshal_private_key = lookup('EVP_marshal_private_key')
 ///
 /// It returns one on success, or zero on error.
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestSignInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+/// int EVP_DigestSignInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
 ///                                       const EVP_MD *type, ENGINE *e,
 ///                                       EVP_PKEY *pkey);
 /// ```
@@ -169,7 +169,7 @@ final EVP_DigestSignInit = lookup('EVP_DigestSignInit')
 /// single-shot operation.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestSignUpdate(EVP_MD_CTX *ctx, const void *data,
+/// int EVP_DigestSignUpdate(EVP_MD_CTX *ctx, const void *data,
 ///                                         size_t len);
 /// ```
 final EVP_DigestSignUpdate = lookup('EVP_DigestSignUpdate')
@@ -189,7 +189,7 @@ final EVP_DigestSignUpdate = lookup('EVP_DigestSignUpdate')
 /// It returns one on success, or zero on error.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestSignFinal(EVP_MD_CTX *ctx, uint8_t *out_sig,
+/// int EVP_DigestSignFinal(EVP_MD_CTX *ctx, uint8_t *out_sig,
 ///                                        size_t *out_sig_len);
 /// ```
 final EVP_DigestSignFinal = lookup('EVP_DigestSignFinal')
@@ -214,7 +214,7 @@ final EVP_DigestSignFinal = lookup('EVP_DigestSignFinal')
 /// It returns one on success, or zero on error.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+/// int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
 ///                                         const EVP_MD *type, ENGINE *e,
 ///                                         EVP_PKEY *pkey);
 /// ```
@@ -244,7 +244,7 @@ final EVP_DigestVerifyInit = lookup('EVP_DigestVerifyInit')
 /// for a single-shot verification.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestVerifyUpdate(EVP_MD_CTX *ctx, const void *data,
+/// int EVP_DigestVerifyUpdate(EVP_MD_CTX *ctx, const void *data,
 ///                                           size_t len);
 /// ```
 final EVP_DigestVerifyUpdate = lookup('EVP_DigestVerifyUpdate')
@@ -260,7 +260,7 @@ final EVP_DigestVerifyUpdate = lookup('EVP_DigestVerifyUpdate')
 /// for a single-shot verification.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const uint8_t *sig,
+/// int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const uint8_t *sig,
 ///                                          size_t sig_len);
 /// ```
 final EVP_DigestVerifyFinal = lookup('EVP_DigestVerifyFinal')

@@ -29,7 +29,7 @@ class CBS extends Pointer<Void> {
 /// CBS_init sets cbs to point to data. It does not take ownership of data.
 ///
 /// ```c
-/// OPENSSL_EXPORT void CBS_init(CBS *cbs, const uint8_t *data, size_t len);
+/// void CBS_init(CBS *cbs, const uint8_t *data, size_t len);
 /// ```
 final CBS_init = lookup('CBS_init')
     .lookupFunc<Void Function(CBS, Bytes, IntPtr)>()
@@ -81,7 +81,7 @@ class CBB extends Pointer<Void> {
 /// cleanup of a CBB.
 ///
 /// ```c
-/// OPENSSL_EXPORT void CBB_zero(CBB *cbb);
+/// void CBB_zero(CBB *cbb);
 /// ```
 final CBB_zero = lookup('CBB_zero')
     .lookupFunc<Void Function(CBB)>()
@@ -92,7 +92,7 @@ final CBB_zero = lookup('CBB_zero')
 /// allocation failure.
 ///
 /// ```c
-/// OPENSSL_EXPORT int CBB_init(CBB *cbb, size_t initial_capacity);
+/// int CBB_init(CBB *cbb, size_t initial_capacity);
 /// ```
 final CBB_init = lookup('CBB_init')
     .lookupFunc<Int32 Function(CBB, IntPtr)>()
@@ -107,7 +107,7 @@ final CBB_init = lookup('CBB_init')
 /// CBB_zero.
 ///
 /// ```c
-/// OPENSSL_EXPORT void CBB_cleanup(CBB *cbb);
+/// void CBB_cleanup(CBB *cbb);
 /// ```
 final CBB_cleanup = lookup('CBB_cleanup')
     .lookupFunc<Void Function(CBB)>()
@@ -120,7 +120,7 @@ final CBB_cleanup = lookup('CBB_cleanup')
 /// returns one on success or zero on error.
 ///
 /// ```c
-/// OPENSSL_EXPORT int CBB_flush(CBB *cbb);
+/// int CBB_flush(CBB *cbb);
 /// ```
 final CBB_flush = lookup('CBB_flush')
     .lookupFunc<Int32 Function(CBB)>()
@@ -133,7 +133,7 @@ final CBB_flush = lookup('CBB_flush')
 /// CBB with any active children.
 ///
 /// ```c
-/// OPENSSL_EXPORT const uint8_t *CBB_data(const CBB *cbb);
+/// const uint8_t *CBB_data(const CBB *cbb);
 /// ```
 final CBB_data = lookup('CBB_data')
     .lookupFunc<Bytes Function(CBB)>()
@@ -145,7 +145,7 @@ final CBB_data = lookup('CBB_data')
 /// CBB with any active children.
 ///
 /// ```c
-/// OPENSSL_EXPORT size_t CBB_len(const CBB *cbb);
+/// size_t CBB_len(const CBB *cbb);
 /// ```
 final CBB_len = lookup('CBB_len')
     .lookupFunc<IntPtr Function(CBB)>()

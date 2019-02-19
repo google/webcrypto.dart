@@ -9,10 +9,10 @@ import 'helpers.dart';
 /// hash function.
 ///
 /// ```c
-/// OPENSSL_EXPORT const EVP_MD *EVP_sha1(void);
-/// OPENSSL_EXPORT const EVP_MD *EVP_sha256(void);
-/// OPENSSL_EXPORT const EVP_MD *EVP_sha384(void);
-/// OPENSSL_EXPORT const EVP_MD *EVP_sha512(void);
+/// const EVP_MD *EVP_sha1(void);
+/// const EVP_MD *EVP_sha256(void);
+/// const EVP_MD *EVP_sha384(void);
+/// const EVP_MD *EVP_sha512(void);
 /// ```
 final EVP_sha1 = lookup('EVP_sha1')
         .lookupFunc<EVP_MD Function()>()
@@ -30,7 +30,7 @@ final EVP_sha1 = lookup('EVP_sha1')
 /// EVP_MD_size returns the digest size of md, in bytes.
 ///
 /// ```c
-/// OPENSSL_EXPORT size_t EVP_MD_size(const EVP_MD *md);
+/// size_t EVP_MD_size(const EVP_MD *md);
 /// ```
 final EVP_MD_size = lookup('EVP_MD_size')
     .lookupFunc<IntPtr Function(EVP_MD)>()
@@ -41,7 +41,7 @@ final EVP_MD_size = lookup('EVP_MD_size')
 /// release the resulting object.
 ///
 /// ```c
-/// OPENSSL_EXPORT EVP_MD_CTX *EVP_MD_CTX_new(void);
+/// EVP_MD_CTX *EVP_MD_CTX_new(void);
 /// ```
 final EVP_MD_CTX_new = lookup('EVP_MD_CTX_new')
     .lookupFunc<EVP_MD_CTX Function()>()
@@ -50,7 +50,7 @@ final EVP_MD_CTX_new = lookup('EVP_MD_CTX_new')
 /// EVP_MD_CTX_free calls EVP_MD_CTX_cleanup and then frees ctx itself.
 ///
 /// ```c
-/// OPENSSL_EXPORT void EVP_MD_CTX_free(EVP_MD_CTX *ctx);
+/// void EVP_MD_CTX_free(EVP_MD_CTX *ctx);
 /// ```
 final EVP_MD_CTX_free = lookup('EVP_MD_CTX_free')
     .lookupFunc<Void Function(EVP_MD_CTX)>()
@@ -60,7 +60,7 @@ final EVP_MD_CTX_free = lookup('EVP_MD_CTX_free')
 /// before use.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestInit(EVP_MD_CTX *ctx, const EVP_MD *type);
+/// int EVP_DigestInit(EVP_MD_CTX *ctx, const EVP_MD *type);
 /// ```
 final EVP_DigestInit = lookup('EVP_DigestInit')
     .lookupFunc<Int32 Function(EVP_MD_CTX, EVP_MD)>()
@@ -70,7 +70,7 @@ final EVP_DigestInit = lookup('EVP_DigestInit')
 /// in ctx. It returns one.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *data,
+/// int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *data,
 ///                                     size_t len);
 /// ```
 final EVP_DigestUpdate = lookup('EVP_DigestUpdate')
@@ -81,7 +81,7 @@ final EVP_DigestUpdate = lookup('EVP_DigestUpdate')
 /// is called on ctx before returning.
 ///
 /// ```c
-/// OPENSSL_EXPORT int EVP_DigestFinal(EVP_MD_CTX *ctx, uint8_t *md_out,
+/// int EVP_DigestFinal(EVP_MD_CTX *ctx, uint8_t *md_out,
 ///                                    unsigned int *out_size);
 /// ```
 final EVP_DigestFinal = lookup('EVP_DigestFinal')
@@ -92,7 +92,7 @@ final EVP_DigestFinal = lookup('EVP_DigestFinal')
 /// a digest hasn't been set on ctx.
 ///
 /// ```c
-/// OPENSSL_EXPORT size_t EVP_MD_CTX_size(const EVP_MD_CTX *ctx);
+/// size_t EVP_MD_CTX_size(const EVP_MD_CTX *ctx);
 /// ```
 final EVP_MD_CTX_size = lookup('EVP_MD_CTX_size')
     .lookupFunc<IntPtr Function(EVP_MD_CTX)>()

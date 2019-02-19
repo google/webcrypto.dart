@@ -8,7 +8,7 @@ import 'helpers.dart';
 /// RAND_bytes writes len bytes of random data to buf and returns one.
 ///
 /// ```c
-/// OPENSSL_EXPORT int RAND_bytes(uint8_t *buf, size_t len);
+/// int RAND_bytes(uint8_t *buf, size_t len);
 /// ```
 final RAND_bytes = lookup('RAND_bytes')
     .lookupFunc<Int32 Function(Bytes, IntPtr)>()

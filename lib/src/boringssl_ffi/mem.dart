@@ -9,7 +9,7 @@ import 'helpers.dart';
 /// non-zero.
 ///
 /// ```c
-/// OPENSSL_EXPORT int CRYPTO_memcmp(const void *a, const void *b, size_t len);
+/// int CRYPTO_memcmp(const void *a, const void *b, size_t len);
 /// ```
 final CRYPTO_memcmp = lookup('CRYPTO_memcmp')
     .lookupFunc<Uint32 Function(Data, Data, IntPtr)>()

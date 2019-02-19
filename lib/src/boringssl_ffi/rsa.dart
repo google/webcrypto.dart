@@ -8,7 +8,7 @@ import 'helpers.dart';
 /// RSA_new returns a new, empty RSA object or NULL on error.
 ///
 /// ```c
-/// OPENSSL_EXPORT RSA *RSA_new(void);
+/// RSA *RSA_new(void);
 /// ```
 final RSA_new =
     lookup('RSA_new').lookupFunc<RSA Function()>().asFunction<RSA Function()>();
@@ -17,7 +17,7 @@ final RSA_new =
 /// count drops to zero.
 ///
 /// ```c
-/// OPENSSL_EXPORT void RSA_free(RSA *rsa);
+/// void RSA_free(RSA *rsa);
 /// ```
 final RSA_free = lookup('RSA_free')
     .lookupFunc<Void Function(RSA)>()
@@ -34,7 +34,7 @@ final RSA_free = lookup('RSA_free')
 ///
 /// It returns one on success or zero on error.
 /// ```c
-/// OPENSSL_EXPORT int RSA_generate_key_ex(RSA *rsa, int bits, const BIGNUM *e,
+/// int RSA_generate_key_ex(RSA *rsa, int bits, const BIGNUM *e,
 ///                                        BN_GENCB *cb);
 /// ```
 final RSA_generate_key_ex = lookup('RSA_generate_key_ex')
@@ -48,7 +48,7 @@ final RSA_generate_key_ex = lookup('RSA_generate_key_ex')
 /// returns zero then a more detailed error is available on the error queue.
 ///
 /// ```c
-/// OPENSSL_EXPORT int RSA_check_key(const RSA *rsa);
+/// int RSA_check_key(const RSA *rsa);
 /// ```
 final RSA_check_key = lookup('RSA_check_key')
     .lookupFunc<Int32 Function(RSA)>()
@@ -58,7 +58,7 @@ final RSA_check_key = lookup('RSA_check_key')
 /// into it. It returns the fresh RSA object, or NULL on error.
 ///
 /// ```c
-/// OPENSSL_EXPORT RSA *RSAPublicKey_dup(const RSA *rsa);
+/// RSA *RSAPublicKey_dup(const RSA *rsa);
 /// ```
 final RSAPublicKey_dup = lookup('RSAPublicKey_dup')
     .lookupFunc<RSA Function(RSA)>()

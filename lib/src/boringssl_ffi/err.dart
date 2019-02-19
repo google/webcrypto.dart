@@ -10,7 +10,7 @@ import 'helpers.dart';
 /// it returns zero.
 ///
 ///```c
-/// OPENSSL_EXPORT uint32_t ERR_get_error(void);
+/// uint32_t ERR_get_error(void);
 ///```
 final ERR_get_error = lookup('ERR_get_error')
     .lookupFunc<Uint32 Function()>()
@@ -29,7 +29,7 @@ final ERR_get_error = lookup('ERR_get_error')
 /// are ASCII text.
 ///
 /// ```c
-/// OPENSSL_EXPORT void ERR_error_string_n(uint32_t packed_error, char *buf,
+/// void ERR_error_string_n(uint32_t packed_error, char *buf,
 ///                                        size_t len);
 /// ```
 final ERR_error_string_n = lookup('ERR_error_string_n')
@@ -39,7 +39,7 @@ final ERR_error_string_n = lookup('ERR_error_string_n')
 /// ERR_clear_error clears the error queue for the current thread.
 ///
 ///```c
-/// OPENSSL_EXPORT void ERR_clear_error(void);
+/// void ERR_clear_error(void);
 ///```
 final ERR_clear_error = lookup('ERR_clear_error')
     .lookupFunc<Void Function()>()

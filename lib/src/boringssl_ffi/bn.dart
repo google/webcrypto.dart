@@ -12,7 +12,7 @@ import 'helpers.dart';
 /// BN_new creates a new, allocated BIGNUM and initialises it.
 ///
 /// ```c
-/// OPENSSL_EXPORT BIGNUM *BN_new(void);
+/// BIGNUM *BN_new(void);
 /// ```
 final BN_new = lookup('BN_new')
     .lookupFunc<BIGNUM Function()>()
@@ -22,7 +22,7 @@ final BN_new = lookup('BN_new')
 /// on the heap, frees bn also.
 ///
 /// ```c
-/// OPENSSL_EXPORT void BN_free(BIGNUM *bn);
+/// void BN_free(BIGNUM *bn);
 /// ```
 final BN_free = lookup('BN_free')
     .lookupFunc<Void Function(BIGNUM)>()
@@ -32,7 +32,7 @@ final BN_free = lookup('BN_free')
 /// allocation failure.
 ///
 /// ```c
-/// OPENSSL_EXPORT int BN_set_word(BIGNUM *bn, BN_ULONG value);
+/// int BN_set_word(BIGNUM *bn, BN_ULONG value);
 /// ```
 final BN_set_word = lookup('BN_set_word')
     .lookupFunc<Int32 Function(BIGNUM, Uint64)>()
