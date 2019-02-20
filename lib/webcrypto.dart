@@ -1,4 +1,11 @@
-/// Web crypto package provides bindings for web cryptography specificaiton.
+/// _The `webcrypto` package provides bindings for
+/// [web cryptography API][webcrypto-spec]._
+///
+/// The functionality available in this package works in Dart whether running
+/// in the VM, browser or AOT-compiled to binary code.
+///
+///
+/// [webcrypto-spec]: https://www.w3.org/TR/WebCryptoAPI/
 library webcrypto;
 
 import 'dart:async';
@@ -75,8 +82,6 @@ enum HashAlgorithm {
 
 /// Compute a cryptographic hash-sum of [data] stream using [hash].
 ///
-///
-///
 /// **Example**
 /// ```dart
 /// import 'dart:convert' show base64, utf8;
@@ -143,7 +148,12 @@ List<KeyUsage> _normalizeUsages(List<KeyUsage> usages) {
   return usages;
 }
 
+/// Facilitates signing/verifying with an HMAC.
+///
+/// The [HmacSecretKey] holds a symmetric secret key and a [HashAlgorithm],
+/// which can be used to create and verify HMAC signatures.
 abstract class HmacSecretKey implements CryptoKey {
+  /// Import [HmacSecretKey] from raw [keyData].
   static Future<HmacSecretKey> importRawKey({
     @required List<int> keyData,
     @required HashAlgorithm hash,
@@ -181,6 +191,19 @@ abstract class HmacSecretKey implements CryptoKey {
     );
   }
 
+  /// Generate random [HmacSecretKey].
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  ///
+  /// // Generate a new random HMAC secret key.
+  /// final key = await HmacSecretKey.generate({
+  ///   hash: HashAlgorithm.sha256,
+  ///   extractable: true,
+  ///   usages: [KeyUsage.sign, KeyUsage.verify],
+  /// });
+  /// ```
   static Future<HmacSecretKey> generateKey({
     @required HashAlgorithm hash,
     @required bool extractable,
@@ -215,6 +238,32 @@ abstract class HmacSecretKey implements CryptoKey {
     @required Stream<List<int>> data,
   });
 
+  /// Export [HmacSecretKey] as raw bytes.
+  ///
+  /// This returns raw bytes making up the secret key. This does not encode the
+  /// [HashAlgorithm], [usages], [extractable] or other metadata the key was
+  /// created with. This operation requires this key to be [extractable].
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  ///
+  /// Future<void> exportPrintAndImportKey(HmacSecretKey key) async {
+  ///   // Extract the secret key.
+  ///   final secretBytes = await key.extractRawKey();
+  ///
+  ///   // Print the key as base64
+  ///   print(base64.encode(secretBytes));
+  ///
+  ///   // If we wanted to we could import the key as follows:
+  ///   // key = await HmacSecretKey.importRawKey({
+  ///   //   keyData: secretBytes,
+  ///   //   hash: HashAlgorithm.sha256,
+  ///   //   extractable: true,
+  ///   //   usages: [KeyUsage.sign, KeyUsage.verify],
+  ///   // });
+  /// }
+  /// ```
   Future<List<int>> exportRawKey();
 }
 
