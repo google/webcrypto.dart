@@ -36,15 +36,14 @@ enum KeyUsage {
 
 /// Common interface for all cryptographic keys.
 ///
-/// All cryptographic keys contain key material, and while the operations and
-/// their signature often depends on the cryptographic algorithm, common to all
-/// cryptographic keys is that allow a specific set of [usages] and may permit
-/// operations that extract the key material.
+/// Once generated or import a [CryptoKey] is immutable. The [usages] properties
+/// determines what operations the key can be used for.
+/// The [extractable] bit determines if operations that extract the key material
+/// is permitted.
 ///
-/// The [usages] properties determines what operations the key can be used for.
-/// The [extractable] bit determines if operations that extract the key is
-/// permitted. These properties are read-only, but can be specified when a key
-/// is imported or generated.
+/// Methods to generate or import [CryptoKey] subclasses are exposed as static
+/// methods on the algorithm specific subclass, e.g. see
+/// [HmacSecretKew.generateKey] for generating a random [HmacSecretKey].
 abstract class CryptoKey {
   /// Determines if operations extracting the key is permitted.
   ///

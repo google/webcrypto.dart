@@ -1,11 +1,47 @@
 /// _The `webcrypto` package provides bindings for
 /// [web cryptography API][webcrypto-spec]._
 ///
-/// The functionality available in this package works in Dart whether running
-/// in the VM, browser or AOT-compiled to binary code.
+/// Cryptographic primitives stores the key material in algorithm-specific
+/// [CryptoKey] subclasses such as [HmacSecretKey]. Instances of these keys
+/// is _always_ created using asynchronous static methods on the [CryptoKey]
+/// subclass in question. For example, a [HmacSecretKey] can be created using
+/// [HmacSecretKey.generate()] and [HmacSecretKey.importRawKey()].
 ///
+/// For algorithms with both private and public keys static the method to
+/// generate a [CryptoKeyPair] with both a private and public key is exposed as
+/// a static method on the [CryptoKey] subclass for the private key.
+/// For example, [RsassaPkcs1V15PrivateKey.generateKey()] generates both a
+/// public and a private key.
+///
+/// Once instantiated a [CryptoKey] subclass is immutable. The capabilities of
+/// the [CryptoKey] instance is configured when it is imported or generated.
+/// Methods to import or generate a [CryptoKey] subclass accepts a boolean
+/// `extractable` and a [List<KeyUsage>] `usages`, together these determine
+/// which operations are permitted. This aims to prevent unintended usage of
+/// keys.
+///
+/// **Warning**, this package provides access cryptographic primitives. Using
+/// these correctly is non-trivial and subtle mistakes can cause security
+/// vulnerabilities in your application.
+/// **If you are unsure how these cryptographic primitives work, it is wise to
+/// consult a security expert.**
+///
+/// ## Supported Platforms
+/// The functionality available in this package works is design to be available
+/// everywhere Dart runs.
+///
+/// In the browser the computation delegated to the browser's
+/// [Web Cryptography][webcrypto-spec] implementation, which is available in
+/// recent versions of most modern browsers. If necessary shims can be employed
+/// to reach all browsers, however, distribution of such shims is outside the
+/// scope of this package.
+///
+/// In the Dart VM and AOT compiled Dart code, the computation is delegated to
+/// [BoringSSL][boringssl], which is also used by the Dart SDK for TLS
+/// connections.
 ///
 /// [webcrypto-spec]: https://www.w3.org/TR/WebCryptoAPI/
+/// [boringssl]: https://boringssl.googlesource.com/boringssl/
 library webcrypto;
 
 import 'dart:async';
@@ -44,6 +80,8 @@ export 'src/cryptokey.dart';
 /// ```
 void getRandomValues(TypedData destination) {
   ArgumentError.checkNotNull(destination, 'destination');
+  // This limitation is given in the Web Cryptography Specification, see:
+  // https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues
   if (destination.lengthInBytes > 65536) {
     throw ArgumentError.value(destination, 'destination',
         'array of more than 65536 bytes is not allowed');
@@ -56,6 +94,8 @@ void getRandomValues(TypedData destination) {
 ///
 /// See [digest] for how to compute the hash sum of a byte stream.
 enum HashAlgorithm {
+  // TODO: Consider renaming this type `Hash` instead of `HashAlgorithm`
+
   /// SHA-1 as specified in [FIPS PUB 180-4][1].
   ///
   /// **This algorithm is considered weak** and should not be used in new
@@ -84,15 +124,39 @@ enum HashAlgorithm {
 ///
 /// **Example**
 /// ```dart
+/// import 'dart:io' show File;
+/// import 'dart:convert' show base64;
+/// import 'package:webcrypto/webcrypto.dart';
+///
+/// // Pick a file to hash.
+/// String fileToHash = '/etc/passwd';
+///
+/// // Compute hash of fileToHash with sha-256
+/// List<int> hash = await digest(
+///   hash: HashAlgorithm.sha256,
+///   data: File(fileToHash).openRead(),
+/// );
+///
+/// // Print the base64 encoded hash
+/// print(base64.encode(hash));
+/// ```
+///
+/// This package does not provide a convenient function for hashing a
+/// byte array. But as illustrated in the example below this can be achieved by
+/// creating a function that wraps the byte array in a byte stream.
+///
+/// **Example**
+/// ```dart
 /// import 'dart:convert' show base64, utf8;
 /// import 'package:webcrypto/webcrypto.dart';
 ///
 /// // Function that creates a stream of data we can hash.
 /// Stream<List<int>> dataStream() async* {
+///   // In this case our stream contains a single chunk of bytes.
 ///   yield utf8.encode('hello world');
 /// }
 ///
-/// // Hash of the dataStream with sha-256
+/// // Compute hash of the dataStream with sha-256
 /// List<int> hash = await digest(
 ///   hash: HashAlgorithm.sha256,
 ///   data: dataStream(),
@@ -101,10 +165,6 @@ enum HashAlgorithm {
 /// // Print the base64 encoded hash
 /// print(base64.encode(hash));
 /// ```
-///
-/// This package does not provide a convenient function for hashing a
-/// byte array. But as illustrated in the example above this can be achieved by
-/// creating a function that wraps the byte array in a byte stream.
 Future<List<int>> digest({
   // Note: It's tempting to use positional arguments, but this could cause
   //       problems if future iterations of the Web Cryptography Specification
@@ -132,6 +192,9 @@ void _checkAllowedUsages(
   List<KeyUsage> allowedUsages,
 ) {
   ArgumentError.checkNotNull(usages, 'usages');
+  assert(algorithm != null && algorithm != '', 'algorithm should be given');
+  assert(allowedUsages != null, 'allowedUsages should be given');
+
   for (final usage in usages) {
     if (!allowedUsages.contains(usage)) {
       final allowedList = allowedUsages.map(utils.keyUsageToString).join(', ');
@@ -143,6 +206,7 @@ void _checkAllowedUsages(
 
 /// Remove duplicate [usages] and sort according to index in enum.
 List<KeyUsage> _normalizeUsages(List<KeyUsage> usages) {
+  assert(usages != null, 'usages should be checked for null');
   usages = usages.toSet().toList();
   usages.sort((a, b) => a.index.compareTo(b.index));
   return usages;
@@ -151,9 +215,34 @@ List<KeyUsage> _normalizeUsages(List<KeyUsage> usages) {
 /// Facilitates signing/verifying with an HMAC.
 ///
 /// The [HmacSecretKey] holds a symmetric secret key and a [HashAlgorithm],
-/// which can be used to create and verify HMAC signatures.
+/// which can be used to create and verify HMAC signatures as specified in
+/// [FIPS PUB 180-4][1].
+///
+/// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
 abstract class HmacSecretKey implements CryptoKey {
   /// Import [HmacSecretKey] from raw [keyData].
+  ///
+  /// Creates an [HmacSecretKey] using [keyData] as secret key, and running
+  /// HMAC with given [hash] algorithm. Valid [usages] is [KeyUsage.sign] and
+  /// [KeyUsage.verify].
+  ///
+  /// If given [length] specifies the length of the key, this must be not be
+  /// less than number of bits in [keyData] - 7. The [length] only allows
+  /// cutting bits of the last byte in [keyData]. In practice this is the same
+  /// as zero'ing the last bits in [keyData].
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'dart:convert' show utf8;
+  /// import 'package:webcrypto/webcrypto.dart';
+  ///
+  /// final key = await HmacSecretKey.importRawKey(
+  ///   keyData: utf8.encode('a-secret-key'),  // don't use string in practice
+  ///   hash: HashAlgorithm.sha256,
+  ///   extractable: false,
+  ///   usages: [KeyUsage.sign],
+  /// );
+  /// ```
   static Future<HmacSecretKey> importRawKey({
     @required List<int> keyData,
     @required HashAlgorithm hash,
@@ -169,6 +258,8 @@ abstract class HmacSecretKey implements CryptoKey {
       KeyUsage.verify,
     ]);
     usages = _normalizeUsages(usages);
+    // These limitations are given in Web Cryptography Spec:
+    // https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
     if (length != null && length > keyData.length * 8) {
       ArgumentError.value(
           length, 'length', 'must be less than number of bits in keyData');
@@ -192,6 +283,10 @@ abstract class HmacSecretKey implements CryptoKey {
   }
 
   /// Generate random [HmacSecretKey].
+  ///
+  /// The [length] specifies the length of the secret key in bits. If omitted
+  /// the random key will use the same number of bits as the underlying hash
+  /// algorithm given in [hash].
   ///
   /// **Example**
   /// ```dart
@@ -229,10 +324,81 @@ abstract class HmacSecretKey implements CryptoKey {
     );
   }
 
+  /// Compute an HMAC signature of given [data] stream.
+  ///
+  /// This computes an HMAC signature of the [data] stream using hash algorithm
+  /// and secret key material held by this [HmacSecretKey].
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'dart:convert' show base64, utf8;
+  /// import 'package:webcrypto/webcrypto.dart';
+  ///
+  /// // Generate an HmacSecretKey.
+  /// final key = await HmacSecretKey.generateKey(
+  ///   hash: HashAlgorithm.sha256,
+  ///   extractable: true,
+  ///   usages: [KeyUsage.sign, KeyUsage.verify],
+  /// );
+  ///
+  /// // Function that creates a stream of data from our string-to-sign:
+  /// String stringToSign = 'example-string-to-signed';
+  /// Stream<List<int>> dataStream() async* {
+  ///   yield utf8.encode(stringToSign);
+  /// }
+  ///
+  /// // Compute signature.
+  /// final signature = await key.sign(data: dataStream());
+  ///
+  /// // Print as base64
+  /// print(base64.encode(signature));
+  /// ```
+  ///
+  /// **Warning**, this method should **not** be used for **validating**
+  /// other signatures by generating a new signature and then comparing the two.
+  /// While this technically works, you application might be vulnerable to
+  /// timing attacks. To validate signatures use [verify()], this method
+  /// computes a signature and does a fixed-time comparison.
   Future<List<int>> sign({
     @required Stream<List<int>> data,
   });
 
+  /// Verify the HMAC [signature] of given [data] stream.
+  ///
+  /// This computes an HMAC signature of the [data] stream in the same manner
+  /// as [sign()] and conducts a fixed-time comparison against [signature],
+  /// returning `true` if the two signatures are equal.
+  ///
+  /// Notice that it's possible to compute a signature for [data] using
+  /// [sign()] and then simply compare the two signatures. This is strongly
+  /// discouraged as it is easy to introduce side-channels opening your
+  /// application to timing attacks. Use this method to verify signatures.
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'dart:convert' show base64, utf8;
+  /// import 'package:webcrypto/webcrypto.dart';
+  ///
+  /// // Generate an HmacSecretKey.
+  /// final key = await HmacSecretKey.generateKey(
+  ///   hash: HashAlgorithm.sha256,
+  ///   extractable: true,
+  ///   usages: [KeyUsage.sign, KeyUsage.verify],
+  /// );
+  ///
+  /// // Function that creates a stream of data from our string-to-sign:
+  /// String stringToSign = 'example-string-to-signed';
+  /// Stream<List<int>> dataStream() async* {
+  ///   yield utf8.encode(stringToSign);
+  /// }
+  ///
+  /// // Compute signature.
+  /// final signature = await key.sign(data: dataStream());
+  ///
+  /// // Verify signature.
+  /// final result = await key.verify(signature: signature, data: dataStream());
+  /// assert(result == true, 'this signature should be valid');
+  /// ```
   Future<bool> verify({
     @required List<int> signature,
     @required Stream<List<int>> data,
@@ -248,21 +414,26 @@ abstract class HmacSecretKey implements CryptoKey {
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// Future<void> exportPrintAndImportKey(HmacSecretKey key) async {
-  ///   // Extract the secret key.
-  ///   final secretBytes = await key.extractRawKey();
+  /// // Generate a new random HMAC secret key.
+  /// final key = await HmacSecretKey.generate({
+  ///   hash: HashAlgorithm.sha256,
+  ///   extractable: true,
+  ///   usages: [KeyUsage.sign, KeyUsage.verify],
+  /// });
   ///
-  ///   // Print the key as base64
-  ///   print(base64.encode(secretBytes));
+  /// // Extract the secret key.
+  /// final secretBytes = await key.extractRawKey();
   ///
-  ///   // If we wanted to we could import the key as follows:
-  ///   // key = await HmacSecretKey.importRawKey({
-  ///   //   keyData: secretBytes,
-  ///   //   hash: HashAlgorithm.sha256,
-  ///   //   extractable: true,
-  ///   //   usages: [KeyUsage.sign, KeyUsage.verify],
-  ///   // });
-  /// }
+  /// // Print the key as base64
+  /// print(base64.encode(secretBytes));
+  ///
+  /// // If we wanted to we could import the key as follows:
+  /// // key = await HmacSecretKey.importRawKey({
+  /// //   keyData: secretBytes,
+  /// //   hash: HashAlgorithm.sha256,
+  /// //   extractable: true,
+  /// //   usages: [KeyUsage.sign, KeyUsage.verify],
+  /// // });
   /// ```
   Future<List<int>> exportRawKey();
 }
