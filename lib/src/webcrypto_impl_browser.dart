@@ -310,10 +310,10 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
 
   final k = await _importKey('spki', keyData, algorithm, extractable, usages);
 
-  // Ensure that we have a private key
-  if (k.type != 'private') {
+  // Ensure that we have a public key
+  if (k.type != 'public') {
     throw ArgumentError.value(keyData, 'keyData',
-        'must be a "private" key, instead we got a "${k.type}" key');
+        'must be a "public" key, instead we got a "${k.type}" key');
   }
 
   return _RsassaPkcs1V15PublicKey(k);
