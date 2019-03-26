@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:typed_data';
 import '../webcrypto.dart';
+import 'exceptions.dart';
 import 'webcrypto_extension/webcrypto_extension.dart' as ext;
 
 final _notImplemented = UnimplementedError(
   'webcrypto not availble on this platform',
 );
-
-StateError _notExtractableError() => StateError(
-      'key cannot be extracted, if created with "extractable" set to `false`',
-    );
 
 abstract class _CryptoKeyBase implements CryptoKey {
   final bool extractable;
@@ -77,7 +74,7 @@ Uint8List _ensureUint8List(List<int> data) {
 
 void _throwOperationExceptionIfString(dynamic value) {
   if (value is String) {
-    throw OperationException(value);
+    throw operationException(value);
   }
 }
 
@@ -102,7 +99,7 @@ void getRandomValues(TypedData destination) {
 
   final err = ext.getRandomValues(destination.buffer.asUint8List());
   if (err != null) {
-    throw OperationException(err);
+    throw operationException(err);
   }
 }
 
@@ -115,7 +112,7 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) async {
   // Create a digest context
   final ctx = ext.digest_create(ext.hashAlgorithmToHashIdentifier(hash));
   if (ctx is String) {
-    throw OperationException(ctx);
+    throw operationException(ctx);
   }
 
   try {
@@ -199,7 +196,7 @@ class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
     // Create a context
     final ctx = ext.hmac_create(_hash, _keyData);
     if (ctx is String) {
-      throw OperationException(ctx);
+      throw operationException(ctx);
     }
 
     try {

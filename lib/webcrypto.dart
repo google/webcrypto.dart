@@ -55,8 +55,13 @@ import 'src/webcrypto_impl_stub.dart'
 import 'src/utils.dart' as utils;
 import 'src/cryptokey.dart';
 
-export 'src/exceptions.dart';
-export 'src/cryptokey.dart';
+export 'src/exceptions.dart'
+    show
+        WebCryptoException,
+        NotSupportedException,
+        DataException,
+        OperationException;
+export 'src/cryptokey.dart' show KeyUsage, CryptoKey, CryptoKeyPair;
 
 /// Fill [destination] with cryptographically random values.
 ///

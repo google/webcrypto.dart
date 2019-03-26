@@ -9,7 +9,7 @@
 ///    a [CryptoKey] for a _usage_ it was not declared to do at creation.
 abstract class WebCryptoException implements Exception {
   final String message;
-  const WebCryptoException(this.message);
+  WebCryptoException._(this.message);
 
   @override
   String toString() => this.message;
@@ -29,7 +29,7 @@ class NotSupportedException extends WebCryptoException {
   //       It's possible we change this as few people want to do feature
   //       detection this way, and you technically can catch errors if needed.
 
-  NotSupportedException(String message) : super(message);
+  NotSupportedException._(String message) : super._(message);
 }
 
 /// Thrown if input data is invalid.
@@ -40,10 +40,16 @@ class NotSupportedException extends WebCryptoException {
 /// This is not thrown in response to invalid arguments, such as a negative
 /// exponent in RSA.
 class DataException extends WebCryptoException {
-  DataException(String message) : super(message);
+  DataException._(String message) : super._(message);
 }
 
 /// Thrown when an operation failed for an operation-specific reason.
 class OperationException extends WebCryptoException {
-  OperationException(String message) : super(message);
+  OperationException._(String message) : super._(message);
 }
+
+NotSupportedException notSupportedException(String message) =>
+    NotSupportedException._(message);
+DataException dataException(String message) => DataException._(message);
+OperationException operationException(String message) =>
+    OperationException._(message);

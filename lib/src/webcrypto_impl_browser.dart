@@ -1,4 +1,5 @@
 import '../webcrypto.dart';
+import 'exceptions.dart';
 import 'dart:async';
 import 'crypto_subtle.dart' as subtle;
 import 'utils.dart' as utils;
@@ -8,7 +9,7 @@ import 'dart:html' show DomException;
 Object _asErrorOrException(DomException e) {
   switch (e.name) {
     case 'NotSupportedError':
-      return NotSupportedException(e.message);
+      return notSupportedException(e.message);
     case 'SyntaxError':
       // SyntaxError is thrown as ArgumentError
       return ArgumentError(e.message);
@@ -16,9 +17,9 @@ Object _asErrorOrException(DomException e) {
       // InvalidAccessError is thrown as StateError
       return StateError(e.message);
     case 'DataError':
-      return DataException(e.message);
+      return dataException(e.message);
     case 'OperationError':
-      return OperationException(e.message);
+      return operationException(e.message);
     case 'QuotaExceededError':
       return ArgumentError(e.message);
   }

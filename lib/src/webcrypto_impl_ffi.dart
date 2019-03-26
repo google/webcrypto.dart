@@ -1,14 +1,11 @@
 import 'dart:typed_data';
 import '../webcrypto.dart';
+import 'exceptions.dart';
 import 'dart:math' as math;
 import 'dart:async' show FutureOr;
 import 'dart:ffi' as ffi;
 import 'dart:convert' show utf8;
 import 'boringssl_ffi/boringssl_ffi.dart' as ssl;
-
-final _notImplemented = UnimplementedError(
-  'webcrypto not availble on this platform',
-);
 
 /// Throw [OperationException] or [DataException] if [condition] is `false`.
 ///
@@ -25,9 +22,9 @@ void _check(
     final err = _extractError();
     message ??= err ?? fallback ?? 'unknown error';
     if (data) {
-      throw DataException(message);
+      throw dataException(message);
     }
-    throw OperationException(message);
+    throw operationException(message);
   }
 }
 
@@ -132,7 +129,7 @@ final _hashAlgorithms = {
 ssl.EVP_MD _hash(HashAlgorithm hash) {
   final MD = _hashAlgorithms[hash];
   if (MD == null) {
-    throw NotSupportedException('HashAlgorithm not supported: $hash');
+    throw notSupportedException('HashAlgorithm not supported: $hash');
   }
   final md = MD();
   _check(md.address != 0, fallback: 'failed to instantiate hash algorithm');
@@ -487,12 +484,12 @@ Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
 }) async {
   // Sanity check for the modulusLength
   if (modulusLength < 256 || modulusLength > 16384) {
-    throw NotSupportedException(
+    throw notSupportedException(
       'modulusLength must between 256 and 16k, $modulusLength is not supported',
     );
   }
   if ((modulusLength % 8) != 0) {
-    throw NotSupportedException(
+    throw notSupportedException(
         'modulusLength: $modulusLength is not a multiple of 8');
   }
 
@@ -500,7 +497,7 @@ Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
   // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
   if (publicExponent != BigInt.from(3) &&
       publicExponent != BigInt.from(65537)) {
-    throw NotSupportedException(
+    throw notSupportedException(
         'publicExponent is not supported, try 3 or 65537');
   }
 
