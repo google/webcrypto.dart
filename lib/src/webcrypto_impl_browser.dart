@@ -290,7 +290,7 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
 
   // Ensure that we have a private key
   if (k.type != 'private') {
-    ArgumentError.value(keyData, 'keyData',
+    throw ArgumentError.value(keyData, 'keyData',
         'must be a "private" key, instead we got a "${k.type}" key');
   }
 
@@ -312,7 +312,7 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
 
   // Ensure that we have a private key
   if (k.type != 'private') {
-    ArgumentError.value(keyData, 'keyData',
+    throw ArgumentError.value(keyData, 'keyData',
         'must be a "private" key, instead we got a "${k.type}" key');
   }
 
