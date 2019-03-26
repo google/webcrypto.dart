@@ -52,7 +52,7 @@ import 'src/webcrypto_impl_stub.dart'
     if (dart.library.ffi) 'src/webcrypto_impl_ffi.dart'
     if (dart.library.io) 'src/webcrypto_impl_native.dart'
     if (dart.library.html) 'src/webcrypto_impl_browser.dart' as impl;
-import 'src/utils.dart' as utils;
+import 'src/utils.dart' show checkAllowedUsages, normalizeUsages;
 import 'src/cryptokey.dart';
 
 export 'src/exceptions.dart'
@@ -184,39 +184,6 @@ Future<List<int>> digest({
   return impl.digest(hash: hash, data: data);
 }
 
-/// Check that [usages] is a subset of [allowedUsages], throws an
-/// [ArgumentError] if:
-///  * [usages] is `null`
-///  * [usages] is not a subset of [allowedUsages].
-///
-/// The [algorithm] paramter is used specify a string that will be used in the
-/// error message explaining why a given usage is not allowed.
-void _checkAllowedUsages(
-  String algorithm,
-  List<KeyUsage> usages,
-  List<KeyUsage> allowedUsages,
-) {
-  ArgumentError.checkNotNull(usages, 'usages');
-  assert(algorithm != null && algorithm != '', 'algorithm should be given');
-  assert(allowedUsages != null, 'allowedUsages should be given');
-
-  for (final usage in usages) {
-    if (!allowedUsages.contains(usage)) {
-      final allowedList = allowedUsages.map(utils.keyUsageToString).join(', ');
-      throw ArgumentError.value(
-          usage, 'usages', '$algorithm only supports usages $allowedList');
-    }
-  }
-}
-
-/// Remove duplicate [usages] and sort according to index in enum.
-List<KeyUsage> _normalizeUsages(List<KeyUsage> usages) {
-  assert(usages != null, 'usages should be checked for null');
-  usages = usages.toSet().toList();
-  usages.sort((a, b) => a.index.compareTo(b.index));
-  return usages;
-}
-
 /// Key for signing/verifying with HMAC.
 ///
 /// An [HmacSecretKey] instance holds a symmetric secret key and a
@@ -263,11 +230,11 @@ abstract class HmacSecretKey implements CryptoKey {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(hash, 'hash');
     ArgumentError.checkNotNull(extractable, 'extractable');
-    _checkAllowedUsages('HMAC', usages, [
+    checkAllowedUsages('HMAC', usages, [
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
-    usages = _normalizeUsages(usages);
+    usages = normalizeUsages(usages);
     // These limitations are given in Web Cryptography Spec:
     // https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
     if (length != null && length > keyData.length * 8) {
@@ -317,11 +284,11 @@ abstract class HmacSecretKey implements CryptoKey {
   }) {
     ArgumentError.checkNotNull(hash, 'hash');
     ArgumentError.checkNotNull(extractable, 'extractable');
-    _checkAllowedUsages('HMAC', usages, [
+    checkAllowedUsages('HMAC', usages, [
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
-    usages = _normalizeUsages(usages);
+    usages = normalizeUsages(usages);
     if (length != null && length <= 0) {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }
@@ -504,8 +471,8 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
-    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.sign]);
-    usages = _normalizeUsages(usages);
+    checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.sign]);
+    usages = normalizeUsages(usages);
     ArgumentError.checkNotNull(hash, 'hash');
 
     return impl.rsassaPkcs1V15PrivateKey_importPkcs8Key(
@@ -587,11 +554,11 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
     ArgumentError.checkNotNull(publicExponent, 'publicExponent');
     ArgumentError.checkNotNull(hash, 'hash');
     ArgumentError.checkNotNull(extractable, 'extractable');
-    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [
+    checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [
       KeyUsage.sign,
       KeyUsage.verify,
     ]);
-    usages = _normalizeUsages(usages);
+    usages = normalizeUsages(usages);
 
     return impl.rsassaPkcs1V15PrivateKey_generateKey(
       modulusLength: modulusLength,
@@ -731,8 +698,8 @@ abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
-    _checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.verify]);
-    usages = _normalizeUsages(usages);
+    checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.verify]);
+    usages = normalizeUsages(usages);
     ArgumentError.checkNotNull(hash, 'hash');
 
     return impl.rsassaPkcs1V15PublicKey_importSpkiKey(
