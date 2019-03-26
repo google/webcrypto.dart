@@ -16,7 +16,7 @@
 /// Once instantiated a [CryptoKey] subclass is immutable. The capabilities of
 /// the [CryptoKey] instance is configured when it is imported or generated.
 /// Methods to import or generate a [CryptoKey] subclass accepts a boolean
-/// `extractable` and a [List<KeyUsage>] `usages`, together these determine
+/// `extractable` and a [List] of [KeyUsage] `usages`, together these determine
 /// which operations are permitted. This aims to prevent unintended usage of
 /// keys.
 ///
