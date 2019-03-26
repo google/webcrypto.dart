@@ -43,7 +43,7 @@ enum KeyUsage {
 ///
 /// Methods to generate or import [CryptoKey] subclasses are exposed as static
 /// methods on the algorithm specific subclass, e.g. see
-/// [HmacSecretKew.generateKey] for generating a random [HmacSecretKey].
+/// [HmacSecretKey.generateKey] for generating a random [HmacSecretKey].
 abstract class CryptoKey {
   /// Determines if operations extracting the key is permitted.
   ///

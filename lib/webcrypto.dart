@@ -5,7 +5,7 @@
 /// [CryptoKey] subclasses such as [HmacSecretKey]. Instances of these keys
 /// is _always_ created using asynchronous static methods on the [CryptoKey]
 /// subclass in question. For example, a [HmacSecretKey] can be created using
-/// [HmacSecretKey.generate()] and [HmacSecretKey.importRawKey()].
+/// [HmacSecretKey.generateKey()] and [HmacSecretKey.importRawKey()].
 ///
 /// For algorithms with both private and public keys static the method to
 /// generate a [CryptoKeyPair] with both a private and public key is exposed as
