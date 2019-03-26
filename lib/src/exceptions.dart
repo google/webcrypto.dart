@@ -1,7 +1,7 @@
 /// Base class for all WebCrypto releated exceptions.
 ///
 /// All _exceptions_ thrown by methods in this package inherets from
-/// [WebCryptoException]. In addition to exceptions methods of this package
+/// [WebCryptoException]. In addition methods of this package may
 /// also throw the following _errors_:
 ///  * [ArgumentError] is thrown when a parameter is out of range.
 ///  * [StateError] is thrown when a type is used in an invalid state, such as
