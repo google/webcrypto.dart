@@ -11,7 +11,7 @@ StateError _notExtractableError() => StateError(
       'key cannot be extracted, if created with "extractable" set to `false`',
     );
 
-abstract class _CryptoKeyBase extends CryptoKey {
+abstract class _CryptoKeyBase implements CryptoKey {
   final bool extractable;
   final List<KeyUsage> usages;
   _CryptoKeyBase(this.extractable, this.usages) {

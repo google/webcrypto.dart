@@ -223,6 +223,8 @@ List<KeyUsage> _normalizeUsages(List<KeyUsage> usages) {
 ///
 /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
 abstract class HmacSecretKey implements CryptoKey {
+  HmacSecretKey._(); // keep the constructor private.
+
   /// Import [HmacSecretKey] from raw [keyData].
   ///
   /// Creates an [HmacSecretKey] using [keyData] as secret key, and running
@@ -453,6 +455,8 @@ abstract class HmacSecretKey implements CryptoKey {
 ///
 /// [1]: https://tools.ietf.org/html/rfc3447
 abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
+  RsassaPkcs1V15PrivateKey._(); // keep the constructor private.
+
   /// Import RSASSA-PKCS1-v1_5 private key in PKCS #8 format.
   ///
   /// Creates an [RsassaPkcs1V15PrivateKey] from [keyData] given as the DER
@@ -678,6 +682,8 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
 ///
 /// [1]: https://tools.ietf.org/html/rfc3447
 abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
+  RsassaPkcs1V15PublicKey._(); // keep the constructor private.
+
   /// Import RSASSA-PKCS1-v1_5 public key in SPKI format.
   ///
   /// Creates an [RsassaPkcs1V15PublicKey] from [keyData] given as the DER

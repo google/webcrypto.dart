@@ -54,7 +54,7 @@ String _extractError() {
   }
 }
 
-abstract class _CryptoKeyBase extends CryptoKey {
+abstract class _CryptoKeyBase implements CryptoKey {
   final bool extractable;
   final List<KeyUsage> usages;
   _CryptoKeyBase(this.extractable, this.usages) {

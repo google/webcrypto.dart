@@ -45,6 +45,8 @@ enum KeyUsage {
 /// methods on the algorithm specific subclass, e.g. see
 /// [HmacSecretKey.generateKey] for generating a random [HmacSecretKey].
 abstract class CryptoKey {
+  CryptoKey._(); // keep the constructor private.
+
   /// Determines if operations extracting the key is permitted.
   ///
   /// This property cannot be changed once a key have been created, however, it
@@ -60,6 +62,8 @@ abstract class CryptoKey {
 
 /// A key-pair as returned from key generation.
 abstract class CryptoKeyPair<S, T> {
+  CryptoKeyPair._(); // keep the constructor private.
+
   /// Private key for [publicKey].
   S get privateKey;
 
