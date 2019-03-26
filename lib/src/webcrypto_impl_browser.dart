@@ -328,6 +328,14 @@ Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
   bool extractable,
   List<KeyUsage> usages,
 }) async {
+  // Limit publicExponent whitelist as in chromium:
+  // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
+  if (publicExponent != BigInt.from(3) &&
+      publicExponent != BigInt.from(65537)) {
+    throw notSupportedException(
+        'publicExponent is not supported, try 3 or 65537');
+  }
+
   final algorithm = subtle.Algorithm(
     name: _rsassaPkcs1V15Algorithm.name,
     hash: subtle.hashAlgorithmToString(hash),

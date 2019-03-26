@@ -115,11 +115,18 @@ List<KeyUsage> stringsToKeyUsages(List<String> usages) {
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#big-integer
 Uint8List bigIntToUint8ListBigInteger(BigInt integer) {
-  // TODO: Implement bigIntToUint8ListBigInteger for all positive integers
-  if (integer != BigInt.from(65537)) {
-    throw UnimplementedError('Only supports 65537 for now');
+  if (integer == BigInt.from(65537)) {
+    return Uint8List.fromList([0x01, 0x00, 0x01]); // 65537
   }
-  return Uint8List.fromList([0x01, 0x00, 0x01]); // 65537
+  if (integer == BigInt.from(3)) {
+    return Uint8List.fromList([0x03]); // 3
+  }
+
+  // TODO: Implement bigIntToUint8ListBigInteger for all positive integers
+  // There is no rush as this is only used for public exponent, and chrome only
+  // supports 3 and 65537, so supporting other numbers is a low priority.
+  // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
+  throw UnimplementedError('Only supports 65537 and 3 for now');
 }
 
 /// Minimal interface for the CryptoKey type.
