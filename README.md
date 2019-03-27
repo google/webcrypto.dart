@@ -32,10 +32,10 @@ paths, which prevents publication on pub.
  * ECDSA (sign/verify)
  * RSA-OAEP	(encrypt/decrypt/wrapKey/unwrapKey)
  * AES-CTR, AES-CBC, AES-GCM (encrypt/decrypt/wrapKey/unwrapKey)
+ * AES-KW (wrapKey/unwrapKey)
  * ECDH (deriveBits/deriveKey)
  * HKDF (deriveBits/deriveKey)
  * PBKDF2	(deriveBits/deriveKey)
- * AES-KW (wrapKey/unwrapKey)
 
 ## References
 

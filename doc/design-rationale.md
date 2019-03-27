@@ -6,7 +6,7 @@ Guiding Principals
 ------------------
 
  * Cryptography is not simple, and should not be simplified.
- * The API should be platform indenpendent.
+ * The API should be platform independent.
  * Cryptographic APIs should be asynchronous.
  * Avoid establishing abstractions that don't fit.
  * Expose reasonably typed APIs.
@@ -60,29 +60,30 @@ additional auxiliary methods or functions for other input types. If the user
 wants to process a byte-buffer, typed `List<int>`, this package will expect the
 user to know (or figure out) how to transform this into a chunked byte-stream.
 
-This is a bit similar to how the [WebCrypto specification][1] puts the
-cryptography API at `crypto.subtle` in an attempt to indicate that many
-of the methods have subtle usage requirements. About the `SubleCrypto` the
-specification says:
+The thinking to not over simplify is in line with how the
+[WebCrypto specification][1] puts the cryptography API at `crypto.subtle` in an
+attempt to indicate that many of the methods have subtle usage requirements.
+About the `SubleCrypto` the specification says:
 
 > It is named `SubtleCrypto` to reflect the fact that many of these algorithms
 > have subtle usage requirements in order to provide the required algorithmic
 > security guarantees.
 
 Following this line of thought, this package shall not attempt to simplify
-cryptography. But instead expect that developers are domain experts, as
-non-experts are better served using high-level oppininated packages instead.
+cryptography. But instead expect that developers are reasonably competent, as
+notice developers are better served using a high-level oppininated package.
 
 [1]: https://www.w3.org/TR/WebCryptoAPI/
 
 Divergence from `package:crypto`
 --------------------------------
 This does not follow `package:crypto` by implementing `Converter<S,T>`
-because `convert()` cannot be asynchronously as required by WebCrypto.
+because `convert()` cannot be asynchronous as required by WebCrypto.
 
 Besides users (hint Flutter) would likely prefer to avoid heavy computations
-like crypto on the main-thread. Even if that's not the case initially, it
-would be preferable to keep the option open by returning Futures.
+like crypto on the main-thread. Even if an initial implemention doesn't move
+computation off-the-mainthread, it would be preferable to keep the option open
+by returning futures.
 
 Finally, it can be argued that applying encryption using a _verb_ like
 `convert` is likely to cause ambiguity, which is highly undesirable in
@@ -100,6 +101,13 @@ parties, client and a server or old client and new client, and all such parties
 needs to agree on the cryptographic algorithms used. Thus, it's rarely possible
 to just swap out the cryptographic algorithms regardless of the abstractions.
 
+For example, while it would be easy to make an abstraction for a hash function
+as `List<int> Function(Stream<List<int>> data)`, there are many algorithms that
+accept a hash function as an argument and would only be unable to support custom
+hash algorithms. Thus, using an enum for specifying a hash algorithm is less
+surprising. An package developer who needs a swappable hash algorithm
+abstraction can easily define one and what implementation this package provides.
+
 Exposed reasonably typed APIs
 -----------------------------
 Types are useful for documentation, auto-completion and ensuring correctness.
@@ -111,15 +119,29 @@ The typed API for Web Cryptography APIs offered by this API also aims to be
 flexible enough to support future options that might be added in the
 Web Cryptography APIs. This means using named parameters, even for parameters
 that are required. Using named parameters for most things is slightly verbose,
-but elegant opinionated abstractions is not a goal for this package.
+but elegant opinionated abstractions is not a goal for this package. Besides it
+doesn't hurt to be a little verbose when doing cryptography.
 
-// TODO: We could consider only using named parameters for those different between algorithms.
-
-For _digest_ algorithms the public API simply exposes a single static function,
-while other algorithms that operates on _keys_, gives rise to classes wrapping
-the key objects. These algorithm specific _key_ classes all subclass a common
+For _digest_ algorithms the public API simply exposes a single static function.
+While other algorithms that operates on _keys_, gives rise to classes wrapping
+the key objects. These algorithm specific key-classes all subclass a common
 `CryptoKey` and feature static and instance method variants of the
 `crypto.subtle` methods from the Web Cryptography specification. This allows
-the `crypto.subtle` methods to be typed for each algorithm.
+the `crypto.subtle` methods to be typed for each algorithm. For example, the
+`crypto.subtle.encrypt` functions takes wildly different parameters depending on
+which algorithm is being used.
 
-// TODO: Type names are massively ugly... and violates effective dart
+Further more, placing all the methods that operate on an `HmacSecretKey` as
+either static functions or instance methods on the class ensures that they are
+easy to discover and don't pollute the global namespace.
+
+For import/export for keys the Web Cryptography API makes it seem obvious that
+we should define an enum with key-formats. However, details examination of the
+specification reveals that most `CryptoKey` types only support 2 of the
+key-formats used in the specifications (ECDSA public keys supports 3 formats).
+Further more, it turns out that export/import of JWK keys expects JSON objects
+rather than a byte-buffer, thus, we provide a `export<KeyFormat>Key` method
+for each supported method. Similarly, we provide a static method for importing
+each supported key-format. This also makes it easy to discover supported formats.
+
+// TODO: Discuss wrapKey/unwrapKey/deriveKey and the intermediate objects.

@@ -390,6 +390,131 @@ abstract class AesKwSecretKey implements CryptoKey {
   Future<List<int>> exportRawKey();
 }
 
+abstract class EcdhPrivateKey implements CryptoKey {
+  EcdhPrivateKey._(); // keep the constructor private.
+
+  static Future<EcdhPrivateKey> importPkcs8Key({
+    @required List<int> keyData,
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDH', usages, [KeyUsage.sign]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(curve, 'curve');
+
+    throw UnimplementedError('TODO: implement ECDH');
+  }
+
+  static Future<CryptoKeyPair<EcdhPrivateKey, EcdhPublicKey>> generateKey({
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(curve, 'curve');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDH', usages, [
+      KeyUsage.deriveBits,
+      KeyUsage.deriveKey,
+    ]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement ECDH');
+  }
+
+  Future<List<int>> deriveBits({
+    @required EcdhPublicKey publicKey,
+    @required int length,
+  });
+
+  // TODO: add deriveKey support
+
+  Future<List<int>> exportPkcs8Key();
+}
+
+abstract class EcdhPublicKey implements CryptoKey {
+  EcdhPublicKey._(); // keep the constructor private.
+
+  static Future<EcdhPublicKey> importSpkiKey({
+    @required List<int> keyData,
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(curve, 'curve');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDH', usages, []);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement ECDH');
+  }
+
+  Future<List<int>> exportSpkiKey();
+}
+
+abstract class HkdfSecretKey implements CryptoKey {
+  HkdfSecretKey._(); // keep the constructor private.
+
+  static Future<HkdfSecretKey> importRawKey({
+    @required List<int> keyData,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(keyData, 'keyData');
+    checkAllowedUsages('HKDF', usages, [
+      KeyUsage.deriveBits,
+      KeyUsage.deriveKey,
+    ]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement HKDF');
+  }
+
+  /// [HkdfSecretKey]'s can never be exported.
+  @override
+  bool get extractable => false;
+
+  Future<List<int>> deriveBits({
+    @required HashAlgorithm hash,
+    @required TypedData salt,
+    @required TypedData info,
+  });
+
+  // TODO: add deriveKey support
+}
+
+abstract class Pbkdf2SecretKey implements CryptoKey {
+  Pbkdf2SecretKey._(); // keep the constructor private.
+
+  static Future<Pbkdf2SecretKey> importRawKey({
+    @required List<int> keyData,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(keyData, 'keyData');
+    checkAllowedUsages('PBKDF2', usages, [
+      KeyUsage.deriveBits,
+      KeyUsage.deriveKey,
+    ]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement PBKDF2');
+  }
+
+  /// [Pbkdf2SecretKey]'s can never be exported.
+  @override
+  bool get extractable => false;
+
+  Future<List<int>> deriveBits({
+    @required HashAlgorithm hash,
+    @required TypedData salt,
+    @required int iterations,
+  });
+
+  // TODO: add deriveKey support
+}
+
 // TODO: Figure out wrapKey/unwrapKey
 /*
 
@@ -469,8 +594,8 @@ That's a lot... but only 2X worse than option (B).
   class RsaPssPrivateKey implements CryptoKey {
     WrapKeyParams wrapAsJwk()
     WrapKeyParams wrapAsPkcs8()
-    static UnwrapKeyParams<T> unwrapFromJwkParams(...importOptions);
-    static UnwrapKeyParams<T> unwrapFromPkcs8Params(...importOptions);
+    static UnwrapKeyParams<RsaPssPrivateKey> unwrapFromJwkParams(...importOptions);
+    static UnwrapKeyParams<RsaPssPrivateKey> unwrapFromPkcs8Params(...importOptions);
   }
 
   abstract class WrapKeyParams {}
@@ -555,6 +680,32 @@ Upside:
 
 
 ######### Option H) Introduce UnwrapKeyOptions // TODO: Better name
+
+The basic idea in this solution is that a CryptoKey that can wrap/unwrap another
+key can create an opaque intermediate object called WrapKeyOptions/... this
+object is then passed to an instance method or static function on the CryptoKey
+class you wish to wrap/unwrap. Similarly, for deriveKey, the key used for
+deriving another key would create an DeriveKeyOptions object, which would be
+passed to a static deriveKey method on CryptoKey class you wish to derive.
+
+**Example** when creating the intermediate UnwrapKeyOptions object the 
+decryption options specific to the CryptoKey being used to unwrap with will be
+specified. In the instance method for unwrap<KeyFormat>Key on the CryptoKey
+class being decrypted, we shall specify the import options necessary. And the
+unwrap<KeyFormat>Key will only be available for KeyFormat supported by the
+given CryptoKey type.
+
+// TODO: Better names for these abstractions (Options, Params, Encrypter,
+         Wrapper, Box?, Operator, Operation, Vault, Locker, Handle, Seal,
+         Envelope, Source)
+         - KeyDerivationSource
+         - KeyUnwrapParams
+         - KeyUnwrapOperation
+         - KeyEncrypter
+         - WrappingKeyOptions / UnwrappingKeyOptions / DerivingKeyOptions
+           (boring, but reasonable understandable...)
+// TODO: the direction can also be flipped as done in Option (E), though this requires
+         type parameters, which makes it all seem even more magic.
 
 abstract class WrapKeyOptions {}   // Maybe call it KeyEncrypter
 abstract class UnwrapKeyOptions {} // KeyDecrypter?
