@@ -760,6 +760,90 @@ Note:
   typically add 2 static methods and 2 instances methods to each CryptoKey
   subclass (3 in the case of ECDSA, because it supports 3 key formats).
 
+######### Option I) Introduce <KeyFormat>Exportable and WrappedKey<T>
+
+// An abstraction for each key-format that a CryptoKey can export.
+abstract class RawExportableKey implements CryptoKey {
+  Future<List<int>> exportRawKey();
+}
+abstract class Pkcs8ExportableKey implements CryptoKey {
+  Future<List<int>> exportPkcs8Key();
+}
+abstract class SpkiExportableKey implements CryptoKey {
+  Future<List<int>> exportSpkiKey();
+}
+abstract class JwkExportableKey implements CryptoKey {
+  Future<List<int>> exportJwkKey(); // This might be Map<String,Object> instead
+}
+
+// A representation of a CryptoKey that is wrapped (thus, encrypted).
+abstract class WrappedCryptoKey<T extends CryptoKey> {}
+
+// A representation of options a key not yet derived.
+abstract class DerivedKeyOptions<T extends CryptoKey> {}
+
+class AesKwSecretKey implements CryptoKey {
+  // A method for each wrapping a key of each format.
+  Future<List<int>> wrapRawKey(RawExportableKey key, ...encryptOptions);
+  Future<List<int>> wrapPkcs8Key(Pkcs8ExportableKey key, ...encryptOptions);
+  Future<List<int>> wrapSpkiKey(SpkiExportableKey key, ...encryptOptions);
+  Future<List<int>> wrapJwkKey(JwkExportableKey key, ...encryptOptions);
+
+  Future<T> unwrapKey<T extends CryptoKey>(WrappedCryptoKey<T> key, ...decryptOptions); 
+
+  static DerivedKeyOptions<AesKwSecretKey> derivedKeyOptions(...generateKeyOptions);
+}
+
+class Pbkdf2SecretKey implements CryptoKey {
+  Future<T> deriveKey<T extends CryptoKey>(DerivedKeyOptions<T> options, ...deriveBitsOptions);
+}
+
+class RsaPssPrivateKey implements CryptoKey, Pkcs8ExportableKey, JwkExportableKey {
+  ...
+  static WrappedCryptoKey<RsaPssPrivateKey> wrappedPkcs8Key(...ImportOptions);
+}
+
+Downsides:
+ * The wrap<KeyFormat>Key(...) methods seem verbose, we could consider
+   introducing a WrappedKeyOptions object instead... it would spare us 4 abstractions.
+ * DerivedKeyOptions<T> only makes sense if read carefully.
+
+
+######### Option J) Introduce WrappedCryptoKeyOptions, WrappedCryptoKey<T>, ...
+
+// A representation of a CryptoKey that is wrapped (thus, encrypted).
+abstract class WrappedCryptoKey<T extends CryptoKey> {}
+
+// A representation of a CryptoKey that is not wrapped yet...
+abstract class WrappedCryptoKeyOptions {}
+
+// A representation of options a key not yet derived.
+abstract class DerivedKeyOptions<T extends CryptoKey> {}
+
+class AesKwSecretKey implements CryptoKey {
+  Future<List<int>> wrapKey(WrappedCryptoKeyOptions key, ...encryptOptions);
+  Future<T> unwrapKey<T extends CryptoKey>(WrappedCryptoKey<T> key, ...decryptOptions); 
+
+  static DerivedKeyOptions<AesKwSecretKey> derivedKeyOptions(...generateKeyOptions);
+}
+
+class Pbkdf2SecretKey implements CryptoKey {
+  Future<T> deriveKey<T extends CryptoKey>(DerivedKeyOptions<T> options, ...deriveBitsOptions);
+}
+
+class RsaPssPrivateKey implements CryptoKey, Pkcs8ExportableKey, JwkExportableKey {
+  WrappedCryptoKeyOptions wrappedPkcs8KeyOptions();
+  WrappedCryptoKeyOptions wrappedJwkKeyOptions();
+
+  static WrappedCryptoKey<RsaPssPrivateKey> wrappedPkcs8Key(...ImportOptions);
+}
+
+Downsides:
+ * WrappedCryptoKeyOptions is confusing... and introduce 1-3 methods on objects
+   that already have 1-3 methods for exporting in various formats.
+ * DerivedKeyOptions<T> only makes sense if read carefully.
+
+
 -----------------------------------------------------
 Conclusion:
 (not sure), but I really hate option (B) because it introduces another enum.
