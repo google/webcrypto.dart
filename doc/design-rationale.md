@@ -2,7 +2,7 @@ Design Rationale
 ================
 This section attempts to outline the thinking behind the design.
 
-Guiding Principals
+Guiding Principles
 ------------------
 
  * Cryptography is not simple, and should not be simplified.
