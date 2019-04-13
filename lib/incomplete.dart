@@ -177,7 +177,7 @@ abstract class RsaOaepPrivateKey implements CryptoKey {
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('RSA-OAEP', usages, [
       KeyUsage.decrypt,
-      KeyUsage.unwrapKey,
+      // KeyUsage.unwrapKey,
     ]);
     usages = normalizeUsages(usages);
     ArgumentError.checkNotNull(hash, 'hash');
@@ -197,10 +197,10 @@ abstract class RsaOaepPrivateKey implements CryptoKey {
     ArgumentError.checkNotNull(hash, 'hash');
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('RSA-OAEP', usages, [
-      KeyUsage.decrypt,
-      KeyUsage.unwrapKey,
       KeyUsage.encrypt,
-      KeyUsage.wrapKey,
+      KeyUsage.decrypt,
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
     ]);
     usages = normalizeUsages(usages);
 
@@ -230,7 +230,7 @@ abstract class RsaOaepPublicKey implements CryptoKey {
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('RSA-OAEP', usages, [
       KeyUsage.encrypt,
-      KeyUsage.wrapKey,
+      // KeyUsage.wrapKey,
     ]);
     usages = normalizeUsages(usages);
     ArgumentError.checkNotNull(hash, 'hash');
@@ -261,8 +261,8 @@ abstract class AesCtrSecretKey implements CryptoKey {
     checkAllowedUsages('AES-CTR', usages, [
       KeyUsage.encrypt,
       KeyUsage.decrypt,
-      KeyUsage.wrapKey,
-      KeyUsage.unwrapKey,
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
     ]);
     usages = normalizeUsages(usages);
 
@@ -300,8 +300,8 @@ abstract class AesCbcSecretKey implements CryptoKey {
     checkAllowedUsages('AES-CBC', usages, [
       KeyUsage.encrypt,
       KeyUsage.decrypt,
-      KeyUsage.wrapKey,
-      KeyUsage.unwrapKey,
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
     ]);
     usages = normalizeUsages(usages);
 
@@ -337,8 +337,8 @@ abstract class AesGcmSecretKey implements CryptoKey {
     checkAllowedUsages('AES-GCM', usages, [
       KeyUsage.encrypt,
       KeyUsage.decrypt,
-      KeyUsage.wrapKey,
-      KeyUsage.unwrapKey,
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
     ]);
     usages = normalizeUsages(usages);
 
@@ -376,8 +376,8 @@ abstract class AesKwSecretKey implements CryptoKey {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('AES-KW', usages, [
-      KeyUsage.wrapKey,
-      KeyUsage.unwrapKey,
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
     ]);
     usages = normalizeUsages(usages);
 
@@ -417,7 +417,7 @@ abstract class EcdhPrivateKey implements CryptoKey {
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('ECDH', usages, [
       KeyUsage.deriveBits,
-      KeyUsage.deriveKey,
+      // KeyUsage.deriveKey,
     ]);
     usages = normalizeUsages(usages);
 
@@ -465,7 +465,7 @@ abstract class HkdfSecretKey implements CryptoKey {
     ArgumentError.checkNotNull(keyData, 'keyData');
     checkAllowedUsages('HKDF', usages, [
       KeyUsage.deriveBits,
-      KeyUsage.deriveKey,
+      // KeyUsage.deriveKey,
     ]);
     usages = normalizeUsages(usages);
 
@@ -495,7 +495,7 @@ abstract class Pbkdf2SecretKey implements CryptoKey {
     ArgumentError.checkNotNull(keyData, 'keyData');
     checkAllowedUsages('PBKDF2', usages, [
       KeyUsage.deriveBits,
-      KeyUsage.deriveKey,
+      // KeyUsage.deriveKey,
     ]);
     usages = normalizeUsages(usages);
 
@@ -800,7 +800,7 @@ class Pbkdf2SecretKey implements CryptoKey {
 
 class RsaPssPrivateKey implements CryptoKey, Pkcs8ExportableKey, JwkExportableKey {
   ...
-  static WrappedCryptoKey<RsaPssPrivateKey> wrappedPkcs8Key(...ImportOptions);
+  static WrappedCryptoKey<RsaPssPrivateKey> importWrappedPkcs8Key(data, ...ImportOptions);
 }
 
 Downsides:
@@ -809,19 +809,19 @@ Downsides:
  * DerivedKeyOptions<T> only makes sense if read carefully.
 
 
-######### Option J) Introduce WrappedCryptoKeyOptions, WrappedCryptoKey<T>, ...
+######### Option J) Introduce UnwrappedCryptoKey, WrappedCryptoKey<T>, ...
 
 // A representation of a CryptoKey that is wrapped (thus, encrypted).
 abstract class WrappedCryptoKey<T extends CryptoKey> {}
 
 // A representation of a CryptoKey that is not wrapped yet...
-abstract class WrappedCryptoKeyOptions {}
+abstract class UnwrappedCryptoKey {}
 
 // A representation of options a key not yet derived.
 abstract class DerivedKeyOptions<T extends CryptoKey> {}
 
 class AesKwSecretKey implements CryptoKey {
-  Future<List<int>> wrapKey(WrappedCryptoKeyOptions key, ...encryptOptions);
+  Future<List<int>> wrapKey(UnwrappedCryptoKey key, ...encryptOptions);
   Future<T> unwrapKey<T extends CryptoKey>(WrappedCryptoKey<T> key, ...decryptOptions); 
 
   static DerivedKeyOptions<AesKwSecretKey> derivedKeyOptions(...generateKeyOptions);
@@ -832,15 +832,15 @@ class Pbkdf2SecretKey implements CryptoKey {
 }
 
 class RsaPssPrivateKey implements CryptoKey, Pkcs8ExportableKey, JwkExportableKey {
-  WrappedCryptoKeyOptions wrappedPkcs8KeyOptions();
-  WrappedCryptoKeyOptions wrappedJwkKeyOptions();
+  UnwrappedCryptoKey unwrappedPkcs8Key();
+  UnwrappedCryptoKey unwrappedJwkKey();
 
-  static WrappedCryptoKey<RsaPssPrivateKey> wrappedPkcs8Key(...ImportOptions);
+  static WrappedCryptoKey<RsaPssPrivateKey> wrappedPkcs8Key(data, ...ImportOptions);
 }
 
 Downsides:
- * WrappedCryptoKeyOptions is confusing... and introduce 1-3 methods on objects
-   that already have 1-3 methods for exporting in various formats.
+ * UnwrappedCryptoKey introduce 1-3 methods on objects that already have 1-3
+   methods for exporting in various formats.
  * DerivedKeyOptions<T> only makes sense if read carefully.
 
 

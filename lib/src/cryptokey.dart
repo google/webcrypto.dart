@@ -21,17 +21,20 @@ enum KeyUsage {
   /// Key can be used for verification of signatures.
   verify,
 
-  /// Key can be used to derive new keys.
-  deriveKey,
+  // Note: omitted as redundant, see doc/webcrypto-parity.md
+  // Key can be used to derive new keys.
+  // deriveKey,
 
   /// Key can be used to derive bits.
   deriveBits,
 
-  /// Key can be used to encrypt another key.
-  wrapKey,
+  // Note: omitted as likely redundant, see doc/webcrypto-parity.md
+  // Key can be used to encrypt another key.
+  // wrapKey,
 
-  /// Key can be used to decrypt another key.
-  unwrapKey,
+  // Note: omitted as likely redundant, see doc/webcrypto-parity.md
+  // Key can be used to decrypt another key.
+  // unwrapKey,
 }
 
 /// Common interface for all cryptographic keys.

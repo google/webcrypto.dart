@@ -20,14 +20,14 @@ String keyUsageToString(KeyUsage usage) {
       return 'sign';
     case KeyUsage.verify:
       return 'verify';
-    case KeyUsage.deriveKey:
-      return 'deriveKey';
+    // case KeyUsage.deriveKey:
+    //   return 'deriveKey';
     case KeyUsage.deriveBits:
       return 'deriveBits';
-    case KeyUsage.wrapKey:
-      return 'wrapKey';
-    case KeyUsage.unwrapKey:
-      return 'unwrapKey';
+    // case KeyUsage.wrapKey:
+    //   return 'wrapKey';
+    // case KeyUsage.unwrapKey:
+    //   return 'unwrapKey';
   }
   // This is an invariant we want to check in production.
   throw AssertionError(

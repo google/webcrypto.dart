@@ -76,18 +76,18 @@ abstract class _CryptoKeyBase implements CryptoKey {
         case KeyUsage.verify:
           name = 'verify';
           break;
-        case KeyUsage.deriveKey:
-          name = 'deriveKey';
-          break;
+        // case KeyUsage.deriveKey:
+        //   name = 'deriveKey';
+        //   break;
         case KeyUsage.deriveBits:
           name = 'deriveBits';
           break;
-        case KeyUsage.wrapKey:
-          name = 'wrapKey';
-          break;
-        case KeyUsage.unwrapKey:
-          name = 'unwrapKey';
-          break;
+        // case KeyUsage.wrapKey:
+        //   name = 'wrapKey';
+        //   break;
+        // case KeyUsage.unwrapKey:
+        //   name = 'unwrapKey';
+        //   break;
       }
       assert(name != null, 'unknown KeyUsage');
       if (name == null) {

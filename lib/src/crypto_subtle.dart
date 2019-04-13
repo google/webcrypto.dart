@@ -63,14 +63,14 @@ List<String> keyUsagesToStrings(List<KeyUsage> usages) {
         return 'sign';
       case KeyUsage.verify:
         return 'verify';
-      case KeyUsage.deriveKey:
-        return 'deriveKey';
+      // case KeyUsage.deriveKey:
+      //   return 'deriveKey';
       case KeyUsage.deriveBits:
         return 'deriveBits';
-      case KeyUsage.wrapKey:
-        return 'wrapKey';
-      case KeyUsage.unwrapKey:
-        return 'unwrapKey';
+      // case KeyUsage.wrapKey:
+      //   return 'wrapKey';
+      // case KeyUsage.unwrapKey:
+      //   return 'unwrapKey';
     }
     // This is an invariant we want to check in production.
     throw AssertionError(
@@ -94,14 +94,14 @@ List<KeyUsage> stringsToKeyUsages(List<String> usages) {
             return KeyUsage.sign;
           case 'verify':
             return KeyUsage.verify;
-          case 'deriveKey':
-            return KeyUsage.deriveKey;
+          // case 'deriveKey':
+          //   return KeyUsage.deriveKey;
           case 'deriveBits':
             return KeyUsage.deriveBits;
-          case 'wrapKey':
-            return KeyUsage.wrapKey;
-          case 'unwrapKey':
-            return KeyUsage.unwrapKey;
+          // case 'wrapKey':
+          //   return KeyUsage.wrapKey;
+          // case 'unwrapKey':
+          //   return KeyUsage.unwrapKey;
         }
         // Ignore unknown values, we'll filter these out later
         return null;
