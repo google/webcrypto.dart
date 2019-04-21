@@ -4,6 +4,8 @@
 /// [WebCryptoException]. In addition methods of this package may
 /// also throw the following _errors_:
 ///  * [ArgumentError] is thrown when a parameter is out of range.
+///  * [OperationError] is thown when an operation fails for an
+///    operation-specific reason, and,
 ///  * [StateError] is thrown when a type is used in an invalid state, such as
 ///    an attempt to extract a [CryptoKey] that is not _extractable_, or using
 ///    a [CryptoKey] for a _usage_ it was not declared to do at creation.
@@ -44,12 +46,14 @@ class DataException extends WebCryptoException {
 }
 
 /// Thrown when an operation failed for an operation-specific reason.
-class OperationException extends WebCryptoException {
-  OperationException._(String message) : super._(message);
+class OperationError extends Error {
+  final String message;
+  OperationError._(this.message);
+  @override
+  String toString() => this.message;
 }
 
 NotSupportedException notSupportedException(String message) =>
     NotSupportedException._(message);
 DataException dataException(String message) => DataException._(message);
-OperationException operationException(String message) =>
-    OperationException._(message);
+OperationError operationError(String message) => OperationError._(message);

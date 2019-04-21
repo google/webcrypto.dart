@@ -74,7 +74,7 @@ Uint8List _ensureUint8List(List<int> data) {
 
 void _throwOperationExceptionIfString(dynamic value) {
   if (value is String) {
-    throw operationException(value);
+    throw operationError(value);
   }
 }
 
@@ -99,7 +99,7 @@ void getRandomValues(TypedData destination) {
 
   final err = ext.getRandomValues(destination.buffer.asUint8List());
   if (err != null) {
-    throw operationException(err);
+    throw operationError(err);
   }
 }
 
@@ -112,7 +112,7 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) async {
   // Create a digest context
   final ctx = ext.digest_create(ext.hashAlgorithmToHashIdentifier(hash));
   if (ctx is String) {
-    throw operationException(ctx);
+    throw operationError(ctx);
   }
 
   try {
@@ -196,7 +196,7 @@ class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
     // Create a context
     final ctx = ext.hmac_create(_hash, _keyData);
     if (ctx is String) {
-      throw operationException(ctx);
+      throw operationError(ctx);
     }
 
     try {

@@ -7,7 +7,7 @@ import 'dart:ffi' as ffi;
 import 'dart:convert' show utf8;
 import 'boringssl_ffi/boringssl_ffi.dart' as ssl;
 
-/// Throw [OperationException] or [DataException] if [condition] is `false`.
+/// Throw [OperationError] or [DataException] if [condition] is `false`.
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
 /// and if nothing is available there we use [fallback].
@@ -24,7 +24,7 @@ void _check(
     if (data) {
       throw dataException(message);
     }
-    throw operationException(message);
+    throw operationError(message);
   }
 }
 

@@ -19,7 +19,7 @@ Object _asErrorOrException(DomException e) {
     case 'DataError':
       return dataException(e.message);
     case 'OperationError':
-      return operationException(e.message);
+      return operationError(e.message);
     case 'QuotaExceededError':
       return ArgumentError(e.message);
   }
