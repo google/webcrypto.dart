@@ -322,6 +322,70 @@ class JsonWebKey {
       k: json['k'] as String,
     );
   }
+
+  Map<String, Object> toJson() {
+    final json = <String, Object>{};
+
+    // Set properties from all the string keys
+    if (this.kty != null) {
+      json['kty'] = this.kty;
+    }
+    if (this.use != null) {
+      json['use'] = this.use;
+    }
+    if (this.alg != null) {
+      json['alg'] = this.alg;
+    }
+    if (this.crv != null) {
+      json['crv'] = this.crv;
+    }
+    if (this.x != null) {
+      json['x'] = this.x;
+    }
+    if (this.y != null) {
+      json['y'] = this.y;
+    }
+    if (this.d != null) {
+      json['d'] = this.d;
+    }
+    if (this.n != null) {
+      json['n'] = this.n;
+    }
+    if (this.e != null) {
+      json['e'] = this.e;
+    }
+    if (this.p != null) {
+      json['p'] = this.p;
+    }
+    if (this.q != null) {
+      json['q'] = this.q;
+    }
+    if (this.dp != null) {
+      json['dp'] = this.dp;
+    }
+    if (this.dq != null) {
+      json['dq'] = this.dq;
+    }
+    if (this.qi != null) {
+      json['qi'] = this.qi;
+    }
+    if (this.k != null) {
+      json['k'] = this.k;
+    }
+
+    // Set non-string properties
+    if (this.key_ops != null) {
+      json['key_ops'] = this.key_ops;
+    }
+    if (this.ext != null) {
+      json['ext'] = this.ext;
+    }
+    if (this.oth != null) {
+      json['oth'] = this.oth.map((e) => e.toJson());
+    }
+
+    return json;
+  }
 }
 
 /// Interface for `RsaOtherPrimesInfo` used in the [JsonWebKey dictionary][1].
@@ -355,6 +419,14 @@ class RsaOtherPrimesInfo {
       t: json['t'] as String,
     );
   }
+
+  Map<String, Object> toJson() {
+    return <String, Object>{
+      'r': r,
+      'd': d,
+      't': t,
+    };
+  }
 }
 
 @JS('crypto.getRandomValues')
@@ -376,6 +448,12 @@ external Promise<ByteBuffer> encrypt(
 
 @JS('crypto.subtle.exportKey')
 external Promise<ByteBuffer> exportKey(
+  String format,
+  CryptoKey key,
+);
+
+@JS('crypto.subtle.exportKey')
+external Promise<JsonWebKey> exportJsonWebKey(
   String format,
   CryptoKey key,
 );

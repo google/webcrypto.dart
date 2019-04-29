@@ -648,6 +648,13 @@ class _RsassaPkcs1V15PrivateKey extends _CryptoKeyBase
       _check(ssl.EVP_marshal_private_key(cbb, _key) == 1);
     });
   }
+
+  @override
+  Future<Map<String, Object>> exportJsonWebKey() async {
+    _checkExtractable();
+    // TODO: Finish implementation
+    throw UnimplementedError('implementation of exportJsonWebKey not finished');
+  }
 }
 
 class _RsassaPkcs1V15PublicKey extends _CryptoKeyBase
@@ -689,5 +696,12 @@ class _RsassaPkcs1V15PublicKey extends _CryptoKeyBase
     return _withOutCBB((cbb) {
       _check(ssl.EVP_marshal_public_key(cbb, _key) == 1);
     });
+  }
+
+  @override
+  Future<Map<String, Object>> exportJsonWebKey() async {
+    _checkExtractable();
+    // TODO: Finish implementation
+    throw UnimplementedError('implementation of exportJsonWebKey not finished');
   }
 }

@@ -326,6 +326,11 @@ class _RsassaPkcs1V15PublicKey extends _CryptoKeyBase
   Future<List<int>> exportSpkiKey() {
     return null;
   }
+
+  @override
+  Future<Map<String, Object>> exportJsonWebKey() {
+    return null;
+  }
 }
 
 /*

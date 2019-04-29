@@ -60,7 +60,7 @@ export 'src/exceptions.dart'
         WebCryptoException,
         NotSupportedException,
         DataException,
-        OperationException;
+        OperationError;
 export 'src/cryptokey.dart' show KeyUsage, CryptoKey, CryptoKeyPair;
 
 /// Fill [destination] with cryptographically random values.
@@ -259,9 +259,11 @@ abstract class HmacSecretKey implements CryptoKey {
     );
   }
 
-  /// Import [HmacSecretKey] from [JWK](https://tools.ietf.org/html/rfc7517).
+  /// Import [HmacSecretKey] from [JWK][1].
   ///
   /// TODO: finish implementation and documentation.
+  ///
+  /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<HmacSecretKey> importJsonWebKey({
     @required Map<String, Object> jwk,
     @required HashAlgorithm hash,
@@ -458,9 +460,11 @@ abstract class HmacSecretKey implements CryptoKey {
   /// ```
   Future<List<int>> exportRawKey();
 
-  /// Export [HmacSecretKey] from [JWK](https://tools.ietf.org/html/rfc7517).
+  /// Export [HmacSecretKey] from [JWK][1].
   ///
   /// TODO: finish implementation and documentation.
+  ///
+  /// [1]: https://tools.ietf.org/html/rfc7517
   Future<Map<String, Object>> exportJsonWebKey();
 }
 
@@ -532,9 +536,11 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
     );
   }
 
-  /// Import RSASSA-PKCS1-v1_5 private key in [JWK] format.
+  /// Import RSASSA-PKCS1-v1_5 private key in [JWK][1] format.
   ///
   /// TODO: finish implementation and documentation.
+  ///
+  /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<RsassaPkcs1V15PrivateKey> importJsonWebKey({
     @required Map<String, Object> jwk,
     @required bool extractable,
@@ -711,6 +717,13 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
   ///
   /// [1]: https://tools.ietf.org/html/rfc5208
   Future<List<int>> exportPkcs8Key();
+
+  /// Export RSASSA-PKCS1-v1_5 private key in [JWK][1] format.
+  ///
+  /// TODO: finish implementation and documentation.
+  ///
+  /// [1]: https://tools.ietf.org/html/rfc7517
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 /// RSASSA-PKCS1-v1_5 public key for signing messages.
@@ -782,9 +795,12 @@ abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
     );
   }
 
-  /// Import RSASSA-PKCS1-v1_5 public key from [JWK](https://tools.ietf.org/html/rfc7517).
+  /// Import RSASSA-PKCS1-v1_5 public key from [JWK][1].
   ///
   /// TODO: finish implementation and documentation.
+  ///
+  /// [1]: https://tools.ietf.org/html/rfc7517
+  Future<Map<String, Object>> exportJsonWebKey();
   static Future<RsassaPkcs1V15PublicKey> importJsonWebKey({
     @required Map<String, Object> jwk,
     @required HashAlgorithm hash,
@@ -879,4 +895,11 @@ abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
   ///
   /// [1]: https://tools.ietf.org/html/rfc5280
   Future<List<int>> exportSpkiKey();
+
+  /// Export RSASSA-PKCS1-v1_5 public key in [JWK][1] format.
+  ///
+  /// TODO: finish implementation and documentation.
+  ///
+  /// [1]: https://tools.ietf.org/html/rfc7517
+  Future<Map<String, Object>> exportJsonWebKey();
 }

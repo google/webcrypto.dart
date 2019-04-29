@@ -156,6 +156,17 @@ Future<List<int>> _exportKey(
   });
 }
 
+/// Adapt `crypto.subtle.export` to dart types.
+Future<Map<String, Object>> _exportJsonWebKey(
+  subtle.CryptoKey key,
+) {
+  return _catchDomException(() async {
+    final result =
+        await subtle.promiseAsFuture(subtle.exportJsonWebKey('jwk', key));
+    return result.toJson();
+  });
+}
+
 /// Adapt `crypto.subtle.generateKey` to dart types.
 Future<subtle.CryptoKey> _generateKey(
   subtle.Algorithm algorithm,
@@ -462,6 +473,11 @@ class _RsassaPkcs1V15PrivateKey extends _BrowserCryptoKeyBase
   Future<List<int>> exportPkcs8Key() {
     return _exportKey('pkcs8', _key);
   }
+
+  @override
+  Future<Map<String, Object>> exportJsonWebKey() {
+    return _exportJsonWebKey(_key);
+  }
 }
 
 class _RsassaPkcs1V15PublicKey extends _BrowserCryptoKeyBase
@@ -476,5 +492,10 @@ class _RsassaPkcs1V15PublicKey extends _BrowserCryptoKeyBase
   @override
   Future<List<int>> exportSpkiKey() {
     return _exportKey('spki', _key);
+  }
+
+  @override
+  Future<Map<String, Object>> exportJsonWebKey() {
+    return _exportJsonWebKey(_key);
   }
 }
