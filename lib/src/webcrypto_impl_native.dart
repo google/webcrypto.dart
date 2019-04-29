@@ -238,6 +238,12 @@ class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
     _checkExtractable();
     return Uint8List.fromList(_keyData);
   }
+
+  @override
+  Future<Map<String, Object>> exportJsonWebKey() async {
+    _checkExtractable();
+    throw UnimplementedError('implementation not finished yet');
+  }
 }
 
 //---------------------- RSASSA_PKCS1_v1_5

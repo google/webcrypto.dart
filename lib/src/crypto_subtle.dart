@@ -214,6 +214,149 @@ class Algorithm {
   });
 }
 
+/// Interface for the [JsonWebKey dictionary][1].
+///
+/// See also list of [registered parameters][2].
+///
+/// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
+/// [2]: https://www.iana.org/assignments/jose/jose.xhtml#web-key-parameters
+@JS()
+@anonymous
+class JsonWebKey {
+  external String get kty;
+  external String get use;
+  external List<String> get key_ops;
+  external String get alg;
+  external bool get ext;
+  external String get crv;
+  external String get x;
+  external String get y;
+  external String get d;
+  external String get n;
+  external String get e;
+  external String get p;
+  external String get q;
+  external String get dp;
+  external String get dq;
+  external String get qi;
+  external List<RsaOtherPrimesInfo> get oth;
+  external String get k;
+
+  external factory JsonWebKey({
+    String kty,
+    String use,
+    List<String> key_ops,
+    String alg,
+    bool ext,
+    String crv,
+    String x,
+    String y,
+    String d,
+    String n,
+    String e,
+    String p,
+    String q,
+    String dp,
+    String dq,
+    String qi,
+    List<RsaOtherPrimesInfo> oth,
+    String k,
+  });
+
+  factory JsonWebKey.fromJson(Map<String, Object> json) {
+    const stringKeys = [
+      'kty',
+      'use',
+      'alg',
+      'crv',
+      'x',
+      'y',
+      'd',
+      'n',
+      'e',
+      'p',
+      'q',
+      'dp',
+      'dq',
+      'qi',
+      'k',
+    ];
+    for (final k in stringKeys) {
+      if (json.containsKey(k) && !(json[k] is String)) {
+        throw ArgumentError('JWK entry "$k" must be a string');
+      }
+    }
+    if (json.containsKey('key_ops') && !(json['key_ops'] is List<String>)) {
+      throw ArgumentError('JWK entry "key_ops" must be a list of strings');
+    }
+    if (json.containsKey('ext') && !(json['ext'] is bool)) {
+      throw ArgumentError('JWK entry "ext" must be boolean');
+    }
+    List<RsaOtherPrimesInfo> oth;
+    if (json.containsKey('oth')) {
+      if (!(json['oth'] is List<Map<String, Object>>)) {
+        throw ArgumentError('JWK entry "oth" must be list of maps');
+      }
+      oth = (json['oth'] as List<Map<String, Object>>).map((json) {
+        return RsaOtherPrimesInfo.fromJson(json);
+      });
+    }
+    return JsonWebKey(
+      kty: json['kty'] as String,
+      use: json['use'] as String,
+      key_ops: json['key_ops'] as List<String>,
+      alg: json['alg'] as String,
+      ext: json['ext'] as bool,
+      crv: json['crv'] as String,
+      x: json['x'] as String,
+      y: json['y'] as String,
+      d: json['d'] as String,
+      n: json['n'] as String,
+      e: json['e'] as String,
+      p: json['p'] as String,
+      q: json['q'] as String,
+      dp: json['dp'] as String,
+      dq: json['dq'] as String,
+      qi: json['qi'] as String,
+      oth: oth,
+      k: json['k'] as String,
+    );
+  }
+}
+
+/// Interface for `RsaOtherPrimesInfo` used in the [JsonWebKey dictionary][1].
+///
+/// See also "oth" in [RFC 7518 Section 6.3.2.7].
+///
+/// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
+/// [2]: https://tools.ietf.org/html/rfc7518#section-6.3.2.7
+@JS()
+@anonymous
+class RsaOtherPrimesInfo {
+  external String get r;
+  external String get d;
+  external String get t;
+
+  external factory RsaOtherPrimesInfo({
+    String r,
+    String d,
+    String t,
+  });
+
+  factory RsaOtherPrimesInfo.fromJson(Map<String, Object> json) {
+    for (final k in ['r', 'd', 't']) {
+      if (!(json[k] is String)) {
+        throw ArgumentError('"oth" entries in a JWK must contain "$k"');
+      }
+    }
+    return RsaOtherPrimesInfo(
+      r: json['r'] as String,
+      d: json['d'] as String,
+      t: json['t'] as String,
+    );
+  }
+}
+
 @JS('crypto.getRandomValues')
 external Promise<ByteBuffer> getRandomValues(TypedData array);
 
@@ -258,6 +401,15 @@ external Promise<ByteBuffer> digest(String algorithm, TypedData data);
 external Promise<CryptoKey> importKey(
   String format,
   TypedData keyData,
+  Algorithm algorithm,
+  bool extractable,
+  List<String> usages,
+);
+
+@JS('crypto.subtle.import')
+external Promise<CryptoKey> importJsonWebKey(
+  String format,
+  JsonWebKey jwk,
   Algorithm algorithm,
   bool extractable,
   List<String> usages,

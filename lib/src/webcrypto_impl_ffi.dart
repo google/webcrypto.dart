@@ -326,6 +326,24 @@ Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int lengthInBits]) {
   return data;
 }
 
+Future<HmacSecretKey> hmacSecret_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+  int length,
+}) async {
+  // As per [1] we must follow [2].
+  // [1]: https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
+  // [2]: https://tools.ietf.org/html/rfc7518#section-6.4
+  if (jwk['kty'] != 'oct') {
+    throw dataException('JWK encoding of HMAC keys must have "kty" == "oct"');
+  }
+  // TODO: Finish this... validate contents of JWK following [2]...
+
+  throw UnimplementedError('implementation not finished yet');
+}
+
 Future<HmacSecretKey> hmacSecret_importRawKey({
   List<int> keyData,
   bool extractable,
@@ -413,6 +431,13 @@ class _HmacSecretKey extends _CryptoKeyBase implements HmacSecretKey {
   Future<List<int>> exportRawKey() async {
     _checkExtractable();
     return Uint8List.fromList(_keyData);
+  }
+
+  @override
+  Future<Map<String, Object>> exportJsonWebKey() async {
+    _checkExtractable();
+    // TODO: implement exportJsonWebKey for HmacSecretKey
+    throw UnimplementedError('implementation not finished yet');
   }
 }
 

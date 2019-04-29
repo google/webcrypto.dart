@@ -18,6 +18,16 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) =>
 
 //---------------------- HMAC
 
+Future<HmacSecretKey> hmacSecret_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+  int length,
+}) async {
+  throw _notImplemented;
+}
+
 Future<HmacSecretKey> hmacSecret_importRawKey({
   List<int> keyData,
   bool extractable,

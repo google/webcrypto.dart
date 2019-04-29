@@ -68,6 +68,24 @@ abstract class _BrowserCryptoKeyBase implements CryptoKey {
 
 //---------------------- Wrappers
 
+/// Adapt `crypto.subtle.importKey` to dart types for JWK.
+Future<subtle.CryptoKey> _importJsonWebKey(
+  Map<String, Object> jwk,
+  subtle.Algorithm algorithm,
+  bool extractable,
+  List<KeyUsage> usages,
+) {
+  return _catchDomException(() async {
+    return subtle.promiseAsFuture(subtle.importJsonWebKey(
+      'jwk',
+      subtle.JsonWebKey.fromJson(jwk),
+      algorithm,
+      extractable,
+      subtle.keyUsagesToStrings(usages),
+    ));
+  });
+}
+
 /// Adapt `crypto.subtle.importKey` to dart types.
 Future<subtle.CryptoKey> _importKey(
   String format,
@@ -198,6 +216,33 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) {
 
 final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 
+Future<HmacSecretKey> hmacSecret_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+  int length,
+}) async {
+  // Construct object with algorithm specific options
+  subtle.Algorithm algorithm;
+  if (length == null) {
+    algorithm = subtle.Algorithm(
+      name: 'HMAC',
+      hash: subtle.hashAlgorithmToString(hash),
+    );
+  } else {
+    algorithm = subtle.Algorithm(
+      name: 'HMAC',
+      hash: subtle.hashAlgorithmToString(hash),
+      length: length,
+    );
+  }
+
+  final k = await _importJsonWebKey(jwk, algorithm, extractable, usages);
+  assert(k.type == 'secret', 'expected a "secret" key');
+  return _HmacSecretKey(k);
+}
+
 /// Wrap `crypto.subtle.importKey` for use in importing keys with the `HMAC`
 /// algorithm, and return the result wrapped as [HmacSecretKey].
 Future<HmacSecretKey> hmacSecret_importRawKey({
@@ -269,6 +314,12 @@ class _HmacSecretKey extends _BrowserCryptoKeyBase implements HmacSecretKey {
   @override
   Future<List<int>> exportRawKey() {
     return _exportKey('raw', _key);
+  }
+
+  @override
+  Future<Map<String, Object>> exportJsonWebKey() async {
+    // TODO: implement exportJsonWebKey for HmacSecretKey
+    throw UnimplementedError('implementation not finished yet');
   }
 }
 

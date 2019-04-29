@@ -197,6 +197,50 @@ Future<List<int>> digest({
 abstract class HmacSecretKey implements CryptoKey {
   HmacSecretKey._(); // keep the constructor private.
 
+  /// Import [HmacSecretKey] from [JWK](https://tools.ietf.org/html/rfc7517).
+  ///
+  /// TODO: finish implementation and documentation.
+  static Future<HmacSecretKey> importJsonWebKey({
+    @required Map<String, Object> jwk,
+    @required HashAlgorithm hash,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+    int length,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(hash, 'hash');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('HMAC', usages, [
+      KeyUsage.sign,
+      KeyUsage.verify,
+    ]);
+    usages = normalizeUsages(usages);
+    /*
+    TODO: Validate these in the native implememtation
+    // These limitations are given in Web Cryptography Spec:
+    // https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
+    if (length != null && length > keyData.length * 8) {
+      throw ArgumentError.value(
+          length, 'length', 'must be less than number of bits in keyData');
+    }
+    if (length != null && length <= (keyData.length - 1) * 8) {
+      throw ArgumentError.value(
+        length,
+        'length',
+        'must be greater than number of bits in keyData - 8, you can attain '
+            'the same effect by removing bytes from keyData',
+      );
+    }*/
+
+    return impl.hmacSecret_importJsonWebKey(
+      jwk: jwk,
+      extractable: extractable,
+      usages: usages,
+      hash: hash,
+      length: length,
+    );
+  }
+
   /// Import [HmacSecretKey] from raw [keyData].
   ///
   /// Creates an [HmacSecretKey] using [keyData] as secret key, and running
@@ -413,6 +457,11 @@ abstract class HmacSecretKey implements CryptoKey {
   /// // });
   /// ```
   Future<List<int>> exportRawKey();
+
+  /// Export [HmacSecretKey] from [JWK](https://tools.ietf.org/html/rfc7517).
+  ///
+  /// TODO: finish implementation and documentation.
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 /// RSASSA-PKCS1-v1_5 private key for signing messages.
