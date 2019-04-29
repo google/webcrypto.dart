@@ -296,6 +296,15 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   );
 }
 
+Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  throw _notImplemented;
+}
+
 class _RsassaPkcs1V15PublicKey extends _CryptoKeyBase
     implements RsassaPkcs1V15PublicKey {
   final Object _keyHandle;

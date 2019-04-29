@@ -782,6 +782,29 @@ abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
     );
   }
 
+  /// Import RSASSA-PKCS1-v1_5 public key from [JWK](https://tools.ietf.org/html/rfc7517).
+  ///
+  /// TODO: finish implementation and documentation.
+  static Future<RsassaPkcs1V15PublicKey> importJsonWebKey({
+    @required Map<String, Object> jwk,
+    @required HashAlgorithm hash,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.verify]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(hash, 'hash');
+
+    return impl.rsassaPkcs1V15PublicKey_importJsonWebKey(
+      jwk: jwk,
+      extractable: extractable,
+      usages: usages,
+      hash: hash,
+    );
+  }
+
   /// Verify [signature] of [data] using this RSASSA-PKCS1-v1_5 public key.
   ///
   /// Returns `true` if the signature was made the private key matching this

@@ -86,3 +86,12 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
 }) async {
   throw _notImplemented;
 }
+
+Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  throw _notImplemented;
+}

@@ -393,6 +393,28 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   return _RsassaPkcs1V15PublicKey(k);
 }
 
+Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  final algorithm = subtle.Algorithm(
+    name: _rsassaPkcs1V15Algorithm.name,
+    hash: subtle.hashAlgorithmToString(hash),
+  );
+
+  final k = await _importJsonWebKey(jwk, algorithm, extractable, usages);
+
+  // Ensure that we have a public key
+  if (k.type != 'public') {
+    throw ArgumentError.value(
+        jwk, 'jwk', 'must be a "public" key, instead we got a "${k.type}" key');
+  }
+
+  return _RsassaPkcs1V15PublicKey(k);
+}
+
 Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
     rsassaPkcs1V15PrivateKey_generateKey({
   int modulusLength,

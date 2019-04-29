@@ -497,6 +497,16 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   }
 }
 
+Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  // TODO: implement importJsonWebKey for RsassaPkcs1V15PublicKey
+  throw UnimplementedError('implementation not finished yet');
+}
+
 /// Invoke [fn] with a new [ssl.BIGNUM] instance that is free'd when [fn]
 /// returns.
 R _withBIGNUM<R>(R Function(ssl.BIGNUM) fn) {
