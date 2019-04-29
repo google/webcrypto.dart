@@ -34,6 +34,21 @@ abstract class RsaPssPrivateKey implements CryptoKey {
     throw UnimplementedError('TODO: implement RSA-PSS');
   }
 
+  static Future<RsaPssPrivateKey> importJsonWebKey({
+    @required Map<String, Object> jwk,
+    @required HashAlgorithm hash,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('RSA-PSS', usages, [KeyUsage.sign]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(hash, 'hash');
+
+    throw UnimplementedError('TODO: implement RSA-PSS');
+  }
+
   static Future<CryptoKeyPair<RsaPssPrivateKey, RsaPssPublicKey>> generateKey({
     @required int modulusLength,
     @required BigInt publicExponent,
@@ -60,6 +75,8 @@ abstract class RsaPssPrivateKey implements CryptoKey {
   });
 
   Future<List<int>> exportPkcs8Key();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class RsaPssPublicKey implements CryptoKey {
@@ -80,6 +97,21 @@ abstract class RsaPssPublicKey implements CryptoKey {
     throw UnimplementedError('TODO: implement RSA-PSS');
   }
 
+  static Future<RsaPssPublicKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required HashAlgorithm hash,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('RSA-PSS', usages, [KeyUsage.verify]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(hash, 'hash');
+
+    throw UnimplementedError('TODO: implement RSA-PSS');
+  }
+
   Future<bool> verify({
     @required List<int> signature,
     @required Stream<List<int>> data,
@@ -87,6 +119,8 @@ abstract class RsaPssPublicKey implements CryptoKey {
   });
 
   Future<List<int>> exportSpkiKey();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 enum EllipticCurve {
@@ -105,6 +139,21 @@ abstract class EcdsaPrivateKey implements CryptoKey {
     @required List<KeyUsage> usages,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDSA', usages, [KeyUsage.sign]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(curve, 'curve');
+
+    throw UnimplementedError('TODO: implement ECDSA');
+  }
+
+  static Future<EcdsaPrivateKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('ECDSA', usages, [KeyUsage.sign]);
     usages = normalizeUsages(usages);
@@ -135,10 +184,27 @@ abstract class EcdsaPrivateKey implements CryptoKey {
   });
 
   Future<List<int>> exportPkcs8Key();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class EcdsaPublicKey implements CryptoKey {
   EcdsaPublicKey._(); // keep the constructor private.
+
+  static Future<EcdsaPublicKey> importRawKey({
+    @required List<int> keyData,
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(curve, 'curve');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDSA', usages, [KeyUsage.verify]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement ECDSA');
+  }
 
   static Future<EcdsaPublicKey> importSpkiKey({
     @required List<int> keyData,
@@ -155,13 +221,32 @@ abstract class EcdsaPublicKey implements CryptoKey {
     throw UnimplementedError('TODO: implement ECDSA');
   }
 
+  static Future<EcdsaPublicKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(curve, 'curve');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDSA', usages, [KeyUsage.verify]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement ECDSA');
+  }
+
   Future<bool> verify({
     @required List<int> signature,
     @required Stream<List<int>> data,
     @required HashAlgorithm hash,
   });
 
+  Future<List<int>> exportRawKey();
+
   Future<List<int>> exportSpkiKey();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class RsaOaepPrivateKey implements CryptoKey {
@@ -174,6 +259,24 @@ abstract class RsaOaepPrivateKey implements CryptoKey {
     @required List<KeyUsage> usages,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('RSA-OAEP', usages, [
+      KeyUsage.decrypt,
+      // KeyUsage.unwrapKey,
+    ]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(hash, 'hash');
+
+    throw UnimplementedError('TODO: implement RSA-OAEP');
+  }
+
+  static Future<RsaOaepPrivateKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required HashAlgorithm hash,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('RSA-OAEP', usages, [
       KeyUsage.decrypt,
@@ -215,6 +318,8 @@ abstract class RsaOaepPrivateKey implements CryptoKey {
   // TODO: add unwrapKey support
 
   Future<List<int>> exportPkcs8Key();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class RsaOaepPublicKey implements CryptoKey {
@@ -238,6 +343,24 @@ abstract class RsaOaepPublicKey implements CryptoKey {
     throw UnimplementedError('TODO: implement RSA-OAEP');
   }
 
+  static Future<RsaOaepPublicKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required HashAlgorithm hash,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('RSA-OAEP', usages, [
+      KeyUsage.encrypt,
+      // KeyUsage.wrapKey,
+    ]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(hash, 'hash');
+
+    throw UnimplementedError('TODO: implement RSA-OAEP');
+  }
+
   Stream<List<int>> encrypt({
     @required Stream<List<int>> data,
     TypedData label,
@@ -246,6 +369,8 @@ abstract class RsaOaepPublicKey implements CryptoKey {
   // TODO: add wrapKey support
 
   Future<List<int>> exportSpkiKey();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class AesCtrSecretKey implements CryptoKey {
@@ -257,6 +382,24 @@ abstract class AesCtrSecretKey implements CryptoKey {
     @required List<KeyUsage> usages,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('AES-CTR', usages, [
+      KeyUsage.encrypt,
+      KeyUsage.decrypt,
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
+    ]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement AES-CTR');
+  }
+
+  static Future<AesCtrSecretKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('AES-CTR', usages, [
       KeyUsage.encrypt,
@@ -285,6 +428,8 @@ abstract class AesCtrSecretKey implements CryptoKey {
   // TODO: add unwrapKey support
 
   Future<List<int>> exportRawKey();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class AesCbcSecretKey implements CryptoKey {
@@ -296,6 +441,24 @@ abstract class AesCbcSecretKey implements CryptoKey {
     @required List<KeyUsage> usages,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('AES-CBC', usages, [
+      KeyUsage.encrypt,
+      KeyUsage.decrypt,
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
+    ]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement AES-CBC');
+  }
+
+  static Future<AesCbcSecretKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('AES-CBC', usages, [
       KeyUsage.encrypt,
@@ -322,6 +485,8 @@ abstract class AesCbcSecretKey implements CryptoKey {
   // TODO: add unwrapKey support
 
   Future<List<int>> exportRawKey();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class AesGcmSecretKey implements CryptoKey {
@@ -333,6 +498,24 @@ abstract class AesGcmSecretKey implements CryptoKey {
     @required List<KeyUsage> usages,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('AES-GCM', usages, [
+      KeyUsage.encrypt,
+      KeyUsage.decrypt,
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
+    ]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement AES-GCM');
+  }
+
+  static Future<AesGcmSecretKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('AES-GCM', usages, [
       KeyUsage.encrypt,
@@ -363,8 +546,11 @@ abstract class AesGcmSecretKey implements CryptoKey {
   // TODO: add unwrapKey support
 
   Future<List<int>> exportRawKey();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
+/*
 abstract class AesKwSecretKey implements CryptoKey {
   AesKwSecretKey._(); // keep the constructor private.
 
@@ -384,11 +570,29 @@ abstract class AesKwSecretKey implements CryptoKey {
     throw UnimplementedError('TODO: implement AES-KW');
   }
 
+  static Future<AesKwSecretKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('AES-KW', usages, [
+      // KeyUsage.wrapKey,
+      // KeyUsage.unwrapKey,
+    ]);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement AES-KW');
+  }
+
   // TODO: add wrapKey support
   // TODO: add unwrapKey support
 
   Future<List<int>> exportRawKey();
-}
+
+  Future<Map<String, Object>> exportJsonWebKey();
+}*/
 
 abstract class EcdhPrivateKey implements CryptoKey {
   EcdhPrivateKey._(); // keep the constructor private.
@@ -400,6 +604,21 @@ abstract class EcdhPrivateKey implements CryptoKey {
     @required List<KeyUsage> usages,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDH', usages, [KeyUsage.sign]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(curve, 'curve');
+
+    throw UnimplementedError('TODO: implement ECDH');
+  }
+
+  static Future<EcdhPrivateKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
     ArgumentError.checkNotNull(extractable, 'extractable');
     checkAllowedUsages('ECDH', usages, [KeyUsage.sign]);
     usages = normalizeUsages(usages);
@@ -432,10 +651,27 @@ abstract class EcdhPrivateKey implements CryptoKey {
   // TODO: add deriveKey support
 
   Future<List<int>> exportPkcs8Key();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class EcdhPublicKey implements CryptoKey {
   EcdhPublicKey._(); // keep the constructor private.
+
+  static Future<EcdhPublicKey> importRawKey({
+    @required List<int> keyData,
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(keyData, 'keyData');
+    ArgumentError.checkNotNull(curve, 'curve');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDH', usages, []);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement ECDH');
+  }
 
   static Future<EcdhPublicKey> importSpkiKey({
     @required List<int> keyData,
@@ -452,7 +688,26 @@ abstract class EcdhPublicKey implements CryptoKey {
     throw UnimplementedError('TODO: implement ECDH');
   }
 
+  static Future<EcdhPublicKey> importJsonWebKey({
+    @required List<int> jwk,
+    @required EllipticCurve curve,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(curve, 'curve');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('ECDH', usages, []);
+    usages = normalizeUsages(usages);
+
+    throw UnimplementedError('TODO: implement ECDH');
+  }
+
+  Future<List<int>> exportRawKey();
+
   Future<List<int>> exportSpkiKey();
+
+  Future<Map<String, Object>> exportJsonWebKey();
 }
 
 abstract class HkdfSecretKey implements CryptoKey {
