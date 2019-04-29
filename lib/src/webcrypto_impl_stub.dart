@@ -58,6 +58,15 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   throw _notImplemented;
 }
 
+Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  throw _notImplemented;
+}
+
 Future<CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
     rsassaPkcs1V15PrivateKey_generateKey({
   int modulusLength,

@@ -532,6 +532,29 @@ abstract class RsassaPkcs1V15PrivateKey implements CryptoKey {
     );
   }
 
+  /// Import RSASSA-PKCS1-v1_5 private key in [JWK] format.
+  ///
+  /// TODO: finish implementation and documentation.
+  static Future<RsassaPkcs1V15PrivateKey> importJsonWebKey({
+    @required Map<String, Object> jwk,
+    @required bool extractable,
+    @required List<KeyUsage> usages,
+    @required HashAlgorithm hash,
+  }) {
+    ArgumentError.checkNotNull(jwk, 'jwk');
+    ArgumentError.checkNotNull(extractable, 'extractable');
+    checkAllowedUsages('RSASSA_PKCS1_v1_5', usages, [KeyUsage.sign]);
+    usages = normalizeUsages(usages);
+    ArgumentError.checkNotNull(hash, 'hash');
+
+    return impl.rsassaPkcs1V15PrivateKey_importJsonWebKey(
+      jwk: jwk,
+      extractable: extractable,
+      usages: usages,
+      hash: hash,
+    );
+  }
+
   /// Generate an RSASSA-PKCS1-v1_5 public/private key-pair.
   ///
   /// Generate an RSA key with given [modulusLength], this should be at-least

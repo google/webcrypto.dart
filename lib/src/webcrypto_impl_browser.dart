@@ -216,33 +216,6 @@ Future<List<int>> digest({HashAlgorithm hash, Stream<List<int>> data}) {
 
 final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 
-Future<HmacSecretKey> hmacSecret_importJsonWebKey({
-  Map<String, Object> jwk,
-  bool extractable,
-  List<KeyUsage> usages,
-  HashAlgorithm hash,
-  int length,
-}) async {
-  // Construct object with algorithm specific options
-  subtle.Algorithm algorithm;
-  if (length == null) {
-    algorithm = subtle.Algorithm(
-      name: 'HMAC',
-      hash: subtle.hashAlgorithmToString(hash),
-    );
-  } else {
-    algorithm = subtle.Algorithm(
-      name: 'HMAC',
-      hash: subtle.hashAlgorithmToString(hash),
-      length: length,
-    );
-  }
-
-  final k = await _importJsonWebKey(jwk, algorithm, extractable, usages);
-  assert(k.type == 'secret', 'expected a "secret" key');
-  return _HmacSecretKey(k);
-}
-
 /// Wrap `crypto.subtle.importKey` for use in importing keys with the `HMAC`
 /// algorithm, and return the result wrapped as [HmacSecretKey].
 Future<HmacSecretKey> hmacSecret_importRawKey({
@@ -268,6 +241,33 @@ Future<HmacSecretKey> hmacSecret_importRawKey({
   }
 
   final k = await _importKey('raw', keyData, algorithm, extractable, usages);
+  assert(k.type == 'secret', 'expected a "secret" key');
+  return _HmacSecretKey(k);
+}
+
+Future<HmacSecretKey> hmacSecret_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+  int length,
+}) async {
+  // Construct object with algorithm specific options
+  subtle.Algorithm algorithm;
+  if (length == null) {
+    algorithm = subtle.Algorithm(
+      name: 'HMAC',
+      hash: subtle.hashAlgorithmToString(hash),
+    );
+  } else {
+    algorithm = subtle.Algorithm(
+      name: 'HMAC',
+      hash: subtle.hashAlgorithmToString(hash),
+      length: length,
+    );
+  }
+
+  final k = await _importJsonWebKey(jwk, algorithm, extractable, usages);
   assert(k.type == 'secret', 'expected a "secret" key');
   return _HmacSecretKey(k);
 }
@@ -343,6 +343,28 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   // Ensure that we have a private key
   if (k.type != 'private') {
     throw ArgumentError.value(keyData, 'keyData',
+        'must be a "private" key, instead we got a "${k.type}" key');
+  }
+
+  return _RsassaPkcs1V15PrivateKey(k);
+}
+
+Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  final algorithm = subtle.Algorithm(
+    name: _rsassaPkcs1V15Algorithm.name,
+    hash: subtle.hashAlgorithmToString(hash),
+  );
+
+  final k = await _importJsonWebKey(jwk, algorithm, extractable, usages);
+
+  // Ensure that we have a private key
+  if (k.type != 'private') {
+    throw ArgumentError.value(jwk, 'jwk',
         'must be a "private" key, instead we got a "${k.type}" key');
   }
 

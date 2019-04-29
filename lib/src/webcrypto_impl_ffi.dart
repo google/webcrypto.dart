@@ -465,6 +465,16 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key({
   }
 }
 
+Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey({
+  Map<String, Object> jwk,
+  bool extractable,
+  List<KeyUsage> usages,
+  HashAlgorithm hash,
+}) async {
+  // TODO: implement importJsonWebKey for RsassaPkcs1V15PrivateKey
+  throw UnimplementedError('implementation not finished yet');
+}
+
 Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey({
   List<int> keyData,
   bool extractable,
