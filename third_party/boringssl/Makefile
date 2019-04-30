@@ -1,7 +1,7 @@
 
 REVISION='9801a0714555f819dc6bd0f1d1a892a40465f056'
 
-all: build/
+all: lib/
 
 src/:
 	mkdir src/
@@ -15,5 +15,10 @@ build/: src/
 	# Build dynamic library
 	cd build && cmake -DBUILD_SHARED_LIBS=1 ../src && make -j
 
+lib/: build/
+	mkdir lib/
+	cp build/ssl/libssl.so lib/libssl.so
+	cp build/crypto/libcrypto.so lib/libcrypto.so
+
 clean:
-	rm -rf src/ build/
+	rm -rf src/ build/ lib/

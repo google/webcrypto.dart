@@ -800,7 +800,6 @@ abstract class RsassaPkcs1V15PublicKey implements CryptoKey {
   /// TODO: finish implementation and documentation.
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, Object>> exportJsonWebKey();
   static Future<RsassaPkcs1V15PublicKey> importJsonWebKey({
     @required Map<String, Object> jwk,
     @required HashAlgorithm hash,
