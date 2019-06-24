@@ -42,8 +42,8 @@ class OperationError extends Error {
 }
 
 /// A key-pair as returned from key generation.
-abstract class CryptoKeyPair<S, T> {
-  CryptoKeyPair._(); // keep the constructor private.
+abstract class KeyPair<S, T> {
+  KeyPair._(); // keep the constructor private.
 
   /// Private key for [publicKey].
   S get privateKey;
@@ -474,8 +474,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// ```
   ///
   /// [1]: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
-  static Future<
-          CryptoKeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
+  static Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
       generateKey(int modulusLength, BigInt publicExponent, Hasher hasher) {
     ArgumentError.checkNotNull(modulusLength, 'modulusLength');
     ArgumentError.checkNotNull(publicExponent, 'publicExponent');
@@ -724,7 +723,7 @@ abstract class RsaPssPrivateKey {
     throw UnimplementedError('TODO: implement RSA-PSS');
   }
 
-  static Future<CryptoKeyPair<RsaPssPrivateKey, RsaPssPublicKey>> generateKey(
+  static Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> generateKey(
     int modulusLength,
     BigInt publicExponent,
     Hasher hasher,
@@ -806,7 +805,7 @@ abstract class EcdsaPrivateKey {
     throw UnimplementedError('TODO: implement ECDSA');
   }
 
-  static Future<CryptoKeyPair<EcdsaPrivateKey, EcdsaPublicKey>> generateKey(
+  static Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> generateKey(
     EllipticCurve curve,
   ) {
     ArgumentError.checkNotNull(curve, 'curve');
@@ -890,7 +889,7 @@ abstract class RsaOaepPrivateKey {
     throw UnimplementedError('TODO: implement RSA-OAEP');
   }
 
-  static Future<CryptoKeyPair<RsaOaepPrivateKey, RsaPssPublicKey>> generateKey(
+  static Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>> generateKey(
     int modulusLength,
     BigInt publicExponent,
     Hasher hasher,
@@ -1070,7 +1069,7 @@ abstract class EcdhPrivateKey {
     throw UnimplementedError('TODO: implement ECDH');
   }
 
-  static Future<CryptoKeyPair<EcdhPrivateKey, EcdhPublicKey>> generateKey(
+  static Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> generateKey(
     EllipticCurve curve,
   ) {
     ArgumentError.checkNotNull(curve, 'curve');
