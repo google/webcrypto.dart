@@ -1,6 +1,12 @@
 /// Outline of all classes **including those not implemented yet**.
 ///
 /// ## CHANGELOG
+/// Since `draft2.dart`:
+///
+///  * Return types are `UInt8List` instead of `List<int>`
+///  * `TypedData` no longer used for input parameter (uses `List<int>` consistently)
+///  * Added a series of `QUESTION:` comments in source code.
+///
 /// Since initial draft in `webcrypto.dart` and `incomplete.dart`:
 ///
 ///  * Removed `CryptoKey` base class.
@@ -11,6 +17,7 @@
 ///  * Removed the `HashAlgorithm` enum.
 ///  * Added the `Hasher` abstract class.
 ///  * Added constants `sha1`, `sha256`, `sha384`, and, `sha512`.
+///
 ///
 /// ## Exceptions
 ///
@@ -43,6 +50,10 @@ class NotSupportedException implements Exception {
   //       It's possible we change this as few people want to do feature
   //       detection this way, and you technically can catch errors if needed.
 
+  // QUESTION: Should we use UnsupportedError or UnimplementedError, as few
+  //           users will do feature detection anyway. And it's still possible.
+  //           This also means we don't clutter documentation.
+
   NotSupportedException(this._message);
 
   @override
@@ -51,6 +62,13 @@ class NotSupportedException implements Exception {
 
 /// Thrown when an operation failed for an operation-specific reason.
 class OperationError extends Error {
+  // QUESTION: Is there a generic error we could throw instead?
+  //           This typically happens because the crypto library returns an
+  //           error. In the web crypto spec you'll find steps such as:
+  //           "3. If performing the operation results in an error, then throw an OperationError."
+  //           See also: https://www.w3.org/TR/WebCryptoAPI/#SubtleCrypto-Exceptions
+  //           (I understand this an internal crypto library errors).
+
   final String message;
   OperationError._(this.message);
   @override
@@ -83,12 +101,16 @@ abstract class KeyPair<S, T> {
 /// final bytes = Uint8List(64);
 ///
 /// // Fill with random bytes.
-/// getRandomValues(bytes);
+/// getRandomValues(bytes.buffer);
 ///
 /// // Print base64 encoded random bytes.
 /// print(base64.encode(bytes));
 /// ```
-void getRandomValues(TypedData destination) {
+void getRandomValues(
+  ByteBuffer destination,
+  // QUESTION: What type should this be? I don't want to return a buffer.
+  //           Filling a buffer should offer better performance.
+) {
   ArgumentError.checkNotNull(destination, 'destination');
   // This limitation is given in the Web Cryptography Specification, see:
   // https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues
@@ -101,7 +123,15 @@ void getRandomValues(TypedData destination) {
 }
 
 /// A cryptographic hash algorithm implementation.
+///
+/// **WARNING:** Custom implementations of this class cannot be passed to
+/// to other methods in this library.
 abstract class Hasher {
+  // QUESTION: Should this be a function typedef instead? Can we do function
+  //           identity on all platforms? HmacSecretKey can only accept the
+  //           implementations defined in this library. When passing to webcryto
+  //           we must pass as a string.
+
   /// Compute a cryptographic hash-sum of [data] stream using this [Hasher].
   ///
   /// **Example**
@@ -142,7 +172,7 @@ abstract class Hasher {
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
   /// ```
-  Future<List<int>> digest(Stream<List<int>> data);
+  Future<Uint8List> digest(Stream<List<int>> data);
 }
 
 /// SHA-1 as specified in [FIPS PUB 180-4][1].
@@ -167,6 +197,10 @@ const Hasher sha384 = null; // TODO: Implement this
 ///
 /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
 const Hasher sha512 = null; // TODO: Implement this
+
+// QUESTION: Should these Hasher implementations be `const` or `final`?
+// QUESTION: Should these Hasher implementation be top-level elements or static
+//           properties on the `Hasher` class?
 
 /// Key for signing/verifying with HMAC.
 ///
@@ -299,7 +333,7 @@ abstract class HmacSecretKey {
   /// While this technically works, you application might be vulnerable to
   /// timing attacks. To validate signatures use [verify()], this method
   /// computes a signature and does a fixed-time comparison.
-  Future<List<int>> sign(Stream<List<int>> data);
+  Future<Uint8List> sign(Stream<List<int>> data);
 
   /// Verify the HMAC [signature] of given [data] stream.
   ///
@@ -356,7 +390,7 @@ abstract class HmacSecretKey {
   /// // If we wanted to we could import the key as follows:
   /// // key = await HmacSecretKey.importRawKey(secretBytes, sha256);
   /// ```
-  Future<List<int>> exportRawKey();
+  Future<Uint8List> exportRawKey();
 
   /// Export [HmacSecretKey] from [JWK][1].
   ///
@@ -364,6 +398,10 @@ abstract class HmacSecretKey {
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   Future<Map<String, Object>> exportJsonWebKey();
+
+  // QUESTION: When exporting a key as JWK (JSON Web Key) ww get JSON, should
+  //           we return String, Uint8List, or Map<String, Object> ?
+  //           Similarly, we have method that import from JSON Web Keys.
 }
 
 /// RSASSA-PKCS1-v1_5 private key for signing messages.
@@ -489,7 +527,11 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// [1]: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
   static Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
-      generateKey(int modulusLength, BigInt publicExponent, Hasher hasher) {
+      generateKey(
+    int modulusLength,
+    BigInt publicExponent,
+    Hasher hasher,
+  ) {
     ArgumentError.checkNotNull(modulusLength, 'modulusLength');
     ArgumentError.checkNotNull(publicExponent, 'publicExponent');
     ArgumentError.checkNotNull(hasher, 'hasher');
@@ -529,7 +571,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// }());
   /// print('signature: ${base64.encode(signature)}');
   /// ```
-  Future<List<int>> sign(Stream<List<int>> data);
+  Future<Uint8List> sign(Stream<List<int>> data);
 
   /// Export this RSASSA-PKCS1-v1_5 private key in PKCS #8 format.
   ///
@@ -558,7 +600,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc5208
-  Future<List<int>> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key();
 
   /// Export RSASSA-PKCS1-v1_5 private key in [JWK][1] format.
   ///
@@ -704,7 +746,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc5280
-  Future<List<int>> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey();
 
   /// Export RSASSA-PKCS1-v1_5 public key in [JWK][1] format.
   ///
@@ -749,9 +791,9 @@ abstract class RsaPssPrivateKey {
     throw UnimplementedError('TODO: implement RSA-PSS');
   }
 
-  Future<List<int>> sign(Stream<List<int>> data, int saltLength);
+  Future<Uint8List> sign(Stream<List<int>> data, int saltLength);
 
-  Future<List<int>> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -785,7 +827,7 @@ abstract class RsaPssPublicKey {
     int saltLength,
   );
 
-  Future<List<int>> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -794,6 +836,13 @@ enum EllipticCurve {
   p256,
   p384,
   p521,
+
+  // QUESTION: Should we use objects or strings instead of an enum for forward
+  //           compatibility. I suspect it's fair to document that new elements
+  //           may be added in the future. Then it's technically not a breaking
+  //           change per policy. Besides it's unlikely users will use this.
+  //           This is only for passing to ImportKey/generateKey operations!
+  //           Any ideas?
 }
 
 abstract class EcdsaPrivateKey {
@@ -827,9 +876,9 @@ abstract class EcdsaPrivateKey {
     throw UnimplementedError('TODO: implement ECDSA');
   }
 
-  Future<List<int>> sign(Stream<List<int>> data, Hasher hasher);
+  Future<Uint8List> sign(Stream<List<int>> data, Hasher hasher);
 
-  Future<List<int>> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -873,9 +922,9 @@ abstract class EcdsaPublicKey {
     Hasher hasher,
   );
 
-  Future<List<int>> exportRawKey();
+  Future<Uint8List> exportRawKey();
 
-  Future<List<int>> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -915,9 +964,15 @@ abstract class RsaOaepPrivateKey {
     throw UnimplementedError('TODO: implement RSA-OAEP');
   }
 
-  Stream<List<int>> decrypt(Stream<List<int>> data, {TypedData label});
+  Stream<Uint8List> decrypt(
+    Stream<List<int>> data, {
+    List<int> label,
+    // QUESTION: Should we use List<int> here? Previous iterations had TypedData
+    //           I'm not sure if that ever made any sense. But List<int> seems
+    //           to be the common thing to do in platform libraries.
+  });
 
-  Future<List<int>> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -945,9 +1000,9 @@ abstract class RsaOaepPublicKey {
     throw UnimplementedError('TODO: implement RSA-OAEP');
   }
 
-  Stream<List<int>> encrypt(Stream<List<int>> data, {TypedData label});
+  Stream<Uint8List> encrypt(Stream<List<int>> data, {List<int> label});
 
-  Future<List<int>> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -967,25 +1022,29 @@ abstract class AesCtrSecretKey {
     throw UnimplementedError('TODO: implement AES-CTR');
   }
 
-  static Future<AesCtrSecretKey> generateKey(int length) {
+  static Future<AesCtrSecretKey> generateKey(
+    int length,
+    // QUESTION: This accepts 128, 192, 256, should we use an enum instead?
+    //           (obviously, more values might be acceptable in the future)
+  ) {
     ArgumentError.checkNotNull(length, 'length');
 
     throw UnimplementedError('TODO: implement AES-CTR');
   }
 
-  Stream<List<int>> encrypt(
+  Stream<Uint8List> encrypt(
     Stream<List<int>> data,
-    TypedData counter,
+    List<int> counter,
     int length,
   );
 
-  Stream<List<int>> decrypt(
+  Stream<Uint8List> decrypt(
     Stream<List<int>> data,
-    TypedData counter,
+    List<int> counter,
     int length,
   );
 
-  Future<List<int>> exportRawKey();
+  Future<Uint8List> exportRawKey();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -1011,11 +1070,11 @@ abstract class AesCbcSecretKey {
     throw UnimplementedError('TODO: implement AES-CBC');
   }
 
-  Stream<List<int>> encrypt(Stream<List<int>> data, TypedData iv);
+  Stream<Uint8List> encrypt(Stream<List<int>> data, List<int> iv);
 
-  Stream<List<int>> decrypt(Stream<List<int>> data, TypedData iv);
+  Stream<Uint8List> decrypt(Stream<List<int>> data, List<int> iv);
 
-  Future<List<int>> exportRawKey();
+  Future<Uint8List> exportRawKey();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -1041,21 +1100,21 @@ abstract class AesGcmSecretKey {
     throw UnimplementedError('TODO: implement AES-GCM');
   }
 
-  Stream<List<int>> encrypt(
+  Stream<Uint8List> encrypt(
     Stream<List<int>> data,
-    TypedData iv, {
-    TypedData additionalData,
+    List<int> iv, {
+    List<int> additionalData,
     int tagLength = 128,
   });
 
-  Stream<List<int>> decrypt(
+  Stream<Uint8List> decrypt(
     Stream<List<int>> data,
-    TypedData iv, {
-    TypedData additionalData,
+    List<int> iv, {
+    List<int> additionalData,
     int tagLength = 128,
   });
 
-  Future<List<int>> exportRawKey();
+  Future<Uint8List> exportRawKey();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -1091,9 +1150,9 @@ abstract class EcdhPrivateKey {
     throw UnimplementedError('TODO: implement ECDH');
   }
 
-  Future<List<int>> deriveBits(EcdhPublicKey publicKey, int length);
+  Future<Uint8List> deriveBits(EcdhPublicKey publicKey, int length);
 
-  Future<List<int>> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -1131,9 +1190,9 @@ abstract class EcdhPublicKey {
     throw UnimplementedError('TODO: implement ECDH');
   }
 
-  Future<List<int>> exportRawKey();
+  Future<Uint8List> exportRawKey();
 
-  Future<List<int>> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey();
 
   Future<Map<String, Object>> exportJsonWebKey();
 }
@@ -1147,10 +1206,10 @@ abstract class HkdfSecretKey {
     throw UnimplementedError('TODO: implement HKDF');
   }
 
-  Future<List<int>> deriveBits(
+  Future<Uint8List> deriveBits(
     Hasher hasher,
-    TypedData salt,
-    TypedData info,
+    List<int> salt,
+    List<int> info,
   );
 }
 
@@ -1163,9 +1222,9 @@ abstract class Pbkdf2SecretKey {
     throw UnimplementedError('TODO: implement PBKDF2');
   }
 
-  Future<List<int>> deriveBits(
+  Future<Uint8List> deriveBits(
     Hasher hasher,
-    TypedData salt,
+    List<int> salt,
     int iterations,
   );
 }
