@@ -155,7 +155,7 @@ const Hasher sha512 = null; // TODO: Implement this
 /// Key for signing/verifying with HMAC.
 ///
 /// An [HmacSecretKey] instance holds a symmetric secret key and a
-/// [HashAlgorithm], which can be used to create and verify HMAC signatures as
+/// [Hasher], which can be used to create and verify HMAC signatures as
 /// specified in [FIPS PUB 180-4][1].
 ///
 /// Instances of [HmacSecretKey] can be imported using
@@ -437,9 +437,9 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// // Generate a key-pair.
   /// final keyPair = await RsassaPkcs1V15PrivateKey.generateKey(
-  ///   modulusLength: 4096,
-  ///   publicExponent: BigInt.from(65537),
-  ///   hash: HashAlgorithm.sha256,
+  ///   4096,
+  ///   BigInt.from(65537),
+  ///   sha256,
   /// );
   ///
   /// // Export public, so Alice can use it later.
@@ -457,14 +457,12 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// // on a trusted piece of paper, but receives the message and signature
   /// // from an untrusted source (thus, desires to verify the signature).
   /// final publicKey = await RsassaPkcs1V15PublicKey.importSpkiKey(
-  ///   keyData: PemCodec(PemLabel.publicKey).decode(pemPublicKey),
-  ///   hash: HashAlgorithm.sha256,
-  ///   extractable: false,
-  ///   usages: [KeyUsage.verify],
+  ///   PemCodec(PemLabel.publicKey).decode(pemPublicKey),
+  ///   sha256,
   /// );
   /// final isValid = await publicKey.verify(
-  ///   signature: signature,
-  ///   data: () async* {
+  ///   signature,
+  ///   () async* {
   ///     yield utf8.encode(message);
   ///   }(),
   /// );
@@ -640,7 +638,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// final keyPair = await RsassaPkcs1V15PrivateKey.generateKey(
   ///   4096,
   ///   BigInt.from(65537),
-  ///   HashAlgorithm.sha256
+  ///   sha256,
   /// );
   ///
   /// // Using privateKey Bob can sign a message for Alice.
