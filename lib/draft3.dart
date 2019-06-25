@@ -110,6 +110,7 @@ void getRandomValues(
   ByteBuffer destination,
   // QUESTION: What type should this be? I don't want to return a buffer.
   //           Filling a buffer should offer better performance.
+  // QUESTION: Should we even have this... dart:math does this too, it's just slow.
 ) {
   ArgumentError.checkNotNull(destination, 'destination');
   // This limitation is given in the Web Cryptography Specification, see:
@@ -131,6 +132,7 @@ abstract class Hasher {
   //           identity on all platforms? HmacSecretKey can only accept the
   //           implementations defined in this library. When passing to webcryto
   //           we must pass as a string.
+  //           See: https://dart.dev/guides/language/effective-dart/design#avoid-defining-a-one-member-abstract-class-when-a-simple-function-will-do
 
   /// Compute a cryptographic hash-sum of [data] stream using this [Hasher].
   ///
@@ -201,6 +203,8 @@ const Hasher sha512 = null; // TODO: Implement this
 // QUESTION: Should these Hasher implementations be `const` or `final`?
 // QUESTION: Should these Hasher implementation be top-level elements or static
 //           properties on the `Hasher` class?
+//           (is this perhaps easier to find, as they would be namespaced)
+//           NOTE: factory constructors might be cool.
 
 /// Key for signing/verifying with HMAC.
 ///
@@ -401,6 +405,7 @@ abstract class HmacSecretKey {
 
   // QUESTION: When exporting a key as JWK (JSON Web Key) ww get JSON, should
   //           we return String, Uint8List, or Map<String, Object> ?
+  //           Or is this Map<String, dynamic>?
   //           Similarly, we have method that import from JSON Web Keys.
 }
 
@@ -964,13 +969,7 @@ abstract class RsaOaepPrivateKey {
     throw UnimplementedError('TODO: implement RSA-OAEP');
   }
 
-  Stream<Uint8List> decrypt(
-    Stream<List<int>> data, {
-    List<int> label,
-    // QUESTION: Should we use List<int> here? Previous iterations had TypedData
-    //           I'm not sure if that ever made any sense. But List<int> seems
-    //           to be the common thing to do in platform libraries.
-  });
+  Stream<Uint8List> decrypt(Stream<List<int>> data, {List<int> label});
 
   Future<Uint8List> exportPkcs8Key();
 
@@ -1026,6 +1025,8 @@ abstract class AesCtrSecretKey {
     int length,
     // QUESTION: This accepts 128, 192, 256, should we use an enum instead?
     //           (obviously, more values might be acceptable in the future)
+    //           Or would separate methods be better, downside is that it
+    //           deviates from how other generateKey methods work.
   ) {
     ArgumentError.checkNotNull(length, 'length');
 
