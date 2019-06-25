@@ -30,7 +30,7 @@
 /// We throw [ArgumentError] is thrown when a parameter is out of range, and
 /// [OperationError] is thrown when an operation fails for an operation-specific
 /// reason.
-library draft2;
+library draft3;
 
 import 'dart:async';
 import 'dart:typed_data';
