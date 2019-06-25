@@ -163,7 +163,7 @@ abstract class Hasher {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Compute hash of the dataStream with sha-256
+  /// // Compute hash of 'hello world' with sha-256
   /// List<int> hash = await sha256.digest(
   ///   Stream.fromIterable([
   ///     // In this case our stream contains a single chunk of bytes.
@@ -319,14 +319,12 @@ abstract class HmacSecretKey {
   /// // Generate an HmacSecretKey.
   /// final key = await HmacSecretKey.generateKey(sha256);
   ///
-  /// // Function that creates a stream of data from our string-to-sign:
   /// String stringToSign = 'example-string-to-signed';
-  /// Stream<List<int>> dataStream() async* {
-  ///   yield utf8.encode(stringToSign);
-  /// }
   ///
   /// // Compute signature.
-  /// final signature = await key.sign(dataStream());
+  /// final signature = await key.sign(Stream.fromIterable([
+  ///   utf8.encode(stringToSign),
+  /// ]));
   ///
   /// // Print as base64
   /// print(base64.encode(signature));
@@ -358,17 +356,17 @@ abstract class HmacSecretKey {
   /// // Generate an HmacSecretKey.
   /// final key = await HmacSecretKey.generateKey(sha256);
   ///
-  /// // Function that creates a stream of data from our string-to-sign:
   /// String stringToSign = 'example-string-to-signed';
-  /// Stream<List<int>> dataStream() async* {
-  ///   yield utf8.encode(stringToSign);
-  /// }
   ///
   /// // Compute signature.
-  /// final signature = await key.sign(dataStream());
+  /// final signature = await key.sign(Stream.fromIterable([
+  ///   utf8.encode(stringToSign),
+  /// ]));
   ///
   /// // Verify signature.
-  /// final result = await key.verify(signature, dataStream());
+  /// final result = await key.verify(signature, Stream.fromIterable([
+  ///   utf8.encode(stringToSign),
+  /// ]));
   /// assert(result == true, 'this signature should be valid');
   /// ```
   Future<bool> verify(List<int> signature, Stream<List<int>> data);
@@ -508,9 +506,9 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// // Sign a message for Alice.
   /// final message = 'Hi Alice';
-  /// final signature = await keyPair.privateKey.sign(data: () async* {
-  ///   yield utf8.encode(message);
-  /// }());
+  /// final signature = await keyPair.privateKey.sign(
+  ///   Stream.fromIterable([utf8.encode(message)]),
+  /// );
   ///
   /// // On the other side of the world, Alice has written down the pemPublicKey
   /// // on a trusted piece of paper, but receives the message and signature
@@ -521,9 +519,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// );
   /// final isValid = await publicKey.verify(
   ///   signature,
-  ///   () async* {
-  ///     yield utf8.encode(message);
-  ///   }(),
+  ///   Stream.fromIterable([utf8.encode(message)]),
   /// );
   /// if (isValid) {
   ///   print('Authentic message from Bob: $message');
@@ -571,9 +567,10 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// // Create a signature for UTF-8 encoded message
   /// final message = 'hello world';
-  /// final signature = await privateKey.sign(() async* {
-  ///   yield utf8.encode(message);
-  /// }());
+  /// final signature = await privateKey.sign(Stream.fromIterable([
+  ///   utf8.encode(message),
+  /// ])),
+  ///
   /// print('signature: ${base64.encode(signature)}');
   /// ```
   Future<Uint8List> sign(Stream<List<int>> data);
@@ -706,16 +703,14 @@ abstract class RsassaPkcs1V15PublicKey {
   ///
   /// // Using privateKey Bob can sign a message for Alice.
   /// final message = 'Hi Alice';
-  /// final signature = await keyPair.privateKey.sign(() async* {
-  ///   yield utf8.encode(message);
-  /// }());
+  /// final signature = await keyPair.privateKey.sign(Stream.fromIterable([
+  ///   utf8.encode(message),
+  /// ]));
   ///
   /// // Given publicKey and signature Alice can verify the message from Bob.
   /// final isValid = await keypair.publicKey.verify(
   ///   signature,
-  ///   () async* {
-  ///     yield utf8.encode(message);
-  ///   }(),
+  ///   Stream.fromIterable([utf8.encode(message)]),
   /// );
   /// if (isValid) {
   ///   print('Authentic message from Bob: $message');
