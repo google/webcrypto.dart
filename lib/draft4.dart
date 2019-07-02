@@ -1247,13 +1247,7 @@ abstract class AesCtrSecretKey {
     throw UnimplementedError('TODO: implement AES-CTR');
   }
 
-  static Future<AesCtrSecretKey> generateKey(
-    int length,
-    // QUESTION: This accepts 128, 192, 256, should we use an enum instead?
-    //           (obviously, more values might be acceptable in the future)
-    //           Or would separate methods be better, downside is that it
-    //           deviates from how other generateKey methods work.
-  ) {
+  static Future<AesCtrSecretKey> generateKey(int length) {
     ArgumentError.checkNotNull(length, 'length');
 
     throw UnimplementedError('TODO: implement AES-CTR');
