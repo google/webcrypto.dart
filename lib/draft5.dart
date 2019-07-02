@@ -1,41 +1,9 @@
 /// Outline of all classes **including those not implemented yet**.
 ///
-/// Questions:
-///  * Naming of hash algorithms, ideas:
-///    * `Hasher` (Proposed in draft3),
-///    * `Hash` (golang),
-///    * `HashAlgorithm` (.Net),
-///    * `MessageDigest` (Java),
-///    * `Digest` (rust-crypto)
-///  * Are we sure about using `Uint8List` for input arguments, all other
-///    platform libraries uses `List<int>` for input? And I'll still have to
-///    do a test that it's the right type and fallback to copy for custom types.
-///  * Can we agree omit `<operation>ToBuffer` methods? These are hard to write
-///    for streaming, and we don't support this for `utf8` encoding either.
-///  * I would still prefer to avoid `<operation>Stream` methods and instead
-///    have all methods default to operate on streams, and leave easy to use
-///    methods for working on byte buffers to users.
-///    (Countering with examples in documentation and utility methods on pub)
-///     - Overhead seems limited (sure, buffering a stream isn't free),
-///     - Everything is always async, anyways,
-///     - Having multiple methods is unnecessarily complicated,
-///     - `<operation>(List<int>)` is largely a convenience method,
-///    Counter arguments:
-///     - Probably, I _feel_ this ugly, this is a bad argument and I should stop
-///       arguing for this :)
-///     - `<operation>(List<int>)` won't polute the global namespace, so who cares.
-///     - `<operation>(List<int>)` can be slightly more efficient, so maybe it's not
-///       entirely convenience.
-///     - Most users cannot figure out how to use streams, and the SDK doesn't
-///       provide convenience functions for buffering streams, so these are
-///       exceptionally hard to use for ordinary users.
-///     - 99% of all users will operate on buffers, not streams.
-///     - Not providing any convenience methods is an unnecessarily strong
-///       oppinion, borderline fanatical :) hehe
-///   * Should we rename `<operation>(List<int>)` to `<operation>Buffer(List<int>)`
-///     or `<operation>Bytes` (as we call the other `<operation>Stream>`).
-///
 /// ## CHANGELOG
+///
+/// Since `draft4.dart`:
+///  * Renamed methods `<operation>(List<int>)` to `<operation>Bytes(List<int>)`.
 ///
 /// Since `draft3.dart`:
 ///
@@ -86,7 +54,7 @@
 ///  * `InvalidAccessError` shouldn't occur, if it does it's an
 ///    [OperationError], because it's an unknown error.
 ///
-library draft4;
+library draft5;
 
 import 'dart:async';
 import 'dart:typed_data';
@@ -169,12 +137,12 @@ abstract class Hash {
   /// final bytesToHash = utf8.encode('hello world');
   ///
   /// // Compute hash of bytesToHash with sha-256
-  /// List<int> hash = await Hash.sha256.digest(bytesToHash);
+  /// List<int> hash = await Hash.sha256.digestBytes(bytesToHash);
   ///
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
   /// ```
-  Future<Uint8List> digest(List<int> data);
+  Future<Uint8List> digestBytes(List<int> data);
 
   /// Compute a cryptographic hash-sum of [data] stream using this [Hash].
   ///
@@ -215,7 +183,7 @@ abstract class Hash {
   /// final bytesToHash = utf8.encode('hello world');
   ///
   /// // Compute hash of bytesToHash with sha-256
-  /// List<int> hash = await Hash.sha256.digest(bytesToHash);
+  /// List<int> hash = await Hash.sha256.digestBytes(bytesToHash);
   ///
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
@@ -235,7 +203,7 @@ abstract class Hash {
   /// final bytesToHash = utf8.encode('hello world');
   ///
   /// // Compute hash of bytesToHash with sha-256
-  /// List<int> hash = await Hash.sha256.digest(bytesToHash);
+  /// List<int> hash = await Hash.sha256.digestBytes(bytesToHash);
   ///
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
@@ -255,7 +223,7 @@ abstract class Hash {
   /// final bytesToHash = utf8.encode('hello world');
   ///
   /// // Compute hash of bytesToHash with sha-384
-  /// List<int> hash = await Hash.sha384.digest(bytesToHash);
+  /// List<int> hash = await Hash.sha384.digestBytes(bytesToHash);
   ///
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
@@ -275,7 +243,7 @@ abstract class Hash {
   /// final bytesToHash = utf8.encode('hello world');
   ///
   /// // Compute hash of bytesToHash with sha-512
-  /// List<int> hash = await Hash.sha512.digest(bytesToHash);
+  /// List<int> hash = await Hash.sha512.digestBytes(bytesToHash);
   ///
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
@@ -398,7 +366,7 @@ abstract class HmacSecretKey {
   /// String stringToSign = 'example-string-to-signed';
   ///
   /// // Compute signature.
-  /// final signature = await key.sign(utf8.encode(stringToSign));
+  /// final signature = await key.signBytes(utf8.encode(stringToSign));
   ///
   /// // Print as base64
   /// print(base64.encode(signature));
@@ -407,9 +375,9 @@ abstract class HmacSecretKey {
   /// **Warning**, this method should **not** be used for **validating**
   /// other signatures by generating a new signature and then comparing the two.
   /// While this technically works, you application might be vulnerable to
-  /// timing attacks. To validate signatures use [verify()], this method
+  /// timing attacks. To validate signatures use [verifyBytes()], this method
   /// computes a signature and does a fixed-time comparison.
-  Future<Uint8List> sign(List<int> data);
+  Future<Uint8List> signBytes(List<int> data);
 
   /// Compute an HMAC signature of given [data] stream.
   ///
@@ -445,11 +413,11 @@ abstract class HmacSecretKey {
   /// Verify the HMAC [signature] of given [data].
   ///
   /// This computes an HMAC signature of the [data] in the same manner
-  /// as [sign()] and conducts a fixed-time comparison against [signature],
+  /// as [signBytes()] and conducts a fixed-time comparison against [signature],
   /// returning `true` if the two signatures are equal.
   ///
   /// Notice that it's possible to compute a signature for [data] using
-  /// [sign()] and then simply compare the two signatures. This is strongly
+  /// [signBytes()] and then simply compare the two signatures. This is strongly
   /// discouraged as it is easy to introduce side-channels opening your
   /// application to timing attacks. Use this method to verify signatures.
   ///
@@ -464,22 +432,25 @@ abstract class HmacSecretKey {
   /// String stringToSign = 'example-string-to-signed';
   ///
   /// // Compute signature.
-  /// final signature = await key.sign(utf8.encode(stringToSign));
+  /// final signature = await key.signBytes(utf8.encode(stringToSign));
   ///
   /// // Verify signature.
-  /// final result = await key.verify(signature, utf8.encode(stringToSign));
+  /// final result = await key.verifyBytes(
+  ///   signature,
+  ///   utf8.encode(stringToSign),
+  /// );
   /// assert(result == true, 'this signature should be valid');
   /// ```
-  Future<bool> verify(List<int> signature, List<int> data);
+  Future<bool> verifyBytes(List<int> signature, List<int> data);
 
   /// Verify the HMAC [signature] of given [data] stream.
   ///
   /// This computes an HMAC signature of the [data] stream in the same manner
-  /// as [sign()] and conducts a fixed-time comparison against [signature],
+  /// as [signBytes()] and conducts a fixed-time comparison against [signature],
   /// returning `true` if the two signatures are equal.
   ///
   /// Notice that it's possible to compute a signature for [data] using
-  /// [sign()] and then simply compare the two signatures. This is strongly
+  /// [signBytes()] and then simply compare the two signatures. This is strongly
   /// discouraged as it is easy to introduce side-channels opening your
   /// application to timing attacks. Use this method to verify signatures.
   ///
@@ -494,12 +465,12 @@ abstract class HmacSecretKey {
   /// String stringToSign = 'example-string-to-signed';
   ///
   /// // Compute signature.
-  /// final signature = await key.sign(Stream.fromIterable([
+  /// final signature = await key.signBytes(Stream.fromIterable([
   ///   utf8.encode(stringToSign),
   /// ]));
   ///
   /// // Verify signature.
-  /// final result = await key.verify(signature, Stream.fromIterable([
+  /// final result = await key.verifyStream(signature, Stream.fromIterable([
   ///   utf8.encode(stringToSign),
   /// ]));
   /// assert(result == true, 'this signature should be valid');
@@ -636,8 +607,8 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// // Sign a message for Alice.
   /// final message = 'Hi Alice';
-  /// final signature = await keyPair.privateKey.sign(
-  ///   Stream.fromIterable([utf8.encode(message)]),
+  /// final signature = await keyPair.privateKey.signBytes(
+  ///   utf8.encode(message),
   /// );
   ///
   /// // On the other side of the world, Alice has written down the pemPublicKey
@@ -647,9 +618,9 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///   PemCodec(PemLabel.publicKey).decode(pemPublicKey),
   ///   Hash.sha256,
   /// );
-  /// final isValid = await publicKey.verify(
+  /// final isValid = await publicKey.verifyBytes(
   ///   signature,
-  ///   Stream.fromIterable([utf8.encode(message)]),
+  ///   utf8.encode(message),
   /// );
   /// if (isValid) {
   ///   print('Authentic message from Bob: $message');
@@ -697,11 +668,11 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// // Create a signature for UTF-8 encoded message
   /// final message = 'hello world';
-  /// final signature = await privateKey.sign(utf8.encode(message));
+  /// final signature = await privateKey.signBytes(utf8.encode(message));
   ///
   /// print('signature: ${base64.encode(signature)}');
   /// ```
-  Future<Uint8List> sign(List<int> data);
+  Future<Uint8List> signBytes(List<int> data);
 
   /// Sign [data] with this RSASSA-PKCS1-v1_5 private key.
   ///
@@ -866,10 +837,10 @@ abstract class RsassaPkcs1V15PublicKey {
   ///
   /// // Using privateKey Bob can sign a message for Alice.
   /// final message = 'Hi Alice';
-  /// final signature = await keyPair.privateKey.sign(utf8.encode(message));
+  /// final signature = await keyPair.privateKey.signBytes(utf8.encode(message));
   ///
   /// // Given publicKey and signature Alice can verify the message from Bob.
-  /// final isValid = await keypair.publicKey.verify(
+  /// final isValid = await keypair.publicKey.verifyBytes(
   ///   signature,
   ///   utf8.encode(message),
   /// );
@@ -877,7 +848,7 @@ abstract class RsassaPkcs1V15PublicKey {
   ///   print('Authentic message from Bob: $message');
   /// }
   /// ```
-  Future<bool> verify(List<int> signature, List<int> data);
+  Future<bool> verifyBytes(List<int> signature, List<int> data);
 
   /// Verify [signature] of [data] using this RSASSA-PKCS1-v1_5 public key.
   ///
@@ -899,7 +870,7 @@ abstract class RsassaPkcs1V15PublicKey {
   ///
   /// // Using privateKey Bob can sign a message for Alice.
   /// final message = 'Hi Alice';
-  /// final signature = await keyPair.privateKey.sign(utf8.encode(message));
+  /// final signature = await keyPair.privateKey.signBytes(utf8.encode(message));
   ///
   /// // Given publicKey and signature Alice can verify the message from Bob.
   /// final isValid = await keypair.publicKey.verifyStream(
@@ -985,7 +956,7 @@ abstract class RsaPssPrivateKey {
     throw UnimplementedError('TODO: implement RSA-PSS');
   }
 
-  Future<Uint8List> sign(List<int> data, int saltLength);
+  Future<Uint8List> signBytes(List<int> data, int saltLength);
   Future<Uint8List> signStream(Stream<List<int>> data, int saltLength);
 
   Future<Uint8List> exportPkcs8Key();
@@ -1016,7 +987,7 @@ abstract class RsaPssPublicKey {
     throw UnimplementedError('TODO: implement RSA-PSS');
   }
 
-  Future<bool> verify(
+  Future<bool> verifyBytes(
     List<int> signature,
     List<int> data,
     int saltLength,
@@ -1073,7 +1044,7 @@ abstract class EcdsaPrivateKey {
     throw UnimplementedError('TODO: implement ECDSA');
   }
 
-  Future<Uint8List> sign(List<int> data, Hash hash);
+  Future<Uint8List> signBytes(List<int> data, Hash hash);
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash);
 
   Future<Uint8List> exportPkcs8Key();
@@ -1114,7 +1085,7 @@ abstract class EcdsaPublicKey {
     throw UnimplementedError('TODO: implement ECDSA');
   }
 
-  Future<bool> verify(
+  Future<bool> verifyBytes(
     List<int> signature,
     List<int> data,
     Hash hash,
@@ -1168,7 +1139,7 @@ abstract class RsaOaepPrivateKey {
     throw UnimplementedError('TODO: implement RSA-OAEP');
   }
 
-  Future<Uint8List> decrypt(List<int> data, {List<int> label});
+  Future<Uint8List> decryptBytes(List<int> data, {List<int> label});
 
   Stream<Uint8List> decryptStream(Stream<List<int>> data, {List<int> label});
 
@@ -1200,7 +1171,7 @@ abstract class RsaOaepPublicKey {
     throw UnimplementedError('TODO: implement RSA-OAEP');
   }
 
-  Future<Uint8List> encrypt(List<int> data, {List<int> label});
+  Future<Uint8List> encryptBytes(List<int> data, {List<int> label});
 
   Stream<Uint8List> encryptStream(Stream<List<int>> data, {List<int> label});
 
@@ -1230,7 +1201,7 @@ abstract class AesCtrSecretKey {
     throw UnimplementedError('TODO: implement AES-CTR');
   }
 
-  Future<Uint8List> encrypt(
+  Future<Uint8List> encryptBytes(
     List<int> data,
     List<int> counter,
     int length,
@@ -1242,7 +1213,7 @@ abstract class AesCtrSecretKey {
     int length,
   );
 
-  Future<Uint8List> decrypt(
+  Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> counter,
     int length,
@@ -1280,11 +1251,11 @@ abstract class AesCbcSecretKey {
     throw UnimplementedError('TODO: implement AES-CBC');
   }
 
-  Future<Uint8List> encrypt(List<int> data, List<int> iv);
+  Future<Uint8List> encryptBytes(List<int> data, List<int> iv);
 
   Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv);
 
-  Future<Uint8List> decrypt(List<int> data, List<int> iv);
+  Future<Uint8List> decryptBytes(List<int> data, List<int> iv);
 
   Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv);
 
@@ -1314,7 +1285,7 @@ abstract class AesGcmSecretKey {
     throw UnimplementedError('TODO: implement AES-GCM');
   }
 
-  Future<Uint8List> encrypt(
+  Future<Uint8List> encryptBytes(
     List<int> data,
     List<int> iv, {
     List<int> additionalData,
@@ -1328,7 +1299,7 @@ abstract class AesGcmSecretKey {
     int tagLength = 128,
   });
 
-  Future<Uint8List> decrypt(
+  Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> iv, {
     List<int> additionalData,
