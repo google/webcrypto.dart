@@ -3,11 +3,11 @@
 @JS()
 library common;
 
-import '../webcrypto.dart' show HashAlgorithm, KeyUsage;
 import 'dart:async';
 import 'package:js/js.dart';
 import 'dart:typed_data';
 import 'dart:html' show DomException;
+export 'dart:html' show DomException;
 
 /// Minimal interface for promises as returned from the browsers WebCrypto API.
 @JS('Promise')
@@ -27,87 +27,6 @@ Future<T> promiseAsFuture<T>(Promise<T> promise) {
     c.completeError(e);
   })));
   return c.future;
-}
-
-/// Convert [HashAlgorithm] to Web Cryptography compatible string.
-String hashAlgorithmToString(HashAlgorithm hash) {
-  ArgumentError.checkNotNull(hash, 'hash');
-
-  switch (hash) {
-    case HashAlgorithm.sha1:
-      return 'SHA-1';
-    case HashAlgorithm.sha256:
-      return 'SHA-256';
-    case HashAlgorithm.sha384:
-      return 'SHA-384';
-    case HashAlgorithm.sha512:
-      return 'SHA-512';
-  }
-  // This is an invariant we want to check in production.
-  throw AssertionError(
-    'HashAlgorithm value with index: ${hash.index} is unknown',
-  );
-}
-
-/// Convert [List<KeyUsage>] to list of Web Cryptography compatible strings.
-List<String> keyUsagesToStrings(List<KeyUsage> usages) {
-  ArgumentError.checkNotNull(usages, 'usages');
-
-  return usages.map((usage) {
-    switch (usage) {
-      case KeyUsage.encrypt:
-        return 'encrypt';
-      case KeyUsage.decrypt:
-        return 'decrypt';
-      case KeyUsage.sign:
-        return 'sign';
-      case KeyUsage.verify:
-        return 'verify';
-      // case KeyUsage.deriveKey:
-      //   return 'deriveKey';
-      case KeyUsage.deriveBits:
-        return 'deriveBits';
-      // case KeyUsage.wrapKey:
-      //   return 'wrapKey';
-      // case KeyUsage.unwrapKey:
-      //   return 'unwrapKey';
-    }
-    // This is an invariant we want to check in production.
-    throw AssertionError(
-      'KeyUsage value with index: ${usage.index} is unknown',
-    );
-  }).toList();
-}
-
-/// Convert [List<String>] to list of [KeyUsage] ignoring unknown values.
-List<KeyUsage> stringsToKeyUsages(List<String> usages) {
-  ArgumentError.checkNotNull(usages, 'usages');
-
-  return usages
-      .map((usage) {
-        switch (usage) {
-          case 'encrypt':
-            return KeyUsage.encrypt;
-          case 'decrypt':
-            return KeyUsage.decrypt;
-          case 'sign':
-            return KeyUsage.sign;
-          case 'verify':
-            return KeyUsage.verify;
-          // case 'deriveKey':
-          //   return KeyUsage.deriveKey;
-          case 'deriveBits':
-            return KeyUsage.deriveBits;
-          // case 'wrapKey':
-          //   return KeyUsage.wrapKey;
-          // case 'unwrapKey':
-          //   return KeyUsage.unwrapKey;
-        }
-        // Ignore unknown values, we'll filter these out later
-        return null;
-      })
-      .where((s) => s != null)
-      .toList();
 }
 
 /// Convert [BigInt] to [Uint8List] formatted as [BigInteger][1] following
@@ -508,7 +427,13 @@ external Promise<bool> verify(
   TypedData data,
 );
 
+@JS('crypto.subtle.deriveBits')
+external Promise<ByteBuffer> deriveBits(
+  Algorithm algorithm,
+  CryptoKey key,
+  int length,
+);
+
 // TODO: crypto.subtle.unwrapKey
 // TODO: crypto.subtle.wrapKey
 // TODO: crypto.subtle.deriveKey
-// TODO: crypto.subtle.unwrapBits
