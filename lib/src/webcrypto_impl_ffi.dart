@@ -281,8 +281,9 @@ abstract class _Hash implements Hash {
       _checkOp(ssl.EVP_DigestInit(ctx, MD) == 1);
       await _streamToUpdate(data, ctx, ssl.EVP_DigestUpdate);
       final size = ssl.EVP_MD_CTX_size(ctx);
+      _checkOp(size > 0);
       return _withOutPointer(size, (ffi.Pointer<ssl.Bytes> p) {
-        _checkOp(ssl.EVP_DigestFinal(ctx, p, null) == 1);
+        _checkOp(ssl.EVP_DigestFinal(ctx, p, ffi.nullptr) == 1);
       });
     });
   }
@@ -387,7 +388,8 @@ class _HmacSecretKey implements HmacSecretKey {
     _checkOp(ctx.address != 0, fallback: 'allocation error');
     try {
       _withDataAsPointer(_keyData, (ffi.Pointer<ssl.Data> p) {
-        _checkOp(ssl.HMAC_Init_ex(ctx, p, _keyData.length, _hash, null) == 1);
+        final n = _keyData.length;
+        _checkOp(ssl.HMAC_Init_ex(ctx, p, n, _hash, ffi.nullptr) == 1);
       });
       await _streamToUpdate(data, ctx, ssl.HMAC_Update);
 
@@ -499,7 +501,8 @@ Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
     _checkOp(privRSA.address != 0, fallback: 'allocation failure');
     _withBIGNUM((e) {
       _checkOp(ssl.BN_set_word(e, publicExponent.toInt()) == 1);
-      _checkOp(ssl.RSA_generate_key_ex(privRSA, modulusLength, e, null) == 1);
+      _checkOp(
+          ssl.RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr) == 1);
     });
 
     // Copy out the public RSA key
@@ -590,11 +593,13 @@ class _RsassaPkcs1V15PrivateKey
     ArgumentError.checkNotNull(data, 'data');
 
     return _withEVP_MD_CTX((ctx) async {
-      _checkOp(ssl.EVP_DigestSignInit(ctx, null, _hash, null, _key) == 1);
+      _checkOp(
+          ssl.EVP_DigestSignInit(ctx, ffi.nullptr, _hash, ffi.nullptr, _key) ==
+              1);
       await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
       return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
         len.value = 0;
-        _checkOp(ssl.EVP_DigestSignFinal(ctx, null, len) == 1);
+        _checkOp(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len) == 1);
         return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> p) {
           _checkOp(ssl.EVP_DigestSignFinal(ctx, p, len) == 1);
         }).sublist(0, len.value);
@@ -641,7 +646,9 @@ class _RsassaPkcs1V15PublicKey
     ArgumentError.checkNotNull(data, 'data');
 
     return _withEVP_MD_CTX((ctx) async {
-      _checkOp(ssl.EVP_DigestVerifyInit(ctx, null, _hash, null, _key) == 1);
+      _checkOp(ssl.EVP_DigestVerifyInit(
+              ctx, ffi.nullptr, _hash, ffi.nullptr, _key) ==
+          1);
       await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
       return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
         final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);

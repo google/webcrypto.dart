@@ -62,7 +62,8 @@ library webcrypto;
 import 'dart:async';
 import 'dart:typed_data';
 import 'src/webcrypto_impl_stub.dart'
-    if (dart.library.html) 'src_old/webcrypto_impl_browser.dart' as impl;
+    if (dart.library.ffi) 'src/webcrypto_impl_ffi.dart'
+    if (dart.library.js) 'src/webcrypto_impl_js.dart' as impl;
 
 /// Thrown when an operation failed for an operation-specific reason.
 abstract class OperationError extends Error {

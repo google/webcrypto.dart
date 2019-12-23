@@ -182,7 +182,7 @@ class JsonWebKey {
     String k,
   });
 
-  factory JsonWebKey.fromJson(Map<String, Object> json) {
+  static JsonWebKey fromJson(Map<String, Object> json) {
     const stringKeys = [
       'kty',
       'use',
@@ -242,65 +242,66 @@ class JsonWebKey {
     );
   }
 
-  Map<String, Object> toJson() {
+  static Map<String, Object> toJson(JsonWebKey k) {
+    assert(k != null);
     final json = <String, Object>{};
 
     // Set properties from all the string keys
-    if (this.kty != null) {
-      json['kty'] = this.kty;
+    if (k.kty != null) {
+      json['kty'] = k.kty;
     }
-    if (this.use != null) {
-      json['use'] = this.use;
+    if (k.use != null) {
+      json['use'] = k.use;
     }
-    if (this.alg != null) {
-      json['alg'] = this.alg;
+    if (k.alg != null) {
+      json['alg'] = k.alg;
     }
-    if (this.crv != null) {
-      json['crv'] = this.crv;
+    if (k.crv != null) {
+      json['crv'] = k.crv;
     }
-    if (this.x != null) {
-      json['x'] = this.x;
+    if (k.x != null) {
+      json['x'] = k.x;
     }
-    if (this.y != null) {
-      json['y'] = this.y;
+    if (k.y != null) {
+      json['y'] = k.y;
     }
-    if (this.d != null) {
-      json['d'] = this.d;
+    if (k.d != null) {
+      json['d'] = k.d;
     }
-    if (this.n != null) {
-      json['n'] = this.n;
+    if (k.n != null) {
+      json['n'] = k.n;
     }
-    if (this.e != null) {
-      json['e'] = this.e;
+    if (k.e != null) {
+      json['e'] = k.e;
     }
-    if (this.p != null) {
-      json['p'] = this.p;
+    if (k.p != null) {
+      json['p'] = k.p;
     }
-    if (this.q != null) {
-      json['q'] = this.q;
+    if (k.q != null) {
+      json['q'] = k.q;
     }
-    if (this.dp != null) {
-      json['dp'] = this.dp;
+    if (k.dp != null) {
+      json['dp'] = k.dp;
     }
-    if (this.dq != null) {
-      json['dq'] = this.dq;
+    if (k.dq != null) {
+      json['dq'] = k.dq;
     }
-    if (this.qi != null) {
-      json['qi'] = this.qi;
+    if (k.qi != null) {
+      json['qi'] = k.qi;
     }
-    if (this.k != null) {
-      json['k'] = this.k;
+    if (k.k != null) {
+      json['k'] = k.k;
     }
 
     // Set non-string properties
-    if (this.key_ops != null) {
-      json['key_ops'] = this.key_ops;
+    if (k.key_ops != null) {
+      json['key_ops'] = k.key_ops;
     }
-    if (this.ext != null) {
-      json['ext'] = this.ext;
+    if (k.ext != null) {
+      json['ext'] = k.ext;
     }
-    if (this.oth != null) {
-      json['oth'] = this.oth.map((e) => e.toJson());
+    if (k.oth != null) {
+      json['oth'] = k.oth.map(RsaOtherPrimesInfo.toJson);
     }
 
     return json;
@@ -326,7 +327,7 @@ class RsaOtherPrimesInfo {
     String t,
   });
 
-  factory RsaOtherPrimesInfo.fromJson(Map<String, Object> json) {
+  static RsaOtherPrimesInfo fromJson(Map<String, Object> json) {
     for (final k in ['r', 'd', 't']) {
       if (!(json[k] is String)) {
         throw ArgumentError('"oth" entries in a JWK must contain "$k"');
@@ -339,11 +340,12 @@ class RsaOtherPrimesInfo {
     );
   }
 
-  Map<String, Object> toJson() {
+  static Map<String, Object> toJson(RsaOtherPrimesInfo info) {
+    assert(info != null);
     return <String, Object>{
-      'r': r,
-      'd': d,
-      't': t,
+      'r': info.r,
+      'd': info.d,
+      't': info.t,
     };
   }
 }
