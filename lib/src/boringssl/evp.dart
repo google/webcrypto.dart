@@ -27,6 +27,15 @@ final EVP_PKEY_free = lookup('EVP_PKEY_free')
     .lookupFunc<Void Function(Pointer<EVP_PKEY>)>()
     .asFunction<void Function(Pointer<EVP_PKEY>)>();
 
+/// EVP_PKEY_id returns the type of pkey, which is one of the EVP_PKEY_* values.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_id(const EVP_PKEY *pkey);
+/// ```
+final EVP_PKEY_id = lookup('EVP_PKEY_id')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY>)>()
+    .asFunction<int Function(Pointer<EVP_PKEY>)>();
+
 //---------------------- Getting and setting concrete public key types
 
 /// The following functions get and set the underlying public key in an EVP_PKEY
@@ -63,6 +72,46 @@ final EVP_PKEY_set1_RSA = lookup('EVP_PKEY_set1_RSA')
 final EVP_PKEY_get0_RSA = lookup('EVP_PKEY_get0_RSA')
     .lookupFunc<Pointer<RSA> Function(Pointer<EVP_PKEY>)>()
     .asFunction<Pointer<RSA> Function(Pointer<EVP_PKEY>)>();
+
+/// Constants that can be returned from [EVP_PKEY_id] or set with
+/// [EVP_PKEY_set_type].
+///
+/// ```c
+/// // from evp.h and nid.h
+/// #define EVP_PKEY_NONE NID_undef
+/// #define NID_undef 0
+///
+/// #define EVP_PKEY_RSA NID_rsaEncryption
+/// #define NID_rsaEncryption 6
+///
+/// #define EVP_PKEY_RSA_PSS NID_rsassaPss
+/// #define NID_rsassaPss 912
+///
+/// #define EVP_PKEY_DSA NID_dsa
+/// #define NID_dsa 116
+///
+/// #define EVP_PKEY_EC NID_X9_62_id_ecPublicKey
+/// #define NID_X9_62_id_ecPublicKey 408
+///
+/// #define EVP_PKEY_ED25519 NID_ED25519
+/// #define NID_ED25519 949
+/// ```
+const int EVP_PKEY_RSA = 6,
+    EVP_PKEY_RSA_PSS = 912,
+    EVP_PKEY_DSA = 116,
+    EVP_PKEY_EC = 408,
+    EVP_PKEY_ED25519 = 949;
+
+/// EVP_PKEY_set_type sets the type of pkey to type. It returns one if
+/// successful or zero if the type argument is not one of the EVP_PKEY_* values.
+/// If pkey is NULL, it simply reports whether the type is known.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_set_type(EVP_PKEY *pkey, int type);
+/// ```
+final EVP_PKEY_set_type = lookup('EVP_PKEY_set_type')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY>, Int32)>()
+    .asFunction<int Function(Pointer<EVP_PKEY>, int)>();
 
 //---------------------- ASN.1 functions
 
@@ -276,3 +325,44 @@ final EVP_DigestVerifyUpdate = lookup('EVP_DigestVerifyUpdate')
 final EVP_DigestVerifyFinal = lookup('EVP_DigestVerifyFinal')
     .lookupFunc<Int32 Function(Pointer<EVP_MD_CTX>, Pointer<Bytes>, IntPtr)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>, Pointer<Bytes>, int)>();
+
+//---------------------- RSA specific control functions
+
+/// EVP_PKEY_CTX_set_rsa_padding sets the padding type to use. It should be one
+/// of the RSA_*_PADDING values. Returns one on success or zero on error.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_CTX_set_rsa_padding(EVP_PKEY_CTX *ctx, int padding);
+/// ```
+final EVP_PKEY_CTX_set_rsa_padding = lookup('EVP_PKEY_CTX_set_rsa_padding')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Int32)>()
+    .asFunction<int Function(Pointer<EVP_PKEY_CTX>, int)>();
+
+/// EVP_PKEY_CTX_set_rsa_pss_saltlen sets the length of the salt in a PSS-padded
+/// signature. A value of -1 cause the salt to be the same length as the digest
+/// in the signature. A value of -2 causes the salt to be the maximum length
+/// that will fit when signing and recovered from the signature when verifying.
+/// Otherwise the value gives the size of the salt in bytes.
+///
+/// If unsure, use -1.
+///
+/// Returns one on success or zero on error.
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_CTX_set_rsa_pss_saltlen(EVP_PKEY_CTX *ctx,
+///                                                     int salt_len);
+/// ```
+final EVP_PKEY_CTX_set_rsa_pss_saltlen =
+    lookup('EVP_PKEY_CTX_set_rsa_pss_saltlen')
+        .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Int32)>()
+        .asFunction<int Function(Pointer<EVP_PKEY_CTX>, int)>();
+
+/// EVP_PKEY_CTX_set_rsa_mgf1_md sets md as the digest used in MGF1. Returns one
+/// on success or zero on error.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_CTX_set_rsa_mgf1_md(EVP_PKEY_CTX *ctx,
+///                                                 const EVP_MD *md);
+/// ```
+final EVP_PKEY_CTX_set_rsa_mgf1_md = lookup('EVP_PKEY_CTX_set_rsa_mgf1_md')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>()
+    .asFunction<int Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>();

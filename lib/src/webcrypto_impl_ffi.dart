@@ -17,11 +17,7 @@ final _notImplemented = throw UnimplementedError('Not implemented');
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
 /// and if nothing is available there we use [fallback].
-void _checkOp(
-  bool condition, {
-  String message,
-  String fallback,
-}) {
+void _checkOp(bool condition, {String message, String fallback}) {
   if (!condition) {
     // Always extract the error to ensure we clear the error queue.
     final err = _extractError();
@@ -30,15 +26,18 @@ void _checkOp(
   }
 }
 
+/// Throw [OperationError] if [retval] is not `1`.
+///
+/// If [message] is given we use that, otherwise we use error from BoringSSL,
+/// and if nothing is available there we use [fallback].
+void _checkOpIsOne(int retval, {String message, String fallback}) =>
+    _checkOp(retval == 1, message: message, fallback: fallback);
+
 /// Throw [FormatException] if [condition] is `false`.
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
 /// and if nothing is available there we use [fallback].
-void _checkData(
-  bool condition, {
-  String message,
-  String fallback,
-}) {
+void _checkData(bool condition, {String message, String fallback}) {
   if (!condition) {
     // Always extract the error to ensure we clear the error queue.
     final err = _extractError();
@@ -46,6 +45,13 @@ void _checkData(
     throw FormatException(message);
   }
 }
+
+/// Throw [FormatException] if [retval] is `1`.
+///
+/// If [message] is given we use that, otherwise we use error from BoringSSL,
+/// and if nothing is available there we use [fallback].
+void _checkDataIsOne(int retval, {String message, String fallback}) =>
+    _checkData(retval == 1, message: message, fallback: fallback);
 
 /// Extract latest error on this thread as [String] and clear the error queue
 /// for this thread.
@@ -76,9 +82,25 @@ R _withAllocation<T extends ffi.NativeType, R>(
   int count,
   R Function(ffi.Pointer<T>) fn,
 ) {
+  assert(!(R is Future), 'avoid async blocks');
   final p = ffi.allocate<T>(count: count);
   try {
     return fn(p);
+  } finally {
+    ffi.free(p);
+  }
+}
+
+/// Invoke [fn] with [ffi.Pointer<T>] of size count and release the pointer
+/// when future returned by [fn] completes.
+Future<R> _withAllocationAsync<T extends ffi.NativeType, R>(
+  int count,
+  FutureOr<R> Function(ffi.Pointer<T>) fn,
+) async {
+  assert(!(R is Future), 'avoid nested async blocks');
+  final p = ffi.allocate<T>(count: count);
+  try {
+    return await fn(p);
   } finally {
     ffi.free(p);
   }
@@ -128,6 +150,13 @@ Future<R> _withEVP_MD_CTX<R>(
     ssl.EVP_MD_CTX_free(ctx);
   }
 }
+
+/// Invoke [fn] with an [ffi.Pointer<ffi.Pointer<ssl.EVP_PKEY_CTX>>] that is
+/// free'd when [fn] returns.
+Future<R> _withPEVP_PKEY_CTX<R>(
+  FutureOr<R> Function(ffi.Pointer<ffi.Pointer<ssl.EVP_PKEY_CTX>> pctx) fn,
+) =>
+    _withAllocationAsync(1, fn);
 
 /// Stream bytes from [source] to [update] with [ctx], useful for streaming
 /// algorithms. Notice that chunk size from [data] may be altered.
@@ -451,6 +480,9 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
   _checkData(key.address != 0, fallback: 'unable to parse key');
 
   try {
+    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
+        message: 'key is not an RSA key');
+
     final rsa = ssl.EVP_PKEY_get0_RSA(key);
     _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
     _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
@@ -551,6 +583,9 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey(
   _checkData(key.address != 0, fallback: 'unable to parse key');
 
   try {
+    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
+        message: 'key is not an RSA key');
+
     final rsa = ssl.EVP_PKEY_get0_RSA(key);
     _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
     _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
@@ -593,16 +628,21 @@ class _RsassaPkcs1V15PrivateKey
     ArgumentError.checkNotNull(data, 'data');
 
     return _withEVP_MD_CTX((ctx) async {
-      _checkOp(
-          ssl.EVP_DigestSignInit(ctx, ffi.nullptr, _hash, ffi.nullptr, _key) ==
-              1);
-      await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-      return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
-        len.value = 0;
-        _checkOp(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len) == 1);
-        return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> p) {
-          _checkOp(ssl.EVP_DigestSignFinal(ctx, p, len) == 1);
-        }).sublist(0, len.value);
+      return await _withPEVP_PKEY_CTX((pctx) async {
+        _checkOpIsOne(
+          ssl.EVP_DigestSignInit(ctx, pctx, _hash, ffi.nullptr, _key),
+        );
+        _checkOpIsOne(
+          ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, ssl.RSA_PKCS1_PADDING),
+        );
+        await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+        return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
+          len.value = 0;
+          _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
+          return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> p) {
+            _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
+          }).sublist(0, len.value);
+        });
       });
     });
   }
@@ -646,13 +686,18 @@ class _RsassaPkcs1V15PublicKey
     ArgumentError.checkNotNull(data, 'data');
 
     return _withEVP_MD_CTX((ctx) async {
-      _checkOp(ssl.EVP_DigestVerifyInit(
-              ctx, ffi.nullptr, _hash, ffi.nullptr, _key) ==
-          1);
-      await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
-      return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
-        final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
-        return result == 1;
+      return _withPEVP_PKEY_CTX((pctx) async {
+        _checkOpIsOne(
+          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash, ffi.nullptr, _key),
+        );
+        _checkOpIsOne(
+          ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, ssl.RSA_PKCS1_PADDING),
+        );
+        await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+        return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
+          final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
+          return result == 1;
+        });
       });
     });
   }
@@ -675,8 +720,25 @@ class _RsassaPkcs1V15PublicKey
 Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
+  _checkData(key.address != 0, fallback: 'unable to parse key');
+
+  try {
+    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
+        message: 'key is not an RSA key');
+
+    final rsa = ssl.EVP_PKEY_get0_RSA(key);
+    _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
+    _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
+
+    return _RsaPssPrivateKey(key, _Hash.fromHash(hash).MD);
+  } catch (_) {
+    // We only free key if an exception/error was thrown
+    ssl.EVP_PKEY_free(key);
+    rethrow;
+  }
+}
 
 Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
@@ -688,20 +750,249 @@ Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Sanity check for the modulusLength
+  if (modulusLength < 256 || modulusLength > 16384) {
+    throw UnsupportedError(
+      'modulusLength must between 256 and 16k, $modulusLength is not supported',
+    );
+  }
+  if ((modulusLength % 8) != 0) {
+    throw UnsupportedError(
+        'modulusLength: $modulusLength is not a multiple of 8');
+  }
+
+  // Limit publicExponent whitelist as in chromium:
+  // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
+  if (publicExponent != BigInt.from(3) &&
+      publicExponent != BigInt.from(65537)) {
+    throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
+  }
+
+  ffi.Pointer<ssl.RSA> privRSA, pubRSA;
+  ffi.Pointer<ssl.EVP_PKEY> privKey, pubKey;
+  try {
+    // Generate private RSA key
+    privRSA = ssl.RSA_new();
+    _checkOp(privRSA.address != 0, fallback: 'allocation failure');
+    _withBIGNUM((e) {
+      _checkOp(ssl.BN_set_word(e, publicExponent.toInt()) == 1);
+      _checkOp(
+          ssl.RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr) == 1);
+    });
+
+    // Copy out the public RSA key
+    final pubRSA = ssl.RSAPublicKey_dup(privRSA);
+    _checkOp(pubRSA.address != 0);
+
+    // Create private key
+    privKey = ssl.EVP_PKEY_new();
+    _checkOp(privKey.address != 0, fallback: 'allocation failure');
+    _checkOp(ssl.EVP_PKEY_set1_RSA(privKey, privRSA) == 1);
+
+    // Create public key
+    pubKey = ssl.EVP_PKEY_new();
+    _checkOp(pubKey.address != 0, fallback: 'allocation failure');
+    _checkOp(ssl.EVP_PKEY_set1_RSA(pubKey, pubRSA) == 1);
+
+    return _KeyPair(
+      privateKey: _RsaPssPrivateKey(privKey, _Hash.fromHash(hash).MD),
+      publicKey: _RsaPssPublicKey(pubKey, _Hash.fromHash(hash).MD),
+    );
+  } catch (_) {
+    // Free privKey/pubKey on exception
+    if (privKey != null) {
+      ssl.EVP_PKEY_free(privKey);
+    }
+    if (pubKey != null) {
+      ssl.EVP_PKEY_free(pubKey);
+    }
+    rethrow;
+  } finally {
+    // Always free RSA keys, we create a new reference with set1 method
+    if (privRSA != null) {
+      ssl.RSA_free(privRSA);
+    }
+    if (pubRSA != null) {
+      ssl.RSA_free(pubRSA);
+    }
+  }
+}
 
 Future<RsaPssPublicKey> rsaPssPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
+  _checkData(key.address != 0, fallback: 'unable to parse key');
+
+  try {
+    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
+        message: 'key is not an RSA key');
+
+    final rsa = ssl.EVP_PKEY_get0_RSA(key);
+    _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
+    _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
+
+    return _RsaPssPublicKey(key, _Hash.fromHash(hash).MD);
+  } catch (_) {
+    // We only free key if an exception/error was thrown
+    ssl.EVP_PKEY_free(key);
+    rethrow;
+  }
+}
 
 Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) =>
     throw _notImplemented;
+
+class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
+  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<ssl.EVP_MD> _hash;
+
+  _RsaPssPrivateKey(this._key, this._hash);
+
+  @override
+  void _finalize() {
+    ssl.EVP_PKEY_free(_key);
+  }
+
+  @override
+  Future<Uint8List> signBytes(List<int> data, int saltLength) {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(saltLength, 'saltLength');
+    return signStream(Stream.value(data), saltLength);
+  }
+
+  @override
+  Future<Uint8List> signStream(Stream<List<int>> data, int saltLength) {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(saltLength, 'saltLength');
+    if (saltLength <= 0) {
+      throw ArgumentError.value(
+        saltLength,
+        'saltLength',
+        'must be a positive integer',
+      );
+    }
+
+    return _withEVP_MD_CTX((ctx) async {
+      return await _withPEVP_PKEY_CTX((pctx) async {
+        _checkOpIsOne(
+          ssl.EVP_DigestSignInit(ctx, pctx, _hash, ffi.nullptr, _key),
+        );
+        _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
+          pctx.value,
+          ssl.RSA_PKCS1_PSS_PADDING,
+        ));
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(
+          pctx.value,
+          saltLength,
+        ));
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash));
+        await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+        return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
+          len.value = 0;
+          _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
+          return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> p) {
+            _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
+          }).sublist(0, len.value);
+        });
+      });
+    });
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportPkcs8Key() async {
+    return _withOutCBB((cbb) {
+      _checkOp(ssl.EVP_marshal_private_key(cbb, _key) == 1);
+    });
+  }
+}
+
+class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
+  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<ssl.EVP_MD> _hash;
+
+  _RsaPssPublicKey(this._key, this._hash);
+
+  @override
+  void _finalize() {
+    ssl.EVP_PKEY_free(_key);
+  }
+
+  @override
+  Future<bool> verifyBytes(
+    List<int> signature,
+    List<int> data,
+    int saltLength,
+  ) {
+    ArgumentError.checkNotNull(signature, 'signature');
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(saltLength, 'saltLength');
+    return verifyStream(signature, Stream.value(data), saltLength);
+  }
+
+  @override
+  Future<bool> verifyStream(
+    List<int> signature,
+    Stream<List<int>> data,
+    int saltLength,
+  ) {
+    ArgumentError.checkNotNull(signature, 'signature');
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(saltLength, 'saltLength');
+
+    if (saltLength <= 0) {
+      throw ArgumentError.value(
+        saltLength,
+        'saltLength',
+        'must be a positive integer',
+      );
+    }
+
+    return _withEVP_MD_CTX((ctx) async {
+      return _withPEVP_PKEY_CTX((pctx) async {
+        _checkOpIsOne(
+          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash, ffi.nullptr, _key),
+        );
+        _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
+          pctx.value,
+          ssl.RSA_PKCS1_PSS_PADDING,
+        ));
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(
+          pctx.value,
+          saltLength,
+        ));
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash));
+        await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+        return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
+          final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
+          return result == 1;
+        });
+      });
+    });
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportSpkiKey() async {
+    return _withOutCBB((cbb) {
+      _checkOp(ssl.EVP_marshal_public_key(cbb, _key) == 1);
+    });
+  }
+}
 
 //---------------------- ECDSA
 

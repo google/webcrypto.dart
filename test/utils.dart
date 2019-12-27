@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 import 'package:webcrypto/webcrypto.dart';
+import 'package:test/test.dart';
 
 void log(Object value) => print(value);
 
 void check(bool condition, [String message]) {
   if (!condition) {
-    throw AssertionError(message);
+    fail(message);
   }
 }
 

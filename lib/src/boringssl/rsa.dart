@@ -54,6 +54,39 @@ final RSA_generate_key_ex = lookup('RSA_generate_key_ex')
       Pointer<BN_GENCB>,
     )>();
 
+//---------------------- Encryption / Decryption
+
+/// RSA_PKCS1_PADDING denotes PKCS#1 v1.5 padding. When used with encryption,
+/// this is RSAES-PKCS1-v1_5. When used with signing, this is RSASSA-PKCS1-v1_5.
+///
+/// ```c
+/// #define RSA_PKCS1_PADDING 1
+/// ```
+const int RSA_PKCS1_PADDING = 1;
+
+/// RSA_NO_PADDING denotes a raw RSA operation.
+///
+/// ```c
+/// #define RSA_NO_PADDING 3
+/// ```
+const int RSA_NO_PADDING = 3;
+
+/// RSA_PKCS1_OAEP_PADDING denotes the RSAES-OAEP encryption scheme.
+///
+/// ```c
+/// #define RSA_PKCS1_OAEP_PADDING 4
+/// ```
+const int RSA_PKCS1_OAEP_PADDING = 4;
+
+/// RSA_PKCS1_PSS_PADDING denotes the RSASSA-PSS signature scheme. This value
+/// may not be passed into RSA_sign_raw, only EVP_PKEY_CTX_set_rsa_padding.
+/// See also RSA_sign_pss_mgf1 and RSA_verify_pss_mgf1.
+///
+/// ```c
+/// #define RSA_PKCS1_PSS_PADDING 6
+/// ```
+const int RSA_PKCS1_PSS_PADDING = 6;
+
 //---------------------- Utility functions
 
 /// RSA_check_key performs basic validity tests on rsa. It returns one if they

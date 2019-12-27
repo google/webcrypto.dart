@@ -135,7 +135,7 @@ class AsymmetricTestCase {
     );
     check(plaintext != null);
     check(
-      signature != null || generateKeyParams != null,
+      generateKeyParams == null || signature == null,
       'Cannot verify signature for a generated key-pair',
     );
     check(importKeyParams != null);
@@ -255,7 +255,8 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
   }) async {
     check(minPlaintext <= maxPlaintext);
     check(maxPlaintext < plaintextTemplate.length);
-    final name = 'Generated at ${DateTime.now().toIso8601String()}';
+    final ts = DateTime.now().toIso8601String().split('.').first; // drop secs
+    final name = 'generated at $ts';
 
     log('generating key-pair');
     final pair = await generateKeyPair(generateKeyParams);
@@ -281,7 +282,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
     );
 
     T optionalCall<S, T>(T Function(S) fn, S v) => fn != null ? fn(v) : null;
-    return AsymmetricTestCase(
+    final c = AsymmetricTestCase(
       name,
       generateKeyParams: generateKeyParams,
       privateRawKeyData: await optionalCall(exportPrivateRawKey, privateKey),
@@ -298,10 +299,22 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
       importKeyParams: importKeyParams,
       signVerifyParams: signVerifyParams,
     );
+
+    // Log the generated test case. This makes it easy to copy/paste the test
+    // case into test files.
+    log(JsonEncoder.withIndent('  ').convert(c.toJson()));
+
+    return c;
+  }
+
+  void runAll(Iterable<Map<dynamic, dynamic>> cases) {
+    for (final c in cases) {
+      run(AsymmetricTestCase.fromJson(c));
+    }
   }
 
   void run(AsymmetricTestCase c) {
-    group(c.name, () {
+    group('${c.name}:', () {
       test('validate test case', () {
         c._validate();
 
