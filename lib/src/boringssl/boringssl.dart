@@ -1,6 +1,9 @@
 export 'bn.dart';
 export 'bytestring.dart';
 export 'digest.dart';
+export 'ec.dart';
+export 'ecdsa.dart';
+export 'ec_key.dart';
 export 'err.dart';
 export 'evp.dart';
 export 'hmac.dart';

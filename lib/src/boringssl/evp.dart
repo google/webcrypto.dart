@@ -73,6 +73,14 @@ final EVP_PKEY_get0_RSA = lookup('EVP_PKEY_get0_RSA')
     .lookupFunc<Pointer<RSA> Function(Pointer<EVP_PKEY>)>()
     .asFunction<Pointer<RSA> Function(Pointer<EVP_PKEY>)>();
 
+final EVP_PKEY_set1_EC_KEY = lookup('EVP_PKEY_set1_EC_KEY')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY>, Pointer<EC_KEY>)>()
+    .asFunction<int Function(Pointer<EVP_PKEY>, Pointer<EC_KEY>)>();
+
+final EVP_PKEY_get0_EC_KEY = lookup('EVP_PKEY_get0_EC_KEY')
+    .lookupFunc<Pointer<EC_KEY> Function(Pointer<EVP_PKEY>)>()
+    .asFunction<Pointer<EC_KEY> Function(Pointer<EVP_PKEY>)>();
+
 /// Constants that can be returned from [EVP_PKEY_id] or set with
 /// [EVP_PKEY_set_type].
 ///

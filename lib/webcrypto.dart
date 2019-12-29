@@ -1078,6 +1078,10 @@ abstract class EcdsaPrivateKey {
     return impl.ecdsaPrivateKey_generateKey(curve);
   }
 
+  /// TODO: Document that this returns the raw signature format specified
+  ///       in the webcrypto specification. Which is R + S as two raw big endian
+  ///       integers zero padded to fill N bytes. Where N is the number of bytes
+  ///       required to encode the order of the base points of the curve.
   Future<Uint8List> signBytes(List<int> data, Hash hash);
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash);
 
@@ -1089,6 +1093,7 @@ abstract class EcdsaPrivateKey {
 abstract class EcdsaPublicKey {
   EcdsaPublicKey._(); // keep the constructor private.
 
+  /// TODO: Document this being X9.62 format
   static Future<EcdsaPublicKey> importRawKey(
     List<int> keyData,
     EllipticCurve curve,
@@ -1131,6 +1136,7 @@ abstract class EcdsaPublicKey {
     Hash hash,
   );
 
+  /// TODO: Document this being X9.62 format
   Future<Uint8List> exportRawKey();
 
   Future<Uint8List> exportSpkiKey();

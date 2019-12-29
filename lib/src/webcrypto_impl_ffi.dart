@@ -996,11 +996,62 @@ class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
 
 //---------------------- ECDSA
 
+/// Get `ssl.NID_...` from BoringSSL matching the given [curve].
+int _curveToNID(EllipticCurve curve) {
+  ArgumentError.checkNotNull(curve, 'curve');
+
+  if (curve == EllipticCurve.p256) {
+    return ssl.NID_X9_62_prime256v1;
+  }
+  if (curve == EllipticCurve.p384) {
+    return ssl.NID_secp384r1;
+  }
+  if (curve == EllipticCurve.p521) {
+    return ssl.NID_secp521r1;
+  }
+  // This should never happen!
+  throw UnsupportedError('curve "$curve" is not supported');
+}
+
+/// Perform some post-import validation for EC keys.
+void _validateEllipticCurveKey(
+  ffi.Pointer<ssl.EVP_PKEY> key,
+  EllipticCurve curve,
+) {
+  _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_EC,
+      message: 'key is not an EC key');
+
+  final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
+  _checkData(ec.address != 0, fallback: 'key is not an EC key');
+  _checkDataIsOne(ssl.EC_KEY_check_key(ec), fallback: 'invalid key');
+
+  // When importing BoringSSL will compute the public key if omitted, and
+  // leave a flag, such that exporting the private key won't include the
+  // public key.
+  final encFlags = ssl.EC_KEY_get_enc_flags(ec);
+  ssl.EC_KEY_set_enc_flags(ec, encFlags & ~ssl.EC_PKEY_NO_PUBKEY);
+
+  // Check the curve of the imported key
+  final nid = ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(ec));
+  _checkData(_curveToNID(curve) != nid, message: 'incorrect elliptic curve');
+}
+
 Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async {
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
+  _checkData(key.address != 0, fallback: 'unable to parse key');
+
+  try {
+    _validateEllipticCurveKey(key, curve);
+    return _EcdsaPrivateKey(key);
+  } catch (_) {
+    // We only free key if an exception/error was thrown
+    ssl.EVP_PKEY_free(key);
+    rethrow;
+  }
+}
 
 Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
@@ -1010,26 +1061,349 @@ Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
 
 Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async {
+  final ecPriv = ssl.EC_KEY_new_by_curve_name(_curveToNID(curve));
+  _checkOp(ecPriv.address != 0, fallback: 'internal failure to use curve');
+
+  try {
+    _checkOpIsOne(ssl.EC_KEY_generate_key(ecPriv),
+        fallback: 'key generation failed');
+
+    final privKey = ssl.EVP_PKEY_new();
+    _checkOp(privKey.address != 0);
+    try {
+      final ecPub = ssl.EC_KEY_new_by_curve_name(_curveToNID(curve));
+      _checkOp(ecPub.address != 0);
+      try {
+        _checkOpIsOne(ssl.EC_KEY_set_public_key(
+          ecPub,
+          ssl.EC_KEY_get0_public_key(ecPriv),
+        ));
+
+        final pubKey = ssl.EVP_PKEY_new();
+        _checkOp(pubKey.address != 0);
+        try {
+          _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(pubKey, ecPub));
+
+          return _KeyPair(
+            privateKey: _EcdsaPrivateKey(privKey),
+            publicKey: _EcdsaPublicKey(pubKey),
+          );
+        } catch (_) {
+          ssl.EVP_PKEY_free(pubKey);
+          rethrow;
+        }
+      } finally {
+        ssl.EC_KEY_free(ecPub);
+      }
+    } catch (_) {
+      ssl.EVP_PKEY_free(privKey);
+      rethrow;
+    }
+  } finally {
+    ssl.EC_KEY_free(ecPriv);
+  }
+}
 
 Future<EcdsaPublicKey> ecdsaPublicKey_importRawKey(
   List<int> keyData,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async {
+  // See: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ec.cc#332
+
+  // Create EC_KEY for the curve
+  final ec = ssl.EC_KEY_new_by_curve_name(_curveToNID(curve));
+  _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
+
+  try {
+    // Create EC_POINT to hold public key info
+    final pub = ssl.EC_POINT_new(ssl.EC_KEY_get0_group(ec));
+    _checkOp(pub.address != 0, fallback: 'internal point allocation error');
+    try {
+      // Read raw public key
+      _withDataAsPointer(keyData, (ffi.Pointer<ssl.Bytes> p) {
+        _checkDataIsOne(
+          ssl.EC_POINT_oct2point(
+              ssl.EC_KEY_get0_group(ec), pub, p, keyData.length, ffi.nullptr),
+          fallback: 'invalid keyData',
+        );
+      });
+      // Copy pub point to ec
+      _checkDataIsOne(ssl.EC_KEY_set_public_key(ec, pub),
+          fallback: 'invalid keyData');
+      final key = ssl.EVP_PKEY_new();
+      try {
+        _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
+        _validateEllipticCurveKey(key, curve);
+        return _EcdsaPublicKey(key);
+      } catch (_) {
+        ssl.EVP_PKEY_free(key);
+        rethrow;
+      }
+    } finally {
+      ssl.EC_POINT_free(pub);
+    }
+  } finally {
+    ssl.EC_KEY_free(ec);
+  }
+}
 
 Future<EcdsaPublicKey> ecdsaPublicKey_importSpkiKey(
   List<int> keyData,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async {
+  // TODO: When calling EVP_parse_public_key it might wise to check that CBS_len(cbs) == 0 is true afterwards
+  // otherwise it might be that all of the contents of the key was not consumed and we should throw
+  // a FormatException. Notice that this the case for private/public keys, and RSA keys.
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
+  _checkData(key.address != 0, fallback: 'unable to parse key');
+
+  try {
+    _validateEllipticCurveKey(key, curve);
+
+    return _EcdsaPublicKey(key);
+  } catch (_) {
+    // We only free key if an exception/error was thrown
+    ssl.EVP_PKEY_free(key);
+    rethrow;
+  }
+}
 
 Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) =>
     throw _notImplemented;
+
+/// Convert ECDSA signature in DER format returned by BoringSSL to the raw R + S
+/// formated specified in the webcrypto specification.
+///
+/// See also: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#69
+Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
+  ffi.Pointer<ssl.EVP_PKEY> key,
+  Uint8List signature,
+) {
+  final ecdsa = _withDataAsCBS(signature, ssl.ECDSA_SIG_parse);
+  _checkOp(ecdsa.address != 0, message: 'internal error formatting signature');
+  try {
+    // Read EC key and get the number of bytes required to encode R and S.
+    final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
+    _checkOp(ec.address != 0, message: 'internal key type invariant violation');
+    final N = ssl.BN_num_bytes(ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(
+      ec,
+    )));
+
+    return _withAllocation(2, (ffi.Pointer<ffi.Pointer<ssl.BIGNUM>> RS) {
+      // Access R and S from the ecdsa signature
+      final R = RS.elementAt(0);
+      final S = RS.elementAt(1);
+      ssl.ECDSA_SIG_get0(ecdsa, R, S);
+
+      // Dump R and S to return value.
+      return _withOutPointer(N * 2, (ffi.Pointer<ffi.Uint8> p) {
+        _checkOpIsOne(
+          ssl.BN_bn2bin_padded(p.elementAt(0).cast<ssl.Bytes>(), N, R.value),
+          fallback: 'internal error formatting R in signature',
+        );
+        _checkOpIsOne(
+          ssl.BN_bn2bin_padded(p.elementAt(N).cast<ssl.Bytes>(), N, S.value),
+          fallback: 'internal error formatting S in signature',
+        );
+      });
+    });
+  } finally {
+    ssl.ECDSA_SIG_free(ecdsa);
+  }
+}
+
+/// Convert ECDSA signature in the raw R + S as specified in webcrypto to DER
+/// format as expected by BoringSSL.
+///
+/// Returns `null` if the [signature] is invalid and should be rejected.
+///
+/// See also: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#111
+Uint8List _convertEcdsaWebCryptoSignatureToDerSignature(
+  ffi.Pointer<ssl.EVP_PKEY> key,
+  Uint8List signature,
+) {
+  // Read EC key and get the number of bytes required to encode R and S.
+  final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
+  _checkOp(ec.address != 0, message: 'internal key type invariant violation');
+  final N = ssl.BN_num_bytes(ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(
+    ec,
+  )));
+
+  if (N * 2 == signature.length) {
+    // If the signature format is invalid we consider the signature invalid and
+    // return false from verification method. This follows:
+    // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#111
+    return null;
+  }
+
+  final ecdsa = ssl.ECDSA_SIG_new();
+  _checkOp(ecdsa.address != 0, message: 'internal error formatting signature');
+  try {
+    return _withAllocation(2, (ffi.Pointer<ffi.Pointer<ssl.BIGNUM>> RS) {
+      // Access R and S from the ecdsa signature
+      final R = RS.elementAt(0);
+      final S = RS.elementAt(1);
+      ssl.ECDSA_SIG_get0(ecdsa, R, S);
+
+      _withDataAsPointer(signature, (ffi.Pointer<ffi.Uint8> p) {
+        _checkOp(
+          ssl.BN_bin2bn(p.elementAt(0).cast<ssl.Bytes>(), N, R.value).address !=
+              0,
+          fallback: 'allocation failure',
+        );
+        _checkOp(
+          ssl.BN_bin2bn(p.elementAt(N).cast<ssl.Bytes>(), N, S.value).address !=
+              0,
+          fallback: 'allocation failure',
+        );
+      });
+      return _withOutCBB((cbb) => _checkOpIsOne(
+            ssl.ECDSA_SIG_marshal(cbb, ecdsa),
+            fallback: 'internal error reformatting signature',
+          ));
+    });
+  } finally {
+    ssl.ECDSA_SIG_free(ecdsa);
+  }
+}
+
+class _EcdsaPrivateKey with _Disposable implements EcdsaPrivateKey {
+  final ffi.Pointer<ssl.EVP_PKEY> _key;
+
+  _EcdsaPrivateKey(this._key);
+
+  @override
+  void _finalize() {
+    ssl.EVP_PKEY_free(_key);
+  }
+
+  @override
+  Future<Uint8List> signBytes(List<int> data, Hash hash) {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(hash, 'hash');
+    return signStream(Stream.value(data), hash);
+  }
+
+  @override
+  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(hash, 'hash');
+    final _hash = _Hash.fromHash(hash).MD;
+
+    final sig = await _withEVP_MD_CTX((ctx) async {
+      _checkOpIsOne(
+        ssl.EVP_DigestSignInit(ctx, ffi.nullptr, _hash, ffi.nullptr, _key),
+      );
+
+      await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+      return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
+        len.value = 0;
+        _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
+        return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> p) {
+          _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
+        }).sublist(0, len.value);
+      });
+    });
+    return _convertEcdsaDerSignatureToWebCryptoSignature(_key, sig);
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportPkcs8Key() async {
+    return _withOutCBB((cbb) {
+      _checkOp(ssl.EVP_marshal_private_key(cbb, _key) == 1);
+    });
+  }
+}
+
+class _EcdsaPublicKey with _Disposable implements EcdsaPublicKey {
+  final ffi.Pointer<ssl.EVP_PKEY> _key;
+
+  _EcdsaPublicKey(this._key);
+
+  @override
+  void _finalize() {
+    ssl.EVP_PKEY_free(_key);
+  }
+
+  @override
+  Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) {
+    ArgumentError.checkNotNull(signature, 'signature');
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(hash, 'hash');
+    return verifyStream(signature, Stream.value(data), hash);
+  }
+
+  @override
+  Future<bool> verifyStream(
+    List<int> signature,
+    Stream<List<int>> data,
+    Hash hash,
+  ) async {
+    ArgumentError.checkNotNull(signature, 'signature');
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(hash, 'hash');
+    final _hash = _Hash.fromHash(hash).MD;
+
+    // Convert to DER signature
+    final sig = _convertEcdsaWebCryptoSignatureToDerSignature(_key, signature);
+    if (sig == null) {
+      // If signature format is invalid we fail verification
+      return false;
+    }
+
+    return await _withEVP_MD_CTX((ctx) async {
+      return await _withPEVP_PKEY_CTX((pctx) async {
+        _checkOpIsOne(
+          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash, ffi.nullptr, _key),
+        );
+        await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+        return _withDataAsPointer(sig, (ffi.Pointer<ssl.Bytes> p) {
+          final result = ssl.EVP_DigestVerifyFinal(ctx, p, sig.length);
+          return result == 1;
+        });
+      });
+    });
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportRawKey() async {
+    final ec = ssl.EVP_PKEY_get0_EC_KEY(_key);
+    _checkOp(ec.address != null, fallback: 'internal key type invariant error');
+
+    return _withOutCBB((cbb) {
+      return _checkOpIsOne(
+          ssl.EC_POINT_point2cbb(
+            cbb,
+            ssl.EC_KEY_get0_group(ec),
+            ssl.EC_KEY_get0_public_key(ec),
+            ssl.POINT_CONVERSION_UNCOMPRESSED,
+            ffi.nullptr,
+          ),
+          fallback: 'formatting failed');
+    });
+  }
+
+  @override
+  Future<Uint8List> exportSpkiKey() async {
+    return _withOutCBB((cbb) {
+      _checkOp(ssl.EVP_marshal_public_key(cbb, _key) == 1);
+    });
+  }
+}
 
 //---------------------- RSA-OAEP
 
