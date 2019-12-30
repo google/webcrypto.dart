@@ -1011,14 +1011,6 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   }
 
   @override
-  Stream<Uint8List> decryptStream(
-    Stream<List<int>> data, {
-    List<int> label,
-  }) async* {
-    yield await decryptBytes(await _bufferStream(data), label: label);
-  }
-
-  @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
     return await _exportJsonWebKey(_key);
   }
@@ -1045,14 +1037,6 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
       _key,
       data,
     );
-  }
-
-  @override
-  Stream<Uint8List> encryptStream(
-    Stream<List<int>> data, {
-    List<int> label,
-  }) async* {
-    yield await encryptBytes(await _bufferStream(data), label: label);
   }
 
   @override

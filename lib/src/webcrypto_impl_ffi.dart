@@ -1507,11 +1507,6 @@ class _RsaOaepPrivateKey with _Disposable implements RsaOaepPrivateKey {
   }
 
   @override
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, {List<int> label}) {
-    throw UnsupportedError('TODO: Remove this method from the interface');
-  }
-
-  @override
   Future<Map<String, dynamic>> exportJsonWebKey() {
     throw _notImplemented;
   }
@@ -1546,11 +1541,6 @@ class _RsaOaepPublicKey with _Disposable implements RsaOaepPublicKey {
       data,
       label: label,
     );
-  }
-
-  @override
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, {List<int> label}) {
-    throw UnsupportedError('TODO: Remove this method from the interface');
   }
 
   @override

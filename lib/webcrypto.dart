@@ -1183,9 +1183,10 @@ abstract class RsaOaepPrivateKey {
     );
   }
 
+  /// Note, that this interface does not support streaming because RSA-OAEP
+  /// is not a streaming cipher, instead it is often used to encrypt a symmetric
+  /// cipher key used with an AES variant.
   Future<Uint8List> decryptBytes(List<int> data, {List<int> label});
-
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, {List<int> label});
 
   Future<Uint8List> exportPkcs8Key();
 
@@ -1215,9 +1216,10 @@ abstract class RsaOaepPublicKey {
     return impl.rsaOaepPublicKey_importJsonWebKey(jwk, hash);
   }
 
+  /// Note, that this interface does not support streaming because RSA-OAEP
+  /// is not a streaming cipher, instead it is often used to encrypt a symmetric
+  /// cipher key used with an AES variant.
   Future<Uint8List> encryptBytes(List<int> data, {List<int> label});
-
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, {List<int> label});
 
   Future<Uint8List> exportSpkiKey();
 
