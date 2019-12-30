@@ -254,6 +254,132 @@ class _KeyPair<S, T> implements KeyPair<S, T> {
   _KeyPair({this.privateKey, this.publicKey});
 }
 
+/// Convert [Stream<List<int>>] to [Uint8List].
+Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
+  ArgumentError.checkNotNull(data, 'data');
+  final result = <int>[];
+  // TODO: Make this allocation stuff smarter
+  await for (var chunk in data) {
+    result.addAll(chunk);
+  }
+  return Uint8List.fromList(result);
+}
+
+//---------------------- RSA Helpers
+
+ffi.Pointer<ssl.EVP_PKEY> _importPkcs8RsaPrivateKey(List<int> keyData) {
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
+  _checkData(key.address != 0, fallback: 'unable to parse key');
+
+  try {
+    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
+        message: 'key is not an RSA key');
+
+    final rsa = ssl.EVP_PKEY_get0_RSA(key);
+    _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
+    _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
+
+    return key;
+  } catch (_) {
+    // We only free key if an exception/error was thrown
+    ssl.EVP_PKEY_free(key);
+    rethrow;
+  }
+}
+
+ffi.Pointer<ssl.EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
+  _checkData(key.address != 0, fallback: 'unable to parse key');
+
+  try {
+    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
+        message: 'key is not an RSA key');
+
+    final rsa = ssl.EVP_PKEY_get0_RSA(key);
+    _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
+    _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
+
+    return key;
+  } catch (_) {
+    // We only free key if an exception/error was thrown
+    ssl.EVP_PKEY_free(key);
+    rethrow;
+  }
+}
+
+_KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
+    _generateRsaKeyPair(
+  int modulusLength,
+  BigInt publicExponent,
+) {
+  // Sanity check for the modulusLength
+  if (modulusLength < 256 || modulusLength > 16384) {
+    throw UnsupportedError(
+      'modulusLength must between 256 and 16k, $modulusLength is not supported',
+    );
+  }
+  if ((modulusLength % 8) != 0) {
+    throw UnsupportedError(
+        'modulusLength: $modulusLength is not a multiple of 8');
+  }
+
+  // Limit publicExponent whitelist as in chromium:
+  // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
+  if (publicExponent != BigInt.from(3) &&
+      publicExponent != BigInt.from(65537)) {
+    throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
+  }
+
+  ffi.Pointer<ssl.RSA> privRSA, pubRSA;
+  ffi.Pointer<ssl.EVP_PKEY> privKey, pubKey;
+  try {
+    // Generate private RSA key
+    privRSA = ssl.RSA_new();
+    _checkOp(privRSA.address != 0, fallback: 'allocation failure');
+    _withBIGNUM((e) {
+      _checkOp(ssl.BN_set_word(e, publicExponent.toInt()) == 1);
+      _checkOp(
+          ssl.RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr) == 1);
+    });
+
+    // Copy out the public RSA key
+    final pubRSA = ssl.RSAPublicKey_dup(privRSA);
+    _checkOp(pubRSA.address != 0);
+
+    // Create private key
+    privKey = ssl.EVP_PKEY_new();
+    _checkOp(privKey.address != 0, fallback: 'allocation failure');
+    _checkOp(ssl.EVP_PKEY_set1_RSA(privKey, privRSA) == 1);
+
+    // Create public key
+    pubKey = ssl.EVP_PKEY_new();
+    _checkOp(pubKey.address != 0, fallback: 'allocation failure');
+    _checkOp(ssl.EVP_PKEY_set1_RSA(pubKey, pubRSA) == 1);
+
+    return _KeyPair(
+      privateKey: privKey,
+      publicKey: pubKey,
+    );
+  } catch (_) {
+    // Free privKey/pubKey on exception
+    if (privKey != null) {
+      ssl.EVP_PKEY_free(privKey);
+    }
+    if (pubKey != null) {
+      ssl.EVP_PKEY_free(pubKey);
+    }
+    rethrow;
+  } finally {
+    // Always free RSA keys, we create a new reference with set1 method
+    if (privRSA != null) {
+      ssl.RSA_free(privRSA);
+    }
+    if (pubRSA != null) {
+      ssl.RSA_free(pubRSA);
+    }
+  }
+}
+
 //---------------------- Random Bytes
 
 void fillRandomBytes(TypedData destination) {
@@ -476,23 +602,9 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-
-  try {
-    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
-        message: 'key is not an RSA key');
-
-    final rsa = ssl.EVP_PKEY_get0_RSA(key);
-    _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
-    _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
-
-    return _RsassaPkcs1V15PrivateKey(key, _Hash.fromHash(hash).MD);
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
-  }
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  return _RsassaPkcs1V15PrivateKey(_importPkcs8RsaPrivateKey(keyData), md);
 }
 
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey(
@@ -507,95 +619,22 @@ Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
   BigInt publicExponent,
   Hash hash,
 ) async {
-  // Sanity check for the modulusLength
-  if (modulusLength < 256 || modulusLength > 16384) {
-    throw UnsupportedError(
-      'modulusLength must between 256 and 16k, $modulusLength is not supported',
-    );
-  }
-  if ((modulusLength % 8) != 0) {
-    throw UnsupportedError(
-        'modulusLength: $modulusLength is not a multiple of 8');
-  }
-
-  // Limit publicExponent whitelist as in chromium:
-  // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
-  if (publicExponent != BigInt.from(3) &&
-      publicExponent != BigInt.from(65537)) {
-    throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
-  }
-
-  ffi.Pointer<ssl.RSA> privRSA, pubRSA;
-  ffi.Pointer<ssl.EVP_PKEY> privKey, pubKey;
-  try {
-    // Generate private RSA key
-    privRSA = ssl.RSA_new();
-    _checkOp(privRSA.address != 0, fallback: 'allocation failure');
-    _withBIGNUM((e) {
-      _checkOp(ssl.BN_set_word(e, publicExponent.toInt()) == 1);
-      _checkOp(
-          ssl.RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr) == 1);
-    });
-
-    // Copy out the public RSA key
-    final pubRSA = ssl.RSAPublicKey_dup(privRSA);
-    _checkOp(pubRSA.address != 0);
-
-    // Create private key
-    privKey = ssl.EVP_PKEY_new();
-    _checkOp(privKey.address != 0, fallback: 'allocation failure');
-    _checkOp(ssl.EVP_PKEY_set1_RSA(privKey, privRSA) == 1);
-
-    // Create public key
-    pubKey = ssl.EVP_PKEY_new();
-    _checkOp(pubKey.address != 0, fallback: 'allocation failure');
-    _checkOp(ssl.EVP_PKEY_set1_RSA(pubKey, pubRSA) == 1);
-
-    return _KeyPair(
-      privateKey: _RsassaPkcs1V15PrivateKey(privKey, _Hash.fromHash(hash).MD),
-      publicKey: _RsassaPkcs1V15PublicKey(pubKey, _Hash.fromHash(hash).MD),
-    );
-  } catch (_) {
-    // Free privKey/pubKey on exception
-    if (privKey != null) {
-      ssl.EVP_PKEY_free(privKey);
-    }
-    if (pubKey != null) {
-      ssl.EVP_PKEY_free(pubKey);
-    }
-    rethrow;
-  } finally {
-    // Always free RSA keys, we create a new reference with set1 method
-    if (privRSA != null) {
-      ssl.RSA_free(privRSA);
-    }
-    if (pubRSA != null) {
-      ssl.RSA_free(pubRSA);
-    }
-  }
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  final keys = _generateRsaKeyPair(modulusLength, publicExponent);
+  return _KeyPair(
+    privateKey: _RsassaPkcs1V15PrivateKey(keys.privateKey, md),
+    publicKey: _RsassaPkcs1V15PublicKey(keys.publicKey, md),
+  );
 }
 
 Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-
-  try {
-    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
-        message: 'key is not an RSA key');
-
-    final rsa = ssl.EVP_PKEY_get0_RSA(key);
-    _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
-    _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
-
-    return _RsassaPkcs1V15PublicKey(key, _Hash.fromHash(hash).MD);
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
-  }
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  return _RsassaPkcs1V15PublicKey(_importSpkiRsaPublicKey(keyData), md);
 }
 
 Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
@@ -721,23 +760,9 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-
-  try {
-    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
-        message: 'key is not an RSA key');
-
-    final rsa = ssl.EVP_PKEY_get0_RSA(key);
-    _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
-    _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
-
-    return _RsaPssPrivateKey(key, _Hash.fromHash(hash).MD);
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
-  }
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  return _RsaPssPrivateKey(_importPkcs8RsaPrivateKey(keyData), md);
 }
 
 Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
@@ -751,95 +776,22 @@ Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
   BigInt publicExponent,
   Hash hash,
 ) async {
-  // Sanity check for the modulusLength
-  if (modulusLength < 256 || modulusLength > 16384) {
-    throw UnsupportedError(
-      'modulusLength must between 256 and 16k, $modulusLength is not supported',
-    );
-  }
-  if ((modulusLength % 8) != 0) {
-    throw UnsupportedError(
-        'modulusLength: $modulusLength is not a multiple of 8');
-  }
-
-  // Limit publicExponent whitelist as in chromium:
-  // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
-  if (publicExponent != BigInt.from(3) &&
-      publicExponent != BigInt.from(65537)) {
-    throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
-  }
-
-  ffi.Pointer<ssl.RSA> privRSA, pubRSA;
-  ffi.Pointer<ssl.EVP_PKEY> privKey, pubKey;
-  try {
-    // Generate private RSA key
-    privRSA = ssl.RSA_new();
-    _checkOp(privRSA.address != 0, fallback: 'allocation failure');
-    _withBIGNUM((e) {
-      _checkOp(ssl.BN_set_word(e, publicExponent.toInt()) == 1);
-      _checkOp(
-          ssl.RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr) == 1);
-    });
-
-    // Copy out the public RSA key
-    final pubRSA = ssl.RSAPublicKey_dup(privRSA);
-    _checkOp(pubRSA.address != 0);
-
-    // Create private key
-    privKey = ssl.EVP_PKEY_new();
-    _checkOp(privKey.address != 0, fallback: 'allocation failure');
-    _checkOp(ssl.EVP_PKEY_set1_RSA(privKey, privRSA) == 1);
-
-    // Create public key
-    pubKey = ssl.EVP_PKEY_new();
-    _checkOp(pubKey.address != 0, fallback: 'allocation failure');
-    _checkOp(ssl.EVP_PKEY_set1_RSA(pubKey, pubRSA) == 1);
-
-    return _KeyPair(
-      privateKey: _RsaPssPrivateKey(privKey, _Hash.fromHash(hash).MD),
-      publicKey: _RsaPssPublicKey(pubKey, _Hash.fromHash(hash).MD),
-    );
-  } catch (_) {
-    // Free privKey/pubKey on exception
-    if (privKey != null) {
-      ssl.EVP_PKEY_free(privKey);
-    }
-    if (pubKey != null) {
-      ssl.EVP_PKEY_free(pubKey);
-    }
-    rethrow;
-  } finally {
-    // Always free RSA keys, we create a new reference with set1 method
-    if (privRSA != null) {
-      ssl.RSA_free(privRSA);
-    }
-    if (pubRSA != null) {
-      ssl.RSA_free(pubRSA);
-    }
-  }
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  final keys = _generateRsaKeyPair(modulusLength, publicExponent);
+  return _KeyPair(
+    privateKey: _RsaPssPrivateKey(keys.privateKey, md),
+    publicKey: _RsaPssPublicKey(keys.publicKey, md),
+  );
 }
 
 Future<RsaPssPublicKey> rsaPssPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-
-  try {
-    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
-        message: 'key is not an RSA key');
-
-    final rsa = ssl.EVP_PKEY_get0_RSA(key);
-    _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
-    _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
-
-    return _RsaPssPublicKey(key, _Hash.fromHash(hash).MD);
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
-  }
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  return _RsaPssPublicKey(_importSpkiRsaPublicKey(keyData), md);
 }
 
 Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
@@ -1410,8 +1362,11 @@ class _EcdsaPublicKey with _Disposable implements EcdsaPublicKey {
 Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  return _RsaOaepPrivateKey(_importPkcs8RsaPrivateKey(keyData), md);
+}
 
 Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
@@ -1424,20 +1379,192 @@ Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>>
   int modulusLength,
   BigInt publicExponent,
   Hash hash,
-) =>
-        throw _notImplemented;
+) async {
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  final keys = _generateRsaKeyPair(modulusLength, publicExponent);
+  return _KeyPair(
+    privateKey: _RsaOaepPrivateKey(keys.privateKey, md),
+    publicKey: _RsaPssPublicKey(keys.publicKey, md),
+  );
+}
 
 Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final md = _Hash.fromHash(hash).MD;
+  return _RsaOaepPublicKey(_importSpkiRsaPublicKey(keyData), md);
+}
 
 Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) =>
     throw _notImplemented;
+
+/// Utility method to encrypt or decrypt with RSA-OAEP.
+///
+/// Expects:
+///  * [initFn] as [ssl.EVP_PKEY_encrypt_init] or [ssl.EVP_PKEY_decrypt_init] ,
+///  * [encryptOrDecryptFn] as [ssl.EVP_PKEY_encrypt] or [ssl.EVP_PKEY_decrypt].
+Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
+  ffi.Pointer<ssl.EVP_PKEY> key,
+  ffi.Pointer<ssl.EVP_MD> md,
+  // ssl.EVP_PKEY_encrypt_init
+  int Function(ffi.Pointer<ssl.EVP_PKEY_CTX>) initFn,
+  // ssl.EVP_PKEY_encrypt
+  int Function(
+    ffi.Pointer<ssl.EVP_PKEY_CTX>,
+    ffi.Pointer<ssl.Bytes>,
+    ffi.Pointer<ffi.IntPtr>,
+    ffi.Pointer<ssl.Bytes>,
+    int,
+  )
+      encryptOrDecryptFn,
+  List<int> data, {
+  List<int> label,
+}) async {
+  ArgumentError.checkNotNull(data, 'data');
+
+  final ctx = ssl.EVP_PKEY_CTX_new(key, ffi.nullptr);
+  _checkOp(ctx.address != 0, fallback: 'allocation error');
+  try {
+    _checkOpIsOne(initFn(ctx));
+    _checkOpIsOne(
+      ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, ssl.RSA_PKCS1_OAEP_PADDING),
+    );
+    _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_oaep_md(ctx, md));
+    _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, md));
+
+    // Copy and set label
+    if (label != null && label.isNotEmpty) {
+      final plabel = ssl.OPENSSL_malloc(label.length);
+      _checkOp(plabel.address != 0);
+      try {
+        plabel.cast<ffi.Uint8>().asTypedList(label.length).setAll(0, label);
+        _checkOpIsOne(ssl.EVP_PKEY_CTX_set0_rsa_oaep_label(
+          ctx,
+          plabel.cast<ssl.Bytes>(),
+          label.length,
+        ));
+      } catch (_) {
+        // Ownership is transferred to ctx by EVP_PKEY_CTX_set0_rsa_oaep_label
+        ssl.OPENSSL_free(plabel);
+        rethrow;
+      }
+    }
+
+    return _withDataAsPointer(data, (ffi.Pointer<ssl.Bytes> input) {
+      return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
+        len.value = 0;
+        _checkOpIsOne(encryptOrDecryptFn(
+          ctx,
+          ffi.nullptr,
+          len,
+          input,
+          data.length,
+        ));
+        return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> output) {
+          _checkOpIsOne(encryptOrDecryptFn(
+            ctx,
+            output,
+            len,
+            input,
+            data.length,
+          ));
+        }).sublist(0, len.value);
+      });
+    });
+  } finally {
+    ssl.EVP_PKEY_CTX_free(ctx);
+  }
+}
+
+class _RsaOaepPrivateKey with _Disposable implements RsaOaepPrivateKey {
+  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<ssl.EVP_MD> _hash;
+
+  _RsaOaepPrivateKey(this._key, this._hash);
+
+  @override
+  void _finalize() {
+    ssl.EVP_PKEY_free(_key);
+  }
+
+  @override
+  Future<Uint8List> decryptBytes(List<int> data, {List<int> label}) async {
+    ArgumentError.checkNotNull(data, 'data');
+    return _rsaOaepeEncryptOrDecryptBytes(
+      _key,
+      _hash,
+      ssl.EVP_PKEY_decrypt_init,
+      ssl.EVP_PKEY_decrypt,
+      data,
+      label: label,
+    );
+  }
+
+  @override
+  Stream<Uint8List> decryptStream(Stream<List<int>> data, {List<int> label}) {
+    throw UnsupportedError('TODO: Remove this method from the interface');
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportPkcs8Key() async {
+    return _withOutCBB((cbb) {
+      _checkOp(ssl.EVP_marshal_private_key(cbb, _key) == 1);
+    });
+  }
+}
+
+class _RsaOaepPublicKey with _Disposable implements RsaOaepPublicKey {
+  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<ssl.EVP_MD> _hash;
+
+  _RsaOaepPublicKey(this._key, this._hash);
+
+  @override
+  void _finalize() {
+    ssl.EVP_PKEY_free(_key);
+  }
+
+  @override
+  Future<Uint8List> encryptBytes(List<int> data, {List<int> label}) async {
+    ArgumentError.checkNotNull(data, 'data');
+    return _rsaOaepeEncryptOrDecryptBytes(
+      _key,
+      _hash,
+      ssl.EVP_PKEY_encrypt_init,
+      ssl.EVP_PKEY_encrypt,
+      data,
+      label: label,
+    );
+  }
+
+  @override
+  Stream<Uint8List> encryptStream(Stream<List<int>> data, {List<int> label}) {
+    throw UnsupportedError('TODO: Remove this method from the interface');
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportSpkiKey() async {
+    return _withOutCBB((cbb) {
+      _checkOp(ssl.EVP_marshal_public_key(cbb, _key) == 1);
+    });
+  }
+}
 
 //---------------------- AES-CTR
 

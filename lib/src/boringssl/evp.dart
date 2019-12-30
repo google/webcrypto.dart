@@ -334,6 +334,114 @@ final EVP_DigestVerifyFinal = lookup('EVP_DigestVerifyFinal')
     .lookupFunc<Int32 Function(Pointer<EVP_MD_CTX>, Pointer<Bytes>, IntPtr)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>, Pointer<Bytes>, int)>();
 
+//---------------------- Public key contexts
+
+/// EVP_PKEY_CTX_new allocates a fresh EVP_PKEY_CTX for use with pkey.
+/// It returns the context or NULL on error.
+///
+/// ```c
+/// OPENSSL_EXPORT EVP_PKEY_CTX *EVP_PKEY_CTX_new(EVP_PKEY *pkey, ENGINE *e);
+/// ```
+final EVP_PKEY_CTX_new = lookup('EVP_PKEY_CTX_new')
+    .lookupFunc<
+        Pointer<EVP_PKEY_CTX> Function(Pointer<EVP_PKEY>, Pointer<ENGINE>)>()
+    .asFunction<
+        Pointer<EVP_PKEY_CTX> Function(Pointer<EVP_PKEY>, Pointer<ENGINE>)>();
+
+/// EVP_PKEY_CTX_free frees ctx and the data it owns.
+///
+/// ```c
+/// OPENSSL_EXPORT void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx);
+/// ```
+final EVP_PKEY_CTX_free = lookup('EVP_PKEY_CTX_free')
+    .lookupFunc<Void Function(Pointer<EVP_PKEY_CTX>)>()
+    .asFunction<void Function(Pointer<EVP_PKEY_CTX>)>();
+
+/// EVP_PKEY_encrypt_init initialises an EVP_PKEY_CTX for an encryption operation. It should be called before EVP_PKEY_encrypt.
+///
+/// It returns one on success or zero on error.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_encrypt_init(EVP_PKEY_CTX *ctx);
+/// ```
+final EVP_PKEY_encrypt_init = lookup('EVP_PKEY_encrypt_init')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>)>()
+    .asFunction<int Function(Pointer<EVP_PKEY_CTX>)>();
+
+/// EVP_PKEY_encrypt encrypts in_len bytes from in. If out is NULL, the maximum size of the ciphertext is written to out_len. Otherwise, *out_len must contain the number of bytes of space available at out. If sufficient, the ciphertext will be written to out and *out_len updated with the true length.
+///
+/// WARNING: Setting out to NULL only gives the maximum size of the ciphertext. The actual ciphertext may be smaller.
+///
+/// It returns one on success or zero on error.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_encrypt(EVP_PKEY_CTX *ctx, uint8_t *out,
+///                                     size_t *out_len, const uint8_t *in,
+///                                     size_t in_len);
+/// ```
+final EVP_PKEY_encrypt = lookup('EVP_PKEY_encrypt')
+    .lookupFunc<
+        Int32 Function(
+      Pointer<EVP_PKEY_CTX>,
+      Pointer<Bytes>,
+      Pointer<IntPtr>,
+      Pointer<Bytes>,
+      IntPtr,
+    )>()
+    .asFunction<
+        int Function(
+      Pointer<EVP_PKEY_CTX>,
+      Pointer<Bytes>,
+      Pointer<IntPtr>,
+      Pointer<Bytes>,
+      int,
+    )>();
+
+/// EVP_PKEY_decrypt_init initialises an EVP_PKEY_CTX for a decryption
+/// operation. It should be called before EVP_PKEY_decrypt.
+///
+/// It returns one on success or zero on error.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_decrypt_init(EVP_PKEY_CTX *ctx);
+/// ```
+final EVP_PKEY_decrypt_init = lookup('EVP_PKEY_decrypt_init')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>)>()
+    .asFunction<int Function(Pointer<EVP_PKEY_CTX>)>();
+
+/// EVP_PKEY_decrypt decrypts in_len bytes from in. If out is NULL, the maximum
+/// size of the plaintext is written to out_len. Otherwise, *out_len must
+/// contain the number of bytes of space available at out. If sufficient, the
+/// ciphertext will be written to out and *out_len updated with the true length.
+///
+/// WARNING: Setting out to NULL only gives the maximum size of the plaintext.
+/// The actual plaintext may be smaller.
+///
+/// It returns one on success or zero on error.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_decrypt(EVP_PKEY_CTX *ctx, uint8_t *out,
+///                                     size_t *out_len, const uint8_t *in,
+///                                     size_t in_len);
+/// ```
+final EVP_PKEY_decrypt = lookup('EVP_PKEY_decrypt')
+    .lookupFunc<
+        Int32 Function(
+      Pointer<EVP_PKEY_CTX>,
+      Pointer<Bytes>,
+      Pointer<IntPtr>,
+      Pointer<Bytes>,
+      IntPtr,
+    )>()
+    .asFunction<
+        int Function(
+      Pointer<EVP_PKEY_CTX>,
+      Pointer<Bytes>,
+      Pointer<IntPtr>,
+      Pointer<Bytes>,
+      int,
+    )>();
+
 //---------------------- RSA specific control functions
 
 /// EVP_PKEY_CTX_set_rsa_padding sets the padding type to use. It should be one
@@ -364,6 +472,17 @@ final EVP_PKEY_CTX_set_rsa_pss_saltlen =
         .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Int32)>()
         .asFunction<int Function(Pointer<EVP_PKEY_CTX>, int)>();
 
+/// EVP_PKEY_CTX_set_rsa_oaep_md sets md as the digest used in OAEP padding.
+/// Returns one on success or zero on error.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_CTX_set_rsa_oaep_md(EVP_PKEY_CTX *ctx,
+///                                                 const EVP_MD *md);
+/// ```
+final EVP_PKEY_CTX_set_rsa_oaep_md = lookup('EVP_PKEY_CTX_set_rsa_oaep_md')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>()
+    .asFunction<int Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>();
+
 /// EVP_PKEY_CTX_set_rsa_mgf1_md sets md as the digest used in MGF1. Returns one
 /// on success or zero on error.
 ///
@@ -374,3 +493,19 @@ final EVP_PKEY_CTX_set_rsa_pss_saltlen =
 final EVP_PKEY_CTX_set_rsa_mgf1_md = lookup('EVP_PKEY_CTX_set_rsa_mgf1_md')
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>()
     .asFunction<int Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>();
+
+/// EVP_PKEY_CTX_set0_rsa_oaep_label sets label_len bytes from label as the
+/// label used in OAEP. DANGER: On success, this call takes ownership of label
+/// and will call OPENSSL_free on it when ctx is destroyed.
+///
+/// Returns one on success or zero on error.
+///
+/// ```c
+/// OPENSSL_EXPORT int EVP_PKEY_CTX_set0_rsa_oaep_label(EVP_PKEY_CTX *ctx,
+///                                                     uint8_t *label,
+///                                                     size_t label_len);
+/// ```
+final EVP_PKEY_CTX_set0_rsa_oaep_label = lookup(
+        'EVP_PKEY_CTX_set0_rsa_oaep_label')
+    .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Pointer<Bytes>, IntPtr)>()
+    .asFunction<int Function(Pointer<EVP_PKEY_CTX>, Pointer<Bytes>, int)>();
