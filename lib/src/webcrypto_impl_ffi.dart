@@ -76,6 +76,64 @@ String _extractError() {
   }
 }
 
+/// Allocate [count] (default 1) size of [T] bytes.
+///
+/// Must be de-allocated with [_free].
+ffi.Pointer<T> _malloc<T extends ffi.NativeType>({int count = 1}) {
+  return ffi.allocate<T>(count: count);
+  // TODO: Find out why this fails:
+  // final p = ssl.OPENSSL_malloc(count * ffi.sizeOf<T>());
+  // _checkOp(p.address != 0, fallback: 'allocation failure');
+  // return p.cast<T>();
+}
+
+/// Release memory allocated with [_malloc]
+void _free<T extends ffi.NativeType>(ffi.Pointer<T> p) {
+  ffi.free(p);
+  // TODO: Find out why this fails
+  //ssl.OPENSSL_free(p.cast<ssl.Data>());
+}
+
+// Utility for tracking and releasing memory.
+class _Scope {
+  final List<void Function()> _deferred = [];
+
+  /// Defer [fn] to end of this scope.
+  void defer(void Function() fn) => _deferred.add(fn);
+
+  /// Allocate an [ffi.Pointer<T>] in this scope.
+  ffi.Pointer<T> allocate<T extends ffi.NativeType>({int count = 1}) {
+    final p = _malloc<T>(count: count);
+    defer(() => _free(p));
+    return p;
+  }
+
+  /// Allocate and copy [data] to an [ffi.Pointer<T>] in this scope.
+  ffi.Pointer<T> dataAsPointer<T extends ffi.NativeType>(List<int> data) {
+    final p = allocate<ffi.Uint8>(count: data.length);
+    p.asTypedList(data.length).setAll(0, data);
+    return p.cast<T>();
+  }
+
+  /// Release all resources held in this scope.
+  void release() {
+    while (_deferred.isNotEmpty) {
+      try {
+        _deferred.removeLast()();
+      } catch (e) {
+        while (_deferred.isNotEmpty) {
+          try {
+            _deferred.removeLast()();
+          } catch (_) {
+            // Ignore error
+          }
+        }
+        rethrow;
+      }
+    }
+  }
+}
+
 /// Invoke [fn] with [ffi.Pointer<T>] of size count and release the pointer
 /// when [fn] returns.
 R _withAllocation<T extends ffi.NativeType, R>(
@@ -83,11 +141,11 @@ R _withAllocation<T extends ffi.NativeType, R>(
   R Function(ffi.Pointer<T>) fn,
 ) {
   assert(!(R is Future), 'avoid async blocks');
-  final p = ffi.allocate<T>(count: count);
+  final p = _malloc<T>(count: count);
   try {
     return fn(p);
   } finally {
-    ffi.free(p);
+    _free(p);
   }
 }
 
@@ -98,11 +156,11 @@ Future<R> _withAllocationAsync<T extends ffi.NativeType, R>(
   FutureOr<R> Function(ffi.Pointer<T>) fn,
 ) async {
   assert(!(R is Future), 'avoid nested async blocks');
-  final p = ffi.allocate<T>(count: count);
+  final p = _malloc<T>(count: count);
   try {
     return await fn(p);
   } finally {
-    ffi.free(p);
+    _free(p);
   }
 }
 
@@ -166,7 +224,7 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
   int Function(T, ffi.Pointer<S>, int) update,
 ) async {
   const maxChunk = 4096;
-  final buffer = ffi.allocate<ffi.Uint8>(count: maxChunk);
+  final buffer = _malloc<ffi.Uint8>(count: maxChunk);
   try {
     final ptr = buffer.cast<S>();
     final bytes = buffer.asTypedList(maxChunk);
@@ -180,7 +238,7 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
       }
     }
   } finally {
-    ffi.free(buffer);
+    _free(buffer);
   }
 }
 
@@ -829,7 +887,6 @@ class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
         'must be a positive integer',
       );
     }
-
     return _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
@@ -1556,25 +1613,229 @@ class _RsaOaepPublicKey with _Disposable implements RsaOaepPublicKey {
   }
 }
 
+//---------------------- AES Utilities
+
+Uint8List _aesImportRawKey(List<int> keyData) {
+  ArgumentError.checkNotNull(keyData, 'keyData');
+  if (keyData.length == 24) {
+    // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
+    // If not supported in Chrome, there is not reason to support it in Dart.
+    throw UnsupportedError('192-bit AES keys are not supported');
+  }
+  if (keyData.length != 16 && keyData.length != 32) {
+    throw FormatException('keyData for AES must be 128 or 256 bits');
+  }
+  return Uint8List.fromList(keyData);
+}
+
+Uint8List _aesGenerateKey(int length) {
+  ArgumentError.checkNotNull(length, 'length');
+  if (length == 192) {
+    // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
+    // If not supported in Chrome, there is not reason to support it in Dart.
+    throw UnsupportedError('192-bit AES keys are not supported');
+  }
+  if (length != 128 && length != 256) {
+    throw FormatException('keyData for AES must be 128 or 256 bits');
+  }
+  final keyData = Uint8List(length ~/ 8);
+  fillRandomBytes(keyData);
+  return keyData;
+}
+
 //---------------------- AES-CTR
 
-Future<AesCtrSecretKey> aesCtr_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
+Future<AesCtrSecretKey> aesCtr_importRawKey(List<int> keyData) async =>
+    _AesCtrSecretKey(_aesImportRawKey(keyData));
 
 Future<AesCtrSecretKey> aesCtr_importJsonWebKey(Map<String, dynamic> jwk) =>
     throw _notImplemented;
 
-Future<AesCtrSecretKey> aesCtr_generateKey(int length) => throw _notImplemented;
+Future<AesCtrSecretKey> aesCtr_generateKey(int length) async =>
+    _AesCtrSecretKey(_aesGenerateKey(length));
+
+class _AesCtrSecretKey implements AesCtrSecretKey {
+  final Uint8List _key;
+  _AesCtrSecretKey(this._key);
+
+  @override
+  Future<Uint8List> decryptBytes(
+    List<int> data,
+    List<int> counter,
+    int length,
+  ) async {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(counter, 'counter');
+    ArgumentError.checkNotNull(length, 'length');
+    return await _bufferStream(decryptStream(
+      Stream.value(data),
+      counter,
+      length,
+    ));
+  }
+
+  @override
+  Stream<Uint8List> decryptStream(
+    Stream<List<int>> data,
+    List<int> counter,
+    int length,
+  ) {
+    // TODO: implement decryptStream
+    return null;
+  }
+
+  @override
+  Future<Uint8List> encryptBytes(
+    List<int> data,
+    List<int> counter,
+    int length,
+  ) async {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(counter, 'counter');
+    ArgumentError.checkNotNull(length, 'length');
+    return await _bufferStream(encryptStream(
+      Stream.value(data),
+      counter,
+      length,
+    ));
+  }
+
+  @override
+  Stream<Uint8List> encryptStream(
+    Stream<List<int>> data,
+    List<int> counter,
+    int length,
+  ) {
+    // TODO: implement encryptStream
+    return null;
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportRawKey() async => Uint8List.fromList(_key);
+}
 
 //---------------------- AES-CBC
 
-Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
+Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) async =>
+    _AesCbcSecretKey(_aesImportRawKey(keyData));
 
 Future<AesCbcSecretKey> aesCbc_importJsonWebKey(Map<String, dynamic> jwk) =>
     throw _notImplemented;
 
-Future<AesCbcSecretKey> aesCbc_generateKey(int length) => throw _notImplemented;
+Future<AesCbcSecretKey> aesCbc_generateKey(int length) async =>
+    _AesCbcSecretKey(_aesGenerateKey(length));
+
+Stream<Uint8List> _aesCbcEncryptOrDecrypt(
+  Uint8List key,
+  bool encrypt,
+  Stream<List<int>> source,
+  List<int> iv,
+) async* {
+  ArgumentError.checkNotNull(source, 'data');
+  ArgumentError.checkNotNull(iv, 'iv');
+
+  final scope = _Scope();
+  try {
+    final blockSize = key.length;
+    assert(blockSize == 16 || blockSize == 32);
+    final cipher =
+        blockSize == 16 ? ssl.EVP_aes_128_cbc() : ssl.EVP_aes_256_cbc();
+
+    final ivSize = ssl.EVP_CIPHER_iv_length(cipher);
+    if (iv.length != ivSize) {
+      throw ArgumentError.value(iv, 'iv', 'must be $ivSize bytes');
+    }
+
+    final ctx = ssl.EVP_CIPHER_CTX_new();
+    _checkOp(ctx.address != 0);
+    scope.defer(() => ssl.EVP_CIPHER_CTX_free(ctx));
+
+    _checkOpIsOne(ssl.EVP_CipherInit_ex(
+      ctx,
+      cipher,
+      ffi.nullptr,
+      scope.dataAsPointer(key),
+      scope.dataAsPointer(iv),
+      encrypt ? 1 : 0,
+    ));
+
+    const bufSize = 4096;
+
+    // Allocate an input buffer
+    final inBuf = scope.allocate<ffi.Uint8>(count: bufSize);
+    final inData = inBuf.asTypedList(bufSize);
+    final inBytes = inBuf.cast<ssl.Bytes>();
+
+    // Allocate an output buffer
+    final outBuf = scope.allocate<ffi.Uint8>(count: bufSize + blockSize);
+    final outData = outBuf.asTypedList(bufSize + blockSize);
+    final outBytes = outBuf.cast<ssl.Bytes>();
+
+    // Allocate and output length integer
+    final outLen = scope.allocate<ffi.Int32>();
+
+    // Process data from source
+    await for (final data in source) {
+      int offset = 0;
+      while (offset < data.length) {
+        final N = math.min(data.length - offset, bufSize);
+        inData.setAll(0, data.skip(offset).take(N));
+
+        _checkOpIsOne(ssl.EVP_CipherUpdate(ctx, outBytes, outLen, inBytes, N));
+        if (outLen.value > 0) {
+          yield outData.sublist(0, outLen.value);
+        }
+      }
+    }
+    // Output final block
+    _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+    if (outLen.value > 0) {
+      yield outData.sublist(0, outLen.value);
+    }
+  } finally {
+    scope.release();
+  }
+}
+
+class _AesCbcSecretKey implements AesCbcSecretKey {
+  final Uint8List _key;
+  _AesCbcSecretKey(this._key);
+
+  @override
+  Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(iv, 'iv');
+    return await _bufferStream(decryptStream(Stream.value(data), iv));
+  }
+
+  @override
+  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) =>
+      _aesCbcEncryptOrDecrypt(_key, false, data, iv);
+
+  @override
+  Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(iv, 'iv');
+    return await _bufferStream(encryptStream(Stream.value(data), iv));
+  }
+
+  @override
+  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) =>
+      _aesCbcEncryptOrDecrypt(_key, true, data, iv);
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportRawKey() async => Uint8List.fromList(_key);
+}
 
 //---------------------- AES-GCM
 

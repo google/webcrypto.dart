@@ -46,6 +46,13 @@ class BN_GENCB extends Struct {}
 /// become invalid.
 class BN_CTX extends Struct {}
 
+/// Symmetric cipher.
+class EVP_CIPHER extends Struct {}
+
+/// An EVP_CIPHER_CTX represents the state of an encryption or decryption in
+/// progress.
+class EVP_CIPHER_CTX extends Struct {}
+
 /// An RSA object represents a public or private RSA key. A given object may be
 /// used concurrently on multiple threads by non-mutating functions, provided no
 /// other thread is concurrently calling a mutating function. Unless otherwise
