@@ -115,6 +115,17 @@ class _Scope {
     return p.cast<T>();
   }
 
+  /// Call [create], return [T], and [release] when scope is terminated.
+  ffi.Pointer<T> create<T extends ffi.NativeType>(
+    ffi.Pointer<T> Function() create,
+    void Function(ffi.Pointer<T>) release,
+  ) {
+    final result = create();
+    _checkOp(result.address != 0, fallback: 'allocation failed');
+    defer(() => release(result));
+    return result;
+  }
+
   /// Release all resources held in this scope.
   void release() {
     while (_deferred.isNotEmpty) {
@@ -1654,9 +1665,349 @@ Future<AesCtrSecretKey> aesCtr_importJsonWebKey(Map<String, dynamic> jwk) =>
 Future<AesCtrSecretKey> aesCtr_generateKey(int length) async =>
     _AesCtrSecretKey(_aesGenerateKey(length));
 
+BigInt _parseBigEndian(List<int> data, [int bitLength]) {
+  assert(data != null);
+  bitLength ??= data.length * 8;
+  assert(bitLength <= data.length * 8);
+
+  // Find the index of the first byte we have to read
+  final init = data.length - (bitLength / 8).ceil();
+  // Find the remainder bits when reading the first byte
+  final remainder_bits = bitLength % 8;
+  // If there is any remainder bits, we make a copy and zero-out the rest of the
+  // initial byte
+  if (remainder_bits != 0) {
+    data = Uint8List.fromList(data);
+    data[init] &= ~(0xff << remainder_bits);
+  }
+  // Parse BigInt as big-endian integer.
+  BigInt value = BigInt.from(0);
+  for (int i = init; i < data.length; i++) {
+    value = (value << 8) | BigInt.from(data[i] & 0xf);
+  }
+  return value;
+}
+
+Stream<Uint8List> _aesCtrEncryptOrDecrypt(
+  Uint8List key,
+  bool encrypt,
+  Stream<List<int>> source,
+  List<int> counter,
+  int length,
+) async* {
+  // Heavily inspired by Chromium Web Crypto implementation, see:
+  // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/aes_ctr.cc#144
+
+  final scope = _Scope();
+  try {
+    assert(counter.length == 16);
+    assert(key.length == 16 || key.length == 32);
+    final cipher =
+        key.length == 16 ? ssl.EVP_aes_128_ctr() : ssl.EVP_aes_256_ctr();
+    final blockSize = ssl.EVP_CIPHER_block_size(cipher);
+
+    // Find the number of possible counter values, as the counter may not be
+    // reused this will limit how much data we can process. If we get more data
+    // than `blockSize * ctr_values`, Web Crypto will throw a `DataError`,
+    // which we shall mirror by throwing a [FormatException].
+    final ctr_values = BigInt.one << length;
+
+    // Read the counter
+    final ctr = _parseBigEndian(counter, length);
+
+    // Number of bytes until wrap around. BoringSSL treats the counter as 128
+    // bit counter that can be incremented. While web crypto specifies the
+    // counter to be the first [length] bits of the `counter` parameter, and
+    // the rest of the `counter` parameter is a nonce. Hence, when the counter
+    // wraps around to zero, the left most `128 - length` bits should remain
+    // static. Which is not the behavior BoringSSL implements. We can do this
+    // with BoringSSL by managing the counter wrap-around manually. But to do
+    // this we must track the number of blocks until wrap-around.
+    var bytes_until_wraparound = (ctr_values - ctr) * BigInt.from(blockSize);
+
+    // After wrap-around we cannot consume more than `ctr` blocks, or we'll
+    // reuse the same counter value which is not allowed.
+    var bytes_after_wraparound = ctr * BigInt.from(blockSize);
+
+    final ctx = scope.create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
+    _checkOpIsOne(ssl.EVP_CipherInit_ex(
+      ctx,
+      cipher,
+      ffi.nullptr,
+      scope.dataAsPointer(key),
+      scope.dataAsPointer(counter),
+      encrypt ? 1 : 0,
+    ));
+
+    const bufSize = 4096;
+
+    // Allocate an input buffer
+    final inBuf = scope.allocate<ffi.Uint8>(count: bufSize);
+    final inData = inBuf.asTypedList(bufSize);
+    final inBytes = inBuf.cast<ssl.Bytes>();
+    // TODO: Migrate ssl.Bytes to ffi.Pointer<ffi.Uint8> (painful I know)
+
+    // Allocate an output buffer, notice that BoringSSL says output cannot be
+    // more than input size + blockSize - 1
+    final outBuf = scope.allocate<ffi.Uint8>(count: bufSize + blockSize);
+    final outData = outBuf.asTypedList(bufSize + blockSize);
+    final outBytes = outBuf.cast<ssl.Bytes>();
+
+    // Allocate and output length integer
+    final outLen = scope.allocate<ffi.Int32>();
+
+    // Process data from source
+    var isBeforeWrapAround = true;
+    await for (final data in source) {
+      int offset = 0; // offset in data that we have consumed up-to.
+      while (offset < data.length) {
+        int M;
+        if (isBeforeWrapAround) {
+          // Do not consume more bytes than allowed before wrap-around.
+          M = math.min(bytes_until_wraparound.toInt(), data.length - offset);
+          bytes_until_wraparound -= BigInt.from(M);
+        } else {
+          M = data.length;
+          // Do not consume more bytes than allowed after wrap-around
+          if (bytes_after_wraparound.toInt() > M - offset) {
+            throw FormatException('input is too large for the counter length');
+          }
+          bytes_after_wraparound -= BigInt.from(M - offset);
+        }
+
+        // Consume the first M bytes from data.
+        int i = 0;
+        while (i < M) {
+          final N = math.min(M, bufSize);
+          inData.setAll(0, data.skip(offset + i).take(N));
+
+          _checkOpIsOne(ssl.EVP_CipherUpdate(
+            ctx,
+            outBytes,
+            outLen,
+            inBytes,
+            N,
+          ));
+          if (outLen.value > 0) {
+            yield outData.sublist(0, outLen.value);
+          }
+          i += N;
+        }
+        offset += i;
+
+        // Check if it's time to wrap-around
+        if (isBeforeWrapAround && bytes_until_wraparound == BigInt.zero) {
+          // Output final block of data before wrap-around
+          _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+          if (outLen.value > 0) {
+            yield outData.sublist(0, outLen.value);
+          }
+
+          final counterWrappedAround = scope.dataAsPointer<ffi.Uint8>(counter);
+          // Zero out the [length] right-most bits of [counterWrappedAround].
+          final c = counterWrappedAround.asTypedList(16);
+          final remainder_bits = length % 8;
+          final counter_bytes = (length / 8).ceil();
+          c.fillRange(c.length - counter_bytes, c.length, 0);
+          if (remainder_bits != 0) {
+            c[c.length - counter_bytes - 1] &= 0xff << remainder_bits;
+          }
+
+          // Re-initialize the cipher context with counter wrapped around.
+          _checkOpIsOne(ssl.EVP_CipherInit_ex(
+            ctx,
+            cipher,
+            ffi.nullptr,
+            scope.dataAsPointer(key),
+            counterWrappedAround.cast<ssl.Bytes>(),
+            encrypt ? 1 : 0,
+          ));
+
+          // Update state
+          isBeforeWrapAround = false;
+        }
+      }
+    }
+
+    // Output final block
+    _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+    if (outLen.value > 0) {
+      yield outData.sublist(0, outLen.value);
+    }
+  } finally {
+    scope.release();
+  }
+}
+
+/*
+Stream<Uint8List> _aesCtrEncryptOrDecrypt(
+  Uint8List key,
+  bool encrypt,
+  Stream<List<int>> source,
+  List<int> counter,
+  int length,
+) async* {
+  // TODO: Implement this:
+  // https://source.chromium.org/chromium/chromium/src/+/master:components/webcrypto/algorithms/aes_ctr.cc
+
+  final scope = _Scope();
+  try {
+    assert(key.length == 16 || key.length == 32);
+    final cipher =
+        key.length == 16 ? ssl.EVP_aes_128_ctr() : ssl.EVP_aes_256_ctr();
+    final blockSize = ssl.EVP_CIPHER_block_size(cipher);
+
+    // Find the number of possible counter values, as the counter may not be
+    // reused this will limit how much data we can process. If we get more data
+    // than `blockSize * ctr_values`, Web Crypto will throw a `DataError`,
+    // which we shall mirror by throwing a [FormatException].
+    final ctr_values = BigInt.one << length;
+
+    // Read the counter
+    final ctr = _parseBigEndian(counter, length);
+
+    // Number of bytes until wrap around. BoringSSL treats the counter as 128
+    // bit counter that can be incremented. While web crypto specifies the
+    // counter to be the first [length] bits of the `counter` parameter, and
+    // the rest of the `counter` parameter is a nonce. Hence, when the counter
+    // wraps around to zero, the left most `128 - length` bits should remain
+    // static. Which is not the behavior BoringSSL implements. We can do this
+    // with BoringSSL by managing the counter wrap-around manually. But to do
+    // this we must track the number of blocks until wrap-around.
+    var bytes_until_wraparound = (ctr_values - ctr) * BigInt.from(blockSize);
+
+    // After wrap-around we cannot consume more than `ctr` blocks, or we'll
+    // reuse the same counter value which is not allowed.
+    var bytes_after_wraparound = ctr * BigInt.from(blockSize);
+
+    final ctx = scope.create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
+    _checkOpIsOne(ssl.EVP_CipherInit_ex(
+      ctx,
+      cipher,
+      ffi.nullptr,
+      scope.dataAsPointer(key),
+      scope.dataAsPointer(counter),
+      encrypt ? 1 : 0,
+    ));
+
+    const bufSize = 4096;
+
+    // Allocate an input buffer
+    final inBuf = scope.allocate<ffi.Uint8>(count: bufSize);
+    final inData = inBuf.asTypedList(bufSize);
+    final inBytes = inBuf.cast<ssl.Bytes>();
+    // TODO: Migrate ssl.Bytes to ffi.Pointer<ffi.Uint8> (painful I know)
+
+    // Allocate an output buffer, notice that BoringSSL says output cannot be
+    // more than input size + blockSize - 1
+    final outBuf = scope.allocate<ffi.Uint8>(count: bufSize + blockSize);
+    final outData = outBuf.asTypedList(bufSize + blockSize);
+    final outBytes = outBuf.cast<ssl.Bytes>();
+
+    // Allocate and output length integer
+    final outLen = scope.allocate<ffi.Int32>();
+
+    // Process data from source
+    var isBeforeWrapAround = true;
+    await for (final data in source) {
+      int M;
+      if (isBeforeWrapAround) {
+        // Do not consume more bytes than allowed before wrap-around.
+        M = math.min(bytes_until_wraparound.toInt(), data.length);
+        bytes_until_wraparound -= BigInt.from(M);
+      } else {
+        M = data.length;
+        // Do not consume more bytes than allowed after wrap-around
+        if (bytes_after_wraparound.toInt() > M) {
+          throw FormatException('TODO: ....');
+        }
+        bytes_after_wraparound -= BigInt.from(M);
+      }
+
+      // Consume the first M bytes from data.
+      int offset = 0;
+      while (offset < M) {
+        final N = math.min(M - offset, bufSize);
+        inData.setAll(0, data.skip(offset).take(N));
+
+        _checkOpIsOne(ssl.EVP_CipherUpdate(ctx, outBytes, outLen, inBytes, N));
+        if (outLen.value > 0) {
+          yield outData.sublist(0, outLen.value);
+        }
+        offset += N;
+      }
+
+      // Check if it's time to wrap-around
+      if (isBeforeWrapAround && bytes_until_wraparound == BigInt.zero) {
+        // Output final block of data before wrap-around
+        _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+        if (outLen.value > 0) {
+          yield outData.sublist(0, outLen.value);
+        }
+
+        // Re-initialize the cipher context with counter wrapped around.
+        _checkOpIsOne(ssl.EVP_CipherInit_ex(
+          ctx,
+          cipher,
+          ffi.nullptr,
+          scope.dataAsPointer(key),
+          scope.dataAsPointer(counter), // TODO: counter wrapped-around
+          encrypt ? 1 : 0,
+        ));
+        // Update state:
+        isBeforeWrapAround = false;
+
+        // Now we process the remainder of data from the above chunk.
+        M = data.length;
+        // Do not consume more bytes than allowed after wrap-around.
+        // Notice that we've already consume up-to `offset`, so we don't have to
+        // count that.
+        if (bytes_after_wraparound.toInt() > (data.length - offset)) {
+          throw FormatException('TODO: ....');
+        }
+        bytes_after_wraparound -= BigInt.from(M - offset);
+
+        while (offset < M) {
+          final N = math.min(M - offset, bufSize);
+          inData.setAll(0, data.skip(offset).take(N));
+
+          _checkOpIsOne(
+              ssl.EVP_CipherUpdate(ctx, outBytes, outLen, inBytes, N));
+          if (outLen.value > 0) {
+            yield outData.sublist(0, outLen.value);
+          }
+          offset += N;
+        }
+      }
+    }
+
+    // Output final block
+    _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+    if (outLen.value > 0) {
+      yield outData.sublist(0, outLen.value);
+    }
+  } finally {
+    scope.release();
+  }
+}*/
+
 class _AesCtrSecretKey implements AesCtrSecretKey {
   final Uint8List _key;
   _AesCtrSecretKey(this._key);
+
+  void _checkArguments(
+    List<int> counter,
+    int length,
+  ) {
+    ArgumentError.checkNotNull(counter, 'counter');
+    ArgumentError.checkNotNull(length, 'length');
+    if (counter.length != 16) {
+      throw ArgumentError.value(counter, 'counter', 'must be 16 bytes');
+    }
+    if (length <= 0 || 128 < length) {
+      throw ArgumentError.value(length, 'length', 'must be between 1 and 128');
+    }
+  }
 
   @override
   Future<Uint8List> decryptBytes(
@@ -1665,8 +2016,7 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     int length,
   ) async {
     ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(counter, 'counter');
-    ArgumentError.checkNotNull(length, 'length');
+    _checkArguments(counter, length);
     return await _bufferStream(decryptStream(
       Stream.value(data),
       counter,
@@ -1680,8 +2030,9 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) {
-    // TODO: implement decryptStream
-    return null;
+    ArgumentError.checkNotNull(data, 'data');
+    _checkArguments(counter, length);
+    return _aesCtrEncryptOrDecrypt(_key, false, data, counter, length);
   }
 
   @override
@@ -1691,8 +2042,7 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     int length,
   ) async {
     ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(counter, 'counter');
-    ArgumentError.checkNotNull(length, 'length');
+    _checkArguments(counter, length);
     return await _bufferStream(encryptStream(
       Stream.value(data),
       counter,
@@ -1706,8 +2056,9 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) {
-    // TODO: implement encryptStream
-    return null;
+    ArgumentError.checkNotNull(data, 'data');
+    _checkArguments(counter, length);
+    return _aesCtrEncryptOrDecrypt(_key, true, data, counter, length);
   }
 
   @override
@@ -1736,25 +2087,19 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
   Stream<List<int>> source,
   List<int> iv,
 ) async* {
-  ArgumentError.checkNotNull(source, 'data');
-  ArgumentError.checkNotNull(iv, 'iv');
-
   final scope = _Scope();
   try {
-    final blockSize = key.length;
-    assert(blockSize == 16 || blockSize == 32);
+    assert(key.length == 16 || key.length == 32);
     final cipher =
-        blockSize == 16 ? ssl.EVP_aes_128_cbc() : ssl.EVP_aes_256_cbc();
+        key.length == 16 ? ssl.EVP_aes_128_cbc() : ssl.EVP_aes_256_cbc();
+    final blockSize = ssl.EVP_CIPHER_block_size(cipher);
 
     final ivSize = ssl.EVP_CIPHER_iv_length(cipher);
     if (iv.length != ivSize) {
       throw ArgumentError.value(iv, 'iv', 'must be $ivSize bytes');
     }
 
-    final ctx = ssl.EVP_CIPHER_CTX_new();
-    _checkOp(ctx.address != 0);
-    scope.defer(() => ssl.EVP_CIPHER_CTX_free(ctx));
-
+    final ctx = scope.create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
     _checkOpIsOne(ssl.EVP_CipherInit_ex(
       ctx,
       cipher,
@@ -1771,7 +2116,8 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
     final inData = inBuf.asTypedList(bufSize);
     final inBytes = inBuf.cast<ssl.Bytes>();
 
-    // Allocate an output buffer
+    // Allocate an output buffer, notice that BoringSSL says output cannot be
+    // more than input size + blockSize - 1
     final outBuf = scope.allocate<ffi.Uint8>(count: bufSize + blockSize);
     final outData = outBuf.asTypedList(bufSize + blockSize);
     final outBytes = outBuf.cast<ssl.Bytes>();
@@ -1790,6 +2136,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
         if (outLen.value > 0) {
           yield outData.sublist(0, outLen.value);
         }
+        offset += N;
       }
     }
     // Output final block
@@ -1814,8 +2161,11 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
   }
 
   @override
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) =>
-      _aesCbcEncryptOrDecrypt(_key, false, data, iv);
+  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(iv, 'iv');
+    return _aesCbcEncryptOrDecrypt(_key, false, data, iv);
+  }
 
   @override
   Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async {
@@ -1825,8 +2175,11 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
   }
 
   @override
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) =>
-      _aesCbcEncryptOrDecrypt(_key, true, data, iv);
+  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(iv, 'iv');
+    return _aesCbcEncryptOrDecrypt(_key, true, data, iv);
+  }
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() {
@@ -1839,13 +2192,94 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
 
 //---------------------- AES-GCM
 
-Future<AesGcmSecretKey> aesGcm_importRawKey(List<int> keyData) =>
+Future<AesGcmSecretKey> aesGcm_importRawKey(List<int> keyData) async =>
+    _AesGcmSecretKey(_aesImportRawKey(keyData));
+
+Future<AesGcmSecretKey> aesGcm_importJsonWebKey(
+        Map<String, dynamic> jwk) async =>
     throw _notImplemented;
 
-Future<AesGcmSecretKey> aesGcm_importJsonWebKey(Map<String, dynamic> jwk) =>
-    throw _notImplemented;
+Future<AesGcmSecretKey> aesGcm_generateKey(int length) async =>
+    _AesGcmSecretKey(_aesGenerateKey(length));
 
-Future<AesGcmSecretKey> aesGcm_generateKey(int length) => throw _notImplemented;
+class _AesGcmSecretKey implements AesGcmSecretKey {
+  final Uint8List _key;
+  _AesGcmSecretKey(this._key);
+
+  void _checkArguments(List<int> iv, List<int> additionalData, int tagLength) {
+    ArgumentError.checkNotNull(iv, 'iv');
+    ArgumentError.checkNotNull(tagLength, 'tagLength');
+    // TODO: check args
+  }
+
+  @override
+  Future<Uint8List> decryptBytes(
+    List<int> data,
+    List<int> iv, {
+    List<int> additionalData,
+    int tagLength = 128,
+  }) async {
+    ArgumentError.checkNotNull(data, 'data');
+    _checkArguments(iv, additionalData, tagLength);
+    return await _bufferStream(encryptStream(
+      Stream.value(data),
+      iv,
+      additionalData: additionalData,
+      tagLength: tagLength,
+    ));
+  }
+
+  @override
+  Stream<Uint8List> decryptStream(
+    Stream<List<int>> data,
+    List<int> iv, {
+    List<int> additionalData,
+    int tagLength = 128,
+  }) {
+    ArgumentError.checkNotNull(data, 'data');
+    _checkArguments(iv, additionalData, tagLength);
+    // TODO: implement decryptStream
+    return null;
+  }
+
+  @override
+  Future<Uint8List> encryptBytes(
+    List<int> data,
+    List<int> iv, {
+    List<int> additionalData,
+    int tagLength = 128,
+  }) async {
+    ArgumentError.checkNotNull(data, 'data');
+    _checkArguments(iv, additionalData, tagLength);
+    return await _bufferStream(encryptStream(
+      Stream.value(data),
+      iv,
+      additionalData: additionalData,
+      tagLength: tagLength,
+    ));
+  }
+
+  @override
+  Stream<Uint8List> encryptStream(
+    Stream<List<int>> data,
+    List<int> iv, {
+    List<int> additionalData,
+    int tagLength = 128,
+  }) {
+    ArgumentError.checkNotNull(data, 'data');
+    _checkArguments(iv, additionalData, tagLength);
+    // TODO: implement encryptStream
+    return null;
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportRawKey() async => Uint8List.fromList(_key);
+}
 
 //---------------------- ECDH
 

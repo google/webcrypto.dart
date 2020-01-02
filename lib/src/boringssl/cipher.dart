@@ -8,7 +8,8 @@ import 'bytestring.dart';
 
 //---------------------- Cipher primitives.
 
-/// The following functions return EVP_CIPHER objects that implement the named cipher algorithm.
+/// The following functions return EVP_CIPHER objects that implement the named
+/// cipher algorithm.
 ///
 /// ```c
 /// OPENSSL_EXPORT const EVP_CIPHER *EVP_rc4(void);
@@ -148,6 +149,16 @@ final EVP_CipherFinal_ex = lookup('EVP_CipherFinal_ex')
     )>();
 
 //---------------------- Cipher operations.
+
+/// EVP_CIPHER_block_size returns the block size, in bytes, for cipher, or one
+/// if cipher is a stream cipher.
+///
+/// ```c
+/// OPENSSL_EXPORT unsigned EVP_CIPHER_block_size(const EVP_CIPHER *cipher);
+/// ```
+final EVP_CIPHER_block_size = lookup('EVP_CIPHER_block_size')
+    .lookupFunc<Uint32 Function(Pointer<EVP_CIPHER>)>()
+    .asFunction<int Function(Pointer<EVP_CIPHER>)>();
 
 /// EVP_CIPHER_iv_length returns the IV size, in bytes, of cipher, or zero if
 /// cipher doesn't take an IV.
