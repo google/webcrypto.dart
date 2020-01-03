@@ -449,6 +449,193 @@ _KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
   }
 }
 
+//---------------------- EC Helpers
+
+/// Get `ssl.NID_...` from BoringSSL matching the given [curve].
+int _ecCurveToNID(EllipticCurve curve) {
+  ArgumentError.checkNotNull(curve, 'curve');
+
+  if (curve == EllipticCurve.p256) {
+    return ssl.NID_X9_62_prime256v1;
+  }
+  if (curve == EllipticCurve.p384) {
+    return ssl.NID_secp384r1;
+  }
+  if (curve == EllipticCurve.p521) {
+    return ssl.NID_secp521r1;
+  }
+  // This should never happen!
+  throw UnsupportedError('curve "$curve" is not supported');
+}
+
+/// Perform some post-import validation for EC keys.
+void _validateEllipticCurveKey(
+  ffi.Pointer<ssl.EVP_PKEY> key,
+  EllipticCurve curve,
+) {
+  _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_EC,
+      message: 'key is not an EC key');
+
+  final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
+  _checkData(ec.address != 0, fallback: 'key is not an EC key');
+  _checkDataIsOne(ssl.EC_KEY_check_key(ec), fallback: 'invalid key');
+
+  // When importing BoringSSL will compute the public key if omitted, and
+  // leave a flag, such that exporting the private key won't include the
+  // public key.
+  final encFlags = ssl.EC_KEY_get_enc_flags(ec);
+  ssl.EC_KEY_set_enc_flags(ec, encFlags & ~ssl.EC_PKEY_NO_PUBKEY);
+
+  // Check the curve of the imported key
+  final nid = ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(ec));
+  _checkData(_ecCurveToNID(curve) != nid, message: 'incorrect elliptic curve');
+}
+
+ffi.Pointer<ssl.EVP_PKEY> _importPkcs8EcPrivateKey(
+  List<int> keyData,
+  EllipticCurve curve,
+) {
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
+  _checkData(key.address != 0, fallback: 'unable to parse key');
+
+  try {
+    _validateEllipticCurveKey(key, curve);
+    return key;
+  } catch (_) {
+    // We only free key if an exception/error was thrown
+    ssl.EVP_PKEY_free(key);
+    rethrow;
+  }
+}
+
+ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
+  List<int> keyData,
+  EllipticCurve curve,
+) {
+  // TODO: When calling EVP_parse_public_key it might wise to check that CBS_len(cbs) == 0 is true afterwards
+  // otherwise it might be that all of the contents of the key was not consumed and we should throw
+  // a FormatException. Notice that this the case for private/public keys, and RSA keys.
+  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
+  _checkData(key.address != 0, fallback: 'unable to parse key');
+
+  try {
+    _validateEllipticCurveKey(key, curve);
+
+    return key;
+  } catch (_) {
+    // We only free key if an exception/error was thrown
+    ssl.EVP_PKEY_free(key);
+    rethrow;
+  }
+}
+
+ffi.Pointer<ssl.EVP_PKEY> _importRawEcPublicKey(
+  List<int> keyData,
+  EllipticCurve curve,
+) {
+  // See: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ec.cc#332
+
+  // Create EC_KEY for the curve
+  final ec = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
+  _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
+
+  try {
+    // Create EC_POINT to hold public key info
+    final pub = ssl.EC_POINT_new(ssl.EC_KEY_get0_group(ec));
+    _checkOp(pub.address != 0, fallback: 'internal point allocation error');
+    try {
+      // Read raw public key
+      _withDataAsPointer(keyData, (ffi.Pointer<ssl.Bytes> p) {
+        _checkDataIsOne(
+          ssl.EC_POINT_oct2point(
+              ssl.EC_KEY_get0_group(ec), pub, p, keyData.length, ffi.nullptr),
+          fallback: 'invalid keyData',
+        );
+      });
+      // Copy pub point to ec
+      _checkDataIsOne(ssl.EC_KEY_set_public_key(ec, pub),
+          fallback: 'invalid keyData');
+      final key = ssl.EVP_PKEY_new();
+      try {
+        _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
+        _validateEllipticCurveKey(key, curve);
+        return key;
+      } catch (_) {
+        ssl.EVP_PKEY_free(key);
+        rethrow;
+      }
+    } finally {
+      ssl.EC_POINT_free(pub);
+    }
+  } finally {
+    ssl.EC_KEY_free(ec);
+  }
+}
+
+Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
+  final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
+  _checkOp(ec.address != null, fallback: 'internal key type invariant error');
+
+  return _withOutCBB((cbb) {
+    return _checkOpIsOne(
+        ssl.EC_POINT_point2cbb(
+          cbb,
+          ssl.EC_KEY_get0_group(ec),
+          ssl.EC_KEY_get0_public_key(ec),
+          ssl.POINT_CONVERSION_UNCOMPRESSED,
+          ffi.nullptr,
+        ),
+        fallback: 'formatting failed');
+  });
+}
+
+KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
+    _generateEcKeyPair(
+  EllipticCurve curve,
+) {
+  final ecPriv = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
+  _checkOp(ecPriv.address != 0, fallback: 'internal failure to use curve');
+
+  try {
+    _checkOpIsOne(ssl.EC_KEY_generate_key(ecPriv),
+        fallback: 'key generation failed');
+
+    final privKey = ssl.EVP_PKEY_new();
+    _checkOp(privKey.address != 0);
+    try {
+      final ecPub = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
+      _checkOp(ecPub.address != 0);
+      try {
+        _checkOpIsOne(ssl.EC_KEY_set_public_key(
+          ecPub,
+          ssl.EC_KEY_get0_public_key(ecPriv),
+        ));
+
+        final pubKey = ssl.EVP_PKEY_new();
+        _checkOp(pubKey.address != 0);
+        try {
+          _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(pubKey, ecPub));
+
+          return _KeyPair(
+            privateKey: privKey,
+            publicKey: pubKey,
+          );
+        } catch (_) {
+          ssl.EVP_PKEY_free(pubKey);
+          rethrow;
+        }
+      } finally {
+        ssl.EC_KEY_free(ecPub);
+      }
+    } catch (_) {
+      ssl.EVP_PKEY_free(privKey);
+      rethrow;
+    }
+  } finally {
+    ssl.EC_KEY_free(ecPriv);
+  }
+}
+
 //---------------------- Random Bytes
 
 void fillRandomBytes(TypedData destination) {
@@ -1016,62 +1203,11 @@ class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
 
 //---------------------- ECDSA
 
-/// Get `ssl.NID_...` from BoringSSL matching the given [curve].
-int _curveToNID(EllipticCurve curve) {
-  ArgumentError.checkNotNull(curve, 'curve');
-
-  if (curve == EllipticCurve.p256) {
-    return ssl.NID_X9_62_prime256v1;
-  }
-  if (curve == EllipticCurve.p384) {
-    return ssl.NID_secp384r1;
-  }
-  if (curve == EllipticCurve.p521) {
-    return ssl.NID_secp521r1;
-  }
-  // This should never happen!
-  throw UnsupportedError('curve "$curve" is not supported');
-}
-
-/// Perform some post-import validation for EC keys.
-void _validateEllipticCurveKey(
-  ffi.Pointer<ssl.EVP_PKEY> key,
-  EllipticCurve curve,
-) {
-  _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_EC,
-      message: 'key is not an EC key');
-
-  final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
-  _checkData(ec.address != 0, fallback: 'key is not an EC key');
-  _checkDataIsOne(ssl.EC_KEY_check_key(ec), fallback: 'invalid key');
-
-  // When importing BoringSSL will compute the public key if omitted, and
-  // leave a flag, such that exporting the private key won't include the
-  // public key.
-  final encFlags = ssl.EC_KEY_get_enc_flags(ec);
-  ssl.EC_KEY_set_enc_flags(ec, encFlags & ~ssl.EC_PKEY_NO_PUBKEY);
-
-  // Check the curve of the imported key
-  final nid = ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(ec));
-  _checkData(_curveToNID(curve) != nid, message: 'incorrect elliptic curve');
-}
-
 Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
-) async {
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-
-  try {
-    _validateEllipticCurveKey(key, curve);
-    return _EcdsaPrivateKey(key);
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
-  }
-}
+) async =>
+    _EcdsaPrivateKey(_importPkcs8EcPrivateKey(keyData, curve));
 
 Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
@@ -1082,112 +1218,24 @@ Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
 Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
   EllipticCurve curve,
 ) async {
-  final ecPriv = ssl.EC_KEY_new_by_curve_name(_curveToNID(curve));
-  _checkOp(ecPriv.address != 0, fallback: 'internal failure to use curve');
-
-  try {
-    _checkOpIsOne(ssl.EC_KEY_generate_key(ecPriv),
-        fallback: 'key generation failed');
-
-    final privKey = ssl.EVP_PKEY_new();
-    _checkOp(privKey.address != 0);
-    try {
-      final ecPub = ssl.EC_KEY_new_by_curve_name(_curveToNID(curve));
-      _checkOp(ecPub.address != 0);
-      try {
-        _checkOpIsOne(ssl.EC_KEY_set_public_key(
-          ecPub,
-          ssl.EC_KEY_get0_public_key(ecPriv),
-        ));
-
-        final pubKey = ssl.EVP_PKEY_new();
-        _checkOp(pubKey.address != 0);
-        try {
-          _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(pubKey, ecPub));
-
-          return _KeyPair(
-            privateKey: _EcdsaPrivateKey(privKey),
-            publicKey: _EcdsaPublicKey(pubKey),
-          );
-        } catch (_) {
-          ssl.EVP_PKEY_free(pubKey);
-          rethrow;
-        }
-      } finally {
-        ssl.EC_KEY_free(ecPub);
-      }
-    } catch (_) {
-      ssl.EVP_PKEY_free(privKey);
-      rethrow;
-    }
-  } finally {
-    ssl.EC_KEY_free(ecPriv);
-  }
+  final p = _generateEcKeyPair(curve);
+  return _KeyPair(
+    privateKey: _EcdsaPrivateKey(p.privateKey),
+    publicKey: _EcdsaPublicKey(p.publicKey),
+  );
 }
 
 Future<EcdsaPublicKey> ecdsaPublicKey_importRawKey(
   List<int> keyData,
   EllipticCurve curve,
-) async {
-  // See: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ec.cc#332
-
-  // Create EC_KEY for the curve
-  final ec = ssl.EC_KEY_new_by_curve_name(_curveToNID(curve));
-  _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
-
-  try {
-    // Create EC_POINT to hold public key info
-    final pub = ssl.EC_POINT_new(ssl.EC_KEY_get0_group(ec));
-    _checkOp(pub.address != 0, fallback: 'internal point allocation error');
-    try {
-      // Read raw public key
-      _withDataAsPointer(keyData, (ffi.Pointer<ssl.Bytes> p) {
-        _checkDataIsOne(
-          ssl.EC_POINT_oct2point(
-              ssl.EC_KEY_get0_group(ec), pub, p, keyData.length, ffi.nullptr),
-          fallback: 'invalid keyData',
-        );
-      });
-      // Copy pub point to ec
-      _checkDataIsOne(ssl.EC_KEY_set_public_key(ec, pub),
-          fallback: 'invalid keyData');
-      final key = ssl.EVP_PKEY_new();
-      try {
-        _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
-        _validateEllipticCurveKey(key, curve);
-        return _EcdsaPublicKey(key);
-      } catch (_) {
-        ssl.EVP_PKEY_free(key);
-        rethrow;
-      }
-    } finally {
-      ssl.EC_POINT_free(pub);
-    }
-  } finally {
-    ssl.EC_KEY_free(ec);
-  }
-}
+) async =>
+    _EcdsaPublicKey(_importRawEcPublicKey(keyData, curve));
 
 Future<EcdsaPublicKey> ecdsaPublicKey_importSpkiKey(
   List<int> keyData,
   EllipticCurve curve,
-) async {
-  // TODO: When calling EVP_parse_public_key it might wise to check that CBS_len(cbs) == 0 is true afterwards
-  // otherwise it might be that all of the contents of the key was not consumed and we should throw
-  // a FormatException. Notice that this the case for private/public keys, and RSA keys.
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-
-  try {
-    _validateEllipticCurveKey(key, curve);
-
-    return _EcdsaPublicKey(key);
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
-  }
-}
+) async =>
+    _EcdsaPublicKey(_importSpkiEcPublicKey(keyData, curve));
 
 Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
@@ -1400,22 +1448,7 @@ class _EcdsaPublicKey with _Disposable implements EcdsaPublicKey {
   }
 
   @override
-  Future<Uint8List> exportRawKey() async {
-    final ec = ssl.EVP_PKEY_get0_EC_KEY(_key);
-    _checkOp(ec.address != null, fallback: 'internal key type invariant error');
-
-    return _withOutCBB((cbb) {
-      return _checkOpIsOne(
-          ssl.EC_POINT_point2cbb(
-            cbb,
-            ssl.EC_KEY_get0_group(ec),
-            ssl.EC_KEY_get0_public_key(ec),
-            ssl.POINT_CONVERSION_UNCOMPRESSED,
-            ffi.nullptr,
-          ),
-          fallback: 'formatting failed');
-    });
-  }
+  Future<Uint8List> exportRawKey() async => _exportRawEcPublicKey(_key);
 
   @override
   Future<Uint8List> exportSpkiKey() async {
@@ -2333,8 +2366,8 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
 Future<EcdhPrivateKey> ecdhPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async =>
+    _EcdhPrivateKey(_importPkcs8EcPrivateKey(keyData, curve));
 
 Future<EcdhPrivateKey> ecdhPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
@@ -2344,26 +2377,140 @@ Future<EcdhPrivateKey> ecdhPrivateKey_importJsonWebKey(
 
 Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> ecdhPrivateKey_generateKey(
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async {
+  final p = _generateEcKeyPair(curve);
+  return _KeyPair(
+    privateKey: _EcdhPrivateKey(p.privateKey),
+    publicKey: _EcdhPublicKey(p.publicKey),
+  );
+}
 
 Future<EcdhPublicKey> ecdhPublicKey_importRawKey(
   List<int> keyData,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async =>
+    _EcdhPublicKey(_importRawEcPublicKey(keyData, curve));
 
 Future<EcdhPublicKey> ecdhPublicKey_importSpkiKey(
   List<int> keyData,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async =>
+    _EcdhPublicKey(_importSpkiEcPublicKey(keyData, curve));
 
 Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) =>
     throw _notImplemented;
+
+class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
+  final ffi.Pointer<ssl.EVP_PKEY> _key;
+
+  _EcdhPrivateKey(this._key);
+
+  @override
+  void _finalize() {
+    ssl.EVP_PKEY_free(_key);
+  }
+
+  @override
+  Future<Uint8List> deriveBits(EcdhPublicKey publicKey, int length) async {
+    ArgumentError.checkNotNull(publicKey, 'publicKey');
+    ArgumentError.checkNotNull(length, 'length');
+    if (!(publicKey is _EcdhPublicKey)) {
+      throw ArgumentError.value(
+        publicKey,
+        'publicKey',
+        'custom implementations of EcdhPublicKey is not supported',
+      );
+    }
+    if (length <= 0) {
+      throw ArgumentError.value(length, 'length', 'must be positive');
+    }
+    final _publicKey = publicKey as _EcdhPublicKey;
+
+    final pubEcKey = ssl.EVP_PKEY_get0_EC_KEY(_publicKey._key);
+    final privEcKey = ssl.EVP_PKEY_get0_EC_KEY(_key);
+
+    // Field size rounded up to 8 bits is the maximum number of bits we can
+    // derive. The most significant bits will be zero in this case.
+    final fieldSize = ssl.EC_GROUP_get_degree(ssl.EC_KEY_get0_group(privEcKey));
+    final maxLength = 8 * (fieldSize / 8).ceil();
+    if (length > maxLength) {
+      throw _OperationError(
+        'Length in ECDH key derivation is too large. '
+        'Maximum allowed is $maxLength bits.',
+      );
+    }
+
+    if (length == 0) {
+      return Uint8List.fromList([]);
+    }
+
+    final lengthInBytes = (length / 8).ceil() * 8;
+    final derived = _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Data> p) {
+      final outLen = ssl.ECDH_compute_key(
+        p,
+        lengthInBytes,
+        ssl.EC_KEY_get0_public_key(pubEcKey),
+        privEcKey,
+        ffi.nullptr,
+      );
+      _checkOp(outLen != -1, fallback: 'ECDH key derivation failed');
+      _checkOp(
+        outLen != lengthInBytes,
+        message: 'internal error in ECDH key derivation',
+      );
+    });
+
+    // Zero the most-significant bits, if length does not fit to bytes.
+    final zeroBits = lengthInBytes * 8 - length;
+    assert(zeroBits < 8);
+    if (zeroBits > 0) {
+      derived[0] &= 0xff << (8 - lengthInBytes);
+    }
+
+    return derived;
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportPkcs8Key() async {
+    return _withOutCBB((cbb) {
+      _checkOp(ssl.EVP_marshal_private_key(cbb, _key) == 1);
+    });
+  }
+}
+
+class _EcdhPublicKey with _Disposable implements EcdhPublicKey {
+  final ffi.Pointer<ssl.EVP_PKEY> _key;
+
+  _EcdhPublicKey(this._key);
+
+  @override
+  void _finalize() {
+    ssl.EVP_PKEY_free(_key);
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() {
+    throw _notImplemented;
+  }
+
+  @override
+  Future<Uint8List> exportRawKey() async => _exportRawEcPublicKey(_key);
+
+  @override
+  Future<Uint8List> exportSpkiKey() async {
+    return _withOutCBB((cbb) {
+      _checkOp(ssl.EVP_marshal_public_key(cbb, _key) == 1);
+    });
+  }
+}
 
 //---------------------- HKDF
 

@@ -85,6 +85,16 @@ final EC_GROUP_get_curve_name = lookup('EC_GROUP_get_curve_name')
     .lookupFunc<Int32 Function(Pointer<EC_GROUP>)>()
     .asFunction<int Function(Pointer<EC_GROUP>)>();
 
+/// EC_GROUP_get_degree returns the number of bits needed to represent an
+/// element of the field underlying group.
+///
+/// ```c
+/// OPENSSL_EXPORT unsigned EC_GROUP_get_degree(const EC_GROUP *group);
+/// ```
+final EC_GROUP_get_degree = lookup('EC_GROUP_get_degree')
+    .lookupFunc<Uint32 Function(Pointer<EC_GROUP>)>()
+    .asFunction<int Function(Pointer<EC_GROUP>)>();
+
 //---------------------- Points on elliptic curves.
 
 /// EC_POINT_new returns a fresh EC_POINT object in the given group, or NULL on error.

@@ -4,6 +4,7 @@ export 'bytestring.dart';
 export 'cipher.dart';
 export 'digest.dart';
 export 'ec.dart';
+export 'ecdh.dart';
 export 'ecdsa.dart';
 export 'ec_key.dart';
 export 'err.dart';
