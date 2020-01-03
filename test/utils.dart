@@ -47,6 +47,37 @@ String hashToJson(Hash h) {
   return null; // unreachable
 }
 
+String curveToJson(EllipticCurve curve) {
+  if (curve == EllipticCurve.p256) {
+    return 'p-256';
+  }
+  if (curve == EllipticCurve.p384) {
+    return 'p-384';
+  }
+  if (curve == EllipticCurve.p521) {
+    return 'p-521';
+  }
+  check(false, 'invalid curve implementation');
+  return null; // unreachable
+}
+
+EllipticCurve curveFromJson(dynamic json) {
+  if (json is Map) {
+    json = json['curve'];
+  }
+  if (json == 'p-256') {
+    return EllipticCurve.p256;
+  }
+  if (json == 'p-384') {
+    return EllipticCurve.p384;
+  }
+  if (json == 'p-521') {
+    return EllipticCurve.p521;
+  }
+  check(false, 'invalid curve specification');
+  return null; // unreachable
+}
+
 /// Flip the first bit of every byte
 ///
 /// Useful for generating an invalidate signature.

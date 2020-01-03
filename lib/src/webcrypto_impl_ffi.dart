@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 import '../webcrypto.dart';
 import 'boringssl/boringssl.dart' as ssl;
 
-final _notImplemented = throw UnimplementedError('Not implemented');
+final _notImplemented = UnimplementedError('Not implemented');
 
 //---------------------- Helpers
 
@@ -82,9 +82,9 @@ String _extractError() {
 ffi.Pointer<T> _malloc<T extends ffi.NativeType>({int count = 1}) {
   return ffi.allocate<T>(count: count);
   // TODO: Find out why this fails:
-  // final p = ssl.OPENSSL_malloc(count * ffi.sizeOf<T>());
-  // _checkOp(p.address != 0, fallback: 'allocation failure');
-  // return p.cast<T>();
+  //final p = ssl.OPENSSL_malloc(count * ffi.sizeOf<T>());
+  //_checkOp(p.address != 0, fallback: 'allocation failure');
+  //return p.cast<T>();
 }
 
 /// Release memory allocated with [_malloc]
@@ -94,25 +94,35 @@ void _free<T extends ffi.NativeType>(ffi.Pointer<T> p) {
   //ssl.OPENSSL_free(p.cast<ssl.Data>());
 }
 
+class _ScopeEntry {
+  final Object handle;
+  final void Function() fn;
+
+  _ScopeEntry(this.handle, this.fn);
+}
+
 // Utility for tracking and releasing memory.
 class _Scope {
-  final List<void Function()> _deferred = [];
+  final List<_ScopeEntry> _deferred = [];
 
   /// Defer [fn] to end of this scope.
-  void defer(void Function() fn) => _deferred.add(fn);
+  void defer(void Function() fn, [Object handle]) =>
+      _deferred.add(_ScopeEntry(handle, fn));
 
   /// Allocate an [ffi.Pointer<T>] in this scope.
   ffi.Pointer<T> allocate<T extends ffi.NativeType>({int count = 1}) {
     final p = _malloc<T>(count: count);
-    defer(() => _free(p));
+    defer(() => _free(p), p);
     return p;
   }
 
   /// Allocate and copy [data] to an [ffi.Pointer<T>] in this scope.
   ffi.Pointer<T> dataAsPointer<T extends ffi.NativeType>(List<int> data) {
-    final p = allocate<ffi.Uint8>(count: data.length);
+    final p = _malloc<ffi.Uint8>(count: data.length);
     p.asTypedList(data.length).setAll(0, data);
-    return p.cast<T>();
+    final result = p.cast<T>();
+    defer(() => _free(p), result);
+    return result;
   }
 
   /// Call [create], return [T], and [release] when scope is terminated.
@@ -122,19 +132,31 @@ class _Scope {
   ) {
     final result = create();
     _checkOp(result.address != 0, fallback: 'allocation failed');
-    defer(() => release(result));
+    defer(() => release(result), result);
     return result;
+  }
+
+  /// Move [handle] out of scope.
+  ///
+  /// This requires that [handle] is an object that was registered in this
+  /// scope, otherwise this throws.
+  T move<T>(T handle) {
+    if (!_deferred.any((e) => e.handle == handle)) {
+      throw StateError('Cannot move handle from Scope');
+    }
+    _deferred.removeWhere((e) => e.handle == handle);
+    return handle;
   }
 
   /// Release all resources held in this scope.
   void release() {
     while (_deferred.isNotEmpty) {
       try {
-        _deferred.removeLast()();
+        _deferred.removeLast().fn();
       } catch (e) {
         while (_deferred.isNotEmpty) {
           try {
-            _deferred.removeLast()();
+            _deferred.removeLast().fn();
           } catch (_) {
             // Ignore error
           }
@@ -151,7 +173,7 @@ R _withAllocation<T extends ffi.NativeType, R>(
   int count,
   R Function(ffi.Pointer<T>) fn,
 ) {
-  assert(!(R is Future), 'avoid async blocks');
+  assert(R is! Future, 'avoid async blocks');
   final p = _malloc<T>(count: count);
   try {
     return fn(p);
@@ -166,7 +188,7 @@ Future<R> _withAllocationAsync<T extends ffi.NativeType, R>(
   int count,
   FutureOr<R> Function(ffi.Pointer<T>) fn,
 ) async {
-  assert(!(R is Future), 'avoid nested async blocks');
+  assert(R is! Future, 'avoid nested async blocks');
   final p = _malloc<T>(count: count);
   try {
     return await fn(p);
@@ -488,7 +510,7 @@ void _validateEllipticCurveKey(
 
   // Check the curve of the imported key
   final nid = ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(ec));
-  _checkData(_ecCurveToNID(curve) != nid, message: 'incorrect elliptic curve');
+  _checkData(_ecCurveToNID(curve) == nid, message: 'incorrect elliptic curve');
 }
 
 ffi.Pointer<ssl.EVP_PKEY> _importPkcs8EcPrivateKey(
@@ -593,46 +615,34 @@ KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
     _generateEcKeyPair(
   EllipticCurve curve,
 ) {
-  final ecPriv = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
-  _checkOp(ecPriv.address != 0, fallback: 'internal failure to use curve');
-
+  final scope = _Scope();
   try {
-    _checkOpIsOne(ssl.EC_KEY_generate_key(ecPriv),
-        fallback: 'key generation failed');
+    final ecPriv = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
+    _checkOp(ecPriv.address != 0, fallback: 'internal failure to use curve');
+    scope.defer(() => ssl.EC_KEY_free(ecPriv));
 
-    final privKey = ssl.EVP_PKEY_new();
-    _checkOp(privKey.address != 0);
-    try {
-      final ecPub = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
-      _checkOp(ecPub.address != 0);
-      try {
-        _checkOpIsOne(ssl.EC_KEY_set_public_key(
-          ecPub,
-          ssl.EC_KEY_get0_public_key(ecPriv),
-        ));
+    _checkOpIsOne(ssl.EC_KEY_generate_key(ecPriv));
 
-        final pubKey = ssl.EVP_PKEY_new();
-        _checkOp(pubKey.address != 0);
-        try {
-          _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(pubKey, ecPub));
+    final privKey = scope.create(ssl.EVP_PKEY_new, ssl.EVP_PKEY_free);
+    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(privKey, ecPriv));
 
-          return _KeyPair(
-            privateKey: privKey,
-            publicKey: pubKey,
-          );
-        } catch (_) {
-          ssl.EVP_PKEY_free(pubKey);
-          rethrow;
-        }
-      } finally {
-        ssl.EC_KEY_free(ecPub);
-      }
-    } catch (_) {
-      ssl.EVP_PKEY_free(privKey);
-      rethrow;
-    }
+    final ecPub = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
+    _checkOp(ecPub.address != 0);
+    scope.defer(() => ssl.EC_KEY_free(ecPub));
+    _checkOpIsOne(ssl.EC_KEY_set_public_key(
+      ecPub,
+      ssl.EC_KEY_get0_public_key(ecPriv),
+    ));
+
+    final pubKey = scope.create(ssl.EVP_PKEY_new, ssl.EVP_PKEY_free);
+    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(pubKey, ecPub));
+
+    return _KeyPair(
+      privateKey: scope.move(privKey),
+      publicKey: scope.move(pubKey),
+    );
   } finally {
-    ssl.EC_KEY_free(ecPriv);
+    scope.release();
   }
 }
 
@@ -1301,7 +1311,7 @@ Uint8List _convertEcdsaWebCryptoSignatureToDerSignature(
     ec,
   )));
 
-  if (N * 2 == signature.length) {
+  if (N * 2 != signature.length) {
     // If the signature format is invalid we consider the signature invalid and
     // return false from verification method. This follows:
     // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#111
@@ -2417,7 +2427,7 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
   Future<Uint8List> deriveBits(EcdhPublicKey publicKey, int length) async {
     ArgumentError.checkNotNull(publicKey, 'publicKey');
     ArgumentError.checkNotNull(length, 'length');
-    if (!(publicKey is _EcdhPublicKey)) {
+    if (publicKey is! _EcdhPublicKey) {
       throw ArgumentError.value(
         publicKey,
         'publicKey',

@@ -1050,6 +1050,9 @@ enum EllipticCurve {
 abstract class EcdsaPrivateKey {
   EcdsaPrivateKey._(); // keep the constructor private.
 
+  // TODO: document or workaround pkcs8 being unsupported on Firefox:
+  //       https://bugzilla.mozilla.org/show_bug.cgi?id=1133698
+  // See: https://github.com/callstats-io/pem-to-jwk/blob/master/index.js#L126
   static Future<EcdsaPrivateKey> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
@@ -1085,6 +1088,7 @@ abstract class EcdsaPrivateKey {
   Future<Uint8List> signBytes(List<int> data, Hash hash);
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash);
 
+  // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
   Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, dynamic>> exportJsonWebKey();
@@ -1356,6 +1360,7 @@ abstract class AesGcmSecretKey {
 abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
 
+  // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
   static Future<EcdhPrivateKey> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
@@ -1386,6 +1391,7 @@ abstract class EcdhPrivateKey {
 
   Future<Uint8List> deriveBits(EcdhPublicKey publicKey, int length);
 
+  // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
   Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, dynamic>> exportJsonWebKey();
@@ -1394,6 +1400,7 @@ abstract class EcdhPrivateKey {
 abstract class EcdhPublicKey {
   EcdhPublicKey._(); // keep the constructor private.
 
+  /// TODO: find out of this works on Firefox
   static Future<EcdhPublicKey> importRawKey(
     List<int> keyData,
     EllipticCurve curve,

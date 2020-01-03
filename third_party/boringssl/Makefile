@@ -1,5 +1,5 @@
 
-REVISION='9801a0714555f819dc6bd0f1d1a892a40465f056'
+REVISION='6c95434cc9876dfe1cdc375c5ff04e70ebfe3770'
 
 all: lib/
 
@@ -11,9 +11,9 @@ src/:
 build/: src/
 	mkdir build/
 	# Build static library
-	cd build && cmake ../src && make -j
+	#cd build && cmake ../src && make -j2
 	# Build dynamic library
-	cd build && cmake -DBUILD_SHARED_LIBS=1 ../src && make -j
+	cd build && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1 ../src && make -j1
 
 lib/: build/
 	mkdir lib/
