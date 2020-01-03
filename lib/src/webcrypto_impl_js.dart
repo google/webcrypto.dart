@@ -1313,16 +1313,6 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
   }
 
   @override
-  Stream<Uint8List> decryptStream(
-    Stream<List<int>> data,
-    List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
-  }) async* {
-    yield await decryptBytes(await _bufferStream(data), iv);
-  }
-
-  @override
   Future<Uint8List> encryptBytes(
     List<int> data,
     List<int> iv, {
@@ -1347,16 +1337,6 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
       _key,
       data,
     );
-  }
-
-  @override
-  Stream<Uint8List> encryptStream(
-    Stream<List<int>> data,
-    List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
-  }) async* {
-    yield await encryptBytes(await _bufferStream(data), iv);
   }
 
   @override

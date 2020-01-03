@@ -53,6 +53,22 @@ class EVP_CIPHER extends Struct {}
 /// progress.
 class EVP_CIPHER_CTX extends Struct {}
 
+/// Authenticated Encryption with Additional Data.
+class EVP_AEAD extends Struct {}
+
+/// An EVP_AEAD_CTX represents an AEAD algorithm configured with a specific key and message-independent IV.
+///
+/// ```c
+/// typedef struct evp_aead_ctx_st {
+///   const EVP_AEAD *aead;
+///   union evp_aead_ctx_st_state state;
+///   // tag_len may contain the actual length of the authentication tag if it is
+///   // known at initialization time.
+///   uint8_t tag_len;
+/// } EVP_AEAD_CTX;
+/// ```
+class EVP_AEAD_CTX extends Struct {}
+
 /// An RSA object represents a public or private RSA key. A given object may be
 /// used concurrently on multiple threads by non-mutating functions, provided no
 /// other thread is concurrently calling a mutating function. Unless otherwise

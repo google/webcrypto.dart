@@ -1,3 +1,4 @@
+export 'aead.dart';
 export 'bn.dart';
 export 'bytestring.dart';
 export 'cipher.dart';

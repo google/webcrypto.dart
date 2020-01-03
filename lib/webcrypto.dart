@@ -1331,6 +1331,9 @@ abstract class AesGcmSecretKey {
     return impl.aesGcm_generateKey(length);
   }
 
+  // TODO: Document that this does not provide a streaming interface because
+  //       access to the decrypted bytes before verification of the
+  //       authentication tag defeats the purpose of authenticated-encryption.
   Future<Uint8List> encryptBytes(
     List<int> data,
     List<int> iv, {
@@ -1338,22 +1341,8 @@ abstract class AesGcmSecretKey {
     int tagLength = 128,
   });
 
-  Stream<Uint8List> encryptStream(
-    Stream<List<int>> data,
-    List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
-  });
-
   Future<Uint8List> decryptBytes(
     List<int> data,
-    List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
-  });
-
-  Stream<Uint8List> decryptStream(
-    Stream<List<int>> data,
     List<int> iv, {
     List<int> additionalData,
     int tagLength = 128,
