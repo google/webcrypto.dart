@@ -2432,6 +2432,18 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
     final pubEcKey = ssl.EVP_PKEY_get0_EC_KEY(_publicKey._key);
     final privEcKey = ssl.EVP_PKEY_get0_EC_KEY(_key);
 
+    // Check that public/private key uses the same elliptic curve.
+    if (ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(pubEcKey)) ==
+        ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(privEcKey))) {
+      // Note: web crypto will throw an InvalidAccessError here.
+      throw ArgumentError.value(
+        publicKey,
+        'publicKey',
+        'Public and private key for ECDH key derivation have the same '
+            'elliptic curve',
+      );
+    }
+
     // Field size rounded up to 8 bits is the maximum number of bits we can
     // derive. The most significant bits will be zero in this case.
     final fieldSize = ssl.EC_GROUP_get_degree(ssl.EC_KEY_get0_group(privEcKey));
@@ -2514,10 +2526,133 @@ class _EcdhPublicKey with _Disposable implements EcdhPublicKey {
 
 //---------------------- HKDF
 
-Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
+Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
+  ArgumentError.checkNotNull(keyData, 'keyData');
+  return _HkdfSecretKey(Uint8List.fromList(keyData));
+}
+
+class _HkdfSecretKey implements HkdfSecretKey {
+  final Uint8List _key;
+
+  _HkdfSecretKey(this._key);
+
+  @override
+  Future<Uint8List> deriveBits(
+    int length,
+    Hash hash,
+    List<int> salt,
+    List<int> info,
+  ) async {
+    ArgumentError.checkNotNull(length, 'length');
+    ArgumentError.checkNotNull(hash, 'hash');
+    ArgumentError.checkNotNull(salt, 'salt');
+    ArgumentError.checkNotNull(info, 'info');
+    if (length < 0) {
+      throw ArgumentError.value(length, 'length', 'must be positive integer');
+    }
+    final md = _Hash.fromHash(hash).MD;
+
+    // Mirroring limitations in chromium:
+    // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/hkdf.cc#74
+    if (length % 8 != 0) {
+      throw _OperationError('The length for HKDF must be a multiple of 8 bits');
+    }
+
+    final lengthInBytes = length ~/ 8;
+
+    final scope = _Scope();
+    try {
+      return _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Bytes> out) {
+        final r = ssl.HKDF(
+          out,
+          lengthInBytes,
+          md,
+          scope.dataAsPointer(_key),
+          _key.length,
+          scope.dataAsPointer(salt),
+          salt.length,
+          scope.dataAsPointer(info),
+          info.length,
+        );
+        if (r != 1) {
+          final packed_error = ssl.ERR_peek_error();
+          if (ssl.ERR_GET_LIB(packed_error) == ssl.ERR_LIB_HKDF &&
+              ssl.ERR_GET_REASON(packed_error) == ssl.HKDF_R_OUTPUT_TOO_LARGE) {
+            ssl.ERR_clear_error();
+            throw _OperationError(
+              'Length specified for HkdfSecretKey.deriveBits is too long',
+            );
+          }
+          _checkOpIsOne(r, fallback: 'HKDF key derivation failed');
+        }
+      });
+    } finally {
+      scope.release();
+    }
+  }
+}
 
 //---------------------- PBKDF2
 
-Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
+Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
+  ArgumentError.checkNotNull(keyData, 'keyData');
+  return _Pbkdf2SecretKey(Uint8List.fromList(keyData));
+}
+
+class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
+  final Uint8List _key;
+
+  _Pbkdf2SecretKey(this._key);
+
+  @override
+  Future<Uint8List> deriveBits(
+    int length,
+    Hash hash,
+    List<int> salt,
+    int iterations,
+  ) async {
+    ArgumentError.checkNotNull(length, 'length');
+    ArgumentError.checkNotNull(hash, 'hash');
+    ArgumentError.checkNotNull(salt, 'salt');
+    ArgumentError.checkNotNull(iterations, 'iterations');
+    if (length < 0) {
+      throw ArgumentError.value(length, 'length', 'must be positive integer');
+    }
+    final md = _Hash.fromHash(hash).MD;
+
+    // Mirroring limitations in chromium:
+    // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/pbkdf2.cc#75
+    if (length % 8 != 0) {
+      throw _OperationError(
+          'The length for PBKDF2 must be a multiple of 8 bits');
+    }
+    if (length == 0) {
+      throw _OperationError(
+          'A length of zero is not allowed Pbkdf2SecretKey.deriveBits');
+    }
+    if (iterations <= 0) {
+      throw _OperationError(
+          'Iterations <= 0 is not allowed for Pbkdf2SecretKey.deriveBits');
+    }
+
+    final lengthInBytes = length ~/ 8;
+
+    final scope = _Scope();
+    try {
+      return _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Bytes> out) {
+        _checkOpIsOne(ssl.PKCS5_PBKDF2_HMAC(
+          scope.dataAsPointer(_key),
+          _key.length,
+          scope.dataAsPointer(salt),
+          salt.length,
+          iterations,
+          md,
+          lengthInBytes,
+          out,
+        ));
+      });
+    } finally {
+      scope.release();
+    }
+  }
+}

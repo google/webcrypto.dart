@@ -54,8 +54,8 @@
 ///  * `NotSupportedError` becomes [UnsupportedError],
 ///  * `DataError` becomes [FormatException],
 ///  * `OperationError` becomes [OperationError],
-///  * `InvalidAccessError` shouldn't occur, if it does it's an
-///    [OperationError], because it's an unknown error.
+///  * `InvalidAccessError` shouldn't occur, except for ECDH key derivation with
+///     mismatching curves where it becomes an [ArgumentError].
 ///
 library webcrypto;
 

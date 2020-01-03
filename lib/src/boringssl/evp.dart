@@ -334,6 +334,45 @@ final EVP_DigestVerifyFinal = lookup('EVP_DigestVerifyFinal')
     .lookupFunc<Int32 Function(Pointer<EVP_MD_CTX>, Pointer<Bytes>, IntPtr)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>, Pointer<Bytes>, int)>();
 
+//---------------------- Password stretching.
+
+// Password stretching functions take a low-entropy password and apply a slow
+// function that results in a key suitable for use in symmetric cryptography.
+
+/// PKCS5_PBKDF2_HMAC computes iterations iterations of PBKDF2 of password and
+/// salt, using digest, and outputs key_len bytes to out_key. It returns one on
+/// success and zero on allocation failure or if iterations is 0.
+///
+/// ```c
+/// OPENSSL_EXPORT int PKCS5_PBKDF2_HMAC(const char *password, size_t password_len,
+///                                      const uint8_t *salt, size_t salt_len,
+///                                      unsigned iterations, const EVP_MD *digest,
+///                                      size_t key_len, uint8_t *out_key);
+/// ```
+final PKCS5_PBKDF2_HMAC = lookup('PKCS5_PBKDF2_HMAC')
+    .lookupFunc<
+        Int32 Function(
+      Pointer<Int8>,
+      IntPtr,
+      Pointer<Bytes>,
+      IntPtr,
+      Uint32,
+      Pointer<EVP_MD>,
+      IntPtr,
+      Pointer<Bytes>,
+    )>()
+    .asFunction<
+        int Function(
+      Pointer<Int8>,
+      int,
+      Pointer<Bytes>,
+      int,
+      int,
+      Pointer<EVP_MD>,
+      int,
+      Pointer<Bytes>,
+    )>();
+
 //---------------------- Public key contexts
 
 /// EVP_PKEY_CTX_new allocates a fresh EVP_PKEY_CTX for use with pkey.

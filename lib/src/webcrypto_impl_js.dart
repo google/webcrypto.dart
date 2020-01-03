@@ -42,7 +42,10 @@ String _curveToName(EllipticCurve curve) {
   throw AssertionError('Unknown curve "$curve"');
 }
 
-Object _translateDomException(subtle.DomException e) {
+Object _translateDomException(
+  subtle.DomException e, {
+  bool invalidAccessErrorIsArgumentError = false,
+}) {
   switch (e.name) {
     case 'SyntaxError':
       return ArgumentError(e.message);
@@ -55,6 +58,22 @@ Object _translateDomException(subtle.DomException e) {
     case 'OperationError':
       return _OperationError(e.message);
     case 'InvalidAccessError':
+      // InvalidAccessError occurs when the request operation is not valid for
+      // the provided key. This is typically because:
+      //  A) `CryptoKey.usages` is violated
+      //     (exporting a key with extractable set to false),
+      //  B) A key is used for the wrong operation
+      //     (signing with AES key makes no sense),
+      //  C) Doing ECDH key derivation using a key-pair from differnet curves.
+      //
+      // The (A) and (B) cases should be possible in this API. Strong typing
+      // prevents (B). And this library always enables all permissible
+      // operations when importing/generating keys.
+      // Hence, unless we're handling errors from ECDH `deriveBits` we shall
+      // consider 'InvalidAccessError' to be an internal error.
+      if (invalidAccessErrorIsArgumentError) {
+        throw ArgumentError(e.message);
+      }
       // This should never happen, because it is only thrown when
       /// CryptoKey.usages isn't configured correctly. But this library allows
       /// all valid usages.
@@ -71,11 +90,17 @@ Object _translateDomException(subtle.DomException e) {
 /// [Web Cryptograpy specification][1].
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#SubtleCrypto-Exceptions
-Future<T> _handleDomException<T>(Future<T> Function() fn) async {
+Future<T> _handleDomException<T>(
+  Future<T> Function() fn, {
+  bool invalidAccessErrorIsArgumentError = false,
+}) async {
   try {
     return await fn();
   } on subtle.DomException catch (e) {
-    throw _translateDomException(e);
+    throw _translateDomException(
+      e,
+      invalidAccessErrorIsArgumentError: invalidAccessErrorIsArgumentError,
+    );
   }
 }
 
@@ -213,8 +238,9 @@ Future<Uint8List> _decrypt(
 Future<Uint8List> _deriveBits(
   subtle.Algorithm algorithm,
   subtle.CryptoKey key,
-  int length,
-) {
+  int length, {
+  bool invalidAccessErrorIsArgumentError = false,
+}) {
   ArgumentError.checkNotNull(length, 'length');
 
   return _handleDomException(() async {
@@ -224,7 +250,7 @@ Future<Uint8List> _deriveBits(
       length,
     ));
     return result.asUint8List();
-  });
+  }, invalidAccessErrorIsArgumentError: invalidAccessErrorIsArgumentError);
 }
 
 /// Adapt `crypto.subtle.export` to Dart types.
@@ -1469,6 +1495,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       ),
       _key,
       length,
+      invalidAccessErrorIsArgumentError: true,
     );
   }
 
