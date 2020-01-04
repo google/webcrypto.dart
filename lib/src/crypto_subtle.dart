@@ -88,9 +88,9 @@ class CryptoKeyPair {
 /// dictionaries say to ignore properties whose values are `null` or
 /// `undefined`. Otherwise, this object would define a lot of properties that
 /// are not permitted. If two parameters for any algorithms in the Web
-/// Cryptography specification has conflicting tyoes in the future, we might
-/// have to split this into multiple types. But so they don't have conflicting
-/// parameters there is no reason to make a type per algorithm.
+/// Cryptography specification has conflicting types in the future, we might
+/// have to split this into multiple types. But so long as they don't have
+/// conflicting parameters there is no reason to make a type per algorithm.
 ///
 /// [1]: https://www.w3.org/TR/WebIDL-1/#es-dictionary
 @JS()

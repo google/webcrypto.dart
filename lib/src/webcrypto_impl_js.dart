@@ -119,9 +119,12 @@ Future<subtle.CryptoKey> _importJsonWebKey(
   String expectedType,
 ) {
   return _handleDomException(() async {
-    // TODO: Consider reading the JWK and stripping away any usage restrictions
-    //       Also verify that usage restrictions allows for usages listed.
-    //       Reject keys that don't allow for usages we request.
+    jwk = Map.fromEntries(jwk.entries.where(
+      // Filter out 'key_ops' and 'ext' as this library doesn't configuring
+      // _usages_ and _extractable_, we strip these properties.
+      // Notice that we also strip 'key_ops' and 'ext' in [_exportJsonWebKey].
+      (e) => e.key != 'key_ops' && e.key != 'ext',
+    ));
     final k = await subtle.promiseAsFuture(subtle.importJsonWebKey(
       'jwk',
       subtle.JsonWebKey.fromJson(jwk),
@@ -275,7 +278,12 @@ Future<Map<String, Object>> _exportJsonWebKey(
       'jwk',
       key,
     ));
-    return subtle.JsonWebKey.toJson(result);
+    final jwk = subtle.JsonWebKey.toJson(result);
+    // Strip 'key_ops' and 'ext' as this library doesn't allow configuration of
+    // _usages_ or _extractable_.
+    // Notice, that we also strip these in [_importJsonWebKey].
+    jwk.removeWhere((key, _) => key == 'key_ops' || key == 'ext');
+    return jwk;
   });
 }
 
@@ -1225,6 +1233,7 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
 
   @override
   Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async {
+    ArgumentError.checkNotNull(data, 'data');
     ArgumentError.checkNotNull(iv, 'iv');
     return await _decrypt(
       subtle.Algorithm(
@@ -1243,8 +1252,8 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
 
   @override
   Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async {
+    ArgumentError.checkNotNull(data, 'data');
     ArgumentError.checkNotNull(iv, 'iv');
-    // TODO: Validate all input arguments, iv must be 16 bytes
     return await _encrypt(
       subtle.Algorithm(
         name: _aesCbcAlgorithm.name,
