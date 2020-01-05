@@ -686,7 +686,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
       final bin = _JsonWebKey.decodeBase64UrlNoPadding(value, prop);
       checkJwk(bin.length != 0, prop, 'must not be empty');
       checkJwk(
-        bin.length > 1 && bin[0] == 0,
+        bin.length == 1 || bin[0] != 0,
         prop,
         'must not have leading zeros',
       );
@@ -735,6 +735,12 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
       scope.move(dp); // ssl.RSA_set0_crt_params takes ownership
       scope.move(dq);
       scope.move(qi);
+
+      // Notice that 'jwk.oth' isn't supported by Chrome:
+      // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#31
+      // This also appears to be ignored by Firefox:
+      // https://hg.mozilla.org/mozilla-central/file/38e6ad5fd7535be88e432075f76ec4a2dc294672/dom/crypto/CryptoKey.cpp#l588
+      // Thus, we follow Chrome and ignore property.
     }
 
     _checkDataIsOne(ssl.RSA_check_key(rsa), fallback: 'invalid RSA key');
@@ -743,6 +749,79 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
     _checkOpIsOne(ssl.EVP_PKEY_set1_RSA(key, rsa));
 
     return scope.move(key);
+  } finally {
+    scope.release();
+  }
+}
+
+Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
+  ffi.Pointer<ssl.EVP_PKEY> key, {
+  bool isPrivateKey,
+  String jwkAlg,
+  String jwkUse,
+}) {
+  assert(isPrivateKey != null);
+  assert(jwkUse != null);
+  assert(jwkAlg != null);
+
+  final scope = _Scope();
+  try {
+    final rsa = ssl.EVP_PKEY_get0_RSA(key);
+    _checkOp(rsa.address != 0, fallback: 'internal key type error');
+
+    String encodeBN(ffi.Pointer<ssl.BIGNUM> bn) {
+      final N = ssl.BN_num_bytes(bn);
+      final result = _withOutPointer(
+        N,
+        (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, N, bn)),
+      );
+      assert(result.length == 1 || result[0] != 0);
+      return _JsonWebKey.encodeBase64UrlNoPadding(result);
+    }
+
+    // Public key parameters
+    final n = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    final e = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    ssl.RSA_get0_key(rsa, n, e, ffi.nullptr);
+
+    if (!isPrivateKey) {
+      return _JsonWebKey(
+        kty: 'RSA',
+        use: jwkUse,
+        alg: jwkAlg,
+        n: encodeBN(n.value),
+        e: encodeBN(n.value),
+      ).toJson();
+    }
+
+    final d = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    ssl.RSA_get0_key(rsa, ffi.nullptr, ffi.nullptr, d);
+
+    // p, q, dp, dq, qi is optional in:
+    // // https://tools.ietf.org/html/rfc7518#section-6.3.2
+    // but explicitly required when exporting in Web Crypto.
+    final p = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    final q = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    ssl.RSA_get0_factors(rsa, p, q);
+
+    final dp = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    final dq = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    final qi = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    ssl.RSA_get0_crt_params(rsa, dp, dq, qi);
+
+    return _JsonWebKey(
+      kty: 'RSA',
+      use: jwkUse,
+      alg: jwkAlg,
+      n: encodeBN(n.value),
+      e: encodeBN(e.value),
+      d: encodeBN(d.value),
+      p: encodeBN(p.value),
+      q: encodeBN(q.value),
+      dp: encodeBN(dp.value),
+      dq: encodeBN(dq.value),
+      qi: encodeBN(qi.value),
+    ).toJson();
   } finally {
     scope.release();
   }
@@ -1426,9 +1505,9 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
-  return _RsassaPkcs1V15PrivateKey(_importPkcs8RsaPrivateKey(keyData), md);
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsassaPkcs1V15PrivateKey(_importPkcs8RsaPrivateKey(keyData), h);
 }
 
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey(
@@ -1444,7 +1523,7 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey(
       expectedUse: 'sig',
       expectedAlg: _rsassaPkcs1V15JwkAlgFromHash(h),
     ),
-    h.MD,
+    h,
   );
 }
 
@@ -1454,12 +1533,12 @@ Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
   BigInt publicExponent,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
   return _KeyPair(
-    privateKey: _RsassaPkcs1V15PrivateKey(keys.privateKey, md),
-    publicKey: _RsassaPkcs1V15PublicKey(keys.publicKey, md),
+    privateKey: _RsassaPkcs1V15PrivateKey(keys.privateKey, h),
+    publicKey: _RsassaPkcs1V15PublicKey(keys.publicKey, h),
   );
 }
 
@@ -1467,9 +1546,9 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
-  return _RsassaPkcs1V15PublicKey(_importSpkiRsaPublicKey(keyData), md);
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsassaPkcs1V15PublicKey(_importSpkiRsaPublicKey(keyData), h);
 }
 
 Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
@@ -1485,7 +1564,7 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
       expectedUse: 'sig',
       expectedAlg: _rsassaPkcs1V15JwkAlgFromHash(h),
     ),
-    h.MD,
+    h,
   );
 }
 
@@ -1493,7 +1572,7 @@ class _RsassaPkcs1V15PrivateKey
     with _Disposable
     implements RsassaPkcs1V15PrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
-  final ffi.Pointer<ssl.EVP_MD> _hash;
+  final _Hash _hash;
 
   _RsassaPkcs1V15PrivateKey(this._key, this._hash);
 
@@ -1515,7 +1594,7 @@ class _RsassaPkcs1V15PrivateKey
     return _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestSignInit(ctx, pctx, _hash, ffi.nullptr, _key),
+          ssl.EVP_DigestSignInit(ctx, pctx, _hash.MD, ffi.nullptr, _key),
         );
         _checkOpIsOne(
           ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, ssl.RSA_PKCS1_PADDING),
@@ -1533,9 +1612,13 @@ class _RsassaPkcs1V15PrivateKey
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkRsaPrivateOrPublicKey(
+        _key,
+        isPrivateKey: true,
+        jwkAlg: _rsassaPkcs1V15JwkAlgFromHash(_hash),
+        jwkUse: 'sig',
+      );
 
   @override
   Future<Uint8List> exportPkcs8Key() async {
@@ -1549,7 +1632,7 @@ class _RsassaPkcs1V15PublicKey
     with _Disposable
     implements RsassaPkcs1V15PublicKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
-  final ffi.Pointer<ssl.EVP_MD> _hash;
+  final _Hash _hash;
 
   _RsassaPkcs1V15PublicKey(this._key, this._hash);
 
@@ -1573,7 +1656,7 @@ class _RsassaPkcs1V15PublicKey
     return _withEVP_MD_CTX((ctx) async {
       return _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash, ffi.nullptr, _key),
+          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash.MD, ffi.nullptr, _key),
         );
         _checkOpIsOne(
           ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, ssl.RSA_PKCS1_PADDING),
@@ -1588,9 +1671,13 @@ class _RsassaPkcs1V15PublicKey
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkRsaPrivateOrPublicKey(
+        _key,
+        isPrivateKey: false,
+        jwkAlg: _rsassaPkcs1V15JwkAlgFromHash(_hash),
+        jwkUse: 'sig',
+      );
 
   @override
   Future<Uint8List> exportSpkiKey() async {
@@ -1623,9 +1710,9 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
-  return _RsaPssPrivateKey(_importPkcs8RsaPrivateKey(keyData), md);
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsaPssPrivateKey(_importPkcs8RsaPrivateKey(keyData), h);
 }
 
 Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
@@ -1641,7 +1728,7 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
       expectedUse: 'sig',
       expectedAlg: _rsaPssJwkAlgFromHash(h),
     ),
-    h.MD,
+    h,
   );
 }
 
@@ -1650,12 +1737,12 @@ Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
   BigInt publicExponent,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
   return _KeyPair(
-    privateKey: _RsaPssPrivateKey(keys.privateKey, md),
-    publicKey: _RsaPssPublicKey(keys.publicKey, md),
+    privateKey: _RsaPssPrivateKey(keys.privateKey, h),
+    publicKey: _RsaPssPublicKey(keys.publicKey, h),
   );
 }
 
@@ -1663,9 +1750,9 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
-  return _RsaPssPublicKey(_importSpkiRsaPublicKey(keyData), md);
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsaPssPublicKey(_importSpkiRsaPublicKey(keyData), h);
 }
 
 Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
@@ -1681,13 +1768,13 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
       expectedUse: 'sig',
       expectedAlg: _rsaPssJwkAlgFromHash(h),
     ),
-    h.MD,
+    h,
   );
 }
 
 class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
-  final ffi.Pointer<ssl.EVP_MD> _hash;
+  final _Hash _hash;
 
   _RsaPssPrivateKey(this._key, this._hash);
 
@@ -1717,7 +1804,7 @@ class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
     return _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestSignInit(ctx, pctx, _hash, ffi.nullptr, _key),
+          ssl.EVP_DigestSignInit(ctx, pctx, _hash.MD, ffi.nullptr, _key),
         );
         _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
           pctx.value,
@@ -1727,7 +1814,7 @@ class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
           pctx.value,
           saltLength,
         ));
-        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash));
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash.MD));
         await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
         return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
           len.value = 0;
@@ -1741,9 +1828,13 @@ class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkRsaPrivateOrPublicKey(
+        _key,
+        isPrivateKey: true,
+        jwkUse: 'sig',
+        jwkAlg: _rsaPssJwkAlgFromHash(_hash),
+      );
 
   @override
   Future<Uint8List> exportPkcs8Key() async {
@@ -1755,7 +1846,7 @@ class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
 
 class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
-  final ffi.Pointer<ssl.EVP_MD> _hash;
+  final _Hash _hash;
 
   _RsaPssPublicKey(this._key, this._hash);
 
@@ -1797,7 +1888,7 @@ class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
     return _withEVP_MD_CTX((ctx) async {
       return _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash, ffi.nullptr, _key),
+          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash.MD, ffi.nullptr, _key),
         );
         _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
           pctx.value,
@@ -1807,7 +1898,7 @@ class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
           pctx.value,
           saltLength,
         ));
-        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash));
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash.MD));
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
         return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
           final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
@@ -1818,9 +1909,13 @@ class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkRsaPrivateOrPublicKey(
+        _key,
+        isPrivateKey: false,
+        jwkUse: 'sig',
+        jwkAlg: _rsaPssJwkAlgFromHash(_hash),
+      );
 
   @override
   Future<Uint8List> exportSpkiKey() async {
@@ -2138,9 +2233,9 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
-  return _RsaOaepPrivateKey(_importPkcs8RsaPrivateKey(keyData), md);
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsaOaepPrivateKey(_importPkcs8RsaPrivateKey(keyData), h);
 }
 
 Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
@@ -2156,7 +2251,7 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
       expectedUse: 'enc',
       expectedAlg: _rsaOaepJwkAlgFromHash(h),
     ),
-    h.MD,
+    h,
   );
 }
 
@@ -2166,12 +2261,12 @@ Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>>
   BigInt publicExponent,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
   return _KeyPair(
-    privateKey: _RsaOaepPrivateKey(keys.privateKey, md),
-    publicKey: _RsaPssPublicKey(keys.publicKey, md),
+    privateKey: _RsaOaepPrivateKey(keys.privateKey, h),
+    publicKey: _RsaPssPublicKey(keys.publicKey, h),
   );
 }
 
@@ -2179,9 +2274,9 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
-  // Get md first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final md = _Hash.fromHash(hash).MD;
-  return _RsaOaepPublicKey(_importSpkiRsaPublicKey(keyData), md);
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsaOaepPublicKey(_importSpkiRsaPublicKey(keyData), h);
 }
 
 Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
@@ -2197,7 +2292,7 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
       expectedUse: 'enc',
       expectedAlg: _rsaOaepJwkAlgFromHash(h),
     ),
-    h.MD,
+    h,
   );
 }
 
@@ -2281,7 +2376,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
 
 class _RsaOaepPrivateKey with _Disposable implements RsaOaepPrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
-  final ffi.Pointer<ssl.EVP_MD> _hash;
+  final _Hash _hash;
 
   _RsaOaepPrivateKey(this._key, this._hash);
 
@@ -2295,7 +2390,7 @@ class _RsaOaepPrivateKey with _Disposable implements RsaOaepPrivateKey {
     ArgumentError.checkNotNull(data, 'data');
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
-      _hash,
+      _hash.MD,
       ssl.EVP_PKEY_decrypt_init,
       ssl.EVP_PKEY_decrypt,
       data,
@@ -2304,9 +2399,13 @@ class _RsaOaepPrivateKey with _Disposable implements RsaOaepPrivateKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkRsaPrivateOrPublicKey(
+        _key,
+        isPrivateKey: true,
+        jwkUse: 'enc',
+        jwkAlg: _rsaOaepJwkAlgFromHash(_hash),
+      );
 
   @override
   Future<Uint8List> exportPkcs8Key() async {
@@ -2318,7 +2417,7 @@ class _RsaOaepPrivateKey with _Disposable implements RsaOaepPrivateKey {
 
 class _RsaOaepPublicKey with _Disposable implements RsaOaepPublicKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
-  final ffi.Pointer<ssl.EVP_MD> _hash;
+  final _Hash _hash;
 
   _RsaOaepPublicKey(this._key, this._hash);
 
@@ -2332,7 +2431,7 @@ class _RsaOaepPublicKey with _Disposable implements RsaOaepPublicKey {
     ArgumentError.checkNotNull(data, 'data');
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
-      _hash,
+      _hash.MD,
       ssl.EVP_PKEY_encrypt_init,
       ssl.EVP_PKEY_encrypt,
       data,
@@ -2341,9 +2440,13 @@ class _RsaOaepPublicKey with _Disposable implements RsaOaepPublicKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkRsaPrivateOrPublicKey(
+        _key,
+        isPrivateKey: false,
+        jwkUse: 'enc',
+        jwkAlg: _rsaOaepJwkAlgFromHash(_hash),
+      );
 
   @override
   Future<Uint8List> exportSpkiKey() async {

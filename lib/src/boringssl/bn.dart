@@ -41,7 +41,8 @@ final BN_value_one = lookup('BN_value_one')
 
 //---------------------- Basic functions.
 
-/// BN_num_bytes returns the minimum number of bytes needed to represent the absolute value of bn.
+/// BN_num_bytes returns the minimum number of bytes needed to represent the
+/// absolute value of bn.
 ///
 /// ```c
 /// OPENSSL_EXPORT unsigned BN_num_bytes(const BIGNUM *bn);
