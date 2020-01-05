@@ -34,6 +34,26 @@ final EC_KEY_get0_group = lookup('EC_KEY_get0_group')
     .lookupFunc<Pointer<EC_GROUP> Function(Pointer<EC_KEY>)>()
     .asFunction<Pointer<EC_GROUP> Function(Pointer<EC_KEY>)>();
 
+/// EC_KEY_get0_private_key returns a pointer to the private key inside key.
+///
+/// ```c
+/// OPENSSL_EXPORT const BIGNUM *EC_KEY_get0_private_key(const EC_KEY *key);
+/// ```
+final EC_KEY_get0_private_key = lookup('EC_KEY_get0_private_key')
+    .lookupFunc<Pointer<BIGNUM> Function(Pointer<EC_KEY>)>()
+    .asFunction<Pointer<BIGNUM> Function(Pointer<EC_KEY>)>();
+
+/// EC_KEY_set_private_key sets the private key of key to priv. It returns one
+/// on success and zero otherwise. key must already have had a group configured
+/// (see EC_KEY_set_group and EC_KEY_new_by_curve_name).
+///
+/// ```c
+/// OPENSSL_EXPORT int EC_KEY_set_private_key(EC_KEY *key, const BIGNUM *priv);
+/// ```
+final EC_KEY_set_private_key = lookup('EC_KEY_set_private_key')
+    .lookupFunc<Int32 Function(Pointer<EC_KEY>, Pointer<BIGNUM>)>()
+    .asFunction<int Function(Pointer<EC_KEY>, Pointer<BIGNUM>)>();
+
 /// EC_KEY_get0_public_key returns a pointer to the public key point inside key.
 ///
 /// ```c
@@ -92,6 +112,29 @@ final EC_KEY_set_enc_flags = lookup('EC_KEY_set_enc_flags')
 final EC_KEY_check_key = lookup('EC_KEY_check_key')
     .lookupFunc<Int32 Function(Pointer<EC_KEY>)>()
     .asFunction<int Function(Pointer<EC_KEY>)>();
+
+/// EC_KEY_set_public_key_affine_coordinates sets the public key in key
+/// to (x, y). It returns one on success and zero otherwise.
+///
+/// ```c
+/// OPENSSL_EXPORT int EC_KEY_set_public_key_affine_coordinates(EC_KEY *key,
+///                                                             const BIGNUM *x,
+///                                                             const BIGNUM *y);
+/// ```c
+final EC_KEY_set_public_key_affine_coordinates =
+    lookup('EC_KEY_set_public_key_affine_coordinates')
+        .lookupFunc<
+            Int32 Function(
+          Pointer<EC_KEY>,
+          Pointer<BIGNUM>,
+          Pointer<BIGNUM>,
+        )>()
+        .asFunction<
+            int Function(
+          Pointer<EC_KEY>,
+          Pointer<BIGNUM>,
+          Pointer<BIGNUM>,
+        )>();
 
 //---------------------- Key generation.
 

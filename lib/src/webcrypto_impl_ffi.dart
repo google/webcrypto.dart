@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'dart:convert' show utf8;
+import 'dart:convert' show utf8, base64Url;
 import 'dart:ffi' as ffi;
 import 'dart:math' as math;
 import 'package:ffi/ffi.dart' as ffi;
@@ -356,6 +356,252 @@ Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
   return Uint8List.fromList(result);
 }
 
+/// Get the number of bytes required to hold [numberOfBits].
+///
+/// This is the same as `(N / 8).ceil() * 8` without dabling in doubles.
+int _numBitsToBytes(int numberOfBits) =>
+    (numberOfBits ~/ 8) + ((7 + (numberOfBits % 8)) ~/ 8);
+
+//---------------------- JWK Helpers
+
+/// Data type for the [JsonWebKey dictionary][1].
+///
+/// See also list of [registered parameters][2].
+///
+/// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
+/// [2]: https://www.iana.org/assignments/jose/jose.xhtml#web-key-parameters
+class _JsonWebKey {
+  final String kty;
+  final String use;
+  final List<String> key_ops;
+  final String alg;
+  final bool ext;
+  final String crv;
+  final String x;
+  final String y;
+  final String d;
+  final String n;
+  final String e;
+  final String p;
+  final String q;
+  final String dp;
+  final String dq;
+  final String qi;
+  final List<_RsaOtherPrimesInfo> oth;
+  final String k;
+
+  _JsonWebKey({
+    this.kty,
+    this.use,
+    this.key_ops,
+    this.alg,
+    this.ext,
+    this.crv,
+    this.x,
+    this.y,
+    this.d,
+    this.n,
+    this.e,
+    this.p,
+    this.q,
+    this.dp,
+    this.dq,
+    this.qi,
+    this.oth,
+    this.k,
+  });
+
+  /// Decode url-safe base64 witout padding as specified in
+  /// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
+  static Uint8List decodeBase64UrlNoPadding(String unpadded) {
+    final padded = unpadded.padRight(
+      unpadded.length + ((4 - (unpadded.length % 4)) % 4),
+      '=',
+    );
+    return base64Url.decode(padded);
+  }
+
+  /// Encode url-safe base64 witout padding as specified in
+  /// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
+  static String encodeBase64UrlNoPadding(List<int> data) {
+    final padded = base64Url.encode(data);
+    final i = padded.indexOf('=');
+    if (i == -1) {
+      return padded;
+    }
+    return padded.substring(0, i);
+  }
+
+  static _JsonWebKey fromJson(Map<String, Object> json) {
+    assert(json != null);
+    const stringKeys = [
+      'kty',
+      'use',
+      'alg',
+      'crv',
+      'x',
+      'y',
+      'd',
+      'n',
+      'e',
+      'p',
+      'q',
+      'dp',
+      'dq',
+      'qi',
+      'k',
+    ];
+    for (final k in stringKeys) {
+      if (json.containsKey(k) && json[k] is! String) {
+        throw FormatException('JWK entry "$k" must be a string', json);
+      }
+    }
+    if (json.containsKey('key_ops') && json['key_ops'] is! List<String>) {
+      throw FormatException(
+          'JWK entry "key_ops" must be a list of strings', json);
+    }
+    if (json.containsKey('ext') && json['ext'] is! bool) {
+      throw FormatException('JWK entry "ext" must be boolean', json);
+    }
+    List<_RsaOtherPrimesInfo> oth;
+    if (json.containsKey('oth')) {
+      if (!(json['oth'] is List<Map<String, Object>>)) {
+        throw FormatException('JWK entry "oth" must be list of maps', json);
+      }
+      oth = (json['oth'] as List<Map<String, Object>>).map((json) {
+        return _RsaOtherPrimesInfo.fromJson(json);
+      });
+    }
+    return _JsonWebKey(
+      kty: json['kty'] as String,
+      use: json['use'] as String,
+      key_ops: json['key_ops'] as List<String>,
+      alg: json['alg'] as String,
+      ext: json['ext'] as bool,
+      crv: json['crv'] as String,
+      x: json['x'] as String,
+      y: json['y'] as String,
+      d: json['d'] as String,
+      n: json['n'] as String,
+      e: json['e'] as String,
+      p: json['p'] as String,
+      q: json['q'] as String,
+      dp: json['dp'] as String,
+      dq: json['dq'] as String,
+      qi: json['qi'] as String,
+      oth: oth,
+      k: json['k'] as String,
+    );
+  }
+
+  Map<String, Object> toJson() {
+    assert(k != null);
+    final json = <String, Object>{};
+
+    // Set properties from all the string keys
+    if (kty != null) {
+      json['kty'] = kty;
+    }
+    if (use != null) {
+      json['use'] = use;
+    }
+    if (alg != null) {
+      json['alg'] = alg;
+    }
+    if (crv != null) {
+      json['crv'] = crv;
+    }
+    if (x != null) {
+      json['x'] = x;
+    }
+    if (y != null) {
+      json['y'] = y;
+    }
+    if (d != null) {
+      json['d'] = d;
+    }
+    if (n != null) {
+      json['n'] = n;
+    }
+    if (e != null) {
+      json['e'] = e;
+    }
+    if (p != null) {
+      json['p'] = p;
+    }
+    if (q != null) {
+      json['q'] = q;
+    }
+    if (dp != null) {
+      json['dp'] = dp;
+    }
+    if (dq != null) {
+      json['dq'] = dq;
+    }
+    if (qi != null) {
+      json['qi'] = qi;
+    }
+    if (k != null) {
+      json['k'] = k;
+    }
+
+    // Set non-string properties
+    if (key_ops != null) {
+      json['key_ops'] = key_ops;
+    }
+    if (ext != null) {
+      json['ext'] = ext;
+    }
+    if (oth != null) {
+      json['oth'] = oth.map((e) => e.toJson());
+    }
+
+    return json;
+  }
+}
+
+/// Data type for `RsaOtherPrimesInfo` used in the [JsonWebKey dictionary][1].
+///
+/// See also "oth" in [RFC 7518 Section 6.3.2.7].
+///
+/// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
+/// [2]: https://tools.ietf.org/html/rfc7518#section-6.3.2.7
+class _RsaOtherPrimesInfo {
+  final String r;
+  final String d;
+  final String t;
+
+  _RsaOtherPrimesInfo({
+    this.r,
+    this.d,
+    this.t,
+  }) {
+    assert(r != null && d != null && t != null);
+  }
+
+  static _RsaOtherPrimesInfo fromJson(Map<String, Object> json) {
+    assert(json != null);
+    for (final k in ['r', 'd', 't']) {
+      if (json[k] is! String) {
+        throw FormatException('"oth" entries in a JWK must contain "$k"', json);
+      }
+    }
+    return _RsaOtherPrimesInfo(
+      r: json['r'] as String,
+      d: json['d'] as String,
+      t: json['t'] as String,
+    );
+  }
+
+  Map<String, Object> toJson() {
+    return <String, Object>{
+      'r': r,
+      'd': d,
+      't': t,
+    };
+  }
+}
+
 //---------------------- RSA Helpers
 
 ffi.Pointer<ssl.EVP_PKEY> _importPkcs8RsaPrivateKey(List<int> keyData) {
@@ -490,6 +736,39 @@ int _ecCurveToNID(EllipticCurve curve) {
   throw UnsupportedError('curve "$curve" is not supported');
 }
 
+/// Get [EllipticCurve] from matching BoringSSL `ssl.NID_...`.
+EllipticCurve _ecCurveFromNID(int nid) {
+  assert(nid != null);
+
+  if (nid == ssl.NID_X9_62_prime256v1) {
+    return EllipticCurve.p256;
+  }
+  if (nid == ssl.NID_secp384r1) {
+    return EllipticCurve.p384;
+  }
+  if (nid == ssl.NID_secp521r1) {
+    return EllipticCurve.p521;
+  }
+  // This should never happen!
+  throw _OperationError('internal error detecting curve');
+}
+
+String _ecCurveToJwkCrv(EllipticCurve curve) {
+  ArgumentError.checkNotNull(curve, 'curve');
+
+  if (curve == EllipticCurve.p256) {
+    return 'P-256';
+  }
+  if (curve == EllipticCurve.p384) {
+    return 'P-384';
+  }
+  if (curve == EllipticCurve.p521) {
+    return 'P-521';
+  }
+  // This should never happen!
+  throw UnsupportedError('curve "$curve" is not supported');
+}
+
 /// Perform some post-import validation for EC keys.
 void _validateEllipticCurveKey(
   ffi.Pointer<ssl.EVP_PKEY> key,
@@ -551,6 +830,101 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
   }
 }
 
+ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
+  _JsonWebKey jwk,
+  EllipticCurve curve, {
+  bool isPrivateKey,
+  String expectedUse,
+  String expectedAlg, // may be null, if 'alg' property isn't validated (ECDH)
+}) {
+  assert(isPrivateKey != null);
+  assert(expectedUse != null);
+
+  _checkData(
+    jwk.kty == 'EC',
+    message: 'expected a elliptic-curve key, JWK property "kty" must be "EC"',
+  );
+  if (isPrivateKey) {
+    _checkData(
+      jwk.d != null,
+      message: 'expected a private key, JWK property "d" is missing',
+    );
+  } else {
+    _checkData(
+      jwk.d == null,
+      message: 'expected a public key, JWK property "d" is present',
+    );
+  }
+
+  final crv = _ecCurveToJwkCrv(curve);
+  _checkData(jwk.crv != crv, message: 'JWK property "crv" is not "$crv"');
+
+  _checkData(expectedAlg == null || jwk.alg == null || jwk.alg == expectedAlg,
+      message: 'JWK property "alg" should be "$expectedAlg", if present');
+
+  _checkData(jwk.use == null || jwk.use == expectedUse,
+      message: 'JWK property "use" should be "$expectedUse", if present');
+
+  // TODO: Reject keys with key_ops in inconsistent with isPrivate
+  //       Also in the js implementation...
+
+  final scope = _Scope();
+  try {
+    final ec = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
+    _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
+    scope.defer(() => ssl.EC_KEY_free(ec));
+
+    // We expect parameters to have this size
+    final paramSize = _numBitsToBytes(ssl.EC_GROUP_get_degree(
+      ssl.EC_KEY_get0_group(ec),
+    ));
+
+    // Utility to decode a JWK parameter.
+    ffi.Pointer<ssl.BIGNUM> decodeParam(String val, String prop) {
+      final bytes = _JsonWebKey.decodeBase64UrlNoPadding(val);
+      _checkData(
+        bytes.length != paramSize,
+        message: 'JWK property "$prop" should hold $paramSize bytes',
+      );
+      final bn = ssl.BN_bin2bn(
+        scope.dataAsPointer(bytes),
+        bytes.length,
+        ffi.nullptr,
+      );
+      _checkData(bn.address != 0);
+      scope.defer(() => ssl.BN_free(bn));
+      return bn;
+    }
+
+    // Note: ideally we wouldn't throw data errors in case of internal errors
+    _checkDataIsOne(
+      ssl.EC_KEY_set_public_key_affine_coordinates(
+        ec,
+        decodeParam(jwk.x, 'x'),
+        decodeParam(jwk.y, 'y'),
+      ),
+      fallback: 'invalid EC key',
+    );
+
+    if (isPrivateKey) {
+      _checkDataIsOne(
+        ssl.EC_KEY_set_private_key(ec, decodeParam(jwk.d, 'd')),
+        fallback: 'invalid EC key',
+      );
+    }
+
+    _checkDataIsOne(ssl.EC_KEY_check_key(ec), fallback: 'invalid EC key');
+
+    // Wrap with an EVP_KEY
+    final key = scope.create(ssl.EVP_PKEY_new, ssl.EVP_PKEY_free);
+    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
+
+    return scope.move(key);
+  } finally {
+    scope.release();
+  }
+}
+
 ffi.Pointer<ssl.EVP_PKEY> _importRawEcPublicKey(
   List<int> keyData,
   EllipticCurve curve,
@@ -609,6 +983,67 @@ Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
         ),
         fallback: 'formatting failed');
   });
+}
+
+Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
+  ffi.Pointer<ssl.EVP_PKEY> key, {
+  bool isPrivateKey,
+  String jwkUse,
+}) {
+  assert(isPrivateKey != null);
+  assert(jwkUse != null);
+
+  final scope = _Scope();
+  try {
+    final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
+    _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
+
+    final group = ssl.EC_KEY_get0_group(ec);
+    final curve = _ecCurveFromNID(ssl.EC_GROUP_get_curve_name(group));
+
+    // Determine byte size used for encoding params
+    final paramSize = _numBitsToBytes(ssl.EC_GROUP_get_degree(group));
+
+    final x = scope.create(ssl.BN_new, ssl.BN_free);
+    final y = scope.create(ssl.BN_new, ssl.BN_free);
+
+    _checkOpIsOne(ssl.EC_POINT_get_affine_coordinates_GFp(
+      group,
+      ssl.EC_KEY_get0_public_key(ec),
+      x,
+      y,
+      ffi.nullptr,
+    ));
+
+    final xAsBytes = _withOutPointer(
+      paramSize,
+      (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, x)),
+    );
+    final yAsBytes = _withOutPointer(
+      paramSize,
+      (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, y)),
+    );
+
+    Uint8List dAsBytes;
+    if (isPrivateKey) {
+      final d = ssl.EC_KEY_get0_private_key(ec);
+      dAsBytes = _withOutPointer(
+        paramSize,
+        (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, d)),
+      );
+    }
+
+    return _JsonWebKey(
+      kty: 'EC',
+      use: jwkUse,
+      crv: _ecCurveToJwkCrv(curve),
+      x: _JsonWebKey.encodeBase64UrlNoPadding(xAsBytes),
+      y: _JsonWebKey.encodeBase64UrlNoPadding(yAsBytes),
+      d: isPrivateKey ? _JsonWebKey.encodeBase64UrlNoPadding(dAsBytes) : null,
+    ).toJson();
+  } finally {
+    scope.release();
+  }
 }
 
 KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
@@ -1213,6 +1648,24 @@ class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
 
 //---------------------- ECDSA
 
+/// Get valid value for `jwk.alg` property given an [EllipticCurve] for ECDSA.
+String _ecdsaCurveToJwkAlg(EllipticCurve curve) {
+  ArgumentError.checkNotNull(curve, 'curve');
+
+  if (curve == EllipticCurve.p256) {
+    return 'ES256';
+  }
+  if (curve == EllipticCurve.p384) {
+    return 'ES384';
+  }
+  if (curve == EllipticCurve.p521) {
+    // ES512 means P-521 with SHA-512 (not a typo)
+    return 'ES512';
+  }
+  // This should never happen!
+  throw UnsupportedError('curve "$curve" is not supported');
+}
+
 Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
@@ -1222,8 +1675,14 @@ Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
 Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async =>
+    _EcdsaPrivateKey(_importJwkEcPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      curve,
+      isPrivateKey: true,
+      expectedUse: 'sig',
+      expectedAlg: _ecdsaCurveToJwkAlg(curve),
+    ));
 
 Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
   EllipticCurve curve,
@@ -1250,8 +1709,14 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importSpkiKey(
 Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async =>
+    _EcdsaPublicKey(_importJwkEcPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      curve,
+      isPrivateKey: false,
+      expectedUse: 'sig',
+      expectedAlg: _ecdsaCurveToJwkAlg(curve),
+    ));
 
 /// Convert ECDSA signature in DER format returned by BoringSSL to the raw R + S
 /// formated specified in the webcrypto specification.
@@ -1390,9 +1855,8 @@ class _EcdsaPrivateKey with _Disposable implements EcdsaPrivateKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: true, jwkUse: 'sig');
 
   @override
   Future<Uint8List> exportPkcs8Key() async {
@@ -1453,9 +1917,8 @@ class _EcdsaPublicKey with _Disposable implements EcdsaPublicKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: false, jwkUse: 'sig');
 
   @override
   Future<Uint8List> exportRawKey() async => _exportRawEcPublicKey(_key);
@@ -2382,8 +2845,14 @@ Future<EcdhPrivateKey> ecdhPrivateKey_importPkcs8Key(
 Future<EcdhPrivateKey> ecdhPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async =>
+    _EcdhPrivateKey(_importJwkEcPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      curve,
+      isPrivateKey: true,
+      expectedUse: 'enc',
+      expectedAlg: null, // ECDH has no validation of 'jwk.alg'
+    ));
 
 Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> ecdhPrivateKey_generateKey(
   EllipticCurve curve,
@@ -2410,8 +2879,14 @@ Future<EcdhPublicKey> ecdhPublicKey_importSpkiKey(
 Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
-) =>
-    throw _notImplemented;
+) async =>
+    _EcdhPublicKey(_importJwkEcPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      curve,
+      isPrivateKey: false,
+      expectedUse: 'enc',
+      expectedAlg: null, // ECDH has no validation of 'jwk.alg'
+    ));
 
 class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
@@ -2496,9 +2971,8 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: true, jwkUse: 'enc');
 
   @override
   Future<Uint8List> exportPkcs8Key() async {
@@ -2519,9 +2993,8 @@ class _EcdhPublicKey with _Disposable implements EcdhPublicKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: false, jwkUse: 'enc');
 
   @override
   Future<Uint8List> exportRawKey() async => _exportRawEcPublicKey(_key);

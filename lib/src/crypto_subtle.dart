@@ -201,20 +201,21 @@ class JsonWebKey {
       'k',
     ];
     for (final k in stringKeys) {
-      if (json.containsKey(k) && !(json[k] is String)) {
-        throw ArgumentError('JWK entry "$k" must be a string');
+      if (json.containsKey(k) && json[k] is! String) {
+        throw FormatException('JWK entry "$k" must be a string', json);
       }
     }
-    if (json.containsKey('key_ops') && !(json['key_ops'] is List<String>)) {
-      throw ArgumentError('JWK entry "key_ops" must be a list of strings');
+    if (json.containsKey('key_ops') && json['key_ops'] is! List<String>) {
+      throw FormatException(
+          'JWK entry "key_ops" must be a list of strings', json);
     }
-    if (json.containsKey('ext') && !(json['ext'] is bool)) {
-      throw ArgumentError('JWK entry "ext" must be boolean');
+    if (json.containsKey('ext') && json['ext'] is! bool) {
+      throw FormatException('JWK entry "ext" must be boolean', json);
     }
     List<RsaOtherPrimesInfo> oth;
     if (json.containsKey('oth')) {
       if (!(json['oth'] is List<Map<String, Object>>)) {
-        throw ArgumentError('JWK entry "oth" must be list of maps');
+        throw FormatException('JWK entry "oth" must be list of maps', json);
       }
       oth = (json['oth'] as List<Map<String, Object>>).map((json) {
         return RsaOtherPrimesInfo.fromJson(json);
@@ -329,8 +330,8 @@ class RsaOtherPrimesInfo {
 
   static RsaOtherPrimesInfo fromJson(Map<String, Object> json) {
     for (final k in ['r', 'd', 't']) {
-      if (!(json[k] is String)) {
-        throw ArgumentError('"oth" entries in a JWK must contain "$k"');
+      if (json[k] is! String) {
+        throw FormatException('"oth" entries in a JWK must contain "$k"', json);
       }
     }
     return RsaOtherPrimesInfo(

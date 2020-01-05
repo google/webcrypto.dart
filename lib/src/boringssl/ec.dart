@@ -117,6 +117,38 @@ final EC_POINT_free = lookup('EC_POINT_free')
 
 //---------------------- Point conversion.
 
+/// EC_POINT_get_affine_coordinates_GFp sets x and y to the affine value of
+/// point using ctx, if it's not NULL. It returns one on success and
+/// zero otherwise.
+///
+/// Either x or y may be NULL to skip computing that coordinate. This is
+/// slightly faster in the common case where only the x-coordinate is needed.
+///
+/// ```c
+/// OPENSSL_EXPORT int EC_POINT_get_affine_coordinates_GFp(const EC_GROUP *group,
+///                                                        const EC_POINT *point,
+///                                                        BIGNUM *x, BIGNUM *y,
+///                                                        BN_CTX *ctx);
+/// ```
+final EC_POINT_get_affine_coordinates_GFp =
+    lookup('EC_POINT_get_affine_coordinates_GFp')
+        .lookupFunc<
+            Int32 Function(
+          Pointer<EC_GROUP>,
+          Pointer<EC_POINT>,
+          Pointer<BIGNUM>,
+          Pointer<BIGNUM>,
+          Pointer<BN_CTX>,
+        )>()
+        .asFunction<
+            int Function(
+          Pointer<EC_GROUP>,
+          Pointer<EC_POINT>,
+          Pointer<BIGNUM>,
+          Pointer<BIGNUM>,
+          Pointer<BN_CTX>,
+        )>();
+
 /// EC_POINT_point2cbb behaves like EC_POINT_point2oct but appends the
 /// serialised point to cbb. It returns one on success and zero on error.
 ///
