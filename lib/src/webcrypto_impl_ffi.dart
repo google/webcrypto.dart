@@ -1381,6 +1381,23 @@ Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int lengthInBits]) {
   return data;
 }
 
+String _hmacJwkAlgFromHash(_Hash hash) {
+  if (hash == Hash.sha1) {
+    return 'HS1';
+  }
+  if (hash == Hash.sha256) {
+    return 'HS256';
+  }
+  if (hash == Hash.sha384) {
+    return 'HS384';
+  }
+  if (hash == Hash.sha512) {
+    return 'HS512';
+  }
+  assert(false); // This should never happen!
+  throw UnsupportedError('hash is not supported');
+}
+
 Future<HmacSecretKey> hmacSecretKey_importRawKey(
   List<int> keyData,
   Hash hash, {
@@ -1388,7 +1405,7 @@ Future<HmacSecretKey> hmacSecretKey_importRawKey(
 }) async {
   return _HmacSecretKey(
     _asUint8ListZeroedToBitLength(keyData, length),
-    _Hash.fromHash(hash).MD,
+    _Hash.fromHash(hash),
   );
 }
 
@@ -1396,22 +1413,44 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash, {
   int length,
-}) =>
-    throw _notImplemented;
+}) async {
+  ArgumentError.checkNotNull(jwk, 'jwk');
+  ArgumentError.checkNotNull(hash, 'hash');
+
+  final h = _Hash.fromHash(hash);
+  final k = _JsonWebKey.fromJson(jwk);
+
+  void checkJwk(bool condition, String prop, String message) =>
+      _checkData(condition, message: 'JWK property "$prop" $message');
+
+  checkJwk(k.kty == 'oct', 'kty', 'must be "oct"');
+  checkJwk(k.use == null || k.use == 'sig', 'use', 'must be "sig", if present');
+  final expectedAlg = _hmacJwkAlgFromHash(h);
+  checkJwk(
+    k.alg == null || k.alg == expectedAlg,
+    'alg',
+    'must be "$expectedAlg"',
+  );
+
+  final keyData = _JsonWebKey.decodeBase64UrlNoPadding(k.k, 'k');
+
+  return hmacSecretKey_importRawKey(keyData, hash, length: length);
+}
 
 Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash, {int length}) async {
-  length ??= ssl.EVP_MD_size(_Hash.fromHash(hash).MD) * 8;
+  final h = _Hash.fromHash(hash);
+  length ??= ssl.EVP_MD_size(h.MD) * 8;
   final keyData = Uint8List((length / 8).ceil());
   fillRandomBytes(keyData);
 
   return _HmacSecretKey(
     _asUint8ListZeroedToBitLength(keyData, length),
-    _Hash.fromHash(hash).MD,
+    h,
   );
 }
 
 class _HmacSecretKey implements HmacSecretKey {
-  final ffi.Pointer<ssl.EVP_MD> _hash;
+  final _Hash _hash;
   final Uint8List _keyData;
 
   _HmacSecretKey(this._keyData, this._hash);
@@ -1430,7 +1469,7 @@ class _HmacSecretKey implements HmacSecretKey {
     try {
       _withDataAsPointer(_keyData, (ffi.Pointer<ssl.Data> p) {
         final n = _keyData.length;
-        _checkOp(ssl.HMAC_Init_ex(ctx, p, n, _hash, ffi.nullptr) == 1);
+        _checkOp(ssl.HMAC_Init_ex(ctx, p, n, _hash.MD, ffi.nullptr) == 1);
       });
       await _streamToUpdate(data, ctx, ssl.HMAC_Update);
 
@@ -1472,8 +1511,13 @@ class _HmacSecretKey implements HmacSecretKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
+  Future<Map<String, dynamic>> exportJsonWebKey() async {
+    return _JsonWebKey(
+      kty: 'oct',
+      use: 'sig',
+      alg: _hmacJwkAlgFromHash(_hash),
+      k: _JsonWebKey.encodeBase64UrlNoPadding(_keyData),
+    ).toJson();
   }
 
   @override
