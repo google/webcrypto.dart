@@ -24,6 +24,163 @@ final RSA_free = lookup('RSA_free')
     .lookupFunc<Void Function(Pointer<RSA>)>()
     .asFunction<void Function(Pointer<RSA>)>();
 
+//---------------------- Properties.
+
+/// RSA_get0_key sets *out_n, *out_e, and *out_d, if non-NULL, to rsa's modulus,
+/// public exponent, and private exponent, respectively. If rsa is a public key,
+/// he private exponent will be set to NULL.
+///
+/// ```c
+/// OPENSSL_EXPORT void RSA_get0_key(const RSA *rsa, const BIGNUM **out_n,
+///                                  const BIGNUM **out_e, const BIGNUM **out_d);
+/// ```
+final RSA_get0_key = lookup('RSA_get0_key')
+    .lookupFunc<
+        Void Function(
+      Pointer<RSA>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+    )>()
+    .asFunction<
+        void Function(
+      Pointer<RSA>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+    )>();
+
+/// RSA_get0_factors sets *out_p and *out_q, if non-NULL, to rsa's prime
+/// factors. If rsa is a public key, they will be set to NULL.
+///
+/// ```c
+/// OPENSSL_EXPORT void RSA_get0_factors(const RSA *rsa, const BIGNUM **out_p,
+///                                      const BIGNUM **out_q);
+/// ```
+final RSA_get0_factors = lookup('RSA_get0_factors')
+    .lookupFunc<
+        Void Function(
+      Pointer<RSA>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+    )>()
+    .asFunction<
+        void Function(
+      Pointer<RSA>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+    )>();
+
+/// RSA_get0_crt_params sets *out_dmp1, *out_dmq1, and *out_iqmp, if non-NULL,
+/// to rsa's CRT parameters. These are d (mod p-1), d (mod q-1) and q^-1
+/// (mod p), respectively. If rsa is a public key, each parameter will be set
+/// to NULL.
+///
+/// ```c
+/// OPENSSL_EXPORT void RSA_get0_crt_params(const RSA *rsa, const BIGNUM **out_dmp1,
+///                                         const BIGNUM **out_dmq1,
+///                                         const BIGNUM **out_iqmp);
+/// ```
+final RSA_get0_crt_params = lookup('RSA_get0_crt_params')
+    .lookupFunc<
+        Void Function(
+      Pointer<RSA>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+    )>()
+    .asFunction<
+        void Function(
+      Pointer<RSA>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+      Pointer<Pointer<BIGNUM>>,
+    )>();
+
+/// RSA_set0_key sets rsa's modulus, public exponent, and private exponent to
+/// n, e, and d respectively, if non-NULL. On success, it takes ownership of
+/// each argument and returns one. Otherwise, it returns zero.
+///
+/// d may be NULL, but n and e must either be non-NULL or already configured
+/// on rsa.
+///
+/// It is an error to call this function after rsa has been used for a
+/// cryptographic operation. Construct a new RSA object instead.
+///
+/// ```c
+/// OPENSSL_EXPORT int RSA_set0_key(RSA *rsa, BIGNUM *n, BIGNUM *e, BIGNUM *d);
+/// ```
+final RSA_set0_key = lookup('RSA_set0_key')
+    .lookupFunc<
+        Uint32 Function(
+      Pointer<RSA>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+    )>()
+    .asFunction<
+        int Function(
+      Pointer<RSA>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+    )>();
+
+/// RSA_set0_factors sets rsa's prime factors to p and q, if non-NULL, and
+/// takes ownership of them. On success, it takes ownership of each argument
+/// and returns one. Otherwise, it returns zero.
+///
+/// Each argument must either be non-NULL or already configured on rsa.
+///
+/// It is an error to call this function after rsa has been used for a
+/// cryptographic operation. Construct a new RSA object instead.
+///
+/// ```c
+/// OPENSSL_EXPORT int RSA_set0_factors(RSA *rsa, BIGNUM *p, BIGNUM *q);
+/// ```
+final RSA_set0_factors = lookup('RSA_set0_factors')
+    .lookupFunc<
+        Uint32 Function(
+      Pointer<RSA>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+    )>()
+    .asFunction<
+        int Function(
+      Pointer<RSA>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+    )>();
+
+/// RSA_set0_crt_params sets rsa's CRT parameters to dmp1, dmq1, and iqmp,
+/// if non-NULL, and takes ownership of them. On success, it takes ownership
+/// of its parameters and returns one. Otherwise, it returns zero.
+///
+/// Each argument must either be non-NULL or already configured on rsa.
+///
+/// It is an error to call this function after rsa has been used for a
+/// cryptographic operation. Construct a new RSA object instead.
+///
+/// ```c
+/// OPENSSL_EXPORT int RSA_set0_crt_params(RSA *rsa, BIGNUM *dmp1, BIGNUM *dmq1,
+///                                        BIGNUM *iqmp);
+/// ```
+final RSA_set0_crt_params = lookup('RSA_set0_crt_params')
+    .lookupFunc<
+        Uint32 Function(
+      Pointer<RSA>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+    )>()
+    .asFunction<
+        int Function(
+      Pointer<RSA>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+      Pointer<BIGNUM>,
+    )>();
+
 //---------------------- Key generation
 
 /// RSA_generate_key_ex generates a new RSA key where the modulus has size bits

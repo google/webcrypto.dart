@@ -413,12 +413,21 @@ class _JsonWebKey {
 
   /// Decode url-safe base64 witout padding as specified in
   /// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
-  static Uint8List decodeBase64UrlNoPadding(String unpadded) {
-    final padded = unpadded.padRight(
-      unpadded.length + ((4 - (unpadded.length % 4)) % 4),
-      '=',
-    );
-    return base64Url.decode(padded);
+  ///
+  /// Throw [FormatException] mentioning JWK property [prop] on failure.
+  static Uint8List decodeBase64UrlNoPadding(String unpadded, String prop) {
+    try {
+      final padded = unpadded.padRight(
+        unpadded.length + ((4 - (unpadded.length % 4)) % 4),
+        '=',
+      );
+      return base64Url.decode(padded);
+    } on FormatException {
+      throw FormatException(
+        'JWK property "$prop" is not url-safe base64 without padding',
+        unpadded,
+      );
+    }
   }
 
   /// Encode url-safe base64 witout padding as specified in
@@ -644,6 +653,101 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
   }
 }
 
+ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
+  _JsonWebKey jwk, {
+  bool isPrivateKey,
+  String expectedAlg,
+  String expectedUse,
+}) {
+  assert(isPrivateKey != null);
+  assert(expectedAlg != null);
+
+  final scope = _Scope();
+  try {
+    void checkJwk(bool condition, String prop, String message) =>
+        _checkData(condition, message: 'JWK property "$prop" $message');
+
+    checkJwk(jwk.kty != 'RSA', 'kty', 'must be "RSA"');
+    checkJwk(
+      jwk.alg == null || jwk.alg == expectedAlg,
+      'alg',
+      'must be "$expectedAlg", if present',
+    );
+    checkJwk(
+      jwk.use == null || jwk.use == expectedUse,
+      'use',
+      'must be "$expectedUse", if present',
+    );
+
+    // TODO: Consider rejecting keys with key_ops inconsistent with isPrivateKey
+    //       See also JWK import logic for EC keys
+
+    ffi.Pointer<ssl.BIGNUM> readBN(String value, String prop) {
+      final bin = _JsonWebKey.decodeBase64UrlNoPadding(value, prop);
+      checkJwk(bin.length != 0, prop, 'must not be empty');
+      checkJwk(
+        bin.length > 1 && bin[0] == 0,
+        prop,
+        'must not have leading zeros',
+      );
+      return scope.create(
+        () => ssl.BN_bin2bn(scope.dataAsPointer(bin), bin.length, ffi.nullptr),
+        ssl.BN_free,
+      );
+    }
+
+    final rsa = scope.create(ssl.RSA_new, ssl.RSA_free);
+
+    final n = readBN(jwk.n, 'n');
+    final e = readBN(jwk.n, 'e');
+    _checkOpIsOne(ssl.RSA_set0_key(rsa, n, e, ffi.nullptr));
+    scope.move(n); // ssl.RSA_set0_key takes ownership
+    scope.move(e);
+
+    if (isPrivateKey) {
+      // The "p", "q", "dp", "dq", and "qi" properties are optional in the JWA
+      // spec. However they are required by Chromium's WebCrypto implementation.
+      final d = readBN(jwk.n, 'd');
+      // If present properties p,q,dp,dq,qi enable optional optimizations, see:
+      // https://tools.ietf.org/html/rfc7518#section-6.3.2
+      // However, these are required by Chromes Web Crypto implementation:
+      // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#82
+      // They are also required by Web Crypto implementation in Firefox:
+      // https://hg.mozilla.org/mozilla-central/file/38e6ad5fd7535be88e432075f76ec4a2dc294672/dom/crypto/CryptoKey.cpp#l588
+      // We follow this precedence because (a) having optimizations is nice,
+      // and, (b) following Chromes/Firefox behavior is safe.
+      // Notice, we can choose to support this in the future without breaking
+      // the public API.
+      final p = readBN(jwk.n, 'p');
+      final q = readBN(jwk.n, 'q');
+      final dp = readBN(jwk.n, 'dp');
+      final dq = readBN(jwk.n, 'dq');
+      final qi = readBN(jwk.n, 'qi');
+
+      _checkOpIsOne(ssl.RSA_set0_key(rsa, ffi.nullptr, ffi.nullptr, d));
+      scope.move(d); // ssl.RSA_set0_key takes ownership
+
+      _checkOpIsOne(ssl.RSA_set0_factors(rsa, p, q));
+      scope.move(p); // ssl.RSA_set0_factors takes ownership
+      scope.move(q);
+
+      _checkOpIsOne(ssl.RSA_set0_crt_params(rsa, dp, dq, qi));
+      scope.move(dp); // ssl.RSA_set0_crt_params takes ownership
+      scope.move(dq);
+      scope.move(qi);
+    }
+
+    _checkDataIsOne(ssl.RSA_check_key(rsa), fallback: 'invalid RSA key');
+
+    final key = scope.create(ssl.EVP_PKEY_new, ssl.EVP_PKEY_free);
+    _checkOpIsOne(ssl.EVP_PKEY_set1_RSA(key, rsa));
+
+    return scope.move(key);
+  } finally {
+    scope.release();
+  }
+}
+
 _KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
     _generateRsaKeyPair(
   int modulusLength,
@@ -865,7 +969,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
   _checkData(jwk.use == null || jwk.use == expectedUse,
       message: 'JWK property "use" should be "$expectedUse", if present');
 
-  // TODO: Reject keys with key_ops in inconsistent with isPrivate
+  // TODO: Reject keys with key_ops in inconsistent with isPrivateKey
   //       Also in the js implementation...
 
   final scope = _Scope();
@@ -881,7 +985,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
 
     // Utility to decode a JWK parameter.
     ffi.Pointer<ssl.BIGNUM> decodeParam(String val, String prop) {
-      final bytes = _JsonWebKey.decodeBase64UrlNoPadding(val);
+      final bytes = _JsonWebKey.decodeBase64UrlNoPadding(val, prop);
       _checkData(
         bytes.length != paramSize,
         message: 'JWK property "$prop" should hold $paramSize bytes',
@@ -1177,6 +1281,8 @@ const Hash sha1 = _Sha1();
 const Hash sha256 = _Sha256();
 const Hash sha384 = _Sha384();
 const Hash sha512 = _Sha512();
+// Note: Before adding new hash implementations, make sure to update all the
+//       places that does if (hash == Hash.sha256) ...
 
 //---------------------- HMAC
 
@@ -1299,6 +1405,23 @@ class _HmacSecretKey implements HmacSecretKey {
 
 //---------------------- RSASSA_PKCS1_v1_5
 
+String _rsassaPkcs1V15JwkAlgFromHash(_Hash hash) {
+  if (hash == Hash.sha1) {
+    return 'RS1';
+  }
+  if (hash == Hash.sha256) {
+    return 'RS256';
+  }
+  if (hash == Hash.sha384) {
+    return 'RS384';
+  }
+  if (hash == Hash.sha512) {
+    return 'RS512';
+  }
+  assert(false); // This should never happen!
+  throw UnsupportedError('hash is not supported');
+}
+
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
@@ -1311,8 +1434,19 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsassaPkcs1V15PrivateKey(
+    _importJwkRsaPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      isPrivateKey: true,
+      expectedUse: 'sig',
+      expectedAlg: _rsassaPkcs1V15JwkAlgFromHash(h),
+    ),
+    h.MD,
+  );
+}
 
 Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
     rsassaPkcs1V15PrivateKey_generateKey(
@@ -1341,8 +1475,19 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey(
 Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsassaPkcs1V15PublicKey(
+    _importJwkRsaPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      isPrivateKey: false,
+      expectedUse: 'sig',
+      expectedAlg: _rsassaPkcs1V15JwkAlgFromHash(h),
+    ),
+    h.MD,
+  );
+}
 
 class _RsassaPkcs1V15PrivateKey
     with _Disposable
@@ -1457,6 +1602,23 @@ class _RsassaPkcs1V15PublicKey
 
 //---------------------- RSA-PSS
 
+String _rsaPssJwkAlgFromHash(_Hash hash) {
+  if (hash == Hash.sha1) {
+    return 'PS1';
+  }
+  if (hash == Hash.sha256) {
+    return 'PS256';
+  }
+  if (hash == Hash.sha384) {
+    return 'PS384';
+  }
+  if (hash == Hash.sha512) {
+    return 'PS512';
+  }
+  assert(false); // This should never happen!
+  throw UnsupportedError('hash is not supported');
+}
+
 Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
@@ -1469,8 +1631,19 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
 Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsaPssPrivateKey(
+    _importJwkRsaPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      isPrivateKey: true,
+      expectedUse: 'sig',
+      expectedAlg: _rsaPssJwkAlgFromHash(h),
+    ),
+    h.MD,
+  );
+}
 
 Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
   int modulusLength,
@@ -1498,8 +1671,19 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importSpkiKey(
 Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsaPssPublicKey(
+    _importJwkRsaPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      isPrivateKey: false,
+      expectedUse: 'sig',
+      expectedAlg: _rsaPssJwkAlgFromHash(h),
+    ),
+    h.MD,
+  );
+}
 
 class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
@@ -1933,6 +2117,23 @@ class _EcdsaPublicKey with _Disposable implements EcdsaPublicKey {
 
 //---------------------- RSA-OAEP
 
+String _rsaOaepJwkAlgFromHash(_Hash hash) {
+  if (hash == Hash.sha1) {
+    return 'RSA-OAEP';
+  }
+  if (hash == Hash.sha256) {
+    return 'RSA-OAEP-256';
+  }
+  if (hash == Hash.sha384) {
+    return 'RSA-OAEP-384';
+  }
+  if (hash == Hash.sha512) {
+    return 'RSA-OAEP-512';
+  }
+  assert(false); // This should never happen!
+  throw UnsupportedError('hash is not supported');
+}
+
 Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
@@ -1945,8 +2146,19 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
 Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsaOaepPrivateKey(
+    _importJwkRsaPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      isPrivateKey: true,
+      expectedUse: 'enc',
+      expectedAlg: _rsaOaepJwkAlgFromHash(h),
+    ),
+    h.MD,
+  );
+}
 
 Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>>
     rsaOaepPrivateKey_generateKey(
@@ -1975,8 +2187,19 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
 Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
-) =>
-    throw _notImplemented;
+) async {
+  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  final h = _Hash.fromHash(hash);
+  return _RsaOaepPublicKey(
+    _importJwkRsaPrivateOrPublicKey(
+      _JsonWebKey.fromJson(jwk),
+      isPrivateKey: false,
+      expectedUse: 'enc',
+      expectedAlg: _rsaOaepJwkAlgFromHash(h),
+    ),
+    h.MD,
+  );
+}
 
 /// Utility method to encrypt or decrypt with RSA-OAEP.
 ///
