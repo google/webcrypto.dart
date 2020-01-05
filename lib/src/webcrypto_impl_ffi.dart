@@ -9,8 +9,6 @@ import 'package:meta/meta.dart';
 import '../webcrypto.dart';
 import 'boringssl/boringssl.dart' as ssl;
 
-final _notImplemented = UnimplementedError('Not implemented');
-
 //---------------------- Helpers
 
 /// Throw [OperationError] if [condition] is `false`.
@@ -1424,6 +1422,7 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
       _checkData(condition, message: 'JWK property "$prop" $message');
 
   checkJwk(k.kty == 'oct', 'kty', 'must be "oct"');
+  checkJwk(k.k != null, 'k', 'must be present');
   checkJwk(k.use == null || k.use == 'sig', 'use', 'must be "sig", if present');
   final expectedAlg = _hmacJwkAlgFromHash(h);
   checkJwk(
@@ -2515,6 +2514,59 @@ Uint8List _aesImportRawKey(List<int> keyData) {
   return Uint8List.fromList(keyData);
 }
 
+Uint8List _aesImportJwkKey(
+  Map<String, dynamic> jwk, {
+  String expectedJwkAlgSuffix,
+}) {
+  assert(expectedJwkAlgSuffix != null);
+  ArgumentError.checkNotNull(jwk, 'jwk');
+
+  final k = _JsonWebKey.fromJson(jwk);
+
+  void checkJwk(bool condition, String prop, String message) =>
+      _checkData(condition, message: 'JWK property "$prop" $message');
+
+  checkJwk(k.kty == 'oct', 'kty', 'must be "oct"');
+  checkJwk(k.k != null, 'k', 'must be present');
+  checkJwk(k.use == null || k.use == 'enc', 'use', 'must be "enc", if present');
+
+  final keyData = _JsonWebKey.decodeBase64UrlNoPadding(k.k, 'k');
+  if (keyData.length == 24) {
+    // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
+    // If not supported in Chrome, there is not reason to support it in Dart.
+    throw UnsupportedError('192-bit AES keys are not supported');
+  }
+  checkJwk(keyData.length == 16 || keyData.length == 32, 'k',
+      'must be a 128 or 256 bit key');
+
+  final expectedAlgPrefix = keyData.length == 16 ? 'A128' : 'A256';
+  final expectedAlg = expectedAlgPrefix + expectedJwkAlgSuffix;
+
+  checkJwk(
+    k.alg == null || k.alg == expectedAlg,
+    'alg',
+    'must be "$expectedAlg", if present',
+  );
+
+  return keyData;
+}
+
+Map<String, dynamic> _aesExportJwkKey(
+  List<int> keyData, {
+  String jwkAlgSuffix,
+}) {
+  assert(jwkAlgSuffix != null);
+  assert(keyData.length == 16 || keyData.length == 32);
+  final algPrefix = keyData.length == 16 ? 'A128' : 'A256';
+
+  return _JsonWebKey(
+    kty: 'oct',
+    use: 'enc',
+    alg: algPrefix + jwkAlgSuffix,
+    k: _JsonWebKey.encodeBase64UrlNoPadding(keyData),
+  ).toJson();
+}
+
 Uint8List _aesGenerateKey(int length) {
   ArgumentError.checkNotNull(length, 'length');
   if (length == 192) {
@@ -2535,8 +2587,13 @@ Uint8List _aesGenerateKey(int length) {
 Future<AesCtrSecretKey> aesCtr_importRawKey(List<int> keyData) async =>
     _AesCtrSecretKey(_aesImportRawKey(keyData));
 
-Future<AesCtrSecretKey> aesCtr_importJsonWebKey(Map<String, dynamic> jwk) =>
-    throw _notImplemented;
+Future<AesCtrSecretKey> aesCtr_importJsonWebKey(
+  Map<String, dynamic> jwk,
+) async =>
+    _AesCtrSecretKey(_aesImportJwkKey(
+      jwk,
+      expectedJwkAlgSuffix: 'CTR',
+    ));
 
 Future<AesCtrSecretKey> aesCtr_generateKey(int length) async =>
     _AesCtrSecretKey(_aesGenerateKey(length));
@@ -2938,9 +2995,8 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _aesExportJwkKey(_key, jwkAlgSuffix: 'CTR');
 
   @override
   Future<Uint8List> exportRawKey() async => Uint8List.fromList(_key);
@@ -2951,8 +3007,13 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
 Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) async =>
     _AesCbcSecretKey(_aesImportRawKey(keyData));
 
-Future<AesCbcSecretKey> aesCbc_importJsonWebKey(Map<String, dynamic> jwk) =>
-    throw _notImplemented;
+Future<AesCbcSecretKey> aesCbc_importJsonWebKey(
+  Map<String, dynamic> jwk,
+) async =>
+    _AesCbcSecretKey(_aesImportJwkKey(
+      jwk,
+      expectedJwkAlgSuffix: 'CBC',
+    ));
 
 Future<AesCbcSecretKey> aesCbc_generateKey(int length) async =>
     _AesCbcSecretKey(_aesGenerateKey(length));
@@ -3058,9 +3119,8 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
   }
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _aesExportJwkKey(_key, jwkAlgSuffix: 'CBC');
 
   @override
   Future<Uint8List> exportRawKey() async => Uint8List.fromList(_key);
@@ -3072,8 +3132,12 @@ Future<AesGcmSecretKey> aesGcm_importRawKey(List<int> keyData) async =>
     _AesGcmSecretKey(_aesImportRawKey(keyData));
 
 Future<AesGcmSecretKey> aesGcm_importJsonWebKey(
-        Map<String, dynamic> jwk) async =>
-    throw _notImplemented;
+  Map<String, dynamic> jwk,
+) async =>
+    _AesGcmSecretKey(_aesImportJwkKey(
+      jwk,
+      expectedJwkAlgSuffix: 'GCM',
+    ));
 
 Future<AesGcmSecretKey> aesGcm_generateKey(int length) async =>
     _AesGcmSecretKey(_aesGenerateKey(length));
@@ -3196,9 +3260,8 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
       );
 
   @override
-  Future<Map<String, dynamic>> exportJsonWebKey() {
-    throw _notImplemented;
-  }
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _aesExportJwkKey(_key, jwkAlgSuffix: 'GCM');
 
   @override
   Future<Uint8List> exportRawKey() async => Uint8List.fromList(_key);
