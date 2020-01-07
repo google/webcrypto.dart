@@ -18,7 +18,7 @@ String _optionalBase64Encode(List<int> data) =>
     data == null ? null : base64.encode(data);
 
 @sealed
-class AsymmetricTestCase {
+class TestCase {
   final String name;
 
   // Obtain a keyPair from import or key generation
@@ -41,7 +41,7 @@ class AsymmetricTestCase {
   // Parameters for sign/verify (always required)
   final Map<String, dynamic> signVerifyParams;
 
-  AsymmetricTestCase(
+  TestCase(
     this.name, {
     this.generateKeyParams,
     this.privateRawKeyData,
@@ -56,8 +56,8 @@ class AsymmetricTestCase {
     this.signVerifyParams,
   });
 
-  factory AsymmetricTestCase.fromJson(Map json) {
-    return AsymmetricTestCase(
+  factory TestCase.fromJson(Map json) {
+    return TestCase(
       json['name'] as String,
       generateKeyParams: _optionalStringMapDecode(json['generateKeyParams']),
       privateRawKeyData: _optionalBase64Decode(json['privateRawKeyData']),
@@ -103,36 +103,6 @@ class AsymmetricTestCase {
                   publicJsonWebKeyData != null)),
       'A key-pair must be generated or imported',
     );
-    check(
-      (privateRawKeyData != null &&
-              privatePkcs8KeyData == null &&
-              privateJsonWebKeyData == null) ||
-          (privateRawKeyData == null &&
-              privatePkcs8KeyData != null &&
-              privateJsonWebKeyData == null) ||
-          (privateRawKeyData == null &&
-              privatePkcs8KeyData == null &&
-              privateJsonWebKeyData != null) ||
-          (privateRawKeyData == null &&
-              privatePkcs8KeyData == null &&
-              privateJsonWebKeyData == null),
-      'Cannot import multiple formats',
-    );
-    check(
-      (publicRawKeyData != null &&
-              publicSpkiKeyData == null &&
-              publicJsonWebKeyData == null) ||
-          (publicRawKeyData == null &&
-              publicSpkiKeyData != null &&
-              publicJsonWebKeyData == null) ||
-          (publicRawKeyData == null &&
-              publicSpkiKeyData == null &&
-              publicJsonWebKeyData != null) ||
-          (publicRawKeyData == null &&
-              publicSpkiKeyData == null &&
-              publicJsonWebKeyData == null),
-      'Cannot import multiple formats',
-    );
     check(plaintext != null);
     check(
       generateKeyParams == null || signature == null,
@@ -143,33 +113,44 @@ class AsymmetricTestCase {
   }
 }
 
+/// Function for importing pkcs8, spki, or raw key.
 typedef ImportKeyFn<T> = Future<T> Function(
   List<int> keyData,
   Map<String, dynamic> keyImportParams,
 );
+
+/// Function for exporting pkcs8, spki or raw key.
 typedef ExportKeyFn<T> = Future<List<int>> Function(T key);
+
+/// Function for importing JWK key.
 typedef ImportJsonWebKeyKeyFn<T> = Future<T> Function(
   Map<String, dynamic> jsonWebKeyData,
   Map<String, dynamic> keyImportParams,
 );
+
+/// Function for exporting JWK key.
 typedef ExportJsonWebKeyKeyFn<T> = Future<Map<String, dynamic>> Function(T key);
 
+/// Function for generating a [KeyPair].
 typedef GenerateKeyPairFn<S, T> = Future<KeyPair<S, T>> Function(
   Map<String, dynamic> generateKeyPairParams,
 );
 
+/// Function for signing [data] using [key].
 typedef SignBytesFn<T> = Future<List<int>> Function(
   T key,
   List<int> data,
   Map<String, dynamic> signParams,
 );
 
+/// Function for signing [data] using [key].
 typedef SignStreamFn<T> = Future<List<int>> Function(
   T key,
   Stream<List<int>> data,
   Map<String, dynamic> signParams,
 );
 
+/// Function for verifying [data] using [key].
 typedef VerifyBytesFn<T> = Future<bool> Function(
   T key,
   List<int> signature,
@@ -177,6 +158,7 @@ typedef VerifyBytesFn<T> = Future<bool> Function(
   Map<String, dynamic> verifyParams,
 );
 
+/// Function for verifying [data] using [key].
 typedef VerifyStreamFn<T> = Future<bool> Function(
   T key,
   List<int> signature,
@@ -185,67 +167,84 @@ typedef VerifyStreamFn<T> = Future<bool> Function(
 );
 
 @sealed
-class AsymmetricTestRunner<PrivateKey, PublicKey> {
-  final ImportKeyFn<PrivateKey> importPrivateRawKey;
-  final ExportKeyFn<PrivateKey> exportPrivateRawKey;
-  final ImportKeyFn<PrivateKey> importPrivatePkcs8Key;
-  final ExportKeyFn<PrivateKey> exportPrivatePkcs8Key;
-  final ImportJsonWebKeyKeyFn<PrivateKey> importPrivateJsonWebKey;
-  final ExportJsonWebKeyKeyFn<PrivateKey> exportPrivateJsonWebKey;
+class TestRunner<PrivateKey, PublicKey> {
+  final ImportKeyFn<PrivateKey> _importPrivateRawKey;
+  final ExportKeyFn<PrivateKey> _exportPrivateRawKey;
+  final ImportKeyFn<PrivateKey> _importPrivatePkcs8Key;
+  final ExportKeyFn<PrivateKey> _exportPrivatePkcs8Key;
+  final ImportJsonWebKeyKeyFn<PrivateKey> _importPrivateJsonWebKey;
+  final ExportJsonWebKeyKeyFn<PrivateKey> _exportPrivateJsonWebKey;
 
-  final ImportKeyFn<PublicKey> importPublicRawKey;
-  final ExportKeyFn<PublicKey> exportPublicRawKey;
-  final ImportKeyFn<PublicKey> importPublicSpkiKey;
-  final ExportKeyFn<PublicKey> exportPublicSpkiKey;
-  final ImportJsonWebKeyKeyFn<PublicKey> importPublicJsonWebKey;
-  final ExportJsonWebKeyKeyFn<PublicKey> exportPublicJsonWebKey;
+  final ImportKeyFn<PublicKey> _importPublicRawKey;
+  final ExportKeyFn<PublicKey> _exportPublicRawKey;
+  final ImportKeyFn<PublicKey> _importPublicSpkiKey;
+  final ExportKeyFn<PublicKey> _exportPublicSpkiKey;
+  final ImportJsonWebKeyKeyFn<PublicKey> _importPublicJsonWebKey;
+  final ExportJsonWebKeyKeyFn<PublicKey> _exportPublicJsonWebKey;
 
-  final GenerateKeyPairFn<PrivateKey, PublicKey> generateKeyPair;
-  final SignBytesFn<PrivateKey> signBytes;
-  final SignStreamFn<PrivateKey> signStream;
-  final VerifyBytesFn<PublicKey> verifyBytes;
-  final VerifyStreamFn<PublicKey> verifyStream;
+  final GenerateKeyPairFn<PrivateKey, PublicKey> _generateKeyPair;
+  final SignBytesFn<PrivateKey> _signBytes;
+  final SignStreamFn<PrivateKey> _signStream;
+  final VerifyBytesFn<PublicKey> _verifyBytes;
+  final VerifyStreamFn<PublicKey> _verifyStream;
 
-  AsymmetricTestRunner({
-    this.importPrivateRawKey,
-    this.exportPrivateRawKey,
-    this.importPrivatePkcs8Key,
-    this.exportPrivatePkcs8Key,
-    this.importPrivateJsonWebKey,
-    this.exportPrivateJsonWebKey,
-    this.importPublicRawKey,
-    this.exportPublicRawKey,
-    this.importPublicSpkiKey,
-    this.exportPublicSpkiKey,
-    this.importPublicJsonWebKey,
-    this.exportPublicJsonWebKey,
-    @required this.generateKeyPair,
-    @required this.signBytes,
-    @required this.signStream,
-    @required this.verifyBytes,
-    @required this.verifyStream,
-  }) {
+  TestRunner({
+    ImportKeyFn<PrivateKey> importPrivateRawKey,
+    ExportKeyFn<PrivateKey> exportPrivateRawKey,
+    ImportKeyFn<PrivateKey> importPrivatePkcs8Key,
+    ExportKeyFn<PrivateKey> exportPrivatePkcs8Key,
+    ImportJsonWebKeyKeyFn<PrivateKey> importPrivateJsonWebKey,
+    ExportJsonWebKeyKeyFn<PrivateKey> exportPrivateJsonWebKey,
+    ImportKeyFn<PublicKey> importPublicRawKey,
+    ExportKeyFn<PublicKey> exportPublicRawKey,
+    ImportKeyFn<PublicKey> importPublicSpkiKey,
+    ExportKeyFn<PublicKey> exportPublicSpkiKey,
+    ImportJsonWebKeyKeyFn<PublicKey> importPublicJsonWebKey,
+    ExportJsonWebKeyKeyFn<PublicKey> exportPublicJsonWebKey,
+    @required GenerateKeyPairFn<PrivateKey, PublicKey> generateKeyPair,
+    @required SignBytesFn<PrivateKey> signBytes,
+    @required SignStreamFn<PrivateKey> signStream,
+    @required VerifyBytesFn<PublicKey> verifyBytes,
+    @required VerifyStreamFn<PublicKey> verifyStream,
+  })  : _importPrivateRawKey = importPrivateRawKey,
+        _exportPrivateRawKey = exportPrivateRawKey,
+        _importPrivatePkcs8Key = importPrivatePkcs8Key,
+        _exportPrivatePkcs8Key = exportPrivatePkcs8Key,
+        _importPrivateJsonWebKey = importPrivateJsonWebKey,
+        _exportPrivateJsonWebKey = exportPrivateJsonWebKey,
+        _importPublicRawKey = importPublicRawKey,
+        _exportPublicRawKey = exportPublicRawKey,
+        _importPublicSpkiKey = importPublicSpkiKey,
+        _exportPublicSpkiKey = exportPublicSpkiKey,
+        _importPublicJsonWebKey = importPublicJsonWebKey,
+        _exportPublicJsonWebKey = exportPublicJsonWebKey,
+        _generateKeyPair = generateKeyPair,
+        _signBytes = signBytes,
+        _signStream = signStream,
+        _verifyBytes = verifyBytes,
+        _verifyStream = verifyStream {
     _validate();
   }
 
   void _validate() {
     // Required operations
-    check(generateKeyPair != null);
-    check(signBytes != null);
-    check(signStream != null);
-    check(verifyBytes != null);
-    check(verifyStream != null);
+    check(_generateKeyPair != null);
+    check(_signBytes != null);
+    check(_signStream != null);
+    check(_verifyBytes != null);
+    check(_verifyStream != null);
     // Export-only and import-only formats do not make sense
-    check((importPrivateRawKey != null) == (exportPrivateRawKey != null));
-    check((importPrivatePkcs8Key != null) == (exportPrivatePkcs8Key != null));
+    check((_importPrivateRawKey != null) == (_exportPrivateRawKey != null));
+    check((_importPrivatePkcs8Key != null) == (_exportPrivatePkcs8Key != null));
+    check((_importPrivateJsonWebKey != null) ==
+        (_exportPrivateJsonWebKey != null));
+    check((_importPublicRawKey != null) == (_exportPublicRawKey != null));
+    check((_importPublicSpkiKey != null) == (_exportPublicSpkiKey != null));
     check(
-        (importPrivateJsonWebKey != null) == (exportPrivateJsonWebKey != null));
-    check((importPublicRawKey != null) == (exportPublicRawKey != null));
-    check((importPublicSpkiKey != null) == (exportPublicSpkiKey != null));
-    check((importPublicJsonWebKey != null) == (exportPublicJsonWebKey != null));
+        (_importPublicJsonWebKey != null) == (_exportPublicJsonWebKey != null));
   }
 
-  Future<AsymmetricTestCase> generate({
+  Future<TestCase> generate({
     @required Map<String, dynamic> generateKeyParams,
     @required Map<String, dynamic> importKeyParams,
     @required Map<String, dynamic> signVerifyParams,
@@ -259,7 +258,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
     final name = 'generated at $ts';
 
     log('generating key-pair');
-    final pair = await generateKeyPair(generateKeyParams);
+    final pair = await _generateKeyPair(generateKeyParams);
     final privateKey = pair.privateKey;
     final publicKey = pair.publicKey;
     check(privateKey != null);
@@ -275,25 +274,25 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
     ));
 
     log('creating signature');
-    final signature = await signBytes(
+    final signature = await _signBytes(
       pair.privateKey,
       plaintext,
       signVerifyParams,
     );
 
     T optionalCall<S, T>(T Function(S) fn, S v) => fn != null ? fn(v) : null;
-    final c = AsymmetricTestCase(
+    final c = TestCase(
       name,
       generateKeyParams: generateKeyParams,
-      privateRawKeyData: await optionalCall(exportPrivateRawKey, privateKey),
+      privateRawKeyData: await optionalCall(_exportPrivateRawKey, privateKey),
       privatePkcs8KeyData:
-          await optionalCall(exportPrivatePkcs8Key, privateKey),
+          await optionalCall(_exportPrivatePkcs8Key, privateKey),
       privateJsonWebKeyData:
-          await optionalCall(exportPrivateJsonWebKey, privateKey),
-      publicRawKeyData: await optionalCall(exportPublicRawKey, publicKey),
-      publicSpkiKeyData: await optionalCall(exportPublicSpkiKey, publicKey),
+          await optionalCall(_exportPrivateJsonWebKey, privateKey),
+      publicRawKeyData: await optionalCall(_exportPublicRawKey, publicKey),
+      publicSpkiKeyData: await optionalCall(_exportPublicSpkiKey, publicKey),
       publicJsonWebKeyData:
-          await optionalCall(exportPublicJsonWebKey, publicKey),
+          await optionalCall(_exportPublicJsonWebKey, publicKey),
       plaintext: plaintext,
       signature: signature,
       importKeyParams: importKeyParams,
@@ -309,24 +308,25 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
 
   void runAll(Iterable<Map<dynamic, dynamic>> cases) {
     for (final c in cases) {
-      run(AsymmetricTestCase.fromJson(c));
+      run(TestCase.fromJson(c));
     }
   }
 
-  void run(AsymmetricTestCase c) {
+  void run(TestCase c) {
     group('${c.name}:', () {
       test('validate test case', () {
         c._validate();
 
         // Check that data matches the methods we have in the runner.
-        check(importPrivateRawKey != null || c.privateRawKeyData == null);
-        check(importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
+        check(_importPrivateRawKey != null || c.privateRawKeyData == null);
+        check(_importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
         check(
-          importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null,
+          _importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null,
         );
-        check(importPublicRawKey != null || c.publicRawKeyData == null);
-        check(importPublicSpkiKey != null || c.publicSpkiKeyData == null);
-        check(importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
+        check(_importPublicRawKey != null || c.publicRawKeyData == null);
+        check(_importPublicSpkiKey != null || c.publicSpkiKeyData == null);
+        check(
+            _importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
       });
 
       // Generate or import private/public key
@@ -334,7 +334,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
       PublicKey publicKey;
       if (c.generateKeyParams != null) {
         test('generateKeyPair()', () async {
-          final pair = await generateKeyPair(c.generateKeyParams);
+          final pair = await _generateKeyPair(c.generateKeyParams);
           privateKey = pair.privateKey;
           publicKey = pair.publicKey;
           check(privateKey != null);
@@ -344,7 +344,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         // Import private key
         if (c.privateRawKeyData != null) {
           test('importPrivateRawKey()', () async {
-            privateKey = await importPrivateRawKey(
+            privateKey = await _importPrivateRawKey(
               c.privateRawKeyData,
               c.importKeyParams,
             );
@@ -353,7 +353,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         }
         if (c.privatePkcs8KeyData != null) {
           test('importPrivatePkcs8Key()', () async {
-            privateKey = await importPrivatePkcs8Key(
+            privateKey = await _importPrivatePkcs8Key(
               c.privatePkcs8KeyData,
               c.importKeyParams,
             );
@@ -362,7 +362,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         }
         if (c.privateJsonWebKeyData != null) {
           test('importPrivateJsonWebKey()', () async {
-            privateKey = await importPrivateJsonWebKey(
+            privateKey = await _importPrivateJsonWebKey(
               c.privateJsonWebKeyData,
               c.importKeyParams,
             );
@@ -372,7 +372,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         // Import public key
         if (c.publicRawKeyData != null) {
           test('importPublicRawKey()', () async {
-            publicKey = await importPublicRawKey(
+            publicKey = await _importPublicRawKey(
               c.publicRawKeyData,
               c.importKeyParams,
             );
@@ -381,7 +381,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         }
         if (c.publicSpkiKeyData != null) {
           test('importPublicSpkiKey()', () async {
-            publicKey = await importPublicSpkiKey(
+            publicKey = await _importPublicSpkiKey(
               c.publicSpkiKeyData,
               c.importKeyParams,
             );
@@ -390,7 +390,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         }
         if (c.publicJsonWebKeyData != null) {
           test('importPublicJsonWebKey()', () async {
-            publicKey = await importPublicJsonWebKey(
+            publicKey = await _importPublicJsonWebKey(
               c.publicJsonWebKeyData,
               c.importKeyParams,
             );
@@ -403,7 +403,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
       if (c.signature != null) {
         test('verifyBytes(signature, plaintext)', () async {
           check(
-            await verifyBytes(
+            await _verifyBytes(
               publicKey,
               c.signature,
               c.plaintext,
@@ -413,7 +413,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
           );
 
           check(
-            !await verifyBytes(
+            !await _verifyBytes(
               publicKey,
               flipFirstBits(c.signature),
               c.plaintext,
@@ -425,7 +425,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
 
         test('verifyStream(signature, Stream.value(plaintext))', () async {
           check(
-            await verifyStream(
+            await _verifyStream(
               publicKey,
               c.signature,
               Stream.value(c.plaintext),
@@ -438,20 +438,20 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         test('verifyStream(signature, fibonacciChunkedStream(plaintext))',
             () async {
           check(
-            await verifyStream(
+            await _verifyStream(
               publicKey,
               c.signature,
               fibonacciChunkedStream(c.plaintext),
               c.signVerifyParams,
             ),
-            'failed to verify signature from test case',
+            'faile+d to verify signature from test case',
           );
         });
       }
 
       final signatures = <List<int>>[];
       test('signBytes(plaintext)', () async {
-        final sig = await signBytes(
+        final sig = await _signBytes(
           privateKey,
           c.plaintext,
           c.signVerifyParams,
@@ -459,11 +459,11 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
         signatures.add(sig);
         check(
-          await verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
+          await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
           'failed to verify signature',
         );
         check(
-          !await verifyBytes(
+          !await _verifyBytes(
             publicKey,
             flipFirstBits(sig),
             c.plaintext,
@@ -474,7 +474,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
       });
 
       test('signStream(plaintext)', () async {
-        final sig = await signStream(
+        final sig = await _signStream(
           privateKey,
           Stream.value(c.plaintext),
           c.signVerifyParams,
@@ -482,11 +482,11 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
         signatures.add(sig);
         check(
-          await verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
+          await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
           'failed to verify signature',
         );
         check(
-          !await verifyBytes(
+          !await _verifyBytes(
             publicKey,
             flipFirstBits(sig),
             c.plaintext,
@@ -497,7 +497,7 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
       });
 
       test('signStream(fibonacciChunkedStream(plaintext))', () async {
-        final sig = await signStream(
+        final sig = await _signStream(
           privateKey,
           fibonacciChunkedStream(c.plaintext),
           c.signVerifyParams,
@@ -505,11 +505,11 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
         signatures.add(sig);
         check(
-          await verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
+          await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
           'failed to verify signature',
         );
         check(
-          !await verifyBytes(
+          !await _verifyBytes(
             publicKey,
             flipFirstBits(sig),
             c.plaintext,
@@ -519,21 +519,21 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         );
       });
 
-      if (exportPrivateRawKey != null && importPrivateRawKey != null) {
+      if (_exportPrivateRawKey != null && _importPrivateRawKey != null) {
         test('export/import/signBytes raw private key', () async {
-          final keyData = await exportPrivateRawKey(privateKey);
+          final keyData = await _exportPrivateRawKey(privateKey);
           check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await importPrivateRawKey(keyData, c.importKeyParams);
+          final key = await _importPrivateRawKey(keyData, c.importKeyParams);
           check(key != null, 'failed to import key');
-          final sig = await signBytes(key, c.plaintext, c.signVerifyParams);
+          final sig = await _signBytes(key, c.plaintext, c.signVerifyParams);
           check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
           signatures.add(sig);
           check(
-            await verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
+            await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
             'failed to verify signature',
           );
           check(
-            !await verifyBytes(
+            !await _verifyBytes(
               publicKey,
               flipFirstBits(sig),
               c.plaintext,
@@ -544,21 +544,21 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         });
       }
 
-      if (exportPrivatePkcs8Key != null && importPrivatePkcs8Key != null) {
+      if (_exportPrivatePkcs8Key != null && _importPrivatePkcs8Key != null) {
         test('export/import/signBytes pkcs8 private key', () async {
-          final keyData = await exportPrivatePkcs8Key(privateKey);
+          final keyData = await _exportPrivatePkcs8Key(privateKey);
           check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await importPrivatePkcs8Key(keyData, c.importKeyParams);
+          final key = await _importPrivatePkcs8Key(keyData, c.importKeyParams);
           check(key != null, 'failed to import key');
-          final sig = await signBytes(key, c.plaintext, c.signVerifyParams);
+          final sig = await _signBytes(key, c.plaintext, c.signVerifyParams);
           check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
           signatures.add(sig);
           check(
-            await verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
+            await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
             'failed to verify signature',
           );
           check(
-            !await verifyBytes(
+            !await _verifyBytes(
               publicKey,
               flipFirstBits(sig),
               c.plaintext,
@@ -569,21 +569,23 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         });
       }
 
-      if (exportPrivateJsonWebKey != null && importPrivateJsonWebKey != null) {
+      if (_exportPrivateJsonWebKey != null &&
+          _importPrivateJsonWebKey != null) {
         test('export/import/signBytes JWK private key', () async {
-          final keyData = await exportPrivateJsonWebKey(privateKey);
+          final keyData = await _exportPrivateJsonWebKey(privateKey);
           check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await importPrivateJsonWebKey(keyData, c.importKeyParams);
+          final key =
+              await _importPrivateJsonWebKey(keyData, c.importKeyParams);
           check(key != null, 'failed to import key');
-          final sig = await signBytes(key, c.plaintext, c.signVerifyParams);
+          final sig = await _signBytes(key, c.plaintext, c.signVerifyParams);
           check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
           signatures.add(sig);
           check(
-            await verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
+            await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
             'failed to verify signature',
           );
           check(
-            !await verifyBytes(
+            !await _verifyBytes(
               publicKey,
               flipFirstBits(sig),
               c.plaintext,
@@ -594,19 +596,19 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         });
       }
 
-      if (exportPublicRawKey != null && importPublicRawKey != null) {
+      if (_exportPublicRawKey != null && _importPublicRawKey != null) {
         test('export/import/verifyBytes raw public key', () async {
-          final keyData = await exportPublicRawKey(publicKey);
+          final keyData = await _exportPublicRawKey(publicKey);
           check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await importPublicRawKey(keyData, c.importKeyParams);
+          final key = await _importPublicRawKey(keyData, c.importKeyParams);
           check(key != null, 'failed to import key');
           for (final sig in signatures) {
             check(
-              await verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
+              await _verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
               'failed to verify signature',
             );
             check(
-              !await verifyBytes(
+              !await _verifyBytes(
                 key,
                 flipFirstBits(sig),
                 c.plaintext,
@@ -618,19 +620,19 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         });
       }
 
-      if (exportPublicSpkiKey != null && importPublicSpkiKey != null) {
+      if (_exportPublicSpkiKey != null && _importPublicSpkiKey != null) {
         test('export/import/verifyBytes spki public key', () async {
-          final keyData = await exportPublicSpkiKey(publicKey);
+          final keyData = await _exportPublicSpkiKey(publicKey);
           check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await importPublicSpkiKey(keyData, c.importKeyParams);
+          final key = await _importPublicSpkiKey(keyData, c.importKeyParams);
           check(key != null, 'failed to import key');
           for (final sig in signatures) {
             check(
-              await verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
+              await _verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
               'failed to verify signature',
             );
             check(
-              !await verifyBytes(
+              !await _verifyBytes(
                 key,
                 flipFirstBits(sig),
                 c.plaintext,
@@ -642,19 +644,19 @@ class AsymmetricTestRunner<PrivateKey, PublicKey> {
         });
       }
 
-      if (exportPublicJsonWebKey != null && importPublicJsonWebKey != null) {
+      if (_exportPublicJsonWebKey != null && _importPublicJsonWebKey != null) {
         test('export/import/verifyBytes JWK public key', () async {
-          final keyData = await exportPublicJsonWebKey(publicKey);
+          final keyData = await _exportPublicJsonWebKey(publicKey);
           check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await importPublicJsonWebKey(keyData, c.importKeyParams);
+          final key = await _importPublicJsonWebKey(keyData, c.importKeyParams);
           check(key != null, 'failed to import key');
           for (final sig in signatures) {
             check(
-              await verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
+              await _verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
               'failed to verify signature',
             );
             check(
-              !await verifyBytes(
+              !await _verifyBytes(
                 key,
                 flipFirstBits(sig),
                 c.plaintext,

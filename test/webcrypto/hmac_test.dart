@@ -9,7 +9,7 @@ class _KeyPair<S, T> implements KeyPair<S, T> {
   _KeyPair({this.privateKey, this.publicKey});
 }
 
-final runner = AsymmetricTestRunner<HmacSecretKey, HmacSecretKey>(
+final runner = TestRunner<HmacSecretKey, HmacSecretKey>(
   importPrivateRawKey: (keyData, keyImportParams) =>
       HmacSecretKey.importRawKey(keyData, hashFromJson(keyImportParams)),
   exportPrivateRawKey: (key) => key.exportRawKey(),

@@ -3,8 +3,7 @@ import '../utils.dart';
 import '../testrunner.dart';
 import 'package:test/test.dart';
 
-final runner =
-    AsymmetricTestRunner<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>(
+final runner = TestRunner<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>(
   importPrivateRawKey: null, // not supported
   exportPrivateRawKey: null,
   importPrivatePkcs8Key: (keyData, keyImportParams) =>
