@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:ffi/ffi.dart' as ffi;
 import 'package:meta/meta.dart';
 
+import 'jsonwebkey.dart' show JsonWebKey;
 import '../webcrypto.dart';
 import 'boringssl/boringssl.dart' as ssl;
 
@@ -362,251 +363,34 @@ int _numBitsToBytes(int numberOfBits) =>
 
 //---------------------- JWK Helpers
 
-/// Data type for the [JsonWebKey dictionary][1].
+/// Decode url-safe base64 witout padding as specified in
+/// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
 ///
-/// See also list of [registered parameters][2].
-///
-/// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
-/// [2]: https://www.iana.org/assignments/jose/jose.xhtml#web-key-parameters
-class _JsonWebKey {
-  final String kty;
-  final String use;
-  final List<String> key_ops;
-  final String alg;
-  final bool ext;
-  final String crv;
-  final String x;
-  final String y;
-  final String d;
-  final String n;
-  final String e;
-  final String p;
-  final String q;
-  final String dp;
-  final String dq;
-  final String qi;
-  final List<_RsaOtherPrimesInfo> oth;
-  final String k;
-
-  _JsonWebKey({
-    this.kty,
-    this.use,
-    this.key_ops,
-    this.alg,
-    this.ext,
-    this.crv,
-    this.x,
-    this.y,
-    this.d,
-    this.n,
-    this.e,
-    this.p,
-    this.q,
-    this.dp,
-    this.dq,
-    this.qi,
-    this.oth,
-    this.k,
-  });
-
-  /// Decode url-safe base64 witout padding as specified in
-  /// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
-  ///
-  /// Throw [FormatException] mentioning JWK property [prop] on failure.
-  static Uint8List decodeBase64UrlNoPadding(String unpadded, String prop) {
-    try {
-      final padded = unpadded.padRight(
-        unpadded.length + ((4 - (unpadded.length % 4)) % 4),
-        '=',
-      );
-      return base64Url.decode(padded);
-    } on FormatException {
-      throw FormatException(
-        'JWK property "$prop" is not url-safe base64 without padding',
-        unpadded,
-      );
-    }
-  }
-
-  /// Encode url-safe base64 witout padding as specified in
-  /// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
-  static String encodeBase64UrlNoPadding(List<int> data) {
-    final padded = base64Url.encode(data);
-    final i = padded.indexOf('=');
-    if (i == -1) {
-      return padded;
-    }
-    return padded.substring(0, i);
-  }
-
-  static _JsonWebKey fromJson(Map<String, Object> json) {
-    assert(json != null);
-    const stringKeys = [
-      'kty',
-      'use',
-      'alg',
-      'crv',
-      'x',
-      'y',
-      'd',
-      'n',
-      'e',
-      'p',
-      'q',
-      'dp',
-      'dq',
-      'qi',
-      'k',
-    ];
-    for (final k in stringKeys) {
-      if (json.containsKey(k) && json[k] is! String) {
-        throw FormatException('JWK entry "$k" must be a string', json);
-      }
-    }
-    if (json.containsKey('key_ops') && json['key_ops'] is! List<String>) {
-      throw FormatException(
-          'JWK entry "key_ops" must be a list of strings', json);
-    }
-    if (json.containsKey('ext') && json['ext'] is! bool) {
-      throw FormatException('JWK entry "ext" must be boolean', json);
-    }
-    List<_RsaOtherPrimesInfo> oth;
-    if (json.containsKey('oth')) {
-      if (!(json['oth'] is List<Map<String, Object>>)) {
-        throw FormatException('JWK entry "oth" must be list of maps', json);
-      }
-      oth = (json['oth'] as List<Map<String, Object>>).map((json) {
-        return _RsaOtherPrimesInfo.fromJson(json);
-      });
-    }
-    return _JsonWebKey(
-      kty: json['kty'] as String,
-      use: json['use'] as String,
-      key_ops: json['key_ops'] as List<String>,
-      alg: json['alg'] as String,
-      ext: json['ext'] as bool,
-      crv: json['crv'] as String,
-      x: json['x'] as String,
-      y: json['y'] as String,
-      d: json['d'] as String,
-      n: json['n'] as String,
-      e: json['e'] as String,
-      p: json['p'] as String,
-      q: json['q'] as String,
-      dp: json['dp'] as String,
-      dq: json['dq'] as String,
-      qi: json['qi'] as String,
-      oth: oth,
-      k: json['k'] as String,
+/// Throw [FormatException] mentioning JWK property [prop] on failure.
+Uint8List _jwkDecodeBase64UrlNoPadding(String unpadded, String prop) {
+  try {
+    final padded = unpadded.padRight(
+      unpadded.length + ((4 - (unpadded.length % 4)) % 4),
+      '=',
     );
-  }
-
-  Map<String, Object> toJson() {
-    assert(k != null);
-    final json = <String, Object>{};
-
-    // Set properties from all the string keys
-    if (kty != null) {
-      json['kty'] = kty;
-    }
-    if (use != null) {
-      json['use'] = use;
-    }
-    if (alg != null) {
-      json['alg'] = alg;
-    }
-    if (crv != null) {
-      json['crv'] = crv;
-    }
-    if (x != null) {
-      json['x'] = x;
-    }
-    if (y != null) {
-      json['y'] = y;
-    }
-    if (d != null) {
-      json['d'] = d;
-    }
-    if (n != null) {
-      json['n'] = n;
-    }
-    if (e != null) {
-      json['e'] = e;
-    }
-    if (p != null) {
-      json['p'] = p;
-    }
-    if (q != null) {
-      json['q'] = q;
-    }
-    if (dp != null) {
-      json['dp'] = dp;
-    }
-    if (dq != null) {
-      json['dq'] = dq;
-    }
-    if (qi != null) {
-      json['qi'] = qi;
-    }
-    if (k != null) {
-      json['k'] = k;
-    }
-
-    // Set non-string properties
-    if (key_ops != null) {
-      json['key_ops'] = key_ops;
-    }
-    if (ext != null) {
-      json['ext'] = ext;
-    }
-    if (oth != null) {
-      json['oth'] = oth.map((e) => e.toJson());
-    }
-
-    return json;
+    return base64Url.decode(padded);
+  } on FormatException {
+    throw FormatException(
+      'JWK property "$prop" is not url-safe base64 without padding',
+      unpadded,
+    );
   }
 }
 
-/// Data type for `RsaOtherPrimesInfo` used in the [JsonWebKey dictionary][1].
-///
-/// See also "oth" in [RFC 7518 Section 6.3.2.7].
-///
-/// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
-/// [2]: https://tools.ietf.org/html/rfc7518#section-6.3.2.7
-class _RsaOtherPrimesInfo {
-  final String r;
-  final String d;
-  final String t;
-
-  _RsaOtherPrimesInfo({
-    this.r,
-    this.d,
-    this.t,
-  }) {
-    assert(r != null && d != null && t != null);
+/// Encode url-safe base64 witout padding as specified in
+/// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
+String _jwkEncodeBase64UrlNoPadding(List<int> data) {
+  final padded = base64Url.encode(data);
+  final i = padded.indexOf('=');
+  if (i == -1) {
+    return padded;
   }
-
-  static _RsaOtherPrimesInfo fromJson(Map<String, Object> json) {
-    assert(json != null);
-    for (final k in ['r', 'd', 't']) {
-      if (json[k] is! String) {
-        throw FormatException('"oth" entries in a JWK must contain "$k"', json);
-      }
-    }
-    return _RsaOtherPrimesInfo(
-      r: json['r'] as String,
-      d: json['d'] as String,
-      t: json['t'] as String,
-    );
-  }
-
-  Map<String, Object> toJson() {
-    return <String, Object>{
-      'r': r,
-      'd': d,
-      't': t,
-    };
-  }
+  return padded.substring(0, i);
 }
 
 //---------------------- RSA Helpers
@@ -652,7 +436,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
 }
 
 ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
-  _JsonWebKey jwk, {
+  JsonWebKey jwk, {
   bool isPrivateKey,
   String expectedAlg,
   String expectedUse,
@@ -681,7 +465,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
     //       See also JWK import logic for EC keys
 
     ffi.Pointer<ssl.BIGNUM> readBN(String value, String prop) {
-      final bin = _JsonWebKey.decodeBase64UrlNoPadding(value, prop);
+      final bin = _jwkDecodeBase64UrlNoPadding(value, prop);
       checkJwk(bin.length != 0, prop, 'must not be empty');
       checkJwk(
         bin.length == 1 || bin[0] != 0,
@@ -774,7 +558,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
         (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, N, bn)),
       );
       assert(result.length == 1 || result[0] != 0);
-      return _JsonWebKey.encodeBase64UrlNoPadding(result);
+      return _jwkEncodeBase64UrlNoPadding(result);
     }
 
     // Public key parameters
@@ -783,7 +567,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
     ssl.RSA_get0_key(rsa, n, e, ffi.nullptr);
 
     if (!isPrivateKey) {
-      return _JsonWebKey(
+      return JsonWebKey(
         kty: 'RSA',
         use: jwkUse,
         alg: jwkAlg,
@@ -807,7 +591,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
     final qi = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
     ssl.RSA_get0_crt_params(rsa, dp, dq, qi);
 
-    return _JsonWebKey(
+    return JsonWebKey(
       kty: 'RSA',
       use: jwkUse,
       alg: jwkAlg,
@@ -1012,7 +796,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
 }
 
 ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
-  _JsonWebKey jwk,
+  JsonWebKey jwk,
   EllipticCurve curve, {
   bool isPrivateKey,
   String expectedUse,
@@ -1062,7 +846,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
 
     // Utility to decode a JWK parameter.
     ffi.Pointer<ssl.BIGNUM> decodeParam(String val, String prop) {
-      final bytes = _JsonWebKey.decodeBase64UrlNoPadding(val, prop);
+      final bytes = _jwkDecodeBase64UrlNoPadding(val, prop);
       _checkData(
         bytes.length != paramSize,
         message: 'JWK property "$prop" should hold $paramSize bytes',
@@ -1196,31 +980,28 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
       ffi.nullptr,
     ));
 
-    final xAsBytes = _withOutPointer(
-      paramSize,
-      (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, x)),
-    );
-    final yAsBytes = _withOutPointer(
-      paramSize,
-      (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, y)),
-    );
+    final xAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ssl.Bytes> p) {
+      _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, x));
+    });
+    final yAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ssl.Bytes> p) {
+      _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, y));
+    });
 
     Uint8List dAsBytes;
     if (isPrivateKey) {
       final d = ssl.EC_KEY_get0_private_key(ec);
-      dAsBytes = _withOutPointer(
-        paramSize,
-        (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, d)),
-      );
+      dAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ssl.Bytes> p) {
+        _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, d));
+      });
     }
 
-    return _JsonWebKey(
+    return JsonWebKey(
       kty: 'EC',
       use: jwkUse,
       crv: _ecCurveToJwkCrv(curve),
-      x: _JsonWebKey.encodeBase64UrlNoPadding(xAsBytes),
-      y: _JsonWebKey.encodeBase64UrlNoPadding(yAsBytes),
-      d: isPrivateKey ? _JsonWebKey.encodeBase64UrlNoPadding(dAsBytes) : null,
+      x: _jwkEncodeBase64UrlNoPadding(xAsBytes),
+      y: _jwkEncodeBase64UrlNoPadding(yAsBytes),
+      d: isPrivateKey ? _jwkEncodeBase64UrlNoPadding(dAsBytes) : null,
     ).toJson();
   } finally {
     scope.release();
@@ -1416,7 +1197,7 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   ArgumentError.checkNotNull(hash, 'hash');
 
   final h = _Hash.fromHash(hash);
-  final k = _JsonWebKey.fromJson(jwk);
+  final k = JsonWebKey.fromJson(jwk);
 
   void checkJwk(bool condition, String prop, String message) =>
       _checkData(condition, message: 'JWK property "$prop" $message');
@@ -1431,7 +1212,7 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
     'must be "$expectedAlg"',
   );
 
-  final keyData = _JsonWebKey.decodeBase64UrlNoPadding(k.k, 'k');
+  final keyData = _jwkDecodeBase64UrlNoPadding(k.k, 'k');
 
   return hmacSecretKey_importRawKey(keyData, hash, length: length);
 }
@@ -1511,11 +1292,11 @@ class _HmacSecretKey implements HmacSecretKey {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return _JsonWebKey(
+    return JsonWebKey(
       kty: 'oct',
       use: 'sig',
       alg: _hmacJwkAlgFromHash(_hash),
-      k: _JsonWebKey.encodeBase64UrlNoPadding(_keyData),
+      k: _jwkEncodeBase64UrlNoPadding(_keyData),
     ).toJson();
   }
 
@@ -1561,7 +1342,7 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey(
   final h = _Hash.fromHash(hash);
   return _RsassaPkcs1V15PrivateKey(
     _importJwkRsaPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       isPrivateKey: true,
       expectedUse: 'sig',
       expectedAlg: _rsassaPkcs1V15JwkAlgFromHash(h),
@@ -1602,7 +1383,7 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
   final h = _Hash.fromHash(hash);
   return _RsassaPkcs1V15PublicKey(
     _importJwkRsaPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       isPrivateKey: false,
       expectedUse: 'sig',
       expectedAlg: _rsassaPkcs1V15JwkAlgFromHash(h),
@@ -1766,7 +1547,7 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
   final h = _Hash.fromHash(hash);
   return _RsaPssPrivateKey(
     _importJwkRsaPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       isPrivateKey: true,
       expectedUse: 'sig',
       expectedAlg: _rsaPssJwkAlgFromHash(h),
@@ -1806,7 +1587,7 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
   final h = _Hash.fromHash(hash);
   return _RsaPssPublicKey(
     _importJwkRsaPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       isPrivateKey: false,
       expectedUse: 'sig',
       expectedAlg: _rsaPssJwkAlgFromHash(h),
@@ -1999,7 +1780,7 @@ Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
   EllipticCurve curve,
 ) async =>
     _EcdsaPrivateKey(_importJwkEcPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       curve,
       isPrivateKey: true,
       expectedUse: 'sig',
@@ -2033,7 +1814,7 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
   EllipticCurve curve,
 ) async =>
     _EcdsaPublicKey(_importJwkEcPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       curve,
       isPrivateKey: false,
       expectedUse: 'sig',
@@ -2289,7 +2070,7 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
   final h = _Hash.fromHash(hash);
   return _RsaOaepPrivateKey(
     _importJwkRsaPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       isPrivateKey: true,
       expectedUse: 'enc',
       expectedAlg: _rsaOaepJwkAlgFromHash(h),
@@ -2330,7 +2111,7 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
   final h = _Hash.fromHash(hash);
   return _RsaOaepPublicKey(
     _importJwkRsaPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       isPrivateKey: false,
       expectedUse: 'enc',
       expectedAlg: _rsaOaepJwkAlgFromHash(h),
@@ -2521,7 +2302,7 @@ Uint8List _aesImportJwkKey(
   assert(expectedJwkAlgSuffix != null);
   ArgumentError.checkNotNull(jwk, 'jwk');
 
-  final k = _JsonWebKey.fromJson(jwk);
+  final k = JsonWebKey.fromJson(jwk);
 
   void checkJwk(bool condition, String prop, String message) =>
       _checkData(condition, message: 'JWK property "$prop" $message');
@@ -2530,7 +2311,7 @@ Uint8List _aesImportJwkKey(
   checkJwk(k.k != null, 'k', 'must be present');
   checkJwk(k.use == null || k.use == 'enc', 'use', 'must be "enc", if present');
 
-  final keyData = _JsonWebKey.decodeBase64UrlNoPadding(k.k, 'k');
+  final keyData = _jwkDecodeBase64UrlNoPadding(k.k, 'k');
   if (keyData.length == 24) {
     // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
     // If not supported in Chrome, there is not reason to support it in Dart.
@@ -2559,11 +2340,11 @@ Map<String, dynamic> _aesExportJwkKey(
   assert(keyData.length == 16 || keyData.length == 32);
   final algPrefix = keyData.length == 16 ? 'A128' : 'A256';
 
-  return _JsonWebKey(
+  return JsonWebKey(
     kty: 'oct',
     use: 'enc',
     alg: algPrefix + jwkAlgSuffix,
-    k: _JsonWebKey.encodeBase64UrlNoPadding(keyData),
+    k: _jwkEncodeBase64UrlNoPadding(keyData),
   ).toJson();
 }
 
@@ -3280,7 +3061,7 @@ Future<EcdhPrivateKey> ecdhPrivateKey_importJsonWebKey(
   EllipticCurve curve,
 ) async =>
     _EcdhPrivateKey(_importJwkEcPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       curve,
       isPrivateKey: true,
       expectedUse: 'enc',
@@ -3314,7 +3095,7 @@ Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
   EllipticCurve curve,
 ) async =>
     _EcdhPublicKey(_importJwkEcPrivateOrPublicKey(
-      _JsonWebKey.fromJson(jwk),
+      JsonWebKey.fromJson(jwk),
       curve,
       isPrivateKey: false,
       expectedUse: 'enc',

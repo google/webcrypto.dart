@@ -1,3 +1,6 @@
+@TestOn('!firefox')
+library ecdsa_test;
+
 import 'package:webcrypto/webcrypto.dart';
 import '../utils.dart';
 import '../testrunner.dart';
@@ -9,22 +12,20 @@ final runner = TestRunner<EcdsaPrivateKey, EcdsaPublicKey>(
   importPrivatePkcs8Key: (keyData, keyImportParams) =>
       EcdsaPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams)),
   exportPrivatePkcs8Key: (key) => key.exportPkcs8Key(),
-  // Not implemented (in FFI) yet
-  // importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
-  //     EcdsaPrivateKey.importJsonWebKey(
-  //         jsonWebKeyData, curveFromJson(keyImportParams)),
-  // exportPrivateJsonWebKey: (key) => key.exportJsonWebKey(),
+  importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
+      EcdsaPrivateKey.importJsonWebKey(
+          jsonWebKeyData, curveFromJson(keyImportParams)),
+  exportPrivateJsonWebKey: (key) => key.exportJsonWebKey(),
   importPublicRawKey: (keyData, keyImportParams) =>
       EcdsaPublicKey.importRawKey(keyData, curveFromJson(keyImportParams)),
   exportPublicRawKey: (key) => key.exportRawKey(),
   importPublicSpkiKey: (keyData, keyImportParams) =>
       EcdsaPublicKey.importSpkiKey(keyData, curveFromJson(keyImportParams)),
   exportPublicSpkiKey: (key) => key.exportSpkiKey(),
-  // Not implemented (in FFI) yet
-  // importPublicJsonWebKey: (jsonWebKeyData, keyImportParams) =>
-  //     EcdsaPublicKey.importJsonWebKey(
-  //         jsonWebKeyData, curveFromJson(keyImportParams)),
-  // exportPublicJsonWebKey: (key) => key.exportJsonWebKey(),
+  importPublicJsonWebKey: (jsonWebKeyData, keyImportParams) =>
+      EcdsaPublicKey.importJsonWebKey(
+          jsonWebKeyData, curveFromJson(keyImportParams)),
+  exportPublicJsonWebKey: (key) => key.exportJsonWebKey(),
   generateKeyPair: (generateKeyPairParams) => EcdsaPrivateKey.generateKey(
     curveFromJson(generateKeyPairParams),
   ),

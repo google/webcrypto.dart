@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:webcrypto/webcrypto.dart';
@@ -313,360 +314,450 @@ class TestRunner<PrivateKey, PublicKey> {
   }
 
   void run(TestCase c) {
-    group('${c.name}:', () {
-      test('validate test case', () {
-        c._validate();
+    group('${c.name}:', () => _runTests(this, c));
+  }
+}
 
-        // Check that data matches the methods we have in the runner.
-        check(_importPrivateRawKey != null || c.privateRawKeyData == null);
-        check(_importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
-        check(
-          _importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null,
+void _runTests<PrivateKey, PublicKey>(
+  TestRunner<PrivateKey, PublicKey> r,
+  TestCase c,
+) {
+  test('validate test case', () {
+    c._validate();
+
+    // Check that data matches the methods we have in the runner.
+    check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
+    check(r._importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
+    check(
+      r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null,
+    );
+    check(r._importPublicRawKey != null || c.publicRawKeyData == null);
+    check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
+    check(
+      r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null,
+    );
+  });
+
+  //------------------------------ Import or generate key-pair for testing
+
+  // Store publicKey and privateKey for use in later tests.
+  PublicKey publicKey;
+  PrivateKey privateKey;
+
+  if (c.generateKeyParams != null) {
+    test('generateKeyPair()', () async {
+      final pair = await r._generateKeyPair(c.generateKeyParams);
+      check(pair.privateKey != null);
+      check(pair.publicKey != null);
+      publicKey = pair.publicKey;
+      privateKey = pair.privateKey;
+    });
+  } else {
+    test('import key-pair', () async {
+      // Get a publicKey
+      if (c.publicRawKeyData != null) {
+        publicKey = await r._importPublicRawKey(
+          c.publicRawKeyData,
+          c.importKeyParams,
         );
-        check(_importPublicRawKey != null || c.publicRawKeyData == null);
-        check(_importPublicSpkiKey != null || c.publicSpkiKeyData == null);
-        check(
-            _importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
-      });
-
-      // Generate or import private/public key
-      PrivateKey privateKey;
-      PublicKey publicKey;
-      if (c.generateKeyParams != null) {
-        test('generateKeyPair()', () async {
-          final pair = await _generateKeyPair(c.generateKeyParams);
-          privateKey = pair.privateKey;
-          publicKey = pair.publicKey;
-          check(privateKey != null);
-          check(publicKey != null);
-        });
+        check(publicKey != null);
+      } else if (c.publicSpkiKeyData != null) {
+        publicKey = await r._importPublicSpkiKey(
+          c.publicSpkiKeyData,
+          c.importKeyParams,
+        );
+        check(publicKey != null);
+      } else if (c.publicJsonWebKeyData != null) {
+        publicKey = await r._importPublicJsonWebKey(
+          c.publicJsonWebKeyData,
+          c.importKeyParams,
+        );
+        check(publicKey != null);
       } else {
-        // Import private key
-        if (c.privateRawKeyData != null) {
-          test('importPrivateRawKey()', () async {
-            privateKey = await _importPrivateRawKey(
-              c.privateRawKeyData,
-              c.importKeyParams,
-            );
-            check(privateKey != null);
-          });
-        }
-        if (c.privatePkcs8KeyData != null) {
-          test('importPrivatePkcs8Key()', () async {
-            privateKey = await _importPrivatePkcs8Key(
-              c.privatePkcs8KeyData,
-              c.importKeyParams,
-            );
-            check(privateKey != null);
-          });
-        }
-        if (c.privateJsonWebKeyData != null) {
-          test('importPrivateJsonWebKey()', () async {
-            privateKey = await _importPrivateJsonWebKey(
-              c.privateJsonWebKeyData,
-              c.importKeyParams,
-            );
-            check(privateKey != null);
-          });
-        }
-        // Import public key
-        if (c.publicRawKeyData != null) {
-          test('importPublicRawKey()', () async {
-            publicKey = await _importPublicRawKey(
-              c.publicRawKeyData,
-              c.importKeyParams,
-            );
-            check(publicKey != null);
-          });
-        }
-        if (c.publicSpkiKeyData != null) {
-          test('importPublicSpkiKey()', () async {
-            publicKey = await _importPublicSpkiKey(
-              c.publicSpkiKeyData,
-              c.importKeyParams,
-            );
-            check(publicKey != null);
-          });
-        }
-        if (c.publicJsonWebKeyData != null) {
-          test('importPublicJsonWebKey()', () async {
-            publicKey = await _importPublicJsonWebKey(
-              c.publicJsonWebKeyData,
-              c.importKeyParams,
-            );
-            check(publicKey != null);
-          });
-        }
+        check(false, 'missing public key for importing');
       }
 
-      // If signature we should verify (with bytes and stream) it
-      if (c.signature != null) {
-        test('verifyBytes(signature, plaintext)', () async {
-          check(
-            await _verifyBytes(
-              publicKey,
-              c.signature,
-              c.plaintext,
-              c.signVerifyParams,
-            ),
-            'failed to verify signature from test case',
-          );
-
-          check(
-            !await _verifyBytes(
-              publicKey,
-              flipFirstBits(c.signature),
-              c.plaintext,
-              c.signVerifyParams,
-            ),
-            'verified an invalid signature',
-          );
-        });
-
-        test('verifyStream(signature, Stream.value(plaintext))', () async {
-          check(
-            await _verifyStream(
-              publicKey,
-              c.signature,
-              Stream.value(c.plaintext),
-              c.signVerifyParams,
-            ),
-            'failed to verify signature from test case',
-          );
-        });
-
-        test('verifyStream(signature, fibonacciChunkedStream(plaintext))',
-            () async {
-          check(
-            await _verifyStream(
-              publicKey,
-              c.signature,
-              fibonacciChunkedStream(c.plaintext),
-              c.signVerifyParams,
-            ),
-            'faile+d to verify signature from test case',
-          );
-        });
+      // Get a privateKey
+      if (c.privateRawKeyData != null) {
+        privateKey = await r._importPrivateRawKey(
+          c.privateRawKeyData,
+          c.importKeyParams,
+        );
+        check(privateKey != null);
+      } else if (c.privatePkcs8KeyData != null) {
+        privateKey = await r._importPrivatePkcs8Key(
+          c.privatePkcs8KeyData,
+          c.importKeyParams,
+        );
+        check(privateKey != null);
+      } else if (c.privateJsonWebKeyData != null) {
+        privateKey = await r._importPrivateJsonWebKey(
+          c.privateJsonWebKeyData,
+          c.importKeyParams,
+        );
+        check(privateKey != null);
+      } else {
+        check(false, 'missing private key for importing');
       }
+    });
+  }
 
-      final signatures = <List<int>>[];
-      test('signBytes(plaintext)', () async {
-        final sig = await _signBytes(
+  //------------------------------ Create a signature for testing
+
+  // Ensure that we have a signature for use in later test cases
+  List<int> signature;
+
+  if (r._signBytes != null) {
+    if (c.signature != null) {
+      signature = c.signature;
+    } else {
+      test('create signature', () async {
+        signature = await r._signBytes(
           privateKey,
           c.plaintext,
           c.signVerifyParams,
         );
-        check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
-        signatures.add(sig);
+      });
+    }
+
+    test('verify signature', () async {
+      check(
+        await r._verifyBytes(
+          publicKey,
+          signature,
+          c.plaintext,
+          c.signVerifyParams,
+        ),
+        'failed to verify signature',
+      );
+    });
+  }
+
+  //------------------------------ Utilities for testing
+
+  //// Utility function to verify [sig] using [key].
+  Future<void> _checkVerifyBytes(PublicKey key, List<int> sig) async {
+    check(
+      await r._verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
+      'failed to verify signature',
+    );
+    check(
+      !await r._verifyBytes(
+        key,
+        flipFirstBits(sig),
+        c.plaintext,
+        c.signVerifyParams,
+      ),
+      'verified an invalid signature',
+    );
+    if (c.plaintext.isNotEmpty) {
+      check(
+        !await r._verifyBytes(
+          key,
+          sig,
+          flipFirstBits(c.plaintext),
+          c.signVerifyParams,
+        ),
+        'verified an invalid message',
+      );
+    }
+  }
+
+  /// Check if [publicKey] is sane.
+  Future<void> checkPublicKey(PublicKey publicKey) async {
+    check(publicKey != null, 'publicKey is null');
+    await _checkVerifyBytes(publicKey, signature);
+  }
+
+  /// Check if [signature] is sane.
+  Future<void> checkSignature(List<int> signature) async {
+    check(signature != null, 'signature is null');
+    check(signature.isNotEmpty, 'signature is empty');
+    await _checkVerifyBytes(publicKey, signature);
+  }
+
+  /// Check if [privateKey] is sane.
+  Future<void> checkPrivateKey(PrivateKey privateKey) async {
+    check(privateKey != null, 'privateKey is null');
+    final sig = await r._signBytes(
+      privateKey,
+      c.plaintext,
+      c.signVerifyParams,
+    );
+    await checkSignature(sig);
+  }
+
+  //------------------------------ Test import public key
+
+  if (c.publicRawKeyData != null) {
+    test('importPublicRawKey()', () async {
+      final key = await r._importPublicRawKey(
+        c.publicRawKeyData,
+        c.importKeyParams,
+      );
+      await checkPublicKey(key);
+    });
+  }
+
+  if (c.publicSpkiKeyData != null) {
+    test('importPublicSpkiKey()', () async {
+      final key = await r._importPublicSpkiKey(
+        c.publicSpkiKeyData,
+        c.importKeyParams,
+      );
+      await checkPublicKey(key);
+    });
+  }
+
+  if (c.publicJsonWebKeyData != null) {
+    test('importPublicJsonWebKey()', () async {
+      final key = await r._importPublicJsonWebKey(
+        c.publicJsonWebKeyData,
+        c.importKeyParams,
+      );
+      await checkPublicKey(key);
+    });
+  }
+
+  //------------------------------ Test import private key
+
+  if (c.privateRawKeyData != null) {
+    test('importPrivateRawKey()', () async {
+      final key = await r._importPrivateRawKey(
+        c.privateRawKeyData,
+        c.importKeyParams,
+      );
+      await checkPrivateKey(key);
+    });
+  }
+
+  if (c.privatePkcs8KeyData != null) {
+    test('importPrivatePkcs8Key()', () async {
+      final key = await r._importPrivatePkcs8Key(
+        c.privatePkcs8KeyData,
+        c.importKeyParams,
+      );
+      await checkPrivateKey(key);
+    });
+  }
+
+  if (c.privateJsonWebKeyData != null) {
+    test('importPrivateJsonWebKey()', () async {
+      final key = await r._importPrivateJsonWebKey(
+        c.privateJsonWebKeyData,
+        c.importKeyParams,
+      );
+      await checkPrivateKey(key);
+    });
+  }
+
+  //------------------------------ Test signing
+
+  if (r._signBytes != null) {
+    test('signBytes(plaintext)', () async {
+      final sig = await r._signBytes(
+        privateKey,
+        c.plaintext,
+        c.signVerifyParams,
+      );
+      await checkSignature(sig);
+    });
+  }
+
+  if (r._signStream != null) {
+    test('signStream(plaintext)', () async {
+      final sig = await r._signStream(
+        privateKey,
+        Stream.value(c.plaintext),
+        c.signVerifyParams,
+      );
+      await checkSignature(sig);
+    });
+
+    test('signStream(fibChunked(plaintext))', () async {
+      final sig = await r._signStream(
+        privateKey,
+        fibonacciChunkedStream(c.plaintext),
+        c.signVerifyParams,
+      );
+      await checkSignature(sig);
+    });
+  }
+
+  //------------------------------ Test verification
+
+  if (r._verifyBytes != null) {
+    test('verifyBytes(signature, plaintext)', () async {
+      check(
+        await r._verifyBytes(
+          publicKey,
+          signature,
+          c.plaintext,
+          c.signVerifyParams,
+        ),
+        'failed to verify signature',
+      );
+
+      check(
+        !await r._verifyBytes(
+          publicKey,
+          flipFirstBits(signature),
+          c.plaintext,
+          c.signVerifyParams,
+        ),
+        'verified an invalid signature',
+      );
+
+      if (c.plaintext.isNotEmpty) {
         check(
-          await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
-          'failed to verify signature',
-        );
-        check(
-          !await _verifyBytes(
+          !await r._verifyBytes(
             publicKey,
-            flipFirstBits(sig),
-            c.plaintext,
+            signature,
+            flipFirstBits(c.plaintext),
             c.signVerifyParams,
           ),
-          'verified an invalid signature',
+          'verified an invalid message',
         );
-      });
+      }
+    });
+  }
 
-      test('signStream(plaintext)', () async {
-        final sig = await _signStream(
-          privateKey,
+  if (r._verifyStream != null) {
+    test('verifyStream(signature, Stream.value(plaintext))', () async {
+      check(
+        await r._verifyStream(
+          publicKey,
+          signature,
           Stream.value(c.plaintext),
           c.signVerifyParams,
-        );
-        check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
-        signatures.add(sig);
+        ),
+        'failed to verify signature',
+      );
+
+      check(
+        !await r._verifyStream(
+          publicKey,
+          flipFirstBits(signature),
+          Stream.value(c.plaintext),
+          c.signVerifyParams,
+        ),
+        'verified an invalid signature',
+      );
+
+      if (c.plaintext.isNotEmpty) {
         check(
-          await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
-          'failed to verify signature',
-        );
-        check(
-          !await _verifyBytes(
+          !await r._verifyStream(
             publicKey,
-            flipFirstBits(sig),
-            c.plaintext,
+            signature,
+            Stream.value(flipFirstBits(c.plaintext)),
             c.signVerifyParams,
           ),
-          'verified an invalid signature',
+          'verified an invalid message',
         );
-      });
+      }
+    });
 
-      test('signStream(fibonacciChunkedStream(plaintext))', () async {
-        final sig = await _signStream(
-          privateKey,
+    test('verifyStream(signature, fibChunkedStream(plaintext))', () async {
+      check(
+        await r._verifyStream(
+          publicKey,
+          signature,
           fibonacciChunkedStream(c.plaintext),
           c.signVerifyParams,
-        );
-        check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
-        signatures.add(sig);
+        ),
+        'failed to verify signature',
+      );
+
+      check(
+        !await r._verifyStream(
+          publicKey,
+          flipFirstBits(signature),
+          fibonacciChunkedStream(c.plaintext),
+          c.signVerifyParams,
+        ),
+        'verified an invalid signature',
+      );
+
+      if (c.plaintext.isNotEmpty) {
         check(
-          await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
-          'failed to verify signature',
-        );
-        check(
-          !await _verifyBytes(
+          !await r._verifyStream(
             publicKey,
-            flipFirstBits(sig),
-            c.plaintext,
+            signature,
+            fibonacciChunkedStream(flipFirstBits(c.plaintext)),
             c.signVerifyParams,
           ),
-          'verified an invalid signature',
+          'verified an invalid message',
         );
-      });
-
-      if (_exportPrivateRawKey != null && _importPrivateRawKey != null) {
-        test('export/import/signBytes raw private key', () async {
-          final keyData = await _exportPrivateRawKey(privateKey);
-          check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await _importPrivateRawKey(keyData, c.importKeyParams);
-          check(key != null, 'failed to import key');
-          final sig = await _signBytes(key, c.plaintext, c.signVerifyParams);
-          check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
-          signatures.add(sig);
-          check(
-            await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
-            'failed to verify signature',
-          );
-          check(
-            !await _verifyBytes(
-              publicKey,
-              flipFirstBits(sig),
-              c.plaintext,
-              c.signVerifyParams,
-            ),
-            'verified an invalid signature',
-          );
-        });
       }
+    });
+  }
 
-      if (_exportPrivatePkcs8Key != null && _importPrivatePkcs8Key != null) {
-        test('export/import/signBytes pkcs8 private key', () async {
-          final keyData = await _exportPrivatePkcs8Key(privateKey);
-          check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await _importPrivatePkcs8Key(keyData, c.importKeyParams);
-          check(key != null, 'failed to import key');
-          final sig = await _signBytes(key, c.plaintext, c.signVerifyParams);
-          check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
-          signatures.add(sig);
-          check(
-            await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
-            'failed to verify signature',
-          );
-          check(
-            !await _verifyBytes(
-              publicKey,
-              flipFirstBits(sig),
-              c.plaintext,
-              c.signVerifyParams,
-            ),
-            'verified an invalid signature',
-          );
-        });
-      }
+  //------------------------------ export/import private key
+  if (r._exportPrivateRawKey != null) {
+    test('export/import raw private key', () async {
+      final keyData = await r._exportPrivateRawKey(privateKey);
+      check(keyData != null, 'exported key is null');
+      check(keyData.isNotEmpty, 'exported key is empty');
 
-      if (_exportPrivateJsonWebKey != null &&
-          _importPrivateJsonWebKey != null) {
-        test('export/import/signBytes JWK private key', () async {
-          final keyData = await _exportPrivateJsonWebKey(privateKey);
-          check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key =
-              await _importPrivateJsonWebKey(keyData, c.importKeyParams);
-          check(key != null, 'failed to import key');
-          final sig = await _signBytes(key, c.plaintext, c.signVerifyParams);
-          check(sig != null && sig.isNotEmpty, 'failed to sign plaintext');
-          signatures.add(sig);
-          check(
-            await _verifyBytes(publicKey, sig, c.plaintext, c.signVerifyParams),
-            'failed to verify signature',
-          );
-          check(
-            !await _verifyBytes(
-              publicKey,
-              flipFirstBits(sig),
-              c.plaintext,
-              c.signVerifyParams,
-            ),
-            'verified an invalid signature',
-          );
-        });
-      }
+      final key = await r._importPrivateRawKey(keyData, c.importKeyParams);
+      await checkPrivateKey(key);
+    });
+  }
 
-      if (_exportPublicRawKey != null && _importPublicRawKey != null) {
-        test('export/import/verifyBytes raw public key', () async {
-          final keyData = await _exportPublicRawKey(publicKey);
-          check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await _importPublicRawKey(keyData, c.importKeyParams);
-          check(key != null, 'failed to import key');
-          for (final sig in signatures) {
-            check(
-              await _verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
-              'failed to verify signature',
-            );
-            check(
-              !await _verifyBytes(
-                key,
-                flipFirstBits(sig),
-                c.plaintext,
-                c.signVerifyParams,
-              ),
-              'verified an invalid signature',
-            );
-          }
-        });
-      }
+  if (r._exportPrivatePkcs8Key != null) {
+    test('export/import pkcs8 private key', () async {
+      final keyData = await r._exportPrivatePkcs8Key(privateKey);
+      check(keyData != null, 'exported key is null');
+      check(keyData.isNotEmpty, 'exported key is empty');
 
-      if (_exportPublicSpkiKey != null && _importPublicSpkiKey != null) {
-        test('export/import/verifyBytes spki public key', () async {
-          final keyData = await _exportPublicSpkiKey(publicKey);
-          check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await _importPublicSpkiKey(keyData, c.importKeyParams);
-          check(key != null, 'failed to import key');
-          for (final sig in signatures) {
-            check(
-              await _verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
-              'failed to verify signature',
-            );
-            check(
-              !await _verifyBytes(
-                key,
-                flipFirstBits(sig),
-                c.plaintext,
-                c.signVerifyParams,
-              ),
-              'verified an invalid signature',
-            );
-          }
-        });
-      }
+      final key = await r._importPrivatePkcs8Key(keyData, c.importKeyParams);
+      await checkPrivateKey(key);
+    });
+  }
 
-      if (_exportPublicJsonWebKey != null && _importPublicJsonWebKey != null) {
-        test('export/import/verifyBytes JWK public key', () async {
-          final keyData = await _exportPublicJsonWebKey(publicKey);
-          check(keyData != null && keyData.isNotEmpty, 'failed to export key');
-          final key = await _importPublicJsonWebKey(keyData, c.importKeyParams);
-          check(key != null, 'failed to import key');
-          for (final sig in signatures) {
-            check(
-              await _verifyBytes(key, sig, c.plaintext, c.signVerifyParams),
-              'failed to verify signature',
-            );
-            check(
-              !await _verifyBytes(
-                key,
-                flipFirstBits(sig),
-                c.plaintext,
-                c.signVerifyParams,
-              ),
-              'verified an invalid signature',
-            );
-          }
-        });
-      }
+  if (r._exportPrivateJsonWebKey != null) {
+    test('export/import jwk private key', () async {
+      final jwk = await r._exportPrivateJsonWebKey(privateKey);
+      check(jwk != null, 'exported key is null');
+      check(jwk.isNotEmpty, 'exported key is empty');
+
+      final key = await r._importPrivateJsonWebKey(jwk, c.importKeyParams);
+      await checkPrivateKey(key);
+    });
+  }
+
+  //------------------------------ export/import public key
+
+  if (r._exportPublicRawKey != null) {
+    test('export/import raw public key', () async {
+      final keyData = await r._exportPublicRawKey(publicKey);
+      check(keyData != null, 'exported key is null');
+      check(keyData.isNotEmpty, 'exported key is empty');
+
+      final key = await r._importPublicRawKey(keyData, c.importKeyParams);
+      await checkPublicKey(key);
+    });
+  }
+
+  if (r._exportPublicSpkiKey != null) {
+    test('export/import pkcs8 public key', () async {
+      final keyData = await r._exportPublicSpkiKey(publicKey);
+      check(keyData != null, 'exported key is null');
+      check(keyData.isNotEmpty, 'exported key is empty');
+
+      final key = await r._importPublicSpkiKey(keyData, c.importKeyParams);
+      await checkPublicKey(key);
+    });
+  }
+
+  if (r._exportPublicJsonWebKey != null) {
+    test('export/import jwk public key', () async {
+      final jwk = await r._exportPublicJsonWebKey(publicKey);
+      check(jwk != null, 'exported key is null');
+      check(jwk.isNotEmpty, 'exported key is empty');
+
+      final key = await r._importPublicJsonWebKey(jwk, c.importKeyParams);
+      await checkPublicKey(key);
     });
   }
 }

@@ -119,15 +119,15 @@ Future<subtle.CryptoKey> _importJsonWebKey(
   String expectedType,
 ) {
   return _handleDomException(() async {
-    jwk = Map.fromEntries(jwk.entries.where(
-      // Filter out 'key_ops' and 'ext' as this library doesn't configuring
-      // _usages_ and _extractable_, we strip these properties.
-      // Notice that we also strip 'key_ops' and 'ext' in [_exportJsonWebKey].
-      (e) => e.key != 'key_ops' && e.key != 'ext',
-    ));
+    final jwkObj = subtle.JsonWebKey.fromJson(jwk);
+    // Remove 'key_ops' and 'ext' as this library doesn't configuring
+    // _usages_ and _extractable_.
+    // Notice that we also strip 'key_ops' and 'ext' in [_exportJsonWebKey].
+    jwkObj.key_ops = null;
+    jwkObj.ext = null;
     final k = await subtle.promiseAsFuture(subtle.importJsonWebKey(
       'jwk',
-      subtle.JsonWebKey.fromJson(jwk),
+      subtle.jsonWebKeytoJs(jwkObj),
       algorithm,
       true, // extractable, keys should always be extractable.
       usages,
@@ -278,12 +278,13 @@ Future<Map<String, Object>> _exportJsonWebKey(
       'jwk',
       key,
     ));
-    final jwk = subtle.JsonWebKey.toJson(result);
-    // Strip 'key_ops' and 'ext' as this library doesn't allow configuration of
+    final jwk = subtle.jsonWebKeyFromJs(result);
+    // Remove 'key_ops' and 'ext' as this library doesn't allow configuration of
     // _usages_ or _extractable_.
     // Notice, that we also strip these in [_importJsonWebKey].
-    jwk.removeWhere((key, _) => key == 'key_ops' || key == 'ext');
-    return jwk;
+    jwk.key_ops = null;
+    jwk.ext = null;
+    return jwk.toJson();
   });
 }
 
