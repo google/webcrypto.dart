@@ -1,7 +1,6 @@
 import 'package:webcrypto/webcrypto.dart';
 import '../utils.dart';
 import '../testrunner.dart';
-import 'package:test/test.dart';
 
 class _KeyPair<S, T> implements KeyPair<S, T> {
   final S privateKey;

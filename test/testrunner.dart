@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:webcrypto/webcrypto.dart';
-import 'package:test/test.dart';
 import 'ffibonacci_chunked_stream.dart';
 import 'utils.dart';
 import 'lipsum.dart';
@@ -284,7 +283,7 @@ class TestRunner<PrivateKey, PublicKey> {
     T optionalCall<S, T>(T Function(S) fn, S v) => fn != null ? fn(v) : null;
     final c = TestCase(
       name,
-      generateKeyParams: generateKeyParams,
+      generateKeyParams: null,
       privateRawKeyData: await optionalCall(_exportPrivateRawKey, privateKey),
       privatePkcs8KeyData:
           await optionalCall(_exportPrivatePkcs8Key, privateKey),
@@ -322,7 +321,7 @@ void _runTests<PrivateKey, PublicKey>(
   TestRunner<PrivateKey, PublicKey> r,
   TestCase c,
 ) {
-  test('validate test case', () {
+  final validate = () {
     c._validate();
 
     // Check that data matches the methods we have in the runner.
@@ -336,7 +335,15 @@ void _runTests<PrivateKey, PublicKey>(
     check(
       r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null,
     );
-  });
+  };
+  test('validate test case', validate);
+
+  try {
+    validate();
+  } catch (_) {
+    // Don't register additional tests if the test-case is invalid!
+    return;
+  }
 
   //------------------------------ Import or generate key-pair for testing
 

@@ -68,12 +68,16 @@ class JsonWebKey {
         throw FormatException('JWK entry "$k" must be a string', json);
       }
     }
-    if (json.containsKey('key_ops') &&
-        (json['key_ops'] is! List ||
-            (json['key_ops'] as List).any((e) => e is! String))) {
-      throw FormatException(
-          'JWK entry "key_ops" must be a list of strings', json);
+    List<String> key_ops;
+    if (json.containsKey('key_ops')) {
+      if (json['key_ops'] is! List ||
+          (json['key_ops'] as List).any((e) => e is! String)) {
+        throw FormatException(
+            'JWK entry "key_ops" must be a list of strings', json);
+      }
+      key_ops = (json['key_ops'] as List).map((e) => e as String).toList();
     }
+
     if (json.containsKey('ext') && json['ext'] is! bool) {
       throw FormatException('JWK entry "ext" must be boolean', json);
     }
@@ -89,7 +93,7 @@ class JsonWebKey {
     return JsonWebKey(
       kty: json['kty'] as String,
       use: json['use'] as String,
-      key_ops: (json['key_ops'] as List).map((e) => e as String).toList(),
+      key_ops: key_ops,
       alg: json['alg'] as String,
       ext: json['ext'] as bool,
       crv: json['crv'] as String,

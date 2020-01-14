@@ -323,6 +323,9 @@ abstract class _Disposable {
 
   @protected
   void _finalize();
+
+  // ignore: unused_element
+  static void dispose(_Disposable obj) => obj._finalize();
 }
 
 //---------------------- Utilities
@@ -449,7 +452,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
     void checkJwk(bool condition, String prop, String message) =>
         _checkData(condition, message: 'JWK property "$prop" $message');
 
-    checkJwk(jwk.kty != 'RSA', 'kty', 'must be "RSA"');
+    checkJwk(jwk.kty == 'RSA', 'kty', 'must be "RSA"');
     checkJwk(
       jwk.alg == null || jwk.alg == expectedAlg,
       'alg',
@@ -481,7 +484,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
     final rsa = scope.create(ssl.RSA_new, ssl.RSA_free);
 
     final n = readBN(jwk.n, 'n');
-    final e = readBN(jwk.n, 'e');
+    final e = readBN(jwk.e, 'e');
     _checkOpIsOne(ssl.RSA_set0_key(rsa, n, e, ffi.nullptr));
     scope.move(n); // ssl.RSA_set0_key takes ownership
     scope.move(e);
@@ -489,7 +492,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
     if (isPrivateKey) {
       // The "p", "q", "dp", "dq", and "qi" properties are optional in the JWA
       // spec. However they are required by Chromium's WebCrypto implementation.
-      final d = readBN(jwk.n, 'd');
+      final d = readBN(jwk.d, 'd');
       // If present properties p,q,dp,dq,qi enable optional optimizations, see:
       // https://tools.ietf.org/html/rfc7518#section-6.3.2
       // However, these are required by Chromes Web Crypto implementation:
@@ -500,11 +503,11 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
       // and, (b) following Chromes/Firefox behavior is safe.
       // Notice, we can choose to support this in the future without breaking
       // the public API.
-      final p = readBN(jwk.n, 'p');
-      final q = readBN(jwk.n, 'q');
-      final dp = readBN(jwk.n, 'dp');
-      final dq = readBN(jwk.n, 'dq');
-      final qi = readBN(jwk.n, 'qi');
+      final p = readBN(jwk.p, 'p');
+      final q = readBN(jwk.q, 'q');
+      final dp = readBN(jwk.dp, 'dp');
+      final dq = readBN(jwk.dq, 'dq');
+      final qi = readBN(jwk.qi, 'qi');
 
       _checkOpIsOne(ssl.RSA_set0_key(rsa, ffi.nullptr, ffi.nullptr, d));
       scope.move(d); // ssl.RSA_set0_key takes ownership
@@ -553,10 +556,9 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
 
     String encodeBN(ffi.Pointer<ssl.BIGNUM> bn) {
       final N = ssl.BN_num_bytes(bn);
-      final result = _withOutPointer(
-        N,
-        (p) => _checkOpIsOne(ssl.BN_bn2bin_padded(p, N, bn)),
-      );
+      final result = _withOutPointer(N, (ffi.Pointer<ssl.Bytes> p) {
+        _checkOpIsOne(ssl.BN_bn2bin_padded(p, N, bn));
+      });
       assert(result.length == 1 || result[0] != 0);
       return _jwkEncodeBase64UrlNoPadding(result);
     }
@@ -572,7 +574,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
         use: jwkUse,
         alg: jwkAlg,
         n: encodeBN(n.value),
-        e: encodeBN(n.value),
+        e: encodeBN(e.value),
       ).toJson();
     }
 
@@ -822,7 +824,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
   }
 
   final crv = _ecCurveToJwkCrv(curve);
-  _checkData(jwk.crv != crv, message: 'JWK property "crv" is not "$crv"');
+  _checkData(jwk.crv == crv, message: 'JWK property "crv" is not "$crv"');
 
   _checkData(expectedAlg == null || jwk.alg == null || jwk.alg == expectedAlg,
       message: 'JWK property "alg" should be "$expectedAlg", if present');
@@ -848,7 +850,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
     ffi.Pointer<ssl.BIGNUM> decodeParam(String val, String prop) {
       final bytes = _jwkDecodeBase64UrlNoPadding(val, prop);
       _checkData(
-        bytes.length != paramSize,
+        bytes.length == paramSize,
         message: 'JWK property "$prop" should hold $paramSize bytes',
       );
       final bn = ssl.BN_bin2bn(
@@ -1488,6 +1490,13 @@ class _RsassaPkcs1V15PublicKey
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
         return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
           final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
+          if (result != 1) {
+            // TODO: We should always clear errors, when returning from any
+            //       function that uses BoringSSL.
+            // Note: In this case we could probably assert that error is just
+            //       signature related.
+            ssl.ERR_clear_error();
+          }
           return result == 1;
         });
       });
@@ -1726,6 +1735,13 @@ class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
         return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
           final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
+          if (result != 1) {
+            // TODO: We should always clear errors, when returning from any
+            //       function that uses BoringSSL.
+            // Note: In this case we could probably assert that error is just
+            //       signature related.
+            ssl.ERR_clear_error();
+          }
           return result == 1;
         });
       });
@@ -2013,6 +2029,13 @@ class _EcdsaPublicKey with _Disposable implements EcdsaPublicKey {
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
         return _withDataAsPointer(sig, (ffi.Pointer<ssl.Bytes> p) {
           final result = ssl.EVP_DigestVerifyFinal(ctx, p, sig.length);
+          if (result != 1) {
+            // TODO: We should always clear errors, when returning from any
+            //       function that uses BoringSSL.
+            // Note: In this case we could probably assert that error is just
+            //       signature related.
+            ssl.ERR_clear_error();
+          }
           return result == 1;
         });
       });

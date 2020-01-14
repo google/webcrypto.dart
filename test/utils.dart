@@ -1,13 +1,26 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:webcrypto/webcrypto.dart';
-import 'package:test/test.dart';
+import 'package:test/test.dart' as t;
+
+import 'err_stack_stub.dart' if (dart.library.ffi) 'err_stack_ffi.dart';
 
 void log(Object value) => print(value);
 
 void check(bool condition, [String message]) {
   if (!condition) {
-    fail(message);
+    t.fail(message);
   }
+}
+
+void group(String name, void Function() fn) {
+  t.group(name, fn);
+}
+
+void test(String name, FutureOr Function() fn) {
+  t.test(name, () async {
+    await checkErrorStack(fn);
+  });
 }
 
 Hash hashFromJson(dynamic json) {
