@@ -7,7 +7,7 @@ import 'err_stack_stub.dart' if (dart.library.ffi) 'err_stack_ffi.dart';
 
 void log(Object value) => print(value);
 
-void check(bool condition, [String message]) {
+void check(bool condition, [String message = 'check failed']) {
   if (!condition) {
     t.fail(message);
   }
