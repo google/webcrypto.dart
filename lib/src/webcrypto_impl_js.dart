@@ -46,17 +46,21 @@ Object _translateDomException(
   subtle.DomException e, {
   bool invalidAccessErrorIsArgumentError = false,
 }) {
+  var message = e.message;
+  if (message == null || message.isEmpty) {
+    message = 'browser threw "${e.name}"';
+  }
   switch (e.name) {
     case 'SyntaxError':
-      return ArgumentError(e.message);
+      return ArgumentError(message);
     case 'QuotaExceededError':
-      return ArgumentError(e.message);
+      return ArgumentError(message);
     case 'NotSupportedError':
-      return UnsupportedError(e.message);
+      return UnsupportedError(message);
     case 'DataError':
-      return FormatException(e.message);
+      return FormatException(message);
     case 'OperationError':
-      return _OperationError(e.message);
+      return _OperationError(message);
     case 'InvalidAccessError':
       // InvalidAccessError occurs when the request operation is not valid for
       // the provided key. This is typically because:
@@ -72,18 +76,18 @@ Object _translateDomException(
       // Hence, unless we're handling errors from ECDH `deriveBits` we shall
       // consider 'InvalidAccessError' to be an internal error.
       if (invalidAccessErrorIsArgumentError) {
-        throw ArgumentError(e.message);
+        throw ArgumentError(message);
       }
       // This should never happen, because it is only thrown when
       /// CryptoKey.usages isn't configured correctly. But this library allows
       /// all valid usages.
       return AssertionError(
-        'Unexpected access error from web cryptography: ${e.message}',
+        'Unexpected access error from web cryptography: ${message}',
       );
   }
   // Unknown exception, we cannot handle this case.
   return AssertionError('Unexpected exception from web cryptography'
-      '"${e.name}", message: ${e.message}');
+      '"${e.name}", message: ${message}');
 }
 
 /// Handle instances of [subtle.DomException] specified in the

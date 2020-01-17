@@ -34,12 +34,17 @@ class TestCase {
   final List<int> plaintext;
   // Signature to be verified (invalid, if generateKeyParams != null)
   final List<int> signature;
+  // Ciphertext of plaintext (invalid, if generateKeyParams != null)
+  final List<int> ciphertext;
 
   // Parameters for key import (always required)
   final Map<String, dynamic> importKeyParams;
 
-  // Parameters for sign/verify (always required)
+  // Parameters for sign/verify (required, if there is a signature)
   final Map<String, dynamic> signVerifyParams;
+
+  // Parameters for encrypt/decrypt (required, if there is a ciphertext)
+  final Map<String, dynamic> encryptDecryptParams;
 
   TestCase(
     this.name, {
@@ -52,8 +57,10 @@ class TestCase {
     this.publicJsonWebKeyData,
     this.plaintext,
     this.signature,
+    this.ciphertext,
     this.importKeyParams,
     this.signVerifyParams,
+    this.encryptDecryptParams,
   });
 
   factory TestCase.fromJson(Map json) {
@@ -70,8 +77,11 @@ class TestCase {
           _optionalStringMapDecode(json['publicJsonWebKeyData']),
       plaintext: _optionalBase64Decode(json['plaintext']),
       signature: _optionalBase64Decode(json['signature']),
+      ciphertext: _optionalBase64Decode(json['ciphertext']),
       importKeyParams: _optionalStringMapDecode(json['importKeyParams']),
       signVerifyParams: _optionalStringMapDecode(json['signVerifyParams']),
+      encryptDecryptParams:
+          _optionalStringMapDecode(json['encryptDecryptParams']),
     );
   }
 
@@ -87,9 +97,11 @@ class TestCase {
       'publicJsonWebKeyData': publicJsonWebKeyData,
       'plaintext': _optionalBase64Encode(plaintext),
       'signature': _optionalBase64Encode(signature),
+      'ciphertext': _optionalBase64Encode(ciphertext),
       'importKeyParams': importKeyParams,
       'signVerifyParams': signVerifyParams,
-    };
+      'encryptDecryptParams': encryptDecryptParams,
+    }..removeWhere((_, v) => v == null);
   }
 }
 
@@ -151,6 +163,20 @@ typedef VerifyStreamFn<T> = Future<bool> Function(
   Map<String, dynamic> verifyParams,
 );
 
+/// Function for encrypting or a function for decrypting [data] using [key].
+typedef EncryptOrDecryptBytesFn<T> = Future<List<int>> Function(
+  T key,
+  List<int> data,
+  Map<String, dynamic> encryptOrDecryptParams,
+);
+
+/// Function for encrypting or a function for decrypting [data] using [key].
+typedef EncryptOrDecryptStreamFn<T> = Stream<List<int>> Function(
+  T key,
+  Stream<List<int>> data,
+  Map<String, dynamic> encryptOrDecryptParams,
+);
+
 class _KeyPair<S, T> implements KeyPair<S, T> {
   final S privateKey;
   final T publicKey;
@@ -181,6 +207,10 @@ class TestRunner<PrivateKey, PublicKey> {
   final SignStreamFn<PrivateKey> _signStream;
   final VerifyBytesFn<PublicKey> _verifyBytes;
   final VerifyStreamFn<PublicKey> _verifyStream;
+  final EncryptOrDecryptBytesFn<PublicKey> _encryptBytes;
+  final EncryptOrDecryptStreamFn<PublicKey> _encryptStream;
+  final EncryptOrDecryptBytesFn<PrivateKey> _decryptBytes;
+  final EncryptOrDecryptStreamFn<PrivateKey> _decryptStream;
 
   TestRunner._({
     @required bool isSymmetric,
@@ -197,10 +227,14 @@ class TestRunner<PrivateKey, PublicKey> {
     ImportJsonWebKeyKeyFn<PublicKey> importPublicJsonWebKey,
     ExportJsonWebKeyKeyFn<PublicKey> exportPublicJsonWebKey,
     @required GenerateKeyPairFn<PrivateKey, PublicKey> generateKeyPair,
-    @required SignBytesFn<PrivateKey> signBytes,
-    @required SignStreamFn<PrivateKey> signStream,
-    @required VerifyBytesFn<PublicKey> verifyBytes,
-    @required VerifyStreamFn<PublicKey> verifyStream,
+    SignBytesFn<PrivateKey> signBytes,
+    SignStreamFn<PrivateKey> signStream,
+    VerifyBytesFn<PublicKey> verifyBytes,
+    VerifyStreamFn<PublicKey> verifyStream,
+    EncryptOrDecryptBytesFn<PublicKey> encryptBytes,
+    EncryptOrDecryptStreamFn<PublicKey> encryptStream,
+    EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
+    EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
   })  : _isSymmetric = isSymmetric,
         _importPrivateRawKey = importPrivateRawKey,
         _exportPrivateRawKey = exportPrivateRawKey,
@@ -218,7 +252,11 @@ class TestRunner<PrivateKey, PublicKey> {
         _signBytes = signBytes,
         _signStream = signStream,
         _verifyBytes = verifyBytes,
-        _verifyStream = verifyStream {
+        _verifyStream = verifyStream,
+        _encryptBytes = encryptBytes,
+        _encryptStream = encryptStream,
+        _decryptBytes = decryptBytes,
+        _decryptStream = decryptStream {
     _validate();
   }
 
@@ -237,10 +275,14 @@ class TestRunner<PrivateKey, PublicKey> {
     ImportJsonWebKeyKeyFn<PublicKey> importPublicJsonWebKey,
     ExportJsonWebKeyKeyFn<PublicKey> exportPublicJsonWebKey,
     @required GenerateKeyPairFn<PrivateKey, PublicKey> generateKeyPair,
-    @required SignBytesFn<PrivateKey> signBytes,
-    @required SignStreamFn<PrivateKey> signStream,
-    @required VerifyBytesFn<PublicKey> verifyBytes,
-    @required VerifyStreamFn<PublicKey> verifyStream,
+    SignBytesFn<PrivateKey> signBytes,
+    SignStreamFn<PrivateKey> signStream,
+    VerifyBytesFn<PublicKey> verifyBytes,
+    VerifyStreamFn<PublicKey> verifyStream,
+    EncryptOrDecryptBytesFn<PublicKey> encryptBytes,
+    EncryptOrDecryptStreamFn<PublicKey> encryptStream,
+    EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
+    EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
   }) {
     return TestRunner._(
       isSymmetric: false,
@@ -261,6 +303,10 @@ class TestRunner<PrivateKey, PublicKey> {
       signStream: signStream,
       verifyBytes: verifyBytes,
       verifyStream: verifyStream,
+      encryptBytes: encryptBytes,
+      encryptStream: encryptStream,
+      decryptBytes: decryptBytes,
+      decryptStream: decryptStream,
     );
   }
 
@@ -277,10 +323,14 @@ class TestRunner<PrivateKey, PublicKey> {
     ImportJsonWebKeyKeyFn<PrivateKey> importPrivateJsonWebKey,
     ExportJsonWebKeyKeyFn<PrivateKey> exportPrivateJsonWebKey,
     @required GenerateKeyFn<PrivateKey> generateKey,
-    @required SignBytesFn<PrivateKey> signBytes,
-    @required SignStreamFn<PrivateKey> signStream,
-    @required VerifyBytesFn<PrivateKey> verifyBytes,
-    @required VerifyStreamFn<PrivateKey> verifyStream,
+    SignBytesFn<PrivateKey> signBytes,
+    SignStreamFn<PrivateKey> signStream,
+    VerifyBytesFn<PrivateKey> verifyBytes,
+    VerifyStreamFn<PrivateKey> verifyStream,
+    EncryptOrDecryptBytesFn<PrivateKey> encryptBytes,
+    EncryptOrDecryptStreamFn<PrivateKey> encryptStream,
+    EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
+    EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
   }) {
     return TestRunner._(
       isSymmetric: true,
@@ -298,16 +348,32 @@ class TestRunner<PrivateKey, PublicKey> {
       signStream: signStream,
       verifyBytes: verifyBytes,
       verifyStream: verifyStream,
+      encryptBytes: encryptBytes,
+      encryptStream: encryptStream,
+      decryptBytes: decryptBytes,
+      decryptStream: decryptStream,
     );
   }
 
   void _validate() {
     // Required operations
     check(_generateKeyPair != null);
-    check(_signBytes != null);
-    check(_signStream != null);
-    check(_verifyBytes != null);
-    check(_verifyStream != null);
+
+    // Check that we have verify if we have sign
+    check((_signBytes != null) == (_verifyBytes != null));
+    check((_signStream != null) == (_verifyStream != null));
+    // If we can sign streams, we should also be able to sign bytes
+    if (_signStream != null) {
+      check(_signBytes != null);
+    }
+
+    // Check that we have decrypt if we have encrypt
+    check((_encryptBytes != null) == (_decryptBytes != null));
+    check((_encryptStream != null) == (_decryptStream != null));
+    // If we can encrypt streams, we should also be able to encrypt bytes
+    if (_encryptStream != null) {
+      check(_encryptBytes != null);
+    }
 
     // Must have one priate key import format.
     check(_importPrivateRawKey != null ||
@@ -350,7 +416,8 @@ class TestRunner<PrivateKey, PublicKey> {
   Future<TestCase> generate({
     @required Map<String, dynamic> generateKeyParams,
     @required Map<String, dynamic> importKeyParams,
-    @required Map<String, dynamic> signVerifyParams,
+    Map<String, dynamic> signVerifyParams,
+    Map<String, dynamic> encryptDecryptParams,
     String plaintextTemplate = libsum,
     int minPlaintext = 8,
     int maxPlaintext = libsum.length,
@@ -376,12 +443,25 @@ class TestRunner<PrivateKey, PublicKey> {
       offset + N,
     ));
 
-    log('creating signature');
-    final signature = await _signBytes(
-      pair.privateKey,
-      plaintext,
-      signVerifyParams,
-    );
+    List<int> signature;
+    if (_signBytes != null) {
+      log('creating signature');
+      signature = await _signBytes(
+        pair.privateKey,
+        plaintext,
+        signVerifyParams,
+      );
+    }
+
+    List<int> ciphertext;
+    if (_encryptBytes != null) {
+      log('creating ciphertext');
+      ciphertext = await _encryptBytes(
+        pair.publicKey,
+        plaintext,
+        encryptDecryptParams,
+      );
+    }
 
     T optionalCall<S, T>(T Function(S) fn, S v) => fn != null ? fn(v) : null;
     final c = TestCase(
@@ -398,15 +478,15 @@ class TestRunner<PrivateKey, PublicKey> {
           await optionalCall(_exportPublicJsonWebKey, publicKey),
       plaintext: plaintext,
       signature: signature,
+      ciphertext: ciphertext,
       importKeyParams: importKeyParams,
       signVerifyParams: signVerifyParams,
+      encryptDecryptParams: encryptDecryptParams,
     );
 
     // Log the generated test case. This makes it easy to copy/paste the test
     // case into test files.
-    final json = c.toJson();
-    json.removeWhere((k, v) => v == null);
-    log(JsonEncoder.withIndent('  ').convert(json));
+    log(JsonEncoder.withIndent('  ').convert(c.toJson()));
 
     return c;
   }
@@ -451,11 +531,19 @@ void _runTests<PrivateKey, PublicKey>(
 
     check(c.plaintext != null);
     check(
-      c.generateKeyParams == null || c.signature == null,
-      'Cannot verify signature for a generated key-pair',
+      c.generateKeyParams == null ||
+          (c.signature == null && c.ciphertext == null),
+      'Cannot verify signature/ciphertext for a generated key-pair',
     );
     check(c.importKeyParams != null);
-    check(c.signVerifyParams != null);
+    check((c.signVerifyParams != null) == (r._signBytes != null));
+    check((c.encryptDecryptParams != null) == (r._encryptBytes != null));
+    if (c.signature != null) {
+      check(r._signBytes != null);
+    }
+    if (c.ciphertext != null) {
+      check(r._encryptBytes != null);
+    }
 
     // Check that data matches the methods we have in the runner.
     check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
@@ -575,6 +663,32 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
+  //------------------------------ Create a ciphertext for testing
+  List<int> ciphertext;
+
+  if (r._encryptBytes != null) {
+    if (c.ciphertext != null) {
+      ciphertext = c.ciphertext;
+    } else {
+      test('create ciphertext', () async {
+        ciphertext = await r._encryptBytes(
+          publicKey,
+          c.plaintext,
+          c.encryptDecryptParams,
+        );
+      });
+    }
+
+    test('decrypt ciphertext', () async {
+      final text = await r._decryptBytes(
+        privateKey,
+        ciphertext,
+        c.encryptDecryptParams,
+      );
+      check(equalBytes(text, c.plaintext), 'failed to decrypt ciphertext');
+    });
+  }
+
   //------------------------------ Utilities for testing
 
   //// Utility function to verify [sig] using [key].
@@ -605,10 +719,28 @@ void _runTests<PrivateKey, PublicKey>(
     }
   }
 
-  /// Check if [publicKey] is sane.
-  Future<void> checkPublicKey(PublicKey publicKey) async {
-    check(publicKey != null, 'publicKey is null');
-    await _checkVerifyBytes(publicKey, signature);
+  /// Utility function to decrypt [ctext] using [key].
+  Future<void> _checkDecryptBytes(PrivateKey key, List<int> ctext) async {
+    final text = await r._decryptBytes(key, ctext, c.encryptDecryptParams);
+    check(equalBytes(text, c.plaintext), 'failed to decrypt ciphertext');
+
+    if (ctext.isNotEmpty) {
+      // If ciphertext is mangled some primitives like AES-GCM must throw
+      // others may return garbled plaintext.
+      try {
+        final invalidText = await r._decryptBytes(
+          key,
+          flipFirstBits(ctext),
+          c.encryptDecryptParams,
+        );
+        check(
+          !equalBytes(invalidText, c.plaintext),
+          'decrypted an invalid ciphertext',
+        );
+      } on OperationError catch (e) {
+        check(e.toString() != '', 'expected some explanation');
+      }
+    }
   }
 
   /// Check if [signature] is sane.
@@ -618,15 +750,43 @@ void _runTests<PrivateKey, PublicKey>(
     await _checkVerifyBytes(publicKey, signature);
   }
 
+  /// Check if [ciphertext] is sane.
+  Future<void> checkCipherText(List<int> ctext) async {
+    check(ctext != null, 'ciphtertext is null');
+    check(ctext.isNotEmpty, 'ciphtertext is empty');
+    await _checkDecryptBytes(privateKey, ctext);
+  }
+
+  /// Check if [publicKey] is sane.
+  Future<void> checkPublicKey(PublicKey publicKey) async {
+    check(publicKey != null, 'publicKey is null');
+    if (r._signBytes != null) {
+      await _checkVerifyBytes(publicKey, signature);
+    }
+    if (r._encryptBytes != null) {
+      final ctext = await r._encryptBytes(
+        publicKey,
+        c.plaintext,
+        c.encryptDecryptParams,
+      );
+      await checkCipherText(ctext);
+    }
+  }
+
   /// Check if [privateKey] is sane.
   Future<void> checkPrivateKey(PrivateKey privateKey) async {
     check(privateKey != null, 'privateKey is null');
-    final sig = await r._signBytes(
-      privateKey,
-      c.plaintext,
-      c.signVerifyParams,
-    );
-    await checkSignature(sig);
+    if (r._signBytes != null) {
+      final sig = await r._signBytes(
+        privateKey,
+        c.plaintext,
+        c.signVerifyParams,
+      );
+      await checkSignature(sig);
+    }
+    if (r._encryptBytes != null) {
+      await _checkDecryptBytes(privateKey, ciphertext);
+    }
   }
 
   //------------------------------ Test import public key
@@ -836,6 +996,135 @@ void _runTests<PrivateKey, PublicKey>(
           ),
           'verified an invalid message',
         );
+      }
+    });
+  }
+
+  //------------------------------ Test encryption
+
+  if (r._encryptBytes != null) {
+    test('encryptBytes(plaintext)', () async {
+      final ctext = await r._encryptBytes(
+        publicKey,
+        c.plaintext,
+        c.encryptDecryptParams,
+      );
+      await checkCipherText(ctext);
+    });
+  }
+
+  if (r._encryptStream != null) {
+    test('encryptStream(plaintext)', () async {
+      final ctext = await bufferStream(r._encryptStream(
+        publicKey,
+        Stream.value(c.plaintext),
+        c.encryptDecryptParams,
+      ));
+      await checkCipherText(ctext);
+    });
+
+    test('encryptStream(fibChunked(plaintext))', () async {
+      final ctext = await bufferStream(r._encryptStream(
+        publicKey,
+        fibonacciChunkedStream(c.plaintext),
+        c.encryptDecryptParams,
+      ));
+      await checkCipherText(ctext);
+    });
+  }
+
+  //------------------------------ Test decryption
+
+  if (r._decryptBytes != null) {
+    test('decryptBytes(plaintext)', () async {
+      final text = await r._decryptBytes(
+        privateKey,
+        ciphertext,
+        c.encryptDecryptParams,
+      );
+      check(
+        equalBytes(text, c.plaintext),
+        'failed to decrypt signature',
+      );
+
+      if (ciphertext.isNotEmpty) {
+        // If ciphertext is mangled some primitives like AES-GCM must throw
+        // others may return garbled plaintext.
+        try {
+          final text2 = await r._decryptBytes(
+            privateKey,
+            flipFirstBits(ciphertext),
+            c.encryptDecryptParams,
+          );
+          check(
+            !equalBytes(text2, c.plaintext),
+            'decrypted an invalid ciphertext correctly',
+          );
+        } on OperationError catch (e) {
+          check(e.toString() != '', 'expected some explanation');
+        }
+      }
+    });
+  }
+
+  if (r._decryptStream != null) {
+    test('decryptStream(Stream.value(ciphertext))', () async {
+      final text = await bufferStream(r._decryptStream(
+        privateKey,
+        Stream.value(ciphertext),
+        c.encryptDecryptParams,
+      ));
+      check(
+        equalBytes(text, c.plaintext),
+        'failed to decrypt signature',
+      );
+
+      if (ciphertext.isNotEmpty) {
+        // If ciphertext is mangled some primitives like AES-GCM must throw
+        // others may return garbled plaintext.
+        try {
+          final text2 = await bufferStream(r._decryptStream(
+            privateKey,
+            Stream.value(flipFirstBits(ciphertext)),
+            c.encryptDecryptParams,
+          ));
+          check(
+            !equalBytes(text2, c.plaintext),
+            'decrypted an invalid ciphertext correctly',
+          );
+        } on OperationError catch (e) {
+          check(e.toString() != '', 'expected some explanation');
+        }
+      }
+    });
+
+    test('decryptStream(fibChunkedStream(ciphertext))', () async {
+      final text = await bufferStream(r._decryptStream(
+        privateKey,
+        fibonacciChunkedStream(ciphertext),
+        c.encryptDecryptParams,
+      ));
+      check(
+        equalBytes(text, c.plaintext),
+        'failed to decrypt signature',
+      );
+
+      if (ciphertext.isNotEmpty) {
+        // If ciphertext is mangled some primitives like AES-GCM must throw
+        // others may return garbled plaintext.
+        try {
+          final text2 = await bufferStream(r._decryptStream(
+            privateKey,
+            fibonacciChunkedStream(flipFirstBits(ciphertext)),
+            c.encryptDecryptParams,
+          ));
+          check(
+            !equalBytes(text2, c.plaintext),
+            'decrypted an invalid ciphertext correctly',
+          );
+        } on OperationError catch (e) {
+          check(e.toString() != '', 'expected some explanation');
+        }
       }
     });
   }

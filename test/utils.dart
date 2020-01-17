@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:convert';
 import 'package:webcrypto/webcrypto.dart';
 import 'package:test/test.dart' as t;
 
@@ -21,6 +22,19 @@ void test(String name, FutureOr Function() fn) {
   t.test(name, () async {
     await checkErrorStack(fn);
   });
+}
+
+bool equalBytes(List<int> a, List<int> b) => base64Encode(a) == base64Encode(b);
+
+/// Convert [Stream<List<int>>] to [Uint8List].
+Future<Uint8List> bufferStream(Stream<List<int>> data) async {
+  ArgumentError.checkNotNull(data, 'data');
+  final result = <int>[];
+  // TODO: Make this allocation stuff smarter
+  await for (var chunk in data) {
+    result.addAll(chunk);
+  }
+  return Uint8List.fromList(result);
 }
 
 Hash hashFromJson(dynamic json) {
@@ -89,6 +103,20 @@ EllipticCurve curveFromJson(dynamic json) {
   }
   check(false, 'invalid curve specification');
   return null; // unreachable
+}
+
+List<int> bytesFromJson(Map<String, dynamic> json, String key) {
+  if (json[key] != null) {
+    return base64Decode(json[key]);
+  }
+  return null;
+}
+
+String bytesToJson(List<int> bytes) {
+  if (bytes != null) {
+    return base64Encode(bytes);
+  }
+  return null;
 }
 
 /// Flip the first bit of every byte
