@@ -91,26 +91,6 @@ class TestCase {
       'signVerifyParams': signVerifyParams,
     };
   }
-
-  void _validate() {
-    check(
-      generateKeyParams != null ||
-          ((privateRawKeyData != null ||
-                  privatePkcs8KeyData != null ||
-                  privateJsonWebKeyData != null) &&
-              (publicRawKeyData != null ||
-                  publicSpkiKeyData != null ||
-                  publicJsonWebKeyData != null)),
-      'A key-pair must be generated or imported',
-    );
-    check(plaintext != null);
-    check(
-      generateKeyParams == null || signature == null,
-      'Cannot verify signature for a generated key-pair',
-    );
-    check(importKeyParams != null);
-    check(signVerifyParams != null);
-  }
 }
 
 /// Function for importing pkcs8, spki, or raw key.
@@ -133,6 +113,11 @@ typedef ExportJsonWebKeyKeyFn<T> = Future<Map<String, dynamic>> Function(T key);
 
 /// Function for generating a [KeyPair].
 typedef GenerateKeyPairFn<S, T> = Future<KeyPair<S, T>> Function(
+  Map<String, dynamic> generateKeyPairParams,
+);
+
+/// Function for generating a key.
+typedef GenerateKeyFn<T> = Future<T> Function(
   Map<String, dynamic> generateKeyPairParams,
 );
 
@@ -166,8 +151,17 @@ typedef VerifyStreamFn<T> = Future<bool> Function(
   Map<String, dynamic> verifyParams,
 );
 
+class _KeyPair<S, T> implements KeyPair<S, T> {
+  final S privateKey;
+  final T publicKey;
+  _KeyPair({this.privateKey, this.publicKey});
+}
+
 @sealed
 class TestRunner<PrivateKey, PublicKey> {
+  /// True, if private is a secret key and there is no public key.
+  final bool _isSymmetric;
+
   final ImportKeyFn<PrivateKey> _importPrivateRawKey;
   final ExportKeyFn<PrivateKey> _exportPrivateRawKey;
   final ImportKeyFn<PrivateKey> _importPrivatePkcs8Key;
@@ -188,7 +182,8 @@ class TestRunner<PrivateKey, PublicKey> {
   final VerifyBytesFn<PublicKey> _verifyBytes;
   final VerifyStreamFn<PublicKey> _verifyStream;
 
-  TestRunner({
+  TestRunner._({
+    @required bool isSymmetric,
     ImportKeyFn<PrivateKey> importPrivateRawKey,
     ExportKeyFn<PrivateKey> exportPrivateRawKey,
     ImportKeyFn<PrivateKey> importPrivatePkcs8Key,
@@ -206,7 +201,8 @@ class TestRunner<PrivateKey, PublicKey> {
     @required SignStreamFn<PrivateKey> signStream,
     @required VerifyBytesFn<PublicKey> verifyBytes,
     @required VerifyStreamFn<PublicKey> verifyStream,
-  })  : _importPrivateRawKey = importPrivateRawKey,
+  })  : _isSymmetric = isSymmetric,
+        _importPrivateRawKey = importPrivateRawKey,
         _exportPrivateRawKey = exportPrivateRawKey,
         _importPrivatePkcs8Key = importPrivatePkcs8Key,
         _exportPrivatePkcs8Key = exportPrivatePkcs8Key,
@@ -226,6 +222,85 @@ class TestRunner<PrivateKey, PublicKey> {
     _validate();
   }
 
+  /// Create [TestRunner] for an asymmetric primitive.
+  static TestRunner<PrivateKey, PublicKey> asymmetric<PrivateKey, PublicKey>({
+    ImportKeyFn<PrivateKey> importPrivateRawKey,
+    ExportKeyFn<PrivateKey> exportPrivateRawKey,
+    ImportKeyFn<PrivateKey> importPrivatePkcs8Key,
+    ExportKeyFn<PrivateKey> exportPrivatePkcs8Key,
+    ImportJsonWebKeyKeyFn<PrivateKey> importPrivateJsonWebKey,
+    ExportJsonWebKeyKeyFn<PrivateKey> exportPrivateJsonWebKey,
+    ImportKeyFn<PublicKey> importPublicRawKey,
+    ExportKeyFn<PublicKey> exportPublicRawKey,
+    ImportKeyFn<PublicKey> importPublicSpkiKey,
+    ExportKeyFn<PublicKey> exportPublicSpkiKey,
+    ImportJsonWebKeyKeyFn<PublicKey> importPublicJsonWebKey,
+    ExportJsonWebKeyKeyFn<PublicKey> exportPublicJsonWebKey,
+    @required GenerateKeyPairFn<PrivateKey, PublicKey> generateKeyPair,
+    @required SignBytesFn<PrivateKey> signBytes,
+    @required SignStreamFn<PrivateKey> signStream,
+    @required VerifyBytesFn<PublicKey> verifyBytes,
+    @required VerifyStreamFn<PublicKey> verifyStream,
+  }) {
+    return TestRunner._(
+      isSymmetric: false,
+      importPrivateRawKey: importPrivateRawKey,
+      exportPrivateRawKey: exportPrivateRawKey,
+      importPrivatePkcs8Key: importPrivatePkcs8Key,
+      exportPrivatePkcs8Key: exportPrivatePkcs8Key,
+      importPrivateJsonWebKey: importPrivateJsonWebKey,
+      exportPrivateJsonWebKey: exportPrivateJsonWebKey,
+      importPublicRawKey: importPublicRawKey,
+      exportPublicRawKey: exportPublicRawKey,
+      importPublicSpkiKey: importPublicSpkiKey,
+      exportPublicSpkiKey: exportPublicSpkiKey,
+      importPublicJsonWebKey: importPublicJsonWebKey,
+      exportPublicJsonWebKey: exportPublicJsonWebKey,
+      generateKeyPair: generateKeyPair,
+      signBytes: signBytes,
+      signStream: signStream,
+      verifyBytes: verifyBytes,
+      verifyStream: verifyStream,
+    );
+  }
+
+  /// Create [TestRunner] for an symmetric primitive.
+  ///
+  /// This just creates a [TestRunner] where public and private key have the
+  /// same type. This may give rise to a few unnecessary test cases as
+  /// import/export of public and private key
+  static TestRunner<PrivateKey, PrivateKey> symmetric<PrivateKey>({
+    ImportKeyFn<PrivateKey> importPrivateRawKey,
+    ExportKeyFn<PrivateKey> exportPrivateRawKey,
+    ImportKeyFn<PrivateKey> importPrivatePkcs8Key,
+    ExportKeyFn<PrivateKey> exportPrivatePkcs8Key,
+    ImportJsonWebKeyKeyFn<PrivateKey> importPrivateJsonWebKey,
+    ExportJsonWebKeyKeyFn<PrivateKey> exportPrivateJsonWebKey,
+    @required GenerateKeyFn<PrivateKey> generateKey,
+    @required SignBytesFn<PrivateKey> signBytes,
+    @required SignStreamFn<PrivateKey> signStream,
+    @required VerifyBytesFn<PrivateKey> verifyBytes,
+    @required VerifyStreamFn<PrivateKey> verifyStream,
+  }) {
+    return TestRunner._(
+      isSymmetric: true,
+      importPrivateRawKey: importPrivateRawKey,
+      exportPrivateRawKey: exportPrivateRawKey,
+      importPrivatePkcs8Key: importPrivatePkcs8Key,
+      exportPrivatePkcs8Key: exportPrivatePkcs8Key,
+      importPrivateJsonWebKey: importPrivateJsonWebKey,
+      exportPrivateJsonWebKey: exportPrivateJsonWebKey,
+      generateKeyPair: (params) async {
+        final k = await generateKey(params);
+        return _KeyPair(privateKey: k, publicKey: k);
+      },
+      signBytes: signBytes,
+      signStream: signStream,
+      verifyBytes: verifyBytes,
+      verifyStream: verifyStream,
+    );
+  }
+
   void _validate() {
     // Required operations
     check(_generateKeyPair != null);
@@ -233,15 +308,43 @@ class TestRunner<PrivateKey, PublicKey> {
     check(_signStream != null);
     check(_verifyBytes != null);
     check(_verifyStream != null);
+
+    // Must have one priate key import format.
+    check(_importPrivateRawKey != null ||
+        _importPrivatePkcs8Key != null ||
+        _importPrivateJsonWebKey != null);
+
+    if (_isSymmetric) {
+      // if symmetric we have no methods for importing public keys
+      check(_importPublicRawKey == null);
+      check(_importPublicSpkiKey == null);
+      check(_importPublicJsonWebKey == null);
+    } else {
+      // Must have one public key import format.
+      check(_importPublicRawKey != null ||
+          _importPublicSpkiKey != null ||
+          _importPublicJsonWebKey != null);
+    }
+
     // Export-only and import-only formats do not make sense
-    check((_importPrivateRawKey != null) == (_exportPrivateRawKey != null));
-    check((_importPrivatePkcs8Key != null) == (_exportPrivatePkcs8Key != null));
-    check((_importPrivateJsonWebKey != null) ==
-        (_exportPrivateJsonWebKey != null));
-    check((_importPublicRawKey != null) == (_exportPublicRawKey != null));
-    check((_importPublicSpkiKey != null) == (_exportPublicSpkiKey != null));
     check(
-        (_importPublicJsonWebKey != null) == (_exportPublicJsonWebKey != null));
+      (_importPrivateRawKey != null) == (_exportPrivateRawKey != null),
+    );
+    check(
+      (_importPrivatePkcs8Key != null) == (_exportPrivatePkcs8Key != null),
+    );
+    check(
+      (_importPrivateJsonWebKey != null) == (_exportPrivateJsonWebKey != null),
+    );
+    check(
+      (_importPublicRawKey != null) == (_exportPublicRawKey != null),
+    );
+    check(
+      (_importPublicSpkiKey != null) == (_exportPublicSpkiKey != null),
+    );
+    check(
+      (_importPublicJsonWebKey != null) == (_exportPublicJsonWebKey != null),
+    );
   }
 
   Future<TestCase> generate({
@@ -283,7 +386,7 @@ class TestRunner<PrivateKey, PublicKey> {
     T optionalCall<S, T>(T Function(S) fn, S v) => fn != null ? fn(v) : null;
     final c = TestCase(
       name,
-      generateKeyParams: null,
+      generateKeyParams: null, // omit generateKeyParams
       privateRawKeyData: await optionalCall(_exportPrivateRawKey, privateKey),
       privatePkcs8KeyData:
           await optionalCall(_exportPrivatePkcs8Key, privateKey),
@@ -301,7 +404,9 @@ class TestRunner<PrivateKey, PublicKey> {
 
     // Log the generated test case. This makes it easy to copy/paste the test
     // case into test files.
-    log(JsonEncoder.withIndent('  ').convert(c.toJson()));
+    final json = c.toJson();
+    json.removeWhere((k, v) => v == null);
+    log(JsonEncoder.withIndent('  ').convert(json));
 
     return c;
   }
@@ -321,20 +426,45 @@ void _runTests<PrivateKey, PublicKey>(
   TestRunner<PrivateKey, PublicKey> r,
   TestCase c,
 ) {
+  // Validate that the test case [c] is compatible with TestRunner [r].
   final validate = () {
-    c._validate();
+    final hasPrivateKey = c.privateRawKeyData != null ||
+        c.privatePkcs8KeyData != null ||
+        c.privateJsonWebKeyData != null;
+    final hasPublicKey = c.publicRawKeyData != null ||
+        c.publicSpkiKeyData != null ||
+        c.publicJsonWebKeyData != null;
+
+    // Test that we have keys to import or generate some.
+    if (r._isSymmetric) {
+      check(!hasPublicKey);
+      check(
+        c.generateKeyParams != null || hasPrivateKey,
+        'A key must be generated or imported',
+      );
+    } else {
+      check(
+        c.generateKeyParams != null || (hasPrivateKey && hasPublicKey),
+        'A key-pair must be generated or imported',
+      );
+    }
+
+    check(c.plaintext != null);
+    check(
+      c.generateKeyParams == null || c.signature == null,
+      'Cannot verify signature for a generated key-pair',
+    );
+    check(c.importKeyParams != null);
+    check(c.signVerifyParams != null);
 
     // Check that data matches the methods we have in the runner.
     check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
     check(r._importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
     check(
-      r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null,
-    );
+        r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null);
     check(r._importPublicRawKey != null || c.publicRawKeyData == null);
     check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
-    check(
-      r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null,
-    );
+    check(r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
   };
   test('validate test case', validate);
 
@@ -348,6 +478,8 @@ void _runTests<PrivateKey, PublicKey>(
   //------------------------------ Import or generate key-pair for testing
 
   // Store publicKey and privateKey for use in later tests.
+  // If [_isSymmetric] is true, we still import the public and assign the
+  // private key to the public key.
   PublicKey publicKey;
   PrivateKey privateKey;
 
@@ -361,29 +493,6 @@ void _runTests<PrivateKey, PublicKey>(
     });
   } else {
     test('import key-pair', () async {
-      // Get a publicKey
-      if (c.publicRawKeyData != null) {
-        publicKey = await r._importPublicRawKey(
-          c.publicRawKeyData,
-          c.importKeyParams,
-        );
-        check(publicKey != null);
-      } else if (c.publicSpkiKeyData != null) {
-        publicKey = await r._importPublicSpkiKey(
-          c.publicSpkiKeyData,
-          c.importKeyParams,
-        );
-        check(publicKey != null);
-      } else if (c.publicJsonWebKeyData != null) {
-        publicKey = await r._importPublicJsonWebKey(
-          c.publicJsonWebKeyData,
-          c.importKeyParams,
-        );
-        check(publicKey != null);
-      } else {
-        check(false, 'missing public key for importing');
-      }
-
       // Get a privateKey
       if (c.privateRawKeyData != null) {
         privateKey = await r._importPrivateRawKey(
@@ -405,6 +514,32 @@ void _runTests<PrivateKey, PublicKey>(
         check(privateKey != null);
       } else {
         check(false, 'missing private key for importing');
+      }
+
+      // Get a publicKey
+      if (r._isSymmetric) {
+        // If symmetric algorithm we just use the private key.
+        publicKey = privateKey as PublicKey;
+      } else if (c.publicRawKeyData != null) {
+        publicKey = await r._importPublicRawKey(
+          c.publicRawKeyData,
+          c.importKeyParams,
+        );
+        check(publicKey != null);
+      } else if (c.publicSpkiKeyData != null) {
+        publicKey = await r._importPublicSpkiKey(
+          c.publicSpkiKeyData,
+          c.importKeyParams,
+        );
+        check(publicKey != null);
+      } else if (c.publicJsonWebKeyData != null) {
+        publicKey = await r._importPublicJsonWebKey(
+          c.publicJsonWebKeyData,
+          c.importKeyParams,
+        );
+        check(publicKey != null);
+      } else {
+        check(false, 'missing public key for importing');
       }
     });
   }
@@ -497,6 +632,8 @@ void _runTests<PrivateKey, PublicKey>(
   //------------------------------ Test import public key
 
   if (c.publicRawKeyData != null) {
+    assert(!r._isSymmetric && r._importPublicRawKey != null);
+
     test('importPublicRawKey()', () async {
       final key = await r._importPublicRawKey(
         c.publicRawKeyData,
@@ -507,6 +644,8 @@ void _runTests<PrivateKey, PublicKey>(
   }
 
   if (c.publicSpkiKeyData != null) {
+    assert(!r._isSymmetric && r._importPublicSpkiKey != null);
+
     test('importPublicSpkiKey()', () async {
       final key = await r._importPublicSpkiKey(
         c.publicSpkiKeyData,
@@ -517,6 +656,8 @@ void _runTests<PrivateKey, PublicKey>(
   }
 
   if (c.publicJsonWebKeyData != null) {
+    assert(!r._isSymmetric && r._importPublicJsonWebKey != null);
+
     test('importPublicJsonWebKey()', () async {
       final key = await r._importPublicJsonWebKey(
         c.publicJsonWebKeyData,
@@ -736,6 +877,8 @@ void _runTests<PrivateKey, PublicKey>(
   //------------------------------ export/import public key
 
   if (r._exportPublicRawKey != null) {
+    assert(!r._isSymmetric && r._importPublicRawKey != null);
+
     test('export/import raw public key', () async {
       final keyData = await r._exportPublicRawKey(publicKey);
       check(keyData != null, 'exported key is null');
@@ -747,6 +890,8 @@ void _runTests<PrivateKey, PublicKey>(
   }
 
   if (r._exportPublicSpkiKey != null) {
+    assert(!r._isSymmetric && r._importPublicSpkiKey != null);
+
     test('export/import pkcs8 public key', () async {
       final keyData = await r._exportPublicSpkiKey(publicKey);
       check(keyData != null, 'exported key is null');
@@ -758,6 +903,8 @@ void _runTests<PrivateKey, PublicKey>(
   }
 
   if (r._exportPublicJsonWebKey != null) {
+    assert(!r._isSymmetric && r._importPublicJsonWebKey != null);
+
     test('export/import jwk public key', () async {
       final jwk = await r._exportPublicJsonWebKey(publicKey);
       check(jwk != null, 'exported key is null');

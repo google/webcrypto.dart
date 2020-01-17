@@ -6,7 +6,7 @@ import '../testrunner.dart';
 //       so we have to skip Firefox in ecdsa_test.dart
 import 'ecdsa_test.dart' show testCases;
 
-final runner = TestRunner<EcdsaPrivateKey, EcdsaPublicKey>(
+final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
   importPrivateRawKey: null, // not supported
   exportPrivateRawKey: null,
   // Not supported on Firefox

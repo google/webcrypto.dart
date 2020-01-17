@@ -2,7 +2,7 @@ import 'package:webcrypto/webcrypto.dart';
 import '../utils.dart';
 import '../testrunner.dart';
 
-final runner = TestRunner<RsaPssPrivateKey, RsaPssPublicKey>(
+final runner = TestRunner.asymmetric<RsaPssPrivateKey, RsaPssPublicKey>(
   importPrivateRawKey: null, // not supported
   exportPrivateRawKey: null,
   importPrivatePkcs8Key: (keyData, keyImportParams) =>

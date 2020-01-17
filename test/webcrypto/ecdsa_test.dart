@@ -6,7 +6,7 @@ import '../utils.dart';
 import '../testrunner.dart';
 import 'package:test/test.dart' show TestOn;
 
-final runner = TestRunner<EcdsaPrivateKey, EcdsaPublicKey>(
+final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
   importPrivateRawKey: null, // not supported
   exportPrivateRawKey: null,
   importPrivatePkcs8Key: (keyData, keyImportParams) =>

@@ -2,40 +2,20 @@ import 'package:webcrypto/webcrypto.dart';
 import '../utils.dart';
 import '../testrunner.dart';
 
-class _KeyPair<S, T> implements KeyPair<S, T> {
-  final S privateKey;
-  final T publicKey;
-  _KeyPair({this.privateKey, this.publicKey});
-}
-
-final runner = TestRunner<HmacSecretKey, HmacSecretKey>(
+final runner = TestRunner.symmetric<HmacSecretKey>(
   importPrivateRawKey: (keyData, keyImportParams) =>
       HmacSecretKey.importRawKey(keyData, hashFromJson(keyImportParams)),
   exportPrivateRawKey: (key) => key.exportRawKey(),
   importPrivatePkcs8Key: null, // not supported
   exportPrivatePkcs8Key: null,
-  // Not implemented (in FFI) yet
-  // importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
-  //     HmacSecretKey.importJsonWebKey(
-  //         jsonWebKeyData, hashFromJson(keyImportParams)),
-  // exportPrivateJsonWebKey: (key) => key.exportJsonWebKey(),
-  importPublicRawKey: (keyData, keyImportParams) =>
-      HmacSecretKey.importRawKey(keyData, hashFromJson(keyImportParams)),
-  exportPublicRawKey: (key) => key.exportRawKey(),
-  importPublicSpkiKey: null, // not supported
-  exportPublicSpkiKey: null,
-  // Not implemented (in FFI) yet
-  // importPublicJsonWebKey: (jsonWebKeyData, keyImportParams) =>
-  //     HmacSecretKey.importJsonWebKey(
-  //         jsonWebKeyData, hashFromJson(keyImportParams)),
-  // exportPublicJsonWebKey: (key) => key.exportJsonWebKey(),
-  generateKeyPair: (generateKeyPairParams) async {
-    final key = await HmacSecretKey.generateKey(
-      hashFromJson(generateKeyPairParams),
-      length: generateKeyPairParams['length'] ?? null,
-    );
-    return _KeyPair(privateKey: key, publicKey: key);
-  },
+  importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
+      HmacSecretKey.importJsonWebKey(
+          jsonWebKeyData, hashFromJson(keyImportParams)),
+  exportPrivateJsonWebKey: (key) => key.exportJsonWebKey(),
+  generateKey: (generateKeyPairParams) => HmacSecretKey.generateKey(
+    hashFromJson(generateKeyPairParams),
+    length: generateKeyPairParams['length'] ?? null,
+  ),
   signBytes: (key, data, signParams) => key.signBytes(data),
   signStream: (key, data, signParams) => key.signStream(data),
   verifyBytes: (key, signature, data, verifyParams) =>
@@ -47,8 +27,8 @@ final runner = TestRunner<HmacSecretKey, HmacSecretKey>(
 void main() {
   test('generate HMAC test case', () async {
     await runner.generate(
-      generateKeyParams: {'hash': hashToJson(Hash.sha256), 'length': 37},
-      importKeyParams: {'hash': hashToJson(Hash.sha256), 'length': 37},
+      generateKeyParams: {'hash': hashToJson(Hash.sha384), 'length': 512},
+      importKeyParams: {'hash': hashToJson(Hash.sha384), 'length': 512},
       signVerifyParams: {},
       maxPlaintext: 80,
     );
@@ -56,85 +36,136 @@ void main() {
 
   runner.runAll([
     {
-      "name": "use generated key",
-      "generateKeyParams": {"hash": "sha-256"},
-      "plaintext":
-          "cyBpbiBhbnRlIG5vbiwgc29kYWxlcyBzY2VsZXJpc3F1ZSBxdWFtLgpBbGlxdWFtIHZpdGFlIHNhZ2l0dGlzIGZlbGlzLiBPcmM=",
+      "name": "HS256 generated on boringssl/linux at 2020-01-17T17:22:02",
+      "privateRawKeyData": "hJOnqFnCbZUjWwItPd5l1YW9mWC5jjjYT6h5twHEUdU=",
+      "privateJsonWebKeyData": {
+        "kty": "oct",
+        "use": "sig",
+        "alg": "HS256",
+        "k": "hJOnqFnCbZUjWwItPd5l1YW9mWC5jjjYT6h5twHEUdU"
+      },
+      "plaintext": "YXRlYSBkaWM=",
+      "signature": "XNHqkq5E4mJ5cbSoRGJI/Nop7pYeb9tAzajzXC0HB8U=",
       "importKeyParams": {"hash": "sha-256"},
       "signVerifyParams": {}
     },
     {
-      "name": "raw key generated on chrome/linux at 2019-12-27T11:07:32",
+      "name": "HS256 generated on chrome/linux at 2020-01-17T17:22:15",
       "privateRawKeyData":
-          "I6q4wElrxDYdHj/aTCGfWmlLHDQ06UBypojTPIHhe5iM8QXvLdThLnug4M9T0TCOXCNooC5zhVIc7/8RzdOGMQ==",
-      "publicRawKeyData":
-          "I6q4wElrxDYdHj/aTCGfWmlLHDQ06UBypojTPIHhe5iM8QXvLdThLnug4M9T0TCOXCNooC5zhVIc7/8RzdOGMQ==",
+          "EAACHGiD/ybP+Q/+lcoSUcLmm1D64wN8OUVPhyKfsFMAC7QgcyFAWm8QIyyKsCKzHf/FJMNYtW1WZXAejpoN5g==",
+      "privateJsonWebKeyData": {
+        "kty": "oct",
+        "alg": "HS256",
+        "k":
+            "EAACHGiD_ybP-Q_-lcoSUcLmm1D64wN8OUVPhyKfsFMAC7QgcyFAWm8QIyyKsCKzHf_FJMNYtW1WZXAejpoN5g"
+      },
       "plaintext":
-          "bGl0IGFjIHNvbGxpY2l0dWRpbiB0aW5jaWR1bnQsIHVybmEgdGVsbHVzCnZlaGljdWxhIG8=",
-      "signature": "wM/PDNUt7JQrdUET+XSml9sRMZBcImljaeRJ3yZK+CQ=",
+          "IGJsYW5kaXQgZWdldCwgcG9ydHRpdG9yIGEgb2Rpby4KQWxpcXVhbSBtYXR0aXMgZ3JhdmlkYSB2aXZlcnJhLiBQZWxsZW50ZXNxdWUgdQ==",
+      "signature": "AusmDrNk4hWUNpyIgVVNJ/fGKKwipprpa0t9JnuOBMQ=",
       "importKeyParams": {"hash": "sha-256"},
       "signVerifyParams": {}
     },
     {
-      "name": "raw key generated on ffi/boringssl at 2019-12-23T16:23:50",
-      "privateRawKeyData": "CVT8yOBuzRX0OJK45lhgTh3yH/C0xzwtx6mY1iOmlEg=",
-      "publicRawKeyData": "CVT8yOBuzRX0OJK45lhgTh3yH/C0xzwtx6mY1iOmlEg=",
-      "plaintext":
-          "cyBpbiBhbnRlIG5vbiwgc29kYWxlcyBzY2VsZXJpc3F1ZSBxdWFtLgpBbGlxdWFtIHZpdGFlIHNhZ2l0dGlzIGZlbGlzLiBPcmM=",
-      "signature": "JQSrWn+xcshvRo3fVxA8Pkvi+DOKskxCr/01RXlUEPE=",
-      "importKeyParams": {"hash": "sha-256"},
-      "signVerifyParams": {}
-    },
-    {
-      "name": "raw key generated on firefox/linux at 2019-12-27T11:26:21",
+      "name": "HS256 generated on firefox/linux at 2020-01-17T17:22:22",
       "privateRawKeyData":
-          "rBmoXgAfMnwpzGJcy6i0xhEoiwzpZjLVXo3xsxOME12tmJSIHWy5LPWlvt3adGFpJhOYt4SgRelz36lQ1pOpkQ==",
-      "publicRawKeyData":
-          "rBmoXgAfMnwpzGJcy6i0xhEoiwzpZjLVXo3xsxOME12tmJSIHWy5LPWlvt3adGFpJhOYt4SgRelz36lQ1pOpkQ==",
-      "plaintext": "aXMgaWQuIENyYXMgdGVtcHVzIHNvZGFsZXM=",
-      "signature": "/rpu3udbnZPemRiygmyYTsBsXFtYrIINbp9jIscbuhw=",
+          "wcdaqRxznwwshJa+JX9yWIWQfzk72zX+hAX3+dGg61flkEGxf4+QAYbPJ/kXQ3I/AHFmciS1ET2IYDefx90BPw==",
+      "privateJsonWebKeyData": {
+        "kty": "oct",
+        "alg": "HS256",
+        "k":
+            "wcdaqRxznwwshJa-JX9yWIWQfzk72zX-hAX3-dGg61flkEGxf4-QAYbPJ_kXQ3I_AHFmciS1ET2IYDefx90BPw"
+      },
+      "plaintext":
+          "dWxhLApxdWlzIHBvcnRhIGFyY3Ugc2NlbGVyaXNxdWUuIFNlZCBmZWxpcyBkb2xvciwgdWx0cmljaWVzIGV1IGR1aSBhdCwg",
+      "signature": "xnRlZ0cGFck6p30kMt3c4Z1GnKA+Ek99wK9nS8xRmmk=",
       "importKeyParams": {"hash": "sha-256"},
       "signVerifyParams": {}
     },
     {
-      "name": "use generated key with length 37",
-      "generateKeyParams": {"hash": "sha-256", "length": 37},
+      "name": "HS384/512 generated on boringssl/linux at 2020-01-17T17:27:08",
+      "privateRawKeyData":
+          "M5FlV0ooh9jtDA+ULhcnRpcbbhrhPTqoPPJMMpIvkpTZAetpJ2nbseRmyDLiuiS4Ea79zF8DJkAcnYrI/2ouDA==",
+      "privateJsonWebKeyData": {
+        "kty": "oct",
+        "use": "sig",
+        "alg": "HS384",
+        "k":
+            "M5FlV0ooh9jtDA-ULhcnRpcbbhrhPTqoPPJMMpIvkpTZAetpJ2nbseRmyDLiuiS4Ea79zF8DJkAcnYrI_2ouDA"
+      },
       "plaintext":
-          "bmVuYXRpcywgbWkgcXVpcyBzYWdpdHRpcyB0cmlzdGlxdWUsIG1hc3NhIHZlbGl0IHJob25jdXMKZXgsIHF1aXMgcnV0cnVtIGVyYXQ=",
-      "importKeyParams": {"hash": "sha-256", "length": 37},
+          "dCBuaXNsLiBQcmFlc2VudCBlbmltIG1hZ25hLApyaG9uY3VzIHF1aXMgY29uZGltZW50dW0gYWMs",
+      "signature":
+          "Dc6Jiw5A+92IB4RAJh96Y9acoyZgrx75FmFa2Ye3+h+DihU+qiUyTXiuTOrSi53g",
+      "importKeyParams": {"hash": "sha-384", "length": 512},
       "signVerifyParams": {}
     },
     {
-      "name":
-          "raw key length 37 generated on ffi/boringssl at 2019-12-27T11:34:31",
-      "privateRawKeyData": "mnKq0+g=",
-      "publicRawKeyData": "mnKq0+g=",
-      "plaintext":
-          "bmVuYXRpcywgbWkgcXVpcyBzYWdpdHRpcyB0cmlzdGlxdWUsIG1hc3NhIHZlbGl0IHJob25jdXMKZXgsIHF1aXMgcnV0cnVtIGVyYXQ=",
-      "signature": "Kt13MwmnE7e0KnvrpQjeEYSfLQDTBJdUOxWm4jlECqU=",
-      "importKeyParams": {"hash": "sha-256", "length": 37},
+      "name": "HS384/512 generated on chrome/linux at 2020-01-17T17:27:15",
+      "privateRawKeyData":
+          "pBLSDxNWRIpFxODNstC+Cd+n+e0ABp38wwbALA5o+wJ+r5mgIrLChbKoWmt3zVMWEjDR/qBaHsTuG7kVmnOW9w==",
+      "privateJsonWebKeyData": {
+        "kty": "oct",
+        "alg": "HS384",
+        "k":
+            "pBLSDxNWRIpFxODNstC-Cd-n-e0ABp38wwbALA5o-wJ-r5mgIrLChbKoWmt3zVMWEjDR_qBaHsTuG7kVmnOW9w"
+      },
+      "plaintext": "aXQgcXVpcy4gQ3U=",
+      "signature":
+          "CZCQz8y18FtWhyzxofYSk47cV/KJjFESt4dR+luhPrMop5cW7QmJTreRLFM4RTKy",
+      "importKeyParams": {"hash": "sha-384", "length": 512},
       "signVerifyParams": {}
     },
     {
-      "name":
-          "raw key length 37 generated on chrome/linux at 2019-12-27T11:39:51",
-      "privateRawKeyData": "F5emtng=",
-      "publicRawKeyData": "F5emtng=",
-      "plaintext":
-          "ZXNxdWUgaGFiaXRhbnQgbW9yYmkgdHJpc3RpcXVlIHNlbmVjdHVzIGV0IG5ldHVzIGV0IG1hbGVzdWFkYSBmYW0=",
-      "signature": "M1ms4yIHz6hDLLqYcnqGds7rJ1CQXIWDEOxcCYYArj8=",
-      "importKeyParams": {"hash": "sha-256", "length": 37},
+      "name": "HS384/512 generated on firefox/linux at 2020-01-17T17:27:21",
+      "privateRawKeyData":
+          "xJAxNE2TmomHP+xMSi2hEAHjTPTPNKBACiepH3ijfglWbIVFP3wckj7bQ7QSXvCklewu6ao3HeNUu/kVvdDnJg==",
+      "privateJsonWebKeyData": {
+        "kty": "oct",
+        "alg": "HS384",
+        "k":
+            "xJAxNE2TmomHP-xMSi2hEAHjTPTPNKBACiepH3ijfglWbIVFP3wckj7bQ7QSXvCklewu6ao3HeNUu_kVvdDnJg"
+      },
+      "plaintext": "YyBsYW9yZWV0LCBsZQ==",
+      "signature":
+          "bhnHVnnqoe1L9T7zHImrjDH4B4YVz+Qrvdfxw1eutajcDu2Plhr49B9GXNArXoS8",
+      "importKeyParams": {"hash": "sha-384", "length": 512},
       "signVerifyParams": {}
     },
     {
-      "name":
-          "raw key length 37 generated on firefox/linux at 2019-12-27T11:40:39",
-      "privateRawKeyData": "nfClRQ==",
-      "publicRawKeyData": "nfClRQ==",
-      "plaintext": "LgpBbGlxdWFtIHZpdGFlIHNhZ2l0dA==",
-      "signature": "FcF2TSDp4dRXCK8jVqnnDwKuHd52yN2YKYBiOiZhvzQ=",
-      "importKeyParams": {"hash": "sha-256", "length": 37},
+      "name": "HS512/37 generated on boringssl/linux at 2020-01-17T17:23:41",
+      "privateRawKeyData": "kuk/KhA=",
+      "privateJsonWebKeyData": {
+        "kty": "oct",
+        "use": "sig",
+        "alg": "HS512",
+        "k": "kuk_KhA"
+      },
+      "plaintext":
+          "bmEgaWQgbGliZXJvIGV1aXNtb2QKYWxpcXVldC4gTW9yYmkgYWNjdW1zYW4gZ3JhdmlkYSBkb2xvciwgbmVjIGVnZXN0YXMg",
+      "signature":
+          "LGncsixAXwdUxThwRwpMUobfBNI8dJvZ78DyRTwu3OrzzcwkA5PNgI1zGNWNTs5X2sxX960uY6bDIYjDlu0bGw==",
+      "importKeyParams": {"hash": "sha-512", "length": 37},
       "signVerifyParams": {}
     },
+    {
+      "name": "HS512/37 generated chrome/linux at 2020-01-17T17:23:49",
+      "privateRawKeyData": "fEqx17g=",
+      "privateJsonWebKeyData": {"kty": "oct", "alg": "HS512", "k": "fEqx17g"},
+      "plaintext": "ZHVpIG1hdXJpcy4gU2VkIHBoYXJldHJhLCBu",
+      "signature":
+          "ePa3V+068UE7exuKxgeoa/weVTKGnnYPkn2B6NDj23QGaoxYP2wuwoZW9rkCMtJ796pL9Xpa0YLlBYiMukrHCg==",
+      "importKeyParams": {"hash": "sha-512", "length": 37},
+      "signVerifyParams": {}
+    },
+    {
+      "name": "HS512/37 generated on firefox/linux at 2020-01-17T17:23:56",
+      "privateRawKeyData": "Ay0AcA==",
+      "privateJsonWebKeyData": {"kty": "oct", "alg": "HS512", "k": "Ay0AcA"},
+      "plaintext": "bSBtYXR0aXMgZ3JhdmlkYSB2aXZlcnJhLiBQZQ==",
+      "signature":
+          "WKl+Xj11ugyC0HGD4458P7vVEAllEyftMPnywgwZwwubW66a3sS+nsCgEBWI163m/ZZ9sUPR8QA0yVEhkVUrwQ==",
+      "importKeyParams": {"hash": "sha-512", "length": 37},
+      "signVerifyParams": {}
+    }
   ]);
 }
