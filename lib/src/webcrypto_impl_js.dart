@@ -113,6 +113,7 @@ final _usagesSign = ['sign'];
 final _usagesVerify = ['verify'];
 final _usagesEncryptDecrypt = ['encrypt', 'decrypt'];
 final _usagesDecrypt = ['decrypt'];
+final _usagesEncrypt = ['encrypt'];
 final _usagesDeriveBits = ['deriveBits'];
 
 /// Adapt `crypto.subtle.importKey` to Dart types for JWK.
@@ -991,6 +992,8 @@ Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
     subtle.Algorithm(
       name: _rsaOaepAlgorithmName,
       hash: _getHashAlgorithm(hash),
+      publicExponent: _publicExponentAsBuffer(publicExponent),
+      modulusLength: modulusLength,
     ),
     _usagesEncryptDecrypt,
   );
@@ -1011,7 +1014,7 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
       name: _rsaOaepAlgorithmName,
       hash: _getHashAlgorithm(hash),
     ),
-    _usagesDecrypt,
+    _usagesEncrypt,
     'public',
   ));
 }
@@ -1026,7 +1029,7 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
       name: _rsaOaepAlgorithmName,
       hash: _getHashAlgorithm(hash),
     ),
-    _usagesDecrypt,
+    _usagesEncrypt,
     'public',
   ));
 }

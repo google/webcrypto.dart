@@ -41,6 +41,7 @@ void main() {
         'tagLength': 32,
       },
       maxPlaintext: 80,
+      // TODO: Support test cases with invalid encryptDecryptParams for giving wrong additionalData
     );
   });
 
