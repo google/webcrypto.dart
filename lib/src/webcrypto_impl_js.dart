@@ -981,7 +981,7 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
   ));
 }
 
-Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>>
+Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
     rsaOaepPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
@@ -996,7 +996,7 @@ Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>>
   );
   return _KeyPair(
     privateKey: _RsaOaepPrivateKey(pair.privateKey),
-    publicKey: _RsaPssPublicKey(pair.publicKey),
+    publicKey: _RsaOaepPublicKey(pair.publicKey),
   );
 }
 
@@ -1333,6 +1333,8 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
     int tagLength = 128,
   }) async {
     ArgumentError.checkNotNull(iv, 'iv');
+    // TODO: Ask lrn@ how to implement default parameters -- should null be special
+    tagLength ??= 128;
     ArgumentError.checkNotNull(tagLength, 'tagLength');
     return await _decrypt(
       additionalData == null
@@ -1360,6 +1362,7 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
     int tagLength = 128,
   }) async {
     ArgumentError.checkNotNull(iv, 'iv');
+    tagLength ??= 128;
     ArgumentError.checkNotNull(tagLength, 'tagLength');
     return await _encrypt(
       additionalData == null

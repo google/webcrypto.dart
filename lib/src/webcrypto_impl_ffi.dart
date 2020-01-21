@@ -2102,7 +2102,7 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
   );
 }
 
-Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>>
+Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
     rsaOaepPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
@@ -2113,7 +2113,7 @@ Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>>
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
   return _KeyPair(
     privateKey: _RsaOaepPrivateKey(keys.privateKey, h),
-    publicKey: _RsaPssPublicKey(keys.publicKey, h),
+    publicKey: _RsaOaepPublicKey(keys.publicKey, h),
   );
 }
 
@@ -2801,10 +2801,10 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
   List<int> iv,
   List<int> additionalData,
   int tagLength,
-  bool encrypt,
+  bool isEncrypt,
 ) async {
   ArgumentError.checkNotNull(data, 'data');
-  if (encrypt && data.length > (1 << 39) - 256) {
+  if (isEncrypt && data.length > (1 << 39) - 256) {
     // More than this is not allowed by Web crypto spec, we shall honor that.
     throw _OperationError('data may not be more than 2^39 - 256 bytes');
   }
@@ -2837,7 +2837,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
       ssl.EVP_AEAD_CTX_free,
     );
 
-    if (encrypt) {
+    if (isEncrypt) {
       final outLen = scope.allocate<ffi.IntPtr>();
       final maxOut = data.length + ssl.EVP_AEAD_max_overhead(aead);
       return _withOutPointer(maxOut, (ffi.Pointer<ssl.Bytes> out) {
@@ -2909,7 +2909,7 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
         iv,
         additionalData,
         tagLength,
-        false,
+        true,
       );
 
   @override

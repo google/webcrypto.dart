@@ -166,7 +166,7 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
 ) =>
     throw _notImplemented;
 
-Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>>
+Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
     rsaOaepPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,

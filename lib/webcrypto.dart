@@ -1171,7 +1171,7 @@ abstract class RsaOaepPrivateKey {
     return impl.rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
   }
 
-  static Future<KeyPair<RsaOaepPrivateKey, RsaPssPublicKey>> generateKey(
+  static Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>> generateKey(
     int modulusLength,
     BigInt publicExponent,
     Hash hash,
