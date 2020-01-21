@@ -10,4 +10,5 @@ dependencies:
   js: ^0.6.1
   meta: ^1.1.7
 dev_dependencies:
+  convert:
   test: ^1.5.2

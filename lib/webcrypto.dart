@@ -1251,6 +1251,7 @@ abstract class AesCtrSecretKey {
     return impl.aesCtr_generateKey(length);
   }
 
+  // Note. that if counter wraps around, then this is broken on Firefox.
   Future<Uint8List> encryptBytes(
     List<int> data,
     List<int> counter,
