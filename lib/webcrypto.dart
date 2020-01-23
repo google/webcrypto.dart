@@ -1390,7 +1390,10 @@ abstract class EcdhPrivateKey {
     return impl.ecdhPrivateKey_generateKey(curve);
   }
 
-  Future<Uint8List> deriveBits(EcdhPublicKey publicKey, int length);
+  // Note some webcrypto implementations (chrome, not firefox) supports passing
+  // null for length (in this primitive). However, you can always know the right
+  // length from the curve. Note p512 can provide up to: 528 bits!!!
+  Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey);
 
   // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
   Future<Uint8List> exportPkcs8Key();

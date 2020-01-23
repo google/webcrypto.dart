@@ -36,6 +36,10 @@ class TestCase {
   final List<int> signature;
   // Ciphertext of plaintext (invalid, if generateKeyParams != null)
   final List<int> ciphertext;
+  // Bits derived using deriveBits (invalid, if generateKeyParams != null)
+  final List<int> derivedBits;
+  // Number of bits to derive.
+  final int derivedLength;
 
   // Parameters for key import (always required)
   final Map<String, dynamic> importKeyParams;
@@ -45,6 +49,9 @@ class TestCase {
 
   // Parameters for encrypt/decrypt (required, if there is a ciphertext)
   final Map<String, dynamic> encryptDecryptParams;
+
+  // Parameters for deriveBits (required, if there is a derivedBits)
+  final Map<String, dynamic> deriveParams;
 
   TestCase(
     this.name, {
@@ -58,9 +65,12 @@ class TestCase {
     this.plaintext,
     this.signature,
     this.ciphertext,
+    this.derivedBits,
+    this.derivedLength,
     this.importKeyParams,
     this.signVerifyParams,
     this.encryptDecryptParams,
+    this.deriveParams,
   });
 
   factory TestCase.fromJson(Map json) {
@@ -78,10 +88,13 @@ class TestCase {
       plaintext: _optionalBase64Decode(json['plaintext']),
       signature: _optionalBase64Decode(json['signature']),
       ciphertext: _optionalBase64Decode(json['ciphertext']),
+      derivedBits: _optionalBase64Decode(json['derivedBits']),
+      derivedLength: json['derivedLength'] as int,
       importKeyParams: _optionalStringMapDecode(json['importKeyParams']),
       signVerifyParams: _optionalStringMapDecode(json['signVerifyParams']),
       encryptDecryptParams:
           _optionalStringMapDecode(json['encryptDecryptParams']),
+      deriveParams: _optionalStringMapDecode(json['deriveParams']),
     );
   }
 
@@ -98,9 +111,12 @@ class TestCase {
       'plaintext': _optionalBase64Encode(plaintext),
       'signature': _optionalBase64Encode(signature),
       'ciphertext': _optionalBase64Encode(ciphertext),
+      'derivedBits': _optionalBase64Encode(derivedBits),
+      'derivedLength': derivedLength,
       'importKeyParams': importKeyParams,
       'signVerifyParams': signVerifyParams,
       'encryptDecryptParams': encryptDecryptParams,
+      'deriveParams': deriveParams,
     }..removeWhere((_, v) => v == null);
   }
 }
@@ -122,11 +138,6 @@ typedef ImportJsonWebKeyKeyFn<T> = Future<T> Function(
 
 /// Function for exporting JWK key.
 typedef ExportJsonWebKeyKeyFn<T> = Future<Map<String, dynamic>> Function(T key);
-
-/// Function for generating a [KeyPair].
-typedef GenerateKeyPairFn<S, T> = Future<KeyPair<S, T>> Function(
-  Map<String, dynamic> generateKeyPairParams,
-);
 
 /// Function for generating a key.
 typedef GenerateKeyFn<T> = Future<T> Function(
@@ -177,6 +188,12 @@ typedef EncryptOrDecryptStreamFn<T> = Stream<List<int>> Function(
   Map<String, dynamic> encryptOrDecryptParams,
 );
 
+typedef DeriveBitsFn<T> = Future<List<int>> Function(
+  T keyOrKeyPair,
+  int length,
+  Map<String, dynamic> deriveParams,
+);
+
 class _KeyPair<S, T> implements KeyPair<S, T> {
   final S privateKey;
   final T publicKey;
@@ -202,7 +219,7 @@ class TestRunner<PrivateKey, PublicKey> {
   final ImportJsonWebKeyKeyFn<PublicKey> _importPublicJsonWebKey;
   final ExportJsonWebKeyKeyFn<PublicKey> _exportPublicJsonWebKey;
 
-  final GenerateKeyPairFn<PrivateKey, PublicKey> _generateKeyPair;
+  final GenerateKeyFn<KeyPair<PrivateKey, PublicKey>> _generateKeyPair;
   final SignBytesFn<PrivateKey> _signBytes;
   final SignStreamFn<PrivateKey> _signStream;
   final VerifyBytesFn<PublicKey> _verifyBytes;
@@ -211,6 +228,7 @@ class TestRunner<PrivateKey, PublicKey> {
   final EncryptOrDecryptStreamFn<PublicKey> _encryptStream;
   final EncryptOrDecryptBytesFn<PrivateKey> _decryptBytes;
   final EncryptOrDecryptStreamFn<PrivateKey> _decryptStream;
+  final DeriveBitsFn<KeyPair<PrivateKey, PublicKey>> _deriveBits;
 
   TestRunner._({
     @required bool isSymmetric,
@@ -226,7 +244,7 @@ class TestRunner<PrivateKey, PublicKey> {
     ExportKeyFn<PublicKey> exportPublicSpkiKey,
     ImportJsonWebKeyKeyFn<PublicKey> importPublicJsonWebKey,
     ExportJsonWebKeyKeyFn<PublicKey> exportPublicJsonWebKey,
-    @required GenerateKeyPairFn<PrivateKey, PublicKey> generateKeyPair,
+    @required GenerateKeyFn<KeyPair<PrivateKey, PublicKey>> generateKeyPair,
     SignBytesFn<PrivateKey> signBytes,
     SignStreamFn<PrivateKey> signStream,
     VerifyBytesFn<PublicKey> verifyBytes,
@@ -235,6 +253,7 @@ class TestRunner<PrivateKey, PublicKey> {
     EncryptOrDecryptStreamFn<PublicKey> encryptStream,
     EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
     EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
+    DeriveBitsFn<KeyPair<PrivateKey, PublicKey>> deriveBits,
   })  : _isSymmetric = isSymmetric,
         _importPrivateRawKey = importPrivateRawKey,
         _exportPrivateRawKey = exportPrivateRawKey,
@@ -256,7 +275,8 @@ class TestRunner<PrivateKey, PublicKey> {
         _encryptBytes = encryptBytes,
         _encryptStream = encryptStream,
         _decryptBytes = decryptBytes,
-        _decryptStream = decryptStream {
+        _decryptStream = decryptStream,
+        _deriveBits = deriveBits {
     _validate();
   }
 
@@ -274,7 +294,7 @@ class TestRunner<PrivateKey, PublicKey> {
     ExportKeyFn<PublicKey> exportPublicSpkiKey,
     ImportJsonWebKeyKeyFn<PublicKey> importPublicJsonWebKey,
     ExportJsonWebKeyKeyFn<PublicKey> exportPublicJsonWebKey,
-    @required GenerateKeyPairFn<PrivateKey, PublicKey> generateKeyPair,
+    @required GenerateKeyFn<KeyPair<PrivateKey, PublicKey>> generateKeyPair,
     SignBytesFn<PrivateKey> signBytes,
     SignStreamFn<PrivateKey> signStream,
     VerifyBytesFn<PublicKey> verifyBytes,
@@ -283,6 +303,7 @@ class TestRunner<PrivateKey, PublicKey> {
     EncryptOrDecryptStreamFn<PublicKey> encryptStream,
     EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
     EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
+    DeriveBitsFn<KeyPair<PrivateKey, PublicKey>> deriveBits,
   }) {
     return TestRunner._(
       isSymmetric: false,
@@ -307,6 +328,7 @@ class TestRunner<PrivateKey, PublicKey> {
       encryptStream: encryptStream,
       decryptBytes: decryptBytes,
       decryptStream: decryptStream,
+      deriveBits: deriveBits,
     );
   }
 
@@ -331,6 +353,7 @@ class TestRunner<PrivateKey, PublicKey> {
     EncryptOrDecryptStreamFn<PrivateKey> encryptStream,
     EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
     EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
+    DeriveBitsFn<PrivateKey> deriveBits,
   }) {
     return TestRunner._(
       isSymmetric: true,
@@ -352,6 +375,18 @@ class TestRunner<PrivateKey, PublicKey> {
       encryptStream: encryptStream,
       decryptBytes: decryptBytes,
       decryptStream: decryptStream,
+      deriveBits: deriveBits == null
+          ? null
+          : (
+              KeyPair<PrivateKey, PrivateKey> pair,
+              int length,
+              Map<String, dynamic> deriveParams,
+            ) async {
+              final a = await deriveBits(pair.privateKey, length, deriveParams);
+              final b = await deriveBits(pair.publicKey, length, deriveParams);
+              check(equalBytes(a, b), 'expected both keys to derive the same');
+              return a;
+            },
     );
   }
 
@@ -418,12 +453,15 @@ class TestRunner<PrivateKey, PublicKey> {
     @required Map<String, dynamic> importKeyParams,
     Map<String, dynamic> signVerifyParams,
     Map<String, dynamic> encryptDecryptParams,
+    Map<String, dynamic> deriveParams,
     String plaintextTemplate = libsum,
     int minPlaintext = 8,
     int maxPlaintext = libsum.length,
+    int minDeriveLength = 4,
+    int maxDeriveLength = 512,
   }) async {
     check(minPlaintext <= maxPlaintext);
-    check(maxPlaintext < plaintextTemplate.length);
+    check(maxPlaintext <= plaintextTemplate.length);
     final ts = DateTime.now().toIso8601String().split('.').first; // drop secs
     final name = 'generated at $ts';
 
@@ -434,14 +472,17 @@ class TestRunner<PrivateKey, PublicKey> {
     check(privateKey != null);
     check(publicKey != null);
 
-    log('picking plaintext');
-    final rng = Random.secure();
-    final N = rng.nextInt(maxPlaintext - minPlaintext) + minPlaintext;
-    final offset = rng.nextInt(plaintextTemplate.length - N);
-    final plaintext = utf8.encode(plaintextTemplate.substring(
-      offset,
-      offset + N,
-    ));
+    List<int> plaintext;
+    if (_signBytes != null || _encryptBytes != null) {
+      log('picking plaintext');
+      final rng = Random.secure();
+      final N = rng.nextInt(maxPlaintext - minPlaintext) + minPlaintext;
+      final offset = rng.nextInt(plaintextTemplate.length - N);
+      plaintext = utf8.encode(plaintextTemplate.substring(
+        offset,
+        offset + N,
+      ));
+    }
 
     List<int> signature;
     if (_signBytes != null) {
@@ -463,6 +504,23 @@ class TestRunner<PrivateKey, PublicKey> {
       );
     }
 
+    int derivedLength;
+    List<int> derivedBits;
+    if (_deriveBits != null) {
+      log('picking derivedLength');
+      final rng = Random.secure();
+      derivedLength = maxDeriveLength == minDeriveLength
+          ? maxDeriveLength
+          : rng.nextInt(maxDeriveLength - minDeriveLength) + minDeriveLength;
+
+      log('creating derivedBits');
+      derivedBits = await _deriveBits(
+        pair,
+        derivedLength,
+        deriveParams,
+      );
+    }
+
     T optionalCall<S, T>(T Function(S) fn, S v) => fn != null ? fn(v) : null;
     final c = TestCase(
       name,
@@ -479,9 +537,12 @@ class TestRunner<PrivateKey, PublicKey> {
       plaintext: plaintext,
       signature: signature,
       ciphertext: ciphertext,
+      derivedBits: derivedBits,
       importKeyParams: importKeyParams,
       signVerifyParams: signVerifyParams,
       encryptDecryptParams: encryptDecryptParams,
+      derivedLength: derivedLength,
+      deriveParams: deriveParams,
     );
 
     // Log the generated test case. This makes it easy to copy/paste the test
@@ -529,20 +590,32 @@ void _runTests<PrivateKey, PublicKey>(
       );
     }
 
-    check(c.plaintext != null);
     check(
       c.generateKeyParams == null ||
-          (c.signature == null && c.ciphertext == null),
-      'Cannot verify signature/ciphertext for a generated key-pair',
+          (c.signature == null &&
+              c.ciphertext == null &&
+              c.derivedBits == null),
+      'Cannot verify signature/ciphertext/derivedBits for a generated key-pair',
+    );
+    check(
+      c.plaintext != null || (r._signBytes == null && r._encryptBytes == null),
+      'Cannot sign/encrypt without plaintext',
     );
     check(c.importKeyParams != null);
     check((c.signVerifyParams != null) == (r._signBytes != null));
     check((c.encryptDecryptParams != null) == (r._encryptBytes != null));
+    check((c.deriveParams != null) == (r._deriveBits != null));
     if (c.signature != null) {
       check(r._signBytes != null);
     }
     if (c.ciphertext != null) {
       check(r._encryptBytes != null);
+    }
+    if (c.derivedBits != null) {
+      check(r._deriveBits != null);
+    }
+    if (r._deriveBits != null) {
+      check(c.derivedLength != null);
     }
 
     // Check that data matches the methods we have in the runner.
@@ -689,6 +762,37 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
+  //------------------------------ Create derivedBits for testing
+
+  // Ensure that we have derivedBits for use in later test cases
+  List<int> derivedBits;
+
+  if (r._deriveBits != null) {
+    if (c.derivedBits != null) {
+      derivedBits = c.derivedBits;
+    } else {
+      test('create derivedBits', () async {
+        derivedBits = await r._deriveBits(
+          _KeyPair(privateKey: privateKey, publicKey: publicKey),
+          c.derivedLength,
+          c.deriveParams,
+        );
+      });
+    }
+
+    test('validated derivedBits', () async {
+      final derived = await r._deriveBits(
+        _KeyPair(privateKey: privateKey, publicKey: publicKey),
+        c.derivedLength,
+        c.deriveParams,
+      );
+      check(
+        equalBytes(derived, derivedBits),
+        'failed to derivedBits are not consistent',
+      );
+    });
+  }
+
   //------------------------------ Utilities for testing
 
   //// Utility function to verify [sig] using [key].
@@ -757,6 +861,13 @@ void _runTests<PrivateKey, PublicKey>(
     await _checkDecryptBytes(privateKey, ctext);
   }
 
+  /// Check if [derived] is correct.
+  void checkDerivedBits(List<int> derived) async {
+    check(derived != null, 'derivedBits is null');
+    check(derived.isNotEmpty, 'derivedBits is empty');
+    check(equalBytes(derived, derivedBits), 'derivedBits is not consistent');
+  }
+
   /// Check if [publicKey] is sane.
   Future<void> checkPublicKey(PublicKey publicKey) async {
     check(publicKey != null, 'publicKey is null');
@@ -770,6 +881,14 @@ void _runTests<PrivateKey, PublicKey>(
         c.encryptDecryptParams,
       );
       await checkCipherText(ctext);
+    }
+    if (r._deriveBits != null) {
+      final derived = await r._deriveBits(
+        _KeyPair(privateKey: privateKey, publicKey: publicKey),
+        c.derivedLength,
+        c.deriveParams,
+      );
+      checkDerivedBits(derived);
     }
   }
 
@@ -786,6 +905,14 @@ void _runTests<PrivateKey, PublicKey>(
     }
     if (r._encryptBytes != null) {
       await _checkDecryptBytes(privateKey, ciphertext);
+    }
+    if (r._deriveBits != null) {
+      final derived = await r._deriveBits(
+        _KeyPair(privateKey: privateKey, publicKey: publicKey),
+        c.derivedLength,
+        c.deriveParams,
+      );
+      checkDerivedBits(derived);
     }
   }
 
@@ -1126,6 +1253,18 @@ void _runTests<PrivateKey, PublicKey>(
           check(e.toString() != '', 'expected some explanation');
         }
       }
+    });
+  }
+
+  //------------------------------ Test derivedBits
+  if (r._deriveBits != null) {
+    test('deriveBits', () async {
+      final derived = await r._deriveBits(
+        _KeyPair(privateKey: privateKey, publicKey: publicKey),
+        c.derivedLength,
+        c.deriveParams,
+      );
+      checkDerivedBits(derived);
     });
   }
 

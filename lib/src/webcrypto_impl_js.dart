@@ -1420,6 +1420,12 @@ Future<EcdhPrivateKey> ecdhPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async {
+  if (jwk['use'] == 'enc') {
+    // Chrome incorrectly forbids the 'enc' value for ECDH, hence, we strip it
+    // when importing to ensure compatibility across browsers.
+    // See: https://crbug.com/641499
+    jwk = Map.fromEntries(jwk.entries.where((e) => e.key != 'use'));
+  }
   return _EcdhPrivateKey(await _importJsonWebKey(
     jwk,
     subtle.Algorithm(
@@ -1458,7 +1464,7 @@ Future<EcdhPublicKey> ecdhPublicKey_importRawKey(
       name: _ecdhAlgorithmName,
       namedCurve: _curveToName(curve),
     ),
-    _usagesDeriveBits,
+    [],
     'public',
   ));
 }
@@ -1474,7 +1480,7 @@ Future<EcdhPublicKey> ecdhPublicKey_importSpkiKey(
       name: _ecdhAlgorithmName,
       namedCurve: _curveToName(curve),
     ),
-    _usagesDeriveBits,
+    [],
     'public',
   ));
 }
@@ -1483,13 +1489,19 @@ Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async {
+  if (jwk['use'] == 'enc') {
+    // Chrome incorrectly forbids the 'enc' value for ECDH, hence, we strip it
+    // when importing to ensure compatibility across browsers.
+    // See: https://crbug.com/641499
+    jwk = Map.fromEntries(jwk.entries.where((e) => e.key != 'use'));
+  }
   return _EcdhPublicKey(await _importJsonWebKey(
     jwk,
     subtle.Algorithm(
       name: _ecdhAlgorithmName,
       namedCurve: _curveToName(curve),
     ),
-    _usagesDeriveBits,
+    [],
     'public',
   ));
 }
@@ -1499,7 +1511,8 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
   _EcdhPrivateKey(this._key);
 
   @override
-  Future<Uint8List> deriveBits(EcdhPublicKey publicKey, int length) async {
+  Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
+    ArgumentError.checkNotNull(length, 'length');
     ArgumentError.checkNotNull(publicKey, 'publicKey');
     if (publicKey is! EcdhPublicKey) {
       throw ArgumentError.value(
@@ -1508,15 +1521,27 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
         'custom implementations of EcdhPublicKey is not supported',
       );
     }
-    return await _deriveBits(
+    final lengthInBytes = (length / 8).ceil();
+    final derived = await _deriveBits(
       subtle.Algorithm(
         name: _ecdhAlgorithmName,
         public: (publicKey as _EcdhPublicKey)._key,
       ),
       _key,
-      length,
+      // Always deriveBits in multiples of 8 as required by Firefox, see:
+      // https://hg.mozilla.org/mozilla-central/file/1c9b97bed37830e39642bfa7e73dbc2ea860662a/dom/crypto/WebCryptoTask.cpp#l2667
+      // Chrome does handle a length that is not a multiple of 8, however, cost
+      // of normalizing across browsers behavior seems negligible.
+      lengthInBytes * 8,
       invalidAccessErrorIsArgumentError: true,
     );
+    // Only return the first [length] bits from derived.
+    final zeroBits = lengthInBytes * 8 - length;
+    assert(zeroBits < 8);
+    if (zeroBits > 0) {
+      derived.last &= ((0xff << zeroBits) & 0xff);
+    }
+    return derived;
   }
 
   @override

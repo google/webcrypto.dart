@@ -958,7 +958,6 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
   String jwkUse,
 }) {
   assert(isPrivateKey != null);
-  assert(jwkUse != null);
 
   final scope = _Scope();
   try {
@@ -2985,9 +2984,9 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
   }
 
   @override
-  Future<Uint8List> deriveBits(EcdhPublicKey publicKey, int length) async {
-    ArgumentError.checkNotNull(publicKey, 'publicKey');
+  Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
     ArgumentError.checkNotNull(length, 'length');
+    ArgumentError.checkNotNull(publicKey, 'publicKey');
     if (publicKey is! _EcdhPublicKey) {
       throw ArgumentError.value(
         publicKey,
@@ -3004,7 +3003,7 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
     final privEcKey = ssl.EVP_PKEY_get0_EC_KEY(_key);
 
     // Check that public/private key uses the same elliptic curve.
-    if (ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(pubEcKey)) ==
+    if (ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(pubEcKey)) !=
         ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(privEcKey))) {
       // Note: web crypto will throw an InvalidAccessError here.
       throw ArgumentError.value(
@@ -3030,7 +3029,7 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
       return Uint8List.fromList([]);
     }
 
-    final lengthInBytes = (length / 8).ceil() * 8;
+    final lengthInBytes = (length / 8).ceil();
     final derived = _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Data> p) {
       final outLen = ssl.ECDH_compute_key(
         p,
@@ -3041,16 +3040,16 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
       );
       _checkOp(outLen != -1, fallback: 'ECDH key derivation failed');
       _checkOp(
-        outLen != lengthInBytes,
+        outLen == lengthInBytes,
         message: 'internal error in ECDH key derivation',
       );
     });
 
-    // Zero the most-significant bits, if length does not fit to bytes.
+    // Only return the first [length] bits from derived.
     final zeroBits = lengthInBytes * 8 - length;
     assert(zeroBits < 8);
     if (zeroBits > 0) {
-      derived[0] &= 0xff << (8 - lengthInBytes);
+      derived.last &= ((0xff << zeroBits) & 0xff);
     }
 
     return derived;
@@ -3058,7 +3057,11 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
-      _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: true, jwkUse: 'enc');
+      // Neither Chrome or Firefox produces 'use': 'enc' for ECDH, we choose to
+      // omit it for better interoperability. Chrome incorrectly forbids during
+      // import (though we strip 'use' to mitigate this).
+      // See also: https://crbug.com/641499 (and importJsonWebKey in JS)
+      _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: true, jwkUse: null);
 
   @override
   Future<Uint8List> exportPkcs8Key() async {
@@ -3080,7 +3083,11 @@ class _EcdhPublicKey with _Disposable implements EcdhPublicKey {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
-      _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: false, jwkUse: 'enc');
+      // Neither Chrome or Firefox produces 'use': 'enc' for ECDH, we choose to
+      // omit it for better interoperability. Chrome incorrectly forbids during
+      // import (though we strip 'use' to mitigate this).
+      // See also: https://crbug.com/641499 (and importJsonWebKey in JS)
+      _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: false, jwkUse: null);
 
   @override
   Future<Uint8List> exportRawKey() async => _exportRawEcPublicKey(_key);
