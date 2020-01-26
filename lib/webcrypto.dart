@@ -1393,6 +1393,10 @@ abstract class EcdhPrivateKey {
   // Note some webcrypto implementations (chrome, not firefox) supports passing
   // null for length (in this primitive). However, you can always know the right
   // length from the curve. Note p512 can provide up to: 528 bits!!!
+  //
+  // See: https://tools.ietf.org/html/rfc6090#section-4
+  // Notice that this is not uniformly distributed, see also:
+  // https://tools.ietf.org/html/rfc6090#appendix-B
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey);
 
   // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
@@ -1415,6 +1419,20 @@ abstract class EcdhPublicKey {
     return impl.ecdhPublicKey_importRawKey(keyData, curve);
   }
 
+  /// ## Compatibility
+  /// TODO: explain that Chrome can't import SPKI keys from Firefox < 72.
+  ///       This is a bug in Chrome / BoringSSL (and package:webcrypto)
+  ///
+  /// Chrome / BoringSSL doesn't recognize `id-ecDH`, but only `id-ecPublicKey`,
+  /// See: https://crbug.com/389400
+  ///
+  /// Chrome / BoringSSL exports `id-ecDH`, but Firefox exports
+  /// `id-ecPublicKey`. Note that Firefox < 72 can import both SPKI keys
+  /// exported by both Chrome, BoringSSL and Firefox. While Chrome and BoringSSL
+  /// cannot import SPKI keys from Firefox < 72.
+  ///
+  /// Firefox 72 and later exports SPKI keys with OID `id-ecPublicKey`, thus,
+  /// this is not a problem.
   static Future<EcdhPublicKey> importSpkiKey(
     List<int> keyData,
     EllipticCurve curve,
@@ -1437,6 +1455,9 @@ abstract class EcdhPublicKey {
 
   Future<Uint8List> exportRawKey();
 
+  /// Note: Due to bug in Chrome/BoringSSL, SPKI keys exported from Firefox < 72
+  /// cannot be imported in Chrome/BoringSSL.
+  /// See compatibility section in [EcdhPublicKey.importSpkiKey].
   Future<Uint8List> exportSpkiKey();
 
   Future<Map<String, dynamic>> exportJsonWebKey();

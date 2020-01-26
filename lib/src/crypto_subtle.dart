@@ -17,7 +17,11 @@ export 'dart:html' show DomException;
 @JS('Promise')
 class Promise<T> {
   external Promise then(
-      void Function(T) onAccept, void Function(DomException) onReject);
+    void Function(T) onAccept,
+    // TODO: Use something other than [DomException] as we don't get access to
+    //       message for some reason...
+    void Function(DomException) onReject,
+  );
 }
 
 /// Convert a promise to a future.

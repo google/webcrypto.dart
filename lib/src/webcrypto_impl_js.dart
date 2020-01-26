@@ -48,7 +48,7 @@ Object _translateDomException(
 }) {
   var message = e.message;
   if (message == null || message.isEmpty) {
-    message = 'browser threw "${e.name}"';
+    message = 'browser threw "${e.toString()}"';
   }
   switch (e.name) {
     case 'SyntaxError':
