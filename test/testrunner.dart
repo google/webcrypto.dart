@@ -547,7 +547,10 @@ class TestRunner<PrivateKey, PublicKey> {
 
     // Log the generated test case. This makes it easy to copy/paste the test
     // case into test files.
-    log(JsonEncoder.withIndent('  ').convert(c.toJson()));
+    log('| ' +
+        JsonEncoder.withIndent('  ')
+            .convert(c.toJson())
+            .replaceAll('\n', '\n| '));
 
     return c;
   }

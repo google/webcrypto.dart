@@ -150,14 +150,15 @@ Future<subtle.CryptoKey> _importKey(
   List<int> keyData,
   subtle.Algorithm algorithm,
   List<String> usages,
-  String expectedType,
-) {
+  String expectedType, {
+  bool extractable = true, // most keys should always be extractable
+}) {
   return _handleDomException(() async {
     final k = await subtle.promiseAsFuture(subtle.importKey(
       format,
       Uint8List.fromList(keyData),
       algorithm,
-      true, // extractable, keys should always be extractable.
+      extractable,
       usages,
     ));
     if (k.type != expectedType) {
@@ -1586,6 +1587,9 @@ Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
     subtle.Algorithm(name: _hkdfAlgorithmName),
     _usagesDeriveBits,
     'secret',
+    // Unlike all other key types it makes no sense to HkdfSecretKey to be
+    // exported, and indeed webcrypto requires `extractable: false`.
+    extractable: false,
   ));
 }
 
@@ -1627,6 +1631,9 @@ Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
     subtle.Algorithm(name: _pbkdf2AlgorithmName),
     _usagesDeriveBits,
     'secret',
+    // Unlike all other key types it makes no sense to HkdfSecretKey to be
+    // exported, and indeed webcrypto requires `extractable: false`.
+    extractable: false,
   ));
 }
 
