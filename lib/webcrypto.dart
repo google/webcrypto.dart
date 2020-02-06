@@ -318,7 +318,7 @@ abstract class HmacSecretKey {
 
   /// Import [HmacSecretKey] from [JWK][1].
   ///
-  /// TODO: finish implementation and documentation.
+  /// TODO: finish documentation.
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<HmacSecretKey> importJsonWebKey(
@@ -528,7 +528,7 @@ abstract class HmacSecretKey {
 
   /// Export [HmacSecretKey] from [JWK][1].
   ///
-  /// TODO: finish implementation and documentation.
+  /// TODO: finish documentation.
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey();
@@ -591,7 +591,7 @@ abstract class RsassaPkcs1V15PrivateKey {
 
   /// Import RSASSA-PKCS1-v1_5 private key in [JWK][1] format.
   ///
-  /// TODO: finish implementation and documentation.
+  /// TODO: finish documentation.
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<RsassaPkcs1V15PrivateKey> importJsonWebKey(
@@ -770,7 +770,7 @@ abstract class RsassaPkcs1V15PrivateKey {
 
   /// Export RSASSA-PKCS1-v1_5 private key in [JWK][1] format.
   ///
-  /// TODO: finish implementation and documentation.
+  /// TODO: finish documentation.
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey();
@@ -834,7 +834,7 @@ abstract class RsassaPkcs1V15PublicKey {
 
   /// Import RSASSA-PKCS1-v1_5 public key from [JWK][1].
   ///
-  /// TODO: finish implementation and documentation.
+  /// TODO: finish documentation.
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<RsassaPkcs1V15PublicKey> importJsonWebKey(
@@ -945,7 +945,7 @@ abstract class RsassaPkcs1V15PublicKey {
 
   /// Export RSASSA-PKCS1-v1_5 public key in [JWK][1] format.
   ///
-  /// TODO: finish implementation and documentation.
+  /// TODO: finish documentation.
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey();

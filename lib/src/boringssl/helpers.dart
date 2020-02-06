@@ -5,8 +5,9 @@ import 'dart:cli' as cli;
 /// Dynamically loaded boringssl library.
 final _boringssl = () {
   // Use symbols from the dart executable
-  //final library = DynamicLibrary.executable();
+  final library = DynamicLibrary.executable();
 
+  /*
   // Using symbols from boringssl in this package.
   const rootLibrary = 'package:webcrypto/webcrypto.dart';
   final u = cli
@@ -15,6 +16,7 @@ final _boringssl = () {
   // ALways load libcrypto.so first, as it's required by libssl.so
   DynamicLibrary.open(u.resolve('libcrypto.so').toFilePath());
   final library = DynamicLibrary.open(u.resolve('libssl.so').toFilePath());
+  */
 
   // CRYPTO_library_init initializes the crypto library. It must be called if
   // the library is built with BORINGSSL_NO_STATIC_INITIALIZER. Otherwise, it
