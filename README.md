@@ -13,29 +13,42 @@ while adding typing and accepting ugly names for the sake for future proofing.
 For a quick outline see [API reference on X20][api-docs].
 
 ## Status
-
-Currently the code only works on Linux and Chrome, the `dart:ffi` implementation
-requires Dart SDK from master branch. Library loading still relies on hardcoded
-paths, which prevents publication on pub.
+Implementation is complete using BoringSSL/`dart:ffi` on the VM and Web Crypto
+in javascript.
 
 **Completed**
  * Get random bytes
  * digest (sha-1/sha-256/sha-384/sha-512)
-   * Has bugs in Firefox (to be investigated)
-   * Only import/export from raw key, JSON Web Key is not supported yet.
  * HMAC (sign/verify)
  * RSASSA-PKCS1-v1_5 (sign/verify)
-   * Only import/export from pkcs8/spki, JSON Web Key is not supported yet.
-
-**Missing**
  * RSA-PSS (sign/verify)
  * ECDSA (sign/verify)
- * RSA-OAEP	(encrypt/decrypt/wrapKey/unwrapKey)
- * AES-CTR, AES-CBC, AES-GCM (encrypt/decrypt/wrapKey/unwrapKey)
- * AES-KW (wrapKey/unwrapKey)
- * ECDH (deriveBits/deriveKey)
- * HKDF (deriveBits/deriveKey)
- * PBKDF2	(deriveBits/deriveKey)
+ * RSA-OAEP	(encrypt/decrypt)
+ * AES-CTR, AES-CBC, AES-GCM (encrypt/decrypt)
+ * ECDH (deriveBits)
+ * HKDF (deriveBits)
+ * PBKDF2	(deriveBits)
+ * BoringSSL, Chrome and Firefox implementation pass the same test cases.
+
+**Missing**
+ * Exceptions/errors thrown for invalid input may still differ between
+   implementations, test cases have not been extended to cover invalid input.
+
+## Limitations
+ 
+ * `deriveKey` is not supported, keys can always be created from `derivedBits`
+    which is supported.
+ * `wrapKey` / `unwrapKey` is not supported, keys can be exported/encrypted or
+    decrypted/imported.
+ * `AES-KW` is not supported because it only supports `wrapKey` / `unwrapKey`
+    but doesn't support `encrypt`/`decrypt`.
+
+## Compatibility notes
+
+ * Chrome and BoringSSL does not support valid ECDH spki-formatted keys exported
+   by Firefox prior to version 72.
+ * Firefox does not support pkcs8 import/export for ECDSA and ECDH keys.
+ * Firefox does not handle counter wrap around for `AES-CTR`.
 
 ## References
 
