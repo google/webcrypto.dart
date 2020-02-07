@@ -1,40 +1,11 @@
-/// Outline of all classes **including those not implemented yet**.
+/// Cryptographic primitives for use on Dart VM and Dart in the browser.
 ///
-/// ## CHANGELOG
-///
-/// Since `draft5.dart`:
-///  * Renamed method `getRandomBytes` to `fillRandomBytes`.
-///
-/// Since `draft4.dart`:
-///  * Renamed methods `<operation>(List<int>)` to `<operation>Bytes(List<int>)`.
-///
-/// Since `draft3.dart`:
-///
-///  * Renamed `getRandomValues` to `getRandomBytes` and accept `TypedData`.
-///  * Renamed `Hasher` to `Hash`
-///  * Moved `Hash` instances to be static properties on `Hash`.
-///  * Now using `UnsupportedError` instead of adding `NotSupportedException`
-///  * Using `Map<String, dynamic>` for JSON values.
-///  * Added methods `<operation>(List<int>)` for working on buffers.
-///  * Renamed methods for operations on stream to `<operation>Stream`.
-///
-/// Since `draft2.dart`:
-///
-///  * Return types are `UInt8List` instead of `List<int>`
-///  * `TypedData` no longer used for input parameter (uses `List<int>` consistently)
-///  * Added a series of `QUESTION:` comments in source code.
-///
-/// Since initial draft in `webcrypto.dart` and `incomplete.dart`:
-///
-///  * Removed `CryptoKey` base class.
-///  * Removed `KeyUsages` (all keys can be used for all operations).
-///  * Removed `extractable` (all keys can be extracted).
-///  * Renamed `CryptoKeyPair` to `KeyPair`.
-///  * Required parameters are now all positional parameters.
-///  * Removed the `HashAlgorithm` enum.
-///  * Added the `Hasher` abstract class.
-///  * Added constants `sha1`, `sha256`, `sha384`, and, `sha512`.
-///
+/// TODO: Finish documentation of a public identifiers, so far the folliwng
+/// items have been documented:
+///  * [fillRandomBytes]
+///  * [Hash]
+///  * [HmacSecretKey]
+///  * [RsassaPkcs1V15PrivateKey] and [RsassaPkcs1V15PublicKey].
 ///
 /// ## Exceptions
 /// This library will throw the following exceptions:
