@@ -1,3 +1,7 @@
+/// This library maps symbols from BoringSSL _crypto_ for use in
+/// `package:webcrypto`.
+library boringssl;
+
 export 'aead.dart';
 export 'aes.dart';
 export 'bn.dart';

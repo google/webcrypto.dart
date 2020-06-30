@@ -1,18 +1,24 @@
-import 'dart:ffi';
-import 'types.dart';
-import 'helpers.dart';
+// ignore_for_file: non_constant_identifier_names
 
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/mem.h.html
+///
 /// BoringSSL has its own set of allocation functions, which keep track of
 /// allocation lengths and zero them out before freeing. All memory returned by
 /// BoringSSL API calls must therefore generally be freed using OPENSSL_free
 /// unless stated otherwise.
+library mem;
+
+import 'dart:ffi';
+import 'types.dart';
+import 'lookup/lookup.dart';
 
 /// OPENSSL_malloc acts like a regular malloc.
 ///
 /// ```c
 /// OPENSSL_EXPORT void *OPENSSL_malloc(size_t size);
 /// ```
-final OPENSSL_malloc = lookup('OPENSSL_malloc')
+final OPENSSL_malloc = resolve(Sym.OPENSSL_malloc)
     .lookupFunc<Pointer<Data> Function(IntPtr)>()
     .asFunction<Pointer<Data> Function(int)>();
 
@@ -22,7 +28,7 @@ final OPENSSL_malloc = lookup('OPENSSL_malloc')
 /// ```c
 /// OPENSSL_EXPORT void OPENSSL_free(void *ptr);
 /// ```
-final OPENSSL_free = lookup('OPENSSL_free')
+final OPENSSL_free = resolve(Sym.OPENSSL_free)
     .lookupFunc<Void Function(Pointer<Data>)>()
     .asFunction<void Function(Pointer<Data>)>();
 
@@ -35,7 +41,7 @@ final OPENSSL_free = lookup('OPENSSL_free')
 /// ```c
 /// int CRYPTO_memcmp(const void *a, const void *b, size_t len);
 /// ```
-final CRYPTO_memcmp = lookup('CRYPTO_memcmp')
+final CRYPTO_memcmp = resolve(Sym.CRYPTO_memcmp)
     .lookupFunc<Uint32 Function(Pointer<Data>, Pointer<Data>, IntPtr)>()
     .asFunction<int Function(Pointer<Data>, Pointer<Data>, int)>();
 
@@ -45,6 +51,6 @@ final CRYPTO_memcmp = lookup('CRYPTO_memcmp')
 /// ```c
 /// OPENSSL_EXPORT void *OPENSSL_memdup(const void *data, size_t size);
 /// ```
-final OPENSSL_memdup = lookup('OPENSSL_memdup')
+final OPENSSL_memdup = resolve(Sym.OPENSSL_memdup)
     .lookupFunc<Pointer<Data> Function(Pointer<Data>, IntPtr)>()
     .asFunction<Pointer<Data> Function(Pointer<Data>, int)>();

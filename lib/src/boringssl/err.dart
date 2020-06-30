@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/err.h.html
+library err;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/err.h.html
+import 'lookup/lookup.dart';
 
 //---------------------- Reading and formatting errors.
 
@@ -31,7 +34,7 @@ int ERR_GET_REASON(int packed_error) => packed_error & 0xfff;
 ///```c
 /// uint32_t ERR_get_error(void);
 ///```
-final ERR_get_error = lookup('ERR_get_error')
+final ERR_get_error = resolve(Sym.ERR_get_error)
     .lookupFunc<Uint32 Function()>()
     .asFunction<int Function()>();
 
@@ -41,7 +44,7 @@ final ERR_get_error = lookup('ERR_get_error')
 /// ```c
 /// OPENSSL_EXPORT uint32_t ERR_peek_error(void);
 /// ```
-final ERR_peek_error = lookup('ERR_peek_error')
+final ERR_peek_error = resolve(Sym.ERR_peek_error)
     .lookupFunc<Uint32 Function()>()
     .asFunction<int Function()>();
 
@@ -61,7 +64,7 @@ final ERR_peek_error = lookup('ERR_peek_error')
 /// void ERR_error_string_n(uint32_t packed_error, char *buf,
 ///                                        size_t len);
 /// ```
-final ERR_error_string_n = lookup('ERR_error_string_n')
+final ERR_error_string_n = resolve(Sym.ERR_error_string_n)
     .lookupFunc<Void Function(Uint32, Pointer<Bytes>, IntPtr)>()
     .asFunction<void Function(int, Pointer<Bytes>, int)>();
 
@@ -72,7 +75,7 @@ final ERR_error_string_n = lookup('ERR_error_string_n')
 ///```c
 /// void ERR_clear_error(void);
 ///```
-final ERR_clear_error = lookup('ERR_clear_error')
+final ERR_clear_error = resolve(Sym.ERR_clear_error)
     .lookupFunc<Void Function()>()
     .asFunction<void Function()>();
 

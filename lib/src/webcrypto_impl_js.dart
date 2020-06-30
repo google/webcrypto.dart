@@ -1,8 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:typed_data';
 
 import '../webcrypto.dart';
 import 'crypto_subtle.dart' as subtle;
+
+// TODO: Split this file into parts
 
 //---------------------- Wrappers
 
@@ -82,12 +86,12 @@ Object _translateDomException(
       /// CryptoKey.usages isn't configured correctly. But this library allows
       /// all valid usages.
       return AssertionError(
-        'Unexpected access error from web cryptography: ${message}',
+        'Unexpected access error from web cryptography: $message',
       );
   }
   // Unknown exception, we cannot handle this case.
   return AssertionError('Unexpected exception from web cryptography'
-      '"${e.name}", message: ${message}');
+      '"${e.name}", message: $message');
 }
 
 /// Handle instances of [subtle.DomException] specified in the
@@ -181,7 +185,7 @@ Future<Uint8List> _sign(
     final result = await subtle.promiseAsFuture(subtle.sign(
       algorithm,
       key,
-      await Uint8List.fromList(data),
+      Uint8List.fromList(data),
     ));
     return result.asUint8List();
   });
@@ -219,7 +223,7 @@ Future<Uint8List> _encrypt(
     final result = await subtle.promiseAsFuture(subtle.encrypt(
       algorithm,
       key,
-      await Uint8List.fromList(data),
+      Uint8List.fromList(data),
     ));
     return result.asUint8List();
   });
@@ -237,7 +241,7 @@ Future<Uint8List> _decrypt(
     final result = await subtle.promiseAsFuture(subtle.decrypt(
       algorithm,
       key,
-      await Uint8List.fromList(data),
+      Uint8List.fromList(data),
     ));
     return result.asUint8List();
   });
@@ -1581,7 +1585,7 @@ class _EcdhPublicKey implements EcdhPublicKey {
 final _hkdfAlgorithmName = 'HKDF';
 
 Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
-  return await _HkdfSecretKey(await _importKey(
+  return _HkdfSecretKey(await _importKey(
     'raw',
     keyData,
     subtle.Algorithm(name: _hkdfAlgorithmName),
@@ -1625,7 +1629,7 @@ class _HkdfSecretKey implements HkdfSecretKey {
 final _pbkdf2AlgorithmName = 'PBKDF2';
 
 Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
-  return await _Pbkdf2SecretKey(await _importKey(
+  return _Pbkdf2SecretKey(await _importKey(
     'raw',
     keyData,
     subtle.Algorithm(name: _pbkdf2AlgorithmName),

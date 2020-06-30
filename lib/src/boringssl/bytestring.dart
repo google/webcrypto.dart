@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/bytestring.h.html
+library bytestring;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/bytestring.h.html
+import 'lookup/lookup.dart';
 
 /// A "CBS" (CRYPTO ByteString) represents a string of bytes in memory and
 /// provides utility functions for safely parsing length-prefixed structures
@@ -27,7 +30,7 @@ class CBS extends Struct {
 /// ```c
 /// void CBS_init(CBS *cbs, const uint8_t *data, size_t len);
 /// ```
-final CBS_init = lookup('CBS_init')
+final CBS_init = resolve(Sym.CBS_init)
     .lookupFunc<Void Function(Pointer<CBS>, Pointer<Bytes>, IntPtr)>()
     .asFunction<void Function(Pointer<CBS>, Pointer<Bytes>, int)>();
 
@@ -75,7 +78,7 @@ class CBB extends Struct {
 /// ```c
 /// void CBB_zero(CBB *cbb);
 /// ```
-final CBB_zero = lookup('CBB_zero')
+final CBB_zero = resolve(Sym.CBB_zero)
     .lookupFunc<Void Function(Pointer<CBB>)>()
     .asFunction<void Function(Pointer<CBB>)>();
 
@@ -86,7 +89,7 @@ final CBB_zero = lookup('CBB_zero')
 /// ```c
 /// int CBB_init(CBB *cbb, size_t initial_capacity);
 /// ```
-final CBB_init = lookup('CBB_init')
+final CBB_init = resolve(Sym.CBB_init)
     .lookupFunc<Int32 Function(Pointer<CBB>, IntPtr)>()
     .asFunction<int Function(Pointer<CBB>, int)>();
 
@@ -101,7 +104,7 @@ final CBB_init = lookup('CBB_init')
 /// ```c
 /// void CBB_cleanup(CBB *cbb);
 /// ```
-final CBB_cleanup = lookup('CBB_cleanup')
+final CBB_cleanup = resolve(Sym.CBB_cleanup)
     .lookupFunc<Void Function(Pointer<CBB>)>()
     .asFunction<void Function(Pointer<CBB>)>();
 
@@ -114,7 +117,7 @@ final CBB_cleanup = lookup('CBB_cleanup')
 /// ```c
 /// int CBB_flush(CBB *cbb);
 /// ```
-final CBB_flush = lookup('CBB_flush')
+final CBB_flush = resolve(Sym.CBB_flush)
     .lookupFunc<Int32 Function(Pointer<CBB>)>()
     .asFunction<int Function(Pointer<CBB>)>();
 
@@ -127,7 +130,7 @@ final CBB_flush = lookup('CBB_flush')
 /// ```c
 /// const uint8_t *CBB_data(const CBB *cbb);
 /// ```
-final CBB_data = lookup('CBB_data')
+final CBB_data = resolve(Sym.CBB_data)
     .lookupFunc<Pointer<Bytes> Function(Pointer<CBB>)>()
     .asFunction<Pointer<Bytes> Function(Pointer<CBB>)>();
 
@@ -139,6 +142,6 @@ final CBB_data = lookup('CBB_data')
 /// ```c
 /// size_t CBB_len(const CBB *cbb);
 /// ```
-final CBB_len = lookup('CBB_len')
+final CBB_len = resolve(Sym.CBB_len)
     .lookupFunc<IntPtr Function(Pointer<CBB>)>()
     .asFunction<int Function(Pointer<CBB>)>();

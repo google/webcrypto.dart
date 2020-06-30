@@ -1,16 +1,19 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/rsa.h.html
+library rsa;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/rsa.h.html
+import 'lookup/lookup.dart';
 
 /// RSA_new returns a new, empty RSA object or NULL on error.
 ///
 /// ```c
 /// RSA *RSA_new(void);
 /// ```
-final RSA_new = lookup('RSA_new')
+final RSA_new = resolve(Sym.RSA_new)
     .lookupFunc<Pointer<RSA> Function()>()
     .asFunction<Pointer<RSA> Function()>();
 
@@ -20,7 +23,7 @@ final RSA_new = lookup('RSA_new')
 /// ```c
 /// void RSA_free(RSA *rsa);
 /// ```
-final RSA_free = lookup('RSA_free')
+final RSA_free = resolve(Sym.RSA_free)
     .lookupFunc<Void Function(Pointer<RSA>)>()
     .asFunction<void Function(Pointer<RSA>)>();
 
@@ -34,7 +37,7 @@ final RSA_free = lookup('RSA_free')
 /// OPENSSL_EXPORT void RSA_get0_key(const RSA *rsa, const BIGNUM **out_n,
 ///                                  const BIGNUM **out_e, const BIGNUM **out_d);
 /// ```
-final RSA_get0_key = lookup('RSA_get0_key')
+final RSA_get0_key = resolve(Sym.RSA_get0_key)
     .lookupFunc<
         Void Function(
       Pointer<RSA>,
@@ -57,7 +60,7 @@ final RSA_get0_key = lookup('RSA_get0_key')
 /// OPENSSL_EXPORT void RSA_get0_factors(const RSA *rsa, const BIGNUM **out_p,
 ///                                      const BIGNUM **out_q);
 /// ```
-final RSA_get0_factors = lookup('RSA_get0_factors')
+final RSA_get0_factors = resolve(Sym.RSA_get0_factors)
     .lookupFunc<
         Void Function(
       Pointer<RSA>,
@@ -81,7 +84,7 @@ final RSA_get0_factors = lookup('RSA_get0_factors')
 ///                                         const BIGNUM **out_dmq1,
 ///                                         const BIGNUM **out_iqmp);
 /// ```
-final RSA_get0_crt_params = lookup('RSA_get0_crt_params')
+final RSA_get0_crt_params = resolve(Sym.RSA_get0_crt_params)
     .lookupFunc<
         Void Function(
       Pointer<RSA>,
@@ -110,7 +113,7 @@ final RSA_get0_crt_params = lookup('RSA_get0_crt_params')
 /// ```c
 /// OPENSSL_EXPORT int RSA_set0_key(RSA *rsa, BIGNUM *n, BIGNUM *e, BIGNUM *d);
 /// ```
-final RSA_set0_key = lookup('RSA_set0_key')
+final RSA_set0_key = resolve(Sym.RSA_set0_key)
     .lookupFunc<
         Uint32 Function(
       Pointer<RSA>,
@@ -138,7 +141,7 @@ final RSA_set0_key = lookup('RSA_set0_key')
 /// ```c
 /// OPENSSL_EXPORT int RSA_set0_factors(RSA *rsa, BIGNUM *p, BIGNUM *q);
 /// ```
-final RSA_set0_factors = lookup('RSA_set0_factors')
+final RSA_set0_factors = resolve(Sym.RSA_set0_factors)
     .lookupFunc<
         Uint32 Function(
       Pointer<RSA>,
@@ -165,7 +168,7 @@ final RSA_set0_factors = lookup('RSA_set0_factors')
 /// OPENSSL_EXPORT int RSA_set0_crt_params(RSA *rsa, BIGNUM *dmp1, BIGNUM *dmq1,
 ///                                        BIGNUM *iqmp);
 /// ```
-final RSA_set0_crt_params = lookup('RSA_set0_crt_params')
+final RSA_set0_crt_params = resolve(Sym.RSA_set0_crt_params)
     .lookupFunc<
         Uint32 Function(
       Pointer<RSA>,
@@ -195,7 +198,7 @@ final RSA_set0_crt_params = lookup('RSA_set0_crt_params')
 /// int RSA_generate_key_ex(RSA *rsa, int bits, const BIGNUM *e,
 ///                                        BN_GENCB *cb);
 /// ```
-final RSA_generate_key_ex = lookup('RSA_generate_key_ex')
+final RSA_generate_key_ex = resolve(Sym.RSA_generate_key_ex)
     .lookupFunc<
         Int32 Function(
       Pointer<RSA>,
@@ -253,7 +256,7 @@ const int RSA_PKCS1_PSS_PADDING = 6;
 /// ```c
 /// int RSA_check_key(const RSA *rsa);
 /// ```
-final RSA_check_key = lookup('RSA_check_key')
+final RSA_check_key = resolve(Sym.RSA_check_key)
     .lookupFunc<Int32 Function(Pointer<RSA>)>()
     .asFunction<int Function(Pointer<RSA>)>();
 
@@ -263,6 +266,6 @@ final RSA_check_key = lookup('RSA_check_key')
 /// ```c
 /// RSA *RSAPublicKey_dup(const RSA *rsa);
 /// ```
-final RSAPublicKey_dup = lookup('RSAPublicKey_dup')
+final RSAPublicKey_dup = resolve(Sym.RSAPublicKey_dup)
     .lookupFunc<Pointer<RSA> Function(Pointer<RSA>)>()
     .asFunction<Pointer<RSA> Function(Pointer<RSA>)>();

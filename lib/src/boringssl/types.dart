@@ -1,3 +1,8 @@
+// ignore_for_file: camel_case_types
+
+/// This library defines types used in various BoringSSL headers.
+library types;
+
 import 'dart:ffi';
 
 /// digest algorithm.

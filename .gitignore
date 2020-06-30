@@ -2,11 +2,10 @@
 /.dart_tool/
 /.packages
 /doc/api/
-/third_party/boringssl/build/
-/third_party/boringssl/lib/
-/third_party/boringssl/src/
 /lib/src/boringssl_ffi/libssl.so
 /lib/src/webcrypto_extension/libwebcrypto_extension.so
 /lib/src/webcrypto_extension/obj/
 /dart-sdk/
 /.vscode/
+/build/
+/android/.cxx/

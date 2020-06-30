@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/ec_key.h.html
+library ec_key;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/ec_key.h.html
+import 'lookup/lookup.dart';
 
 //---------------------- EC key objects.
 
@@ -12,7 +15,7 @@ import 'helpers.dart';
 /// ```c
 /// OPENSSL_EXPORT EC_KEY *EC_KEY_new_by_curve_name(int nid);
 /// ```
-final EC_KEY_new_by_curve_name = lookup('EC_KEY_new_by_curve_name')
+final EC_KEY_new_by_curve_name = resolve(Sym.EC_KEY_new_by_curve_name)
     .lookupFunc<Pointer<EC_KEY> Function(Int32)>()
     .asFunction<Pointer<EC_KEY> Function(int)>();
 
@@ -21,7 +24,7 @@ final EC_KEY_new_by_curve_name = lookup('EC_KEY_new_by_curve_name')
 /// ```c
 /// OPENSSL_EXPORT void EC_KEY_free(EC_KEY *key);
 /// ```
-final EC_KEY_free = lookup('EC_KEY_free')
+final EC_KEY_free = resolve(Sym.EC_KEY_free)
     .lookupFunc<Void Function(Pointer<EC_KEY>)>()
     .asFunction<void Function(Pointer<EC_KEY>)>();
 
@@ -30,7 +33,7 @@ final EC_KEY_free = lookup('EC_KEY_free')
 /// ```c
 /// OPENSSL_EXPORT const EC_GROUP *EC_KEY_get0_group(const EC_KEY *key);
 /// ```
-final EC_KEY_get0_group = lookup('EC_KEY_get0_group')
+final EC_KEY_get0_group = resolve(Sym.EC_KEY_get0_group)
     .lookupFunc<Pointer<EC_GROUP> Function(Pointer<EC_KEY>)>()
     .asFunction<Pointer<EC_GROUP> Function(Pointer<EC_KEY>)>();
 
@@ -39,7 +42,7 @@ final EC_KEY_get0_group = lookup('EC_KEY_get0_group')
 /// ```c
 /// OPENSSL_EXPORT const BIGNUM *EC_KEY_get0_private_key(const EC_KEY *key);
 /// ```
-final EC_KEY_get0_private_key = lookup('EC_KEY_get0_private_key')
+final EC_KEY_get0_private_key = resolve(Sym.EC_KEY_get0_private_key)
     .lookupFunc<Pointer<BIGNUM> Function(Pointer<EC_KEY>)>()
     .asFunction<Pointer<BIGNUM> Function(Pointer<EC_KEY>)>();
 
@@ -50,7 +53,7 @@ final EC_KEY_get0_private_key = lookup('EC_KEY_get0_private_key')
 /// ```c
 /// OPENSSL_EXPORT int EC_KEY_set_private_key(EC_KEY *key, const BIGNUM *priv);
 /// ```
-final EC_KEY_set_private_key = lookup('EC_KEY_set_private_key')
+final EC_KEY_set_private_key = resolve(Sym.EC_KEY_set_private_key)
     .lookupFunc<Int32 Function(Pointer<EC_KEY>, Pointer<BIGNUM>)>()
     .asFunction<int Function(Pointer<EC_KEY>, Pointer<BIGNUM>)>();
 
@@ -59,7 +62,7 @@ final EC_KEY_set_private_key = lookup('EC_KEY_set_private_key')
 /// ```c
 /// OPENSSL_EXPORT const EC_POINT *EC_KEY_get0_public_key(const EC_KEY *key);
 /// ```
-final EC_KEY_get0_public_key = lookup('EC_KEY_get0_public_key')
+final EC_KEY_get0_public_key = resolve(Sym.EC_KEY_get0_public_key)
     .lookupFunc<Pointer<EC_POINT> Function(Pointer<EC_KEY>)>()
     .asFunction<Pointer<EC_POINT> Function(Pointer<EC_KEY>)>();
 
@@ -71,7 +74,7 @@ final EC_KEY_get0_public_key = lookup('EC_KEY_get0_public_key')
 /// ```c
 /// OPENSSL_EXPORT int EC_KEY_set_public_key(EC_KEY *key, const EC_POINT *pub);
 /// ```
-final EC_KEY_set_public_key = lookup('EC_KEY_set_public_key')
+final EC_KEY_set_public_key = resolve(Sym.EC_KEY_set_public_key)
     .lookupFunc<Int32 Function(Pointer<EC_KEY>, Pointer<EC_POINT>)>()
     .asFunction<int Function(Pointer<EC_KEY>, Pointer<EC_POINT>)>();
 
@@ -88,7 +91,7 @@ const int EC_PKEY_NO_PARAMETERS = 0x001, EC_PKEY_NO_PUBKEY = 0x002;
 /// ```c
 /// OPENSSL_EXPORT unsigned EC_KEY_get_enc_flags(const EC_KEY *key);
 /// ```
-final EC_KEY_get_enc_flags = lookup('EC_KEY_get_enc_flags')
+final EC_KEY_get_enc_flags = resolve(Sym.EC_KEY_get_enc_flags)
     .lookupFunc<Uint32 Function(Pointer<EC_KEY>)>()
     .asFunction<int Function(Pointer<EC_KEY>)>();
 
@@ -97,7 +100,7 @@ final EC_KEY_get_enc_flags = lookup('EC_KEY_get_enc_flags')
 /// ```c
 /// OPENSSL_EXPORT void EC_KEY_set_enc_flags(EC_KEY *key, unsigned flags);
 /// ```
-final EC_KEY_set_enc_flags = lookup('EC_KEY_set_enc_flags')
+final EC_KEY_set_enc_flags = resolve(Sym.EC_KEY_set_enc_flags)
     .lookupFunc<Void Function(Pointer<EC_KEY>, Uint32)>()
     .asFunction<void Function(Pointer<EC_KEY>, int)>();
 
@@ -109,7 +112,7 @@ final EC_KEY_set_enc_flags = lookup('EC_KEY_set_enc_flags')
 /// ```c
 /// OPENSSL_EXPORT int EC_KEY_check_key(const EC_KEY *key);
 /// ```
-final EC_KEY_check_key = lookup('EC_KEY_check_key')
+final EC_KEY_check_key = resolve(Sym.EC_KEY_check_key)
     .lookupFunc<Int32 Function(Pointer<EC_KEY>)>()
     .asFunction<int Function(Pointer<EC_KEY>)>();
 
@@ -122,7 +125,7 @@ final EC_KEY_check_key = lookup('EC_KEY_check_key')
 ///                                                             const BIGNUM *y);
 /// ```c
 final EC_KEY_set_public_key_affine_coordinates =
-    lookup('EC_KEY_set_public_key_affine_coordinates')
+    resolve(Sym.EC_KEY_set_public_key_affine_coordinates)
         .lookupFunc<
             Int32 Function(
           Pointer<EC_KEY>,
@@ -145,6 +148,6 @@ final EC_KEY_set_public_key_affine_coordinates =
 /// ```c
 /// OPENSSL_EXPORT int EC_KEY_generate_key(EC_KEY *key);
 /// ```
-final EC_KEY_generate_key = lookup('EC_KEY_generate_key')
+final EC_KEY_generate_key = resolve(Sym.EC_KEY_generate_key)
     .lookupFunc<Int32 Function(Pointer<EC_KEY>)>()
     .asFunction<int Function(Pointer<EC_KEY>)>();

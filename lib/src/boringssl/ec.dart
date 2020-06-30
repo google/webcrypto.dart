@@ -1,10 +1,13 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/ec.h.html
+library ec;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
+import 'lookup/lookup.dart';
 import 'bytestring.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/ec.h.html
 
 /// point_conversion_form_t enumerates forms, as defined in X9.62 (ECDSA), for the encoding of a elliptic curve point (x,y)
 ///
@@ -36,7 +39,7 @@ const int POINT_CONVERSION_COMPRESSED = 2, POINT_CONVERSION_UNCOMPRESSED = 4;
 /// ```c
 /// OPENSSL_EXPORT EC_GROUP *EC_GROUP_new_by_curve_name(int nid);
 /// ```
-final EC_GROUP_new_by_curve_name = lookup('EC_GROUP_new_by_curve_name')
+final EC_GROUP_new_by_curve_name = resolve(Sym.EC_GROUP_new_by_curve_name)
     .lookupFunc<Pointer<EC_GROUP> Function(Int32)>()
     .asFunction<Pointer<EC_GROUP> Function(int)>();
 
@@ -45,7 +48,7 @@ final EC_GROUP_new_by_curve_name = lookup('EC_GROUP_new_by_curve_name')
 /// ```c
 /// OPENSSL_EXPORT void EC_GROUP_free(EC_GROUP *group);
 /// ```
-final EC_GROUP_free = lookup('EC_GROUP_free')
+final EC_GROUP_free = resolve(Sym.EC_GROUP_free)
     .lookupFunc<Void Function(Pointer<EC_GROUP>)>()
     .asFunction<void Function(Pointer<EC_GROUP>)>();
 
@@ -72,7 +75,7 @@ const int NID_secp224r1 = 713,
 /// ```c
 /// OPENSSL_EXPORT const BIGNUM *EC_GROUP_get0_order(const EC_GROUP *group);
 /// ```
-final EC_GROUP_get0_order = lookup('EC_GROUP_get0_order')
+final EC_GROUP_get0_order = resolve(Sym.EC_GROUP_get0_order)
     .lookupFunc<Pointer<BIGNUM> Function(Pointer<EC_GROUP>)>()
     .asFunction<Pointer<BIGNUM> Function(Pointer<EC_GROUP>)>();
 
@@ -81,7 +84,7 @@ final EC_GROUP_get0_order = lookup('EC_GROUP_get0_order')
 /// ```c
 /// OPENSSL_EXPORT int EC_GROUP_get_curve_name(const EC_GROUP *group);
 /// ```
-final EC_GROUP_get_curve_name = lookup('EC_GROUP_get_curve_name')
+final EC_GROUP_get_curve_name = resolve(Sym.EC_GROUP_get_curve_name)
     .lookupFunc<Int32 Function(Pointer<EC_GROUP>)>()
     .asFunction<int Function(Pointer<EC_GROUP>)>();
 
@@ -91,7 +94,7 @@ final EC_GROUP_get_curve_name = lookup('EC_GROUP_get_curve_name')
 /// ```c
 /// OPENSSL_EXPORT unsigned EC_GROUP_get_degree(const EC_GROUP *group);
 /// ```
-final EC_GROUP_get_degree = lookup('EC_GROUP_get_degree')
+final EC_GROUP_get_degree = resolve(Sym.EC_GROUP_get_degree)
     .lookupFunc<Uint32 Function(Pointer<EC_GROUP>)>()
     .asFunction<int Function(Pointer<EC_GROUP>)>();
 
@@ -102,7 +105,7 @@ final EC_GROUP_get_degree = lookup('EC_GROUP_get_degree')
 /// ```c
 /// OPENSSL_EXPORT EC_POINT *EC_POINT_new(const EC_GROUP *group);
 /// ```
-final EC_POINT_new = lookup('EC_POINT_new')
+final EC_POINT_new = resolve(Sym.EC_POINT_new)
     .lookupFunc<Pointer<EC_POINT> Function(Pointer<EC_GROUP>)>()
     .asFunction<Pointer<EC_POINT> Function(Pointer<EC_GROUP>)>();
 
@@ -111,7 +114,7 @@ final EC_POINT_new = lookup('EC_POINT_new')
 /// ```c
 /// OPENSSL_EXPORT void EC_POINT_free(EC_POINT *point);
 /// ```
-final EC_POINT_free = lookup('EC_POINT_free')
+final EC_POINT_free = resolve(Sym.EC_POINT_free)
     .lookupFunc<Void Function(Pointer<EC_POINT>)>()
     .asFunction<void Function(Pointer<EC_POINT>)>();
 
@@ -131,7 +134,7 @@ final EC_POINT_free = lookup('EC_POINT_free')
 ///                                                        BN_CTX *ctx);
 /// ```
 final EC_POINT_get_affine_coordinates_GFp =
-    lookup('EC_POINT_get_affine_coordinates_GFp')
+    resolve(Sym.EC_POINT_get_affine_coordinates_GFp)
         .lookupFunc<
             Int32 Function(
           Pointer<EC_GROUP>,
@@ -158,7 +161,7 @@ final EC_POINT_get_affine_coordinates_GFp =
 ///                                       point_conversion_form_t form,
 ///                                       BN_CTX *ctx);
 /// ```
-final EC_POINT_point2cbb = lookup('EC_POINT_point2cbb')
+final EC_POINT_point2cbb = resolve(Sym.EC_POINT_point2cbb)
     .lookupFunc<
         Int32 Function(Pointer<CBB>, Pointer<EC_GROUP>, Pointer<EC_POINT>,
             Int32, Pointer<BN_CTX>)>()
@@ -173,7 +176,7 @@ final EC_POINT_point2cbb = lookup('EC_POINT_point2cbb')
 ///                                       const uint8_t *buf, size_t len,
 ///                                       BN_CTX *ctx);
 /// ```
-final EC_POINT_oct2point = lookup('EC_POINT_oct2point')
+final EC_POINT_oct2point = resolve(Sym.EC_POINT_oct2point)
     .lookupFunc<
         Int32 Function(Pointer<EC_GROUP>, Pointer<EC_POINT>, Pointer<Bytes>,
             IntPtr, Pointer<BN_CTX>)>()

@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:convert' show utf8, base64Url;
@@ -9,6 +11,8 @@ import 'package:meta/meta.dart';
 import 'jsonwebkey.dart' show JsonWebKey;
 import '../webcrypto.dart';
 import 'boringssl/boringssl.dart' as ssl;
+
+// TODO: Split this file into parts
 
 //---------------------- Helpers
 
@@ -79,18 +83,26 @@ String _extractError() {
 ///
 /// Must be de-allocated with [_free].
 ffi.Pointer<T> _malloc<T extends ffi.NativeType>({int count = 1}) {
-  return ffi.allocate<T>(count: count);
-  // TODO: Find out why this fails:
-  //final p = ssl.OPENSSL_malloc(count * ffi.sizeOf<T>());
-  //_checkOp(p.address != 0, fallback: 'allocation failure');
-  //return p.cast<T>();
+  // TODO: Find out why OPENSSL_malloc doesn't work on Dart on Linux.
+  //       This presumably has to do with dlopen(), WEAK symbols and the fact
+  //       that the `dart` executable that ships in the Dart-SDK for Linux is
+  //       a _release build_, not a _product build_, so more symbols might be
+  //       visible. In anycase using ffi.allocate / ffi.free works fine on
+  //       the `dart` executable with the Dart-SDK for Linux.
+  //       Please note, that this does not work with the Flutter or the `dart`
+  //       binary that ships with the Flutter SDK.
+  // return ffi.allocate<T>(count: count);
+  final p = ssl.OPENSSL_malloc(count * ffi.sizeOf<T>());
+  _checkOp(p.address != 0, fallback: 'allocation failure');
+  return p.cast<T>();
 }
 
 /// Release memory allocated with [_malloc]
 void _free<T extends ffi.NativeType>(ffi.Pointer<T> p) {
-  ffi.free(p);
-  // TODO: Find out why this fails
-  //ssl.OPENSSL_free(p.cast<ssl.Data>());
+  // If using the ffi.allocate<T>(count: count) hack from [_malloc] we must also
+  // use ffi.free(p) here. See [_malloc] for details.
+  // ffi.free(p);
+  ssl.OPENSSL_free(p.cast<ssl.Data>());
 }
 
 class _ScopeEntry {
@@ -2818,6 +2830,11 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
     throw _OperationError('tagLength must be 32, 64, 96, 104, 112, 120 or 128');
   }
   additionalData ??= [];
+
+  // TODO: Check iv length is less than EVP_AEAD_nonce_length
+  //       More importantly, add some test cases covering this, also consider
+  //       what chrome does, how firefox passes tests. And check if other
+  //       primitives that accept an iv/nonce has size limitations on it.
 
   final scope = _Scope();
   try {

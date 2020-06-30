@@ -1,10 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/aead.h.html
+library aead;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-import 'bytestring.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/aead.h.html
+import 'lookup/lookup.dart';
 
 //---------------------- AEAD algorithms.
 
@@ -19,7 +21,7 @@ import 'bytestring.dart';
 /// ```c
 /// OPENSSL_EXPORT const EVP_AEAD *EVP_aead_aes_128_gcm(void);
 /// ```
-final EVP_aead_aes_128_gcm = lookup('EVP_aead_aes_128_gcm')
+final EVP_aead_aes_128_gcm = resolve(Sym.EVP_aead_aes_128_gcm)
     .lookupFunc<Pointer<EVP_AEAD> Function()>()
     .asFunction<Pointer<EVP_AEAD> Function()>();
 
@@ -33,7 +35,7 @@ final EVP_aead_aes_128_gcm = lookup('EVP_aead_aes_128_gcm')
 /// ```c
 /// OPENSSL_EXPORT const EVP_AEAD *EVP_aead_aes_256_gcm(void);
 /// ```
-final EVP_aead_aes_256_gcm = lookup('EVP_aead_aes_256_gcm')
+final EVP_aead_aes_256_gcm = resolve(Sym.EVP_aead_aes_256_gcm)
     .lookupFunc<Pointer<EVP_AEAD> Function()>()
     .asFunction<Pointer<EVP_AEAD> Function()>();
 
@@ -44,7 +46,7 @@ final EVP_aead_aes_256_gcm = lookup('EVP_aead_aes_256_gcm')
 /// ```c
 /// OPENSSL_EXPORT size_t EVP_AEAD_key_length(const EVP_AEAD *aead);
 /// ```
-final EVP_AEAD_key_length = lookup('EVP_AEAD_key_length')
+final EVP_AEAD_key_length = resolve(Sym.EVP_AEAD_key_length)
     .lookupFunc<IntPtr Function(Pointer<EVP_AEAD>)>()
     .asFunction<int Function(Pointer<EVP_AEAD>)>();
 
@@ -54,7 +56,7 @@ final EVP_AEAD_key_length = lookup('EVP_AEAD_key_length')
 /// ```c
 /// OPENSSL_EXPORT size_t EVP_AEAD_nonce_length(const EVP_AEAD *aead);
 /// ```
-final EVP_AEAD_nonce_length = lookup('EVP_AEAD_nonce_length')
+final EVP_AEAD_nonce_length = resolve(Sym.EVP_AEAD_nonce_length)
     .lookupFunc<IntPtr Function(Pointer<EVP_AEAD>)>()
     .asFunction<int Function(Pointer<EVP_AEAD>)>();
 
@@ -64,7 +66,7 @@ final EVP_AEAD_nonce_length = lookup('EVP_AEAD_nonce_length')
 /// ```c
 /// OPENSSL_EXPORT size_t EVP_AEAD_max_overhead(const EVP_AEAD *aead);
 /// ```
-final EVP_AEAD_max_overhead = lookup('EVP_AEAD_max_overhead')
+final EVP_AEAD_max_overhead = resolve(Sym.EVP_AEAD_max_overhead)
     .lookupFunc<IntPtr Function(Pointer<EVP_AEAD>)>()
     .asFunction<int Function(Pointer<EVP_AEAD>)>();
 
@@ -74,7 +76,7 @@ final EVP_AEAD_max_overhead = lookup('EVP_AEAD_max_overhead')
 /// ```c
 /// OPENSSL_EXPORT size_t EVP_AEAD_max_tag_len(const EVP_AEAD *aead);
 /// ```
-final EVP_AEAD_max_tag_len = lookup('EVP_AEAD_max_tag_len')
+final EVP_AEAD_max_tag_len = resolve(Sym.EVP_AEAD_max_tag_len)
     .lookupFunc<IntPtr Function(Pointer<EVP_AEAD>)>()
     .asFunction<int Function(Pointer<EVP_AEAD>)>();
 
@@ -88,7 +90,7 @@ final EVP_AEAD_max_tag_len = lookup('EVP_AEAD_max_tag_len')
 ///                                               const uint8_t *key,
 ///                                               size_t key_len, size_t tag_len);
 /// ```
-final EVP_AEAD_CTX_new = lookup('EVP_AEAD_CTX_new')
+final EVP_AEAD_CTX_new = resolve(Sym.EVP_AEAD_CTX_new)
     .lookupFunc<
         Pointer<EVP_AEAD_CTX> Function(
       Pointer<EVP_AEAD>,
@@ -109,7 +111,7 @@ final EVP_AEAD_CTX_new = lookup('EVP_AEAD_CTX_new')
 /// ```c
 /// OPENSSL_EXPORT void EVP_AEAD_CTX_free(EVP_AEAD_CTX *ctx);
 /// ```
-final EVP_AEAD_CTX_free = lookup('EVP_AEAD_CTX_free')
+final EVP_AEAD_CTX_free = resolve(Sym.EVP_AEAD_CTX_free)
     .lookupFunc<IntPtr Function(Pointer<EVP_AEAD_CTX>)>()
     .asFunction<int Function(Pointer<EVP_AEAD_CTX>)>();
 
@@ -141,7 +143,7 @@ final EVP_AEAD_CTX_free = lookup('EVP_AEAD_CTX_free')
 ///                                      const uint8_t *in, size_t in_len,
 ///                                      const uint8_t *ad, size_t ad_len);
 /// ```
-final EVP_AEAD_CTX_seal = lookup('EVP_AEAD_CTX_seal')
+final EVP_AEAD_CTX_seal = resolve(Sym.EVP_AEAD_CTX_seal)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_AEAD_CTX>,
@@ -196,7 +198,7 @@ final EVP_AEAD_CTX_seal = lookup('EVP_AEAD_CTX_seal')
 ///                                      const uint8_t *in, size_t in_len,
 ///                                      const uint8_t *ad, size_t ad_len);
 /// ```
-final EVP_AEAD_CTX_open = lookup('EVP_AEAD_CTX_open')
+final EVP_AEAD_CTX_open = resolve(Sym.EVP_AEAD_CTX_open)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_AEAD_CTX>,

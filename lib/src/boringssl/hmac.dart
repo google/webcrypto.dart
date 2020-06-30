@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/hmac.h.html
+library hmac;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/hmac.h.html
+import 'lookup/lookup.dart';
 
 /// HMAC_CTX_new allocates and initialises a new HMAC_CTX and returns it, or
 /// NULL on allocation failure. The caller must use HMAC_CTX_free to release
@@ -12,7 +15,7 @@ import 'helpers.dart';
 /// ```c
 /// HMAC_CTX *HMAC_CTX_new(void);
 /// ```
-final HMAC_CTX_new = lookup('HMAC_CTX_new')
+final HMAC_CTX_new = resolve(Sym.HMAC_CTX_new)
     .lookupFunc<Pointer<HMAC_CTX> Function()>()
     .asFunction<Pointer<HMAC_CTX> Function()>();
 
@@ -20,7 +23,7 @@ final HMAC_CTX_new = lookup('HMAC_CTX_new')
 /// ```c
 /// void HMAC_CTX_free(HMAC_CTX *ctx);
 /// ```
-final HMAC_CTX_free = lookup('HMAC_CTX_free')
+final HMAC_CTX_free = resolve(Sym.HMAC_CTX_free)
     .lookupFunc<Void Function(Pointer<HMAC_CTX>)>()
     .asFunction<void Function(Pointer<HMAC_CTX>)>();
 
@@ -38,7 +41,7 @@ final HMAC_CTX_free = lookup('HMAC_CTX_free')
 /// int HMAC_Init_ex(HMAC_CTX *ctx, const void *key, size_t key_len,
 ///                                 const EVP_MD *md, ENGINE *impl);
 /// ```
-final HMAC_Init_ex = lookup('HMAC_Init_ex')
+final HMAC_Init_ex = resolve(Sym.HMAC_Init_ex)
     .lookupFunc<
         Uint32 Function(
       Pointer<HMAC_CTX>,
@@ -61,7 +64,7 @@ final HMAC_Init_ex = lookup('HMAC_Init_ex')
 /// int HMAC_Update(HMAC_CTX *ctx, const uint8_t *data,
 ///                                size_t data_len);
 /// ```
-final HMAC_Update = lookup('HMAC_Update')
+final HMAC_Update = resolve(Sym.HMAC_Update)
     .lookupFunc<Uint32 Function(Pointer<HMAC_CTX>, Pointer<Bytes>, IntPtr)>()
     .asFunction<int Function(Pointer<HMAC_CTX>, Pointer<Bytes>, int)>();
 
@@ -75,7 +78,7 @@ final HMAC_Update = lookup('HMAC_Update')
 /// int HMAC_Final(HMAC_CTX *ctx, uint8_t *out,
 ///                               unsigned int *out_len);
 /// ```
-final HMAC_Final = lookup('HMAC_Final')
+final HMAC_Final = resolve(Sym.HMAC_Final)
     .lookupFunc<
         Uint32 Function(
       Pointer<HMAC_CTX>,
@@ -95,6 +98,6 @@ final HMAC_Final = lookup('HMAC_Final')
 /// ```c
 /// size_t HMAC_size(const HMAC_CTX *ctx);
 /// ```
-final HMAC_size = lookup('HMAC_size')
+final HMAC_size = resolve(Sym.HMAC_size)
     .lookupFunc<IntPtr Function(Pointer<HMAC_CTX>)>()
     .asFunction<int Function(Pointer<HMAC_CTX>)>();

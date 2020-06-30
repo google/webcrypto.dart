@@ -8,8 +8,8 @@ that are not used.
 
 The code doing this is structured as follows:
  * `boringssl.dart` exports everything that should be used outside.
- * `helpers.dart` provides helpers for defining symboles without having two
-    type parameters on the same line (multiple lines is more readable).
+ * `lookup/lookup.dart` provides helpers for defining symboles without having
+    two type parameters on the same line (multiple lines is more readable).
  * `types.dart` defines all types, as it's not obvious from documentation
    what headers these are defined in.
  * `<name>.dart` defines symbols from `<name>.h` in the

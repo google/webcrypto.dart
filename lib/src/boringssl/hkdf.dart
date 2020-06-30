@@ -1,10 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/hkdf.h.html
+library hkdf;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-import 'bytestring.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/hkdf.h.html
+import 'lookup/lookup.dart';
 
 //---------------------- HKDF.
 
@@ -22,7 +24,7 @@ import 'bytestring.dart';
 ///                         const uint8_t *salt, size_t salt_len,
 ///                         const uint8_t *info, size_t info_len);
 /// ```
-final HKDF = lookup('HKDF')
+final HKDF = resolve(Sym.HKDF)
     .lookupFunc<
         Int32 Function(
       Pointer<Bytes>,

@@ -30,6 +30,8 @@
 ///
 library webcrypto;
 
+// TODO: Split this file into parts
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'src/webcrypto_impl_stub.dart'

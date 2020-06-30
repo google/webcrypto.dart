@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/digest.h.html
+library digest;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/digest.h.html
+import 'lookup/lookup.dart';
 
 /// The following functions return EVP_MD objects that implement the named
 /// hash function.
@@ -14,16 +17,16 @@ import 'helpers.dart';
 /// const EVP_MD *EVP_sha384(void);
 /// const EVP_MD *EVP_sha512(void);
 /// ```
-final EVP_sha1 = lookup('EVP_sha1')
+final EVP_sha1 = resolve(Sym.EVP_sha1)
         .lookupFunc<Pointer<EVP_MD> Function()>()
         .asFunction<Pointer<EVP_MD> Function()>(),
-    EVP_sha256 = lookup('EVP_sha256')
+    EVP_sha256 = resolve(Sym.EVP_sha256)
         .lookupFunc<Pointer<EVP_MD> Function()>()
         .asFunction<Pointer<EVP_MD> Function()>(),
-    EVP_sha384 = lookup('EVP_sha384')
+    EVP_sha384 = resolve(Sym.EVP_sha384)
         .lookupFunc<Pointer<EVP_MD> Function()>()
         .asFunction<Pointer<EVP_MD> Function()>(),
-    EVP_sha512 = lookup('EVP_sha512')
+    EVP_sha512 = resolve(Sym.EVP_sha512)
         .lookupFunc<Pointer<EVP_MD> Function()>()
         .asFunction<Pointer<EVP_MD> Function()>();
 
@@ -32,7 +35,7 @@ final EVP_sha1 = lookup('EVP_sha1')
 /// ```c
 /// size_t EVP_MD_size(const EVP_MD *md);
 /// ```
-final EVP_MD_size = lookup('EVP_MD_size')
+final EVP_MD_size = resolve(Sym.EVP_MD_size)
     .lookupFunc<IntPtr Function(Pointer<EVP_MD>)>()
     .asFunction<int Function(Pointer<EVP_MD>)>();
 
@@ -43,7 +46,7 @@ final EVP_MD_size = lookup('EVP_MD_size')
 /// ```c
 /// EVP_MD_CTX *EVP_MD_CTX_new(void);
 /// ```
-final EVP_MD_CTX_new = lookup('EVP_MD_CTX_new')
+final EVP_MD_CTX_new = resolve(Sym.EVP_MD_CTX_new)
     .lookupFunc<Pointer<EVP_MD_CTX> Function()>()
     .asFunction<Pointer<EVP_MD_CTX> Function()>();
 
@@ -52,7 +55,7 @@ final EVP_MD_CTX_new = lookup('EVP_MD_CTX_new')
 /// ```c
 /// void EVP_MD_CTX_free(EVP_MD_CTX *ctx);
 /// ```
-final EVP_MD_CTX_free = lookup('EVP_MD_CTX_free')
+final EVP_MD_CTX_free = resolve(Sym.EVP_MD_CTX_free)
     .lookupFunc<Void Function(Pointer<EVP_MD_CTX>)>()
     .asFunction<void Function(Pointer<EVP_MD_CTX>)>();
 
@@ -62,7 +65,7 @@ final EVP_MD_CTX_free = lookup('EVP_MD_CTX_free')
 /// ```c
 /// int EVP_DigestInit(EVP_MD_CTX *ctx, const EVP_MD *type);
 /// ```
-final EVP_DigestInit = lookup('EVP_DigestInit')
+final EVP_DigestInit = resolve(Sym.EVP_DigestInit)
     .lookupFunc<Int32 Function(Pointer<EVP_MD_CTX>, Pointer<EVP_MD>)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>, Pointer<EVP_MD>)>();
 
@@ -73,7 +76,7 @@ final EVP_DigestInit = lookup('EVP_DigestInit')
 /// int EVP_DigestUpdate(EVP_MD_CTX *ctx, const void *data,
 ///                                     size_t len);
 /// ```
-final EVP_DigestUpdate = lookup('EVP_DigestUpdate')
+final EVP_DigestUpdate = resolve(Sym.EVP_DigestUpdate)
     .lookupFunc<Int32 Function(Pointer<EVP_MD_CTX>, Pointer<Data>, IntPtr)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>, Pointer<Data>, int)>();
 
@@ -84,7 +87,7 @@ final EVP_DigestUpdate = lookup('EVP_DigestUpdate')
 /// int EVP_DigestFinal(EVP_MD_CTX *ctx, uint8_t *md_out,
 ///                                    unsigned int *out_size);
 /// ```
-final EVP_DigestFinal = lookup('EVP_DigestFinal')
+final EVP_DigestFinal = resolve(Sym.EVP_DigestFinal)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_MD_CTX>,
@@ -104,6 +107,6 @@ final EVP_DigestFinal = lookup('EVP_DigestFinal')
 /// ```c
 /// size_t EVP_MD_CTX_size(const EVP_MD_CTX *ctx);
 /// ```
-final EVP_MD_CTX_size = lookup('EVP_MD_CTX_size')
+final EVP_MD_CTX_size = resolve(Sym.EVP_MD_CTX_size)
     .lookupFunc<IntPtr Function(Pointer<EVP_MD_CTX>)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>)>();

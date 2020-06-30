@@ -1,10 +1,13 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/evp.h.html
+library evp;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
+import 'lookup/lookup.dart';
 import 'bytestring.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/evp.h.html
 
 //---------------------- Public key objects.
 
@@ -14,7 +17,7 @@ import 'bytestring.dart';
 /// ```c
 /// EVP_PKEY *EVP_PKEY_new(void);
 /// ```
-final EVP_PKEY_new = lookup('EVP_PKEY_new')
+final EVP_PKEY_new = resolve(Sym.EVP_PKEY_new)
     .lookupFunc<Pointer<EVP_PKEY> Function()>()
     .asFunction<Pointer<EVP_PKEY> Function()>();
 
@@ -23,7 +26,7 @@ final EVP_PKEY_new = lookup('EVP_PKEY_new')
 /// ```c
 /// void EVP_PKEY_free(EVP_PKEY *pkey);
 /// ```
-final EVP_PKEY_free = lookup('EVP_PKEY_free')
+final EVP_PKEY_free = resolve(Sym.EVP_PKEY_free)
     .lookupFunc<Void Function(Pointer<EVP_PKEY>)>()
     .asFunction<void Function(Pointer<EVP_PKEY>)>();
 
@@ -32,7 +35,7 @@ final EVP_PKEY_free = lookup('EVP_PKEY_free')
 /// ```c
 /// OPENSSL_EXPORT int EVP_PKEY_id(const EVP_PKEY *pkey);
 /// ```
-final EVP_PKEY_id = lookup('EVP_PKEY_id')
+final EVP_PKEY_id = resolve(Sym.EVP_PKEY_id)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY>)>()
     .asFunction<int Function(Pointer<EVP_PKEY>)>();
 
@@ -65,19 +68,19 @@ final EVP_PKEY_id = lookup('EVP_PKEY_id')
 /// EC_KEY *EVP_PKEY_get0_EC_KEY(const EVP_PKEY *pkey);
 /// EC_KEY *EVP_PKEY_get1_EC_KEY(const EVP_PKEY *pkey);
 /// ```
-final EVP_PKEY_set1_RSA = lookup('EVP_PKEY_set1_RSA')
+final EVP_PKEY_set1_RSA = resolve(Sym.EVP_PKEY_set1_RSA)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY>, Pointer<RSA>)>()
     .asFunction<int Function(Pointer<EVP_PKEY>, Pointer<RSA>)>();
 
-final EVP_PKEY_get0_RSA = lookup('EVP_PKEY_get0_RSA')
+final EVP_PKEY_get0_RSA = resolve(Sym.EVP_PKEY_get0_RSA)
     .lookupFunc<Pointer<RSA> Function(Pointer<EVP_PKEY>)>()
     .asFunction<Pointer<RSA> Function(Pointer<EVP_PKEY>)>();
 
-final EVP_PKEY_set1_EC_KEY = lookup('EVP_PKEY_set1_EC_KEY')
+final EVP_PKEY_set1_EC_KEY = resolve(Sym.EVP_PKEY_set1_EC_KEY)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY>, Pointer<EC_KEY>)>()
     .asFunction<int Function(Pointer<EVP_PKEY>, Pointer<EC_KEY>)>();
 
-final EVP_PKEY_get0_EC_KEY = lookup('EVP_PKEY_get0_EC_KEY')
+final EVP_PKEY_get0_EC_KEY = resolve(Sym.EVP_PKEY_get0_EC_KEY)
     .lookupFunc<Pointer<EC_KEY> Function(Pointer<EVP_PKEY>)>()
     .asFunction<Pointer<EC_KEY> Function(Pointer<EVP_PKEY>)>();
 
@@ -117,7 +120,7 @@ const int EVP_PKEY_RSA = 6,
 /// ```c
 /// OPENSSL_EXPORT int EVP_PKEY_set_type(EVP_PKEY *pkey, int type);
 /// ```
-final EVP_PKEY_set_type = lookup('EVP_PKEY_set_type')
+final EVP_PKEY_set_type = resolve(Sym.EVP_PKEY_set_type)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY>, Int32)>()
     .asFunction<int Function(Pointer<EVP_PKEY>, int)>();
 
@@ -135,7 +138,7 @@ final EVP_PKEY_set_type = lookup('EVP_PKEY_set_type')
 /// ```c
 /// EVP_PKEY *EVP_parse_public_key(CBS *cbs);
 /// ```
-final EVP_parse_public_key = lookup('EVP_parse_public_key')
+final EVP_parse_public_key = resolve(Sym.EVP_parse_public_key)
     .lookupFunc<Pointer<EVP_PKEY> Function(Pointer<CBS>)>()
     .asFunction<Pointer<EVP_PKEY> Function(Pointer<CBS>)>();
 
@@ -146,7 +149,7 @@ final EVP_parse_public_key = lookup('EVP_parse_public_key')
 /// ```c
 /// int EVP_marshal_public_key(CBB *cbb, const EVP_PKEY *key);
 /// ```
-final EVP_marshal_public_key = lookup('EVP_marshal_public_key')
+final EVP_marshal_public_key = resolve(Sym.EVP_marshal_public_key)
     .lookupFunc<Int32 Function(Pointer<CBB>, Pointer<EVP_PKEY>)>()
     .asFunction<int Function(Pointer<CBB>, Pointer<EVP_PKEY>)>();
 
@@ -165,7 +168,7 @@ final EVP_marshal_public_key = lookup('EVP_marshal_public_key')
 /// ```c
 /// EVP_PKEY *EVP_parse_private_key(CBS *cbs);
 /// ```
-final EVP_parse_private_key = lookup('EVP_parse_private_key')
+final EVP_parse_private_key = resolve(Sym.EVP_parse_private_key)
     .lookupFunc<Pointer<EVP_PKEY> Function(Pointer<CBS>)>()
     .asFunction<Pointer<EVP_PKEY> Function(Pointer<CBS>)>();
 
@@ -176,7 +179,7 @@ final EVP_parse_private_key = lookup('EVP_parse_private_key')
 /// ```c
 /// int EVP_marshal_private_key(CBB *cbb, const EVP_PKEY *key);
 /// ```
-final EVP_marshal_private_key = lookup('EVP_marshal_private_key')
+final EVP_marshal_private_key = resolve(Sym.EVP_marshal_private_key)
     .lookupFunc<Int32 Function(Pointer<CBB>, Pointer<EVP_PKEY>)>()
     .asFunction<int Function(Pointer<CBB>, Pointer<EVP_PKEY>)>();
 
@@ -200,7 +203,7 @@ final EVP_marshal_private_key = lookup('EVP_marshal_private_key')
 ///                                       const EVP_MD *type, ENGINE *e,
 ///                                       EVP_PKEY *pkey);
 /// ```
-final EVP_DigestSignInit = lookup('EVP_DigestSignInit')
+final EVP_DigestSignInit = resolve(Sym.EVP_DigestSignInit)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_MD_CTX>,
@@ -229,7 +232,7 @@ final EVP_DigestSignInit = lookup('EVP_DigestSignInit')
 /// int EVP_DigestSignUpdate(EVP_MD_CTX *ctx, const void *data,
 ///                                         size_t len);
 /// ```
-final EVP_DigestSignUpdate = lookup('EVP_DigestSignUpdate')
+final EVP_DigestSignUpdate = resolve(Sym.EVP_DigestSignUpdate)
     .lookupFunc<Int32 Function(Pointer<EVP_MD_CTX>, Pointer<Data>, IntPtr)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>, Pointer<Data>, int)>();
 
@@ -249,7 +252,7 @@ final EVP_DigestSignUpdate = lookup('EVP_DigestSignUpdate')
 /// int EVP_DigestSignFinal(EVP_MD_CTX *ctx, uint8_t *out_sig,
 ///                                        size_t *out_sig_len);
 /// ```
-final EVP_DigestSignFinal = lookup('EVP_DigestSignFinal')
+final EVP_DigestSignFinal = resolve(Sym.EVP_DigestSignFinal)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_MD_CTX>,
@@ -285,7 +288,7 @@ final EVP_DigestSignFinal = lookup('EVP_DigestSignFinal')
 ///                                         const EVP_MD *type, ENGINE *e,
 ///                                         EVP_PKEY *pkey);
 /// ```
-final EVP_DigestVerifyInit = lookup('EVP_DigestVerifyInit')
+final EVP_DigestVerifyInit = resolve(Sym.EVP_DigestVerifyInit)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_MD_CTX>,
@@ -314,7 +317,7 @@ final EVP_DigestVerifyInit = lookup('EVP_DigestVerifyInit')
 /// int EVP_DigestVerifyUpdate(EVP_MD_CTX *ctx, const void *data,
 ///                                           size_t len);
 /// ```
-final EVP_DigestVerifyUpdate = lookup('EVP_DigestVerifyUpdate')
+final EVP_DigestVerifyUpdate = resolve(Sym.EVP_DigestVerifyUpdate)
     .lookupFunc<Int32 Function(Pointer<EVP_MD_CTX>, Pointer<Data>, IntPtr)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>, Pointer<Data>, int)>();
 
@@ -330,7 +333,7 @@ final EVP_DigestVerifyUpdate = lookup('EVP_DigestVerifyUpdate')
 /// int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const uint8_t *sig,
 ///                                          size_t sig_len);
 /// ```
-final EVP_DigestVerifyFinal = lookup('EVP_DigestVerifyFinal')
+final EVP_DigestVerifyFinal = resolve(Sym.EVP_DigestVerifyFinal)
     .lookupFunc<Int32 Function(Pointer<EVP_MD_CTX>, Pointer<Bytes>, IntPtr)>()
     .asFunction<int Function(Pointer<EVP_MD_CTX>, Pointer<Bytes>, int)>();
 
@@ -349,7 +352,7 @@ final EVP_DigestVerifyFinal = lookup('EVP_DigestVerifyFinal')
 ///                                      unsigned iterations, const EVP_MD *digest,
 ///                                      size_t key_len, uint8_t *out_key);
 /// ```
-final PKCS5_PBKDF2_HMAC = lookup('PKCS5_PBKDF2_HMAC')
+final PKCS5_PBKDF2_HMAC = resolve(Sym.PKCS5_PBKDF2_HMAC)
     .lookupFunc<
         Int32 Function(
       Pointer<Int8>,
@@ -381,7 +384,7 @@ final PKCS5_PBKDF2_HMAC = lookup('PKCS5_PBKDF2_HMAC')
 /// ```c
 /// OPENSSL_EXPORT EVP_PKEY_CTX *EVP_PKEY_CTX_new(EVP_PKEY *pkey, ENGINE *e);
 /// ```
-final EVP_PKEY_CTX_new = lookup('EVP_PKEY_CTX_new')
+final EVP_PKEY_CTX_new = resolve(Sym.EVP_PKEY_CTX_new)
     .lookupFunc<
         Pointer<EVP_PKEY_CTX> Function(Pointer<EVP_PKEY>, Pointer<ENGINE>)>()
     .asFunction<
@@ -392,7 +395,7 @@ final EVP_PKEY_CTX_new = lookup('EVP_PKEY_CTX_new')
 /// ```c
 /// OPENSSL_EXPORT void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx);
 /// ```
-final EVP_PKEY_CTX_free = lookup('EVP_PKEY_CTX_free')
+final EVP_PKEY_CTX_free = resolve(Sym.EVP_PKEY_CTX_free)
     .lookupFunc<Void Function(Pointer<EVP_PKEY_CTX>)>()
     .asFunction<void Function(Pointer<EVP_PKEY_CTX>)>();
 
@@ -403,7 +406,7 @@ final EVP_PKEY_CTX_free = lookup('EVP_PKEY_CTX_free')
 /// ```c
 /// OPENSSL_EXPORT int EVP_PKEY_encrypt_init(EVP_PKEY_CTX *ctx);
 /// ```
-final EVP_PKEY_encrypt_init = lookup('EVP_PKEY_encrypt_init')
+final EVP_PKEY_encrypt_init = resolve(Sym.EVP_PKEY_encrypt_init)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>)>()
     .asFunction<int Function(Pointer<EVP_PKEY_CTX>)>();
 
@@ -418,7 +421,7 @@ final EVP_PKEY_encrypt_init = lookup('EVP_PKEY_encrypt_init')
 ///                                     size_t *out_len, const uint8_t *in,
 ///                                     size_t in_len);
 /// ```
-final EVP_PKEY_encrypt = lookup('EVP_PKEY_encrypt')
+final EVP_PKEY_encrypt = resolve(Sym.EVP_PKEY_encrypt)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_PKEY_CTX>,
@@ -444,7 +447,7 @@ final EVP_PKEY_encrypt = lookup('EVP_PKEY_encrypt')
 /// ```c
 /// OPENSSL_EXPORT int EVP_PKEY_decrypt_init(EVP_PKEY_CTX *ctx);
 /// ```
-final EVP_PKEY_decrypt_init = lookup('EVP_PKEY_decrypt_init')
+final EVP_PKEY_decrypt_init = resolve(Sym.EVP_PKEY_decrypt_init)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>)>()
     .asFunction<int Function(Pointer<EVP_PKEY_CTX>)>();
 
@@ -463,7 +466,7 @@ final EVP_PKEY_decrypt_init = lookup('EVP_PKEY_decrypt_init')
 ///                                     size_t *out_len, const uint8_t *in,
 ///                                     size_t in_len);
 /// ```
-final EVP_PKEY_decrypt = lookup('EVP_PKEY_decrypt')
+final EVP_PKEY_decrypt = resolve(Sym.EVP_PKEY_decrypt)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_PKEY_CTX>,
@@ -489,7 +492,7 @@ final EVP_PKEY_decrypt = lookup('EVP_PKEY_decrypt')
 /// ```c
 /// OPENSSL_EXPORT int EVP_PKEY_CTX_set_rsa_padding(EVP_PKEY_CTX *ctx, int padding);
 /// ```
-final EVP_PKEY_CTX_set_rsa_padding = lookup('EVP_PKEY_CTX_set_rsa_padding')
+final EVP_PKEY_CTX_set_rsa_padding = resolve(Sym.EVP_PKEY_CTX_set_rsa_padding)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Int32)>()
     .asFunction<int Function(Pointer<EVP_PKEY_CTX>, int)>();
 
@@ -507,7 +510,7 @@ final EVP_PKEY_CTX_set_rsa_padding = lookup('EVP_PKEY_CTX_set_rsa_padding')
 ///                                                     int salt_len);
 /// ```
 final EVP_PKEY_CTX_set_rsa_pss_saltlen =
-    lookup('EVP_PKEY_CTX_set_rsa_pss_saltlen')
+    resolve(Sym.EVP_PKEY_CTX_set_rsa_pss_saltlen)
         .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Int32)>()
         .asFunction<int Function(Pointer<EVP_PKEY_CTX>, int)>();
 
@@ -518,7 +521,7 @@ final EVP_PKEY_CTX_set_rsa_pss_saltlen =
 /// OPENSSL_EXPORT int EVP_PKEY_CTX_set_rsa_oaep_md(EVP_PKEY_CTX *ctx,
 ///                                                 const EVP_MD *md);
 /// ```
-final EVP_PKEY_CTX_set_rsa_oaep_md = lookup('EVP_PKEY_CTX_set_rsa_oaep_md')
+final EVP_PKEY_CTX_set_rsa_oaep_md = resolve(Sym.EVP_PKEY_CTX_set_rsa_oaep_md)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>()
     .asFunction<int Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>();
 
@@ -529,7 +532,7 @@ final EVP_PKEY_CTX_set_rsa_oaep_md = lookup('EVP_PKEY_CTX_set_rsa_oaep_md')
 /// OPENSSL_EXPORT int EVP_PKEY_CTX_set_rsa_mgf1_md(EVP_PKEY_CTX *ctx,
 ///                                                 const EVP_MD *md);
 /// ```
-final EVP_PKEY_CTX_set_rsa_mgf1_md = lookup('EVP_PKEY_CTX_set_rsa_mgf1_md')
+final EVP_PKEY_CTX_set_rsa_mgf1_md = resolve(Sym.EVP_PKEY_CTX_set_rsa_mgf1_md)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>()
     .asFunction<int Function(Pointer<EVP_PKEY_CTX>, Pointer<EVP_MD>)>();
 
@@ -544,7 +547,8 @@ final EVP_PKEY_CTX_set_rsa_mgf1_md = lookup('EVP_PKEY_CTX_set_rsa_mgf1_md')
 ///                                                     uint8_t *label,
 ///                                                     size_t label_len);
 /// ```
-final EVP_PKEY_CTX_set0_rsa_oaep_label = lookup(
-        'EVP_PKEY_CTX_set0_rsa_oaep_label')
+final EVP_PKEY_CTX_set0_rsa_oaep_label = resolve(
+  Sym.EVP_PKEY_CTX_set0_rsa_oaep_label,
+)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY_CTX>, Pointer<Bytes>, IntPtr)>()
     .asFunction<int Function(Pointer<EVP_PKEY_CTX>, Pointer<Bytes>, int)>();

@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/ec.h.html
+library ecdh;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/ec.h.html
+import 'lookup/lookup.dart';
 
 //---------------------- Elliptic curve Diffie-Hellman.
 
@@ -15,7 +18,7 @@ import 'helpers.dart';
 ///     void *(*kdf)(const void *in, size_t inlen, void *out, size_t *outlen));
 /// ```
 ///
-final ECDH_compute_key = lookup('ECDH_compute_key')
+final ECDH_compute_key = resolve(Sym.ECDH_compute_key)
     .lookupFunc<
         Int32 Function(
       Pointer<Data>,

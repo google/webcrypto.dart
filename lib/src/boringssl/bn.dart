@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/bn.h.html
+library bn;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/bn.h.html
+import 'lookup/lookup.dart';
 
 // On 64bit we have.
 // #define BN_ULONG uint64_t
@@ -16,7 +19,7 @@ import 'helpers.dart';
 /// ```c
 /// BIGNUM *BN_new(void);
 /// ```
-final BN_new = lookup('BN_new')
+final BN_new = resolve(Sym.BN_new)
     .lookupFunc<Pointer<BIGNUM> Function()>()
     .asFunction<Pointer<BIGNUM> Function()>();
 
@@ -26,7 +29,7 @@ final BN_new = lookup('BN_new')
 /// ```c
 /// void BN_free(BIGNUM *bn);
 /// ```
-final BN_free = lookup('BN_free')
+final BN_free = resolve(Sym.BN_free)
     .lookupFunc<Void Function(Pointer<BIGNUM>)>()
     .asFunction<void Function(Pointer<BIGNUM>)>();
 
@@ -35,7 +38,7 @@ final BN_free = lookup('BN_free')
 /// ```c
 /// OPENSSL_EXPORT const BIGNUM *BN_value_one(void);
 /// ```
-final BN_value_one = lookup('BN_value_one')
+final BN_value_one = resolve(Sym.BN_value_one)
     .lookupFunc<Pointer<BIGNUM> Function()>()
     .asFunction<Pointer<BIGNUM> Function()>();
 
@@ -47,7 +50,7 @@ final BN_value_one = lookup('BN_value_one')
 /// ```c
 /// OPENSSL_EXPORT unsigned BN_num_bytes(const BIGNUM *bn);
 /// ```
-final BN_num_bytes = lookup('BN_num_bytes')
+final BN_num_bytes = resolve(Sym.BN_num_bytes)
     .lookupFunc<Uint32 Function(Pointer<BIGNUM>)>()
     .asFunction<int Function(Pointer<BIGNUM>)>();
 
@@ -57,7 +60,7 @@ final BN_num_bytes = lookup('BN_num_bytes')
 /// ```c
 /// int BN_set_word(BIGNUM *bn, BN_ULONG value);
 /// ```
-final BN_set_word = lookup('BN_set_word')
+final BN_set_word = resolve(Sym.BN_set_word)
     .lookupFunc<Int32 Function(Pointer<BIGNUM>, Uint64)>()
     .asFunction<int Function(Pointer<BIGNUM>, int)>();
 // TODO: Solve that int doesn't match Uint64, probably need to try BigInt
@@ -71,7 +74,7 @@ final BN_set_word = lookup('BN_set_word')
 /// ```c
 /// OPENSSL_EXPORT BIGNUM *BN_bin2bn(const uint8_t *in, size_t len, BIGNUM *ret);
 /// ```
-final BN_bin2bn = lookup('BN_bin2bn')
+final BN_bin2bn = resolve(Sym.BN_bin2bn)
     .lookupFunc<
         Pointer<BIGNUM> Function(Pointer<Bytes>, IntPtr, Pointer<BIGNUM>)>()
     .asFunction<
@@ -85,29 +88,31 @@ final BN_bin2bn = lookup('BN_bin2bn')
 /// ```c
 /// OPENSSL_EXPORT int BN_bn2bin_padded(uint8_t *out, size_t len, const BIGNUM *in);
 /// ```
-final BN_bn2bin_padded = lookup('BN_bn2bin_padded')
+final BN_bn2bin_padded = resolve(Sym.BN_bn2bin_padded)
     .lookupFunc<Int32 Function(Pointer<Bytes>, IntPtr, Pointer<BIGNUM>)>()
     .asFunction<int Function(Pointer<Bytes>, int, Pointer<BIGNUM>)>();
 
 //---------------------- Simple arithmetic
 
-/// BN_add sets r = a + b, where r may be the same pointer as either a or b. It returns one on success and zero on allocation failure.
+/// BN_add sets r = a + b, where r may be the same pointer as either a or b.
+/// It returns one on success and zero on allocation failure.
 ///
 /// ```c
 /// OPENSSL_EXPORT int BN_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 /// ```
-final BN_add = lookup('BN_add')
+final BN_add = resolve(Sym.BN_add)
     .lookupFunc<
         Int32 Function(Pointer<BIGNUM>, Pointer<BIGNUM>, Pointer<BIGNUM>)>()
     .asFunction<
         int Function(Pointer<BIGNUM>, Pointer<BIGNUM>, Pointer<BIGNUM>)>();
 
-/// BN_sub sets r = a - b, where r may be the same pointer as either a or b. It returns one on success and zero on allocation failure.
+/// BN_sub sets r = a - b, where r may be the same pointer as either a or b.
+/// It returns one on success and zero on allocation failure.
 ///
 /// ```c
 /// OPENSSL_EXPORT int BN_sub(BIGNUM *r, const BIGNUM *a, const BIGNUM *b);
 /// ```
-final BN_sub = lookup('BN_sub')
+final BN_sub = resolve(Sym.BN_sub)
     .lookupFunc<
         Int32 Function(Pointer<BIGNUM>, Pointer<BIGNUM>, Pointer<BIGNUM>)>()
     .asFunction<
@@ -121,17 +126,18 @@ final BN_sub = lookup('BN_sub')
 /// ```c
 /// OPENSSL_EXPORT int BN_cmp(const BIGNUM *a, const BIGNUM *b);
 /// ```
-final BN_cmp = lookup('BN_cmp')
+final BN_cmp = resolve(Sym.BN_cmp)
     .lookupFunc<Int32 Function(Pointer<BIGNUM>, Pointer<BIGNUM>)>()
     .asFunction<int Function(Pointer<BIGNUM>, Pointer<BIGNUM>)>();
 
 //---------------------- Bitwise operations.
 
-/// BN_lshift sets r equal to a << n. The a and r arguments may be the same BIGNUM. It returns one on success and zero on allocation failure.
+/// BN_lshift sets r equal to a << n. The a and r arguments may be the same
+/// BIGNUM. It returns one on success and zero on allocation failure.
 ///
 /// ```c
 /// OPENSSL_EXPORT int BN_lshift(BIGNUM *r, const BIGNUM *a, int n);
 /// ```
-final BN_lshift = lookup('BN_lshift')
+final BN_lshift = resolve(Sym.BN_lshift)
     .lookupFunc<Int32 Function(Pointer<BIGNUM>, Pointer<BIGNUM>, Int32)>()
     .asFunction<int Function(Pointer<BIGNUM>, Pointer<BIGNUM>, int)>();

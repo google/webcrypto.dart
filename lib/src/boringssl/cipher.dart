@@ -1,10 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+/// This library maps symbols from:
+/// https://commondatastorage.googleapis.com/chromium-boringssl-docs/cipher.h.html
+library cipher;
+
 import 'dart:ffi';
 import 'types.dart';
-import 'helpers.dart';
-import 'bytestring.dart';
-
-// See:
-// https://commondatastorage.googleapis.com/chromium-boringssl-docs/cipher.h.html
+import 'lookup/lookup.dart';
 
 //---------------------- Cipher primitives.
 
@@ -29,16 +31,16 @@ import 'bytestring.dart';
 /// OPENSSL_EXPORT const EVP_CIPHER *EVP_aes_256_ofb(void);
 /// OPENSSL_EXPORT const EVP_CIPHER *EVP_aes_256_xts(void);
 /// ```
-final EVP_aes_128_cbc = lookup('EVP_aes_128_cbc')
+final EVP_aes_128_cbc = resolve(Sym.EVP_aes_128_cbc)
     .lookupFunc<Pointer<EVP_CIPHER> Function()>()
     .asFunction<Pointer<EVP_CIPHER> Function()>();
-final EVP_aes_128_ctr = lookup('EVP_aes_128_ctr')
+final EVP_aes_128_ctr = resolve(Sym.EVP_aes_128_ctr)
     .lookupFunc<Pointer<EVP_CIPHER> Function()>()
     .asFunction<Pointer<EVP_CIPHER> Function()>();
-final EVP_aes_256_cbc = lookup('EVP_aes_256_cbc')
+final EVP_aes_256_cbc = resolve(Sym.EVP_aes_256_cbc)
     .lookupFunc<Pointer<EVP_CIPHER> Function()>()
     .asFunction<Pointer<EVP_CIPHER> Function()>();
-final EVP_aes_256_ctr = lookup('EVP_aes_256_ctr')
+final EVP_aes_256_ctr = resolve(Sym.EVP_aes_256_ctr)
     .lookupFunc<Pointer<EVP_CIPHER> Function()>()
     .asFunction<Pointer<EVP_CIPHER> Function()>();
 
@@ -50,7 +52,7 @@ final EVP_aes_256_ctr = lookup('EVP_aes_256_ctr')
 /// ```c
 /// OPENSSL_EXPORT EVP_CIPHER_CTX *EVP_CIPHER_CTX_new(void);
 /// ```
-final EVP_CIPHER_CTX_new = lookup('EVP_CIPHER_CTX_new')
+final EVP_CIPHER_CTX_new = resolve(Sym.EVP_CIPHER_CTX_new)
     .lookupFunc<Pointer<EVP_CIPHER_CTX> Function()>()
     .asFunction<Pointer<EVP_CIPHER_CTX> Function()>();
 
@@ -59,7 +61,7 @@ final EVP_CIPHER_CTX_new = lookup('EVP_CIPHER_CTX_new')
 /// ```c
 /// OPENSSL_EXPORT void EVP_CIPHER_CTX_free(EVP_CIPHER_CTX *ctx);
 /// ```
-final EVP_CIPHER_CTX_free = lookup('EVP_CIPHER_CTX_free')
+final EVP_CIPHER_CTX_free = resolve(Sym.EVP_CIPHER_CTX_free)
     .lookupFunc<Void Function(Pointer<EVP_CIPHER_CTX>)>()
     .asFunction<void Function(Pointer<EVP_CIPHER_CTX>)>();
 
@@ -79,7 +81,7 @@ final EVP_CIPHER_CTX_free = lookup('EVP_CIPHER_CTX_free')
 ///                                      const uint8_t *key, const uint8_t *iv,
 ///                                      int enc);
 /// ```
-final EVP_CipherInit_ex = lookup('EVP_CipherInit_ex')
+final EVP_CipherInit_ex = resolve(Sym.EVP_CipherInit_ex)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_CIPHER_CTX>,
@@ -109,7 +111,7 @@ final EVP_CipherInit_ex = lookup('EVP_CipherInit_ex')
 ///                                     int *out_len, const uint8_t *in,
 ///                                     int in_len);
 /// ```
-final EVP_CipherUpdate = lookup('EVP_CipherUpdate')
+final EVP_CipherUpdate = resolve(Sym.EVP_CipherUpdate)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_CIPHER_CTX>,
@@ -134,7 +136,7 @@ final EVP_CipherUpdate = lookup('EVP_CipherUpdate')
 /// OPENSSL_EXPORT int EVP_CipherFinal_ex(EVP_CIPHER_CTX *ctx, uint8_t *out,
 ///                                       int *out_len);
 /// ```
-final EVP_CipherFinal_ex = lookup('EVP_CipherFinal_ex')
+final EVP_CipherFinal_ex = resolve(Sym.EVP_CipherFinal_ex)
     .lookupFunc<
         Int32 Function(
       Pointer<EVP_CIPHER_CTX>,
@@ -156,7 +158,7 @@ final EVP_CipherFinal_ex = lookup('EVP_CipherFinal_ex')
 /// ```c
 /// OPENSSL_EXPORT unsigned EVP_CIPHER_block_size(const EVP_CIPHER *cipher);
 /// ```
-final EVP_CIPHER_block_size = lookup('EVP_CIPHER_block_size')
+final EVP_CIPHER_block_size = resolve(Sym.EVP_CIPHER_block_size)
     .lookupFunc<Uint32 Function(Pointer<EVP_CIPHER>)>()
     .asFunction<int Function(Pointer<EVP_CIPHER>)>();
 
@@ -166,6 +168,6 @@ final EVP_CIPHER_block_size = lookup('EVP_CIPHER_block_size')
 /// ```c
 /// OPENSSL_EXPORT unsigned EVP_CIPHER_iv_length(const EVP_CIPHER *cipher);
 /// ```
-final EVP_CIPHER_iv_length = lookup('EVP_CIPHER_iv_length')
+final EVP_CIPHER_iv_length = resolve(Sym.EVP_CIPHER_iv_length)
     .lookupFunc<Uint32 Function(Pointer<EVP_CIPHER>)>()
     .asFunction<int Function(Pointer<EVP_CIPHER>)>();
