@@ -1,4 +1,4 @@
-package com.example.flutter_webcrypto_plugin
+package com.example.webcrypto
 
 import androidx.annotation.NonNull;
 
@@ -9,8 +9,8 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-/** FlutterWebcryptoPlugin */
-public class FlutterWebcryptoPlugin: FlutterPlugin, MethodCallHandler {
+/** WebcryptoPlugin */
+public class WebcryptoPlugin: FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -18,7 +18,7 @@ public class FlutterWebcryptoPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "flutter_webcrypto_plugin")
+    channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "webcrypto")
     channel.setMethodCallHandler(this);
   }
 
@@ -34,8 +34,8 @@ public class FlutterWebcryptoPlugin: FlutterPlugin, MethodCallHandler {
   companion object {
     @JvmStatic
     fun registerWith(registrar: Registrar) {
-      val channel = MethodChannel(registrar.messenger(), "flutter_webcrypto_plugin")
-      channel.setMethodCallHandler(FlutterWebcryptoPlugin())
+      val channel = MethodChannel(registrar.messenger(), "webcrypto")
+      channel.setMethodCallHandler(WebcryptoPlugin())
     }
   }
 
