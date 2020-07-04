@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 
-import 'package:test/test.dart';
+import 'package:test/test.dart' show test;
 import 'package:meta/meta.dart';
 import 'package:webcrypto/webcrypto.dart';
 import 'ffibonacci_chunked_stream.dart';
@@ -122,9 +122,6 @@ class _TestCase {
     }..removeWhere((_, v) => v == null);
   }
 }
-
-/// Test function compatible with `package:test/test.dart`.
-typedef TestFn = void Function(String name, FutureOr<void> Function() fn);
 
 /// Function for importing pkcs8, spki, or raw key.
 typedef ImportKeyFn<T> = Future<T> Function(

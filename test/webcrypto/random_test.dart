@@ -11,55 +11,56 @@ void isNotAllZero(TypedData data) {
   check(data.buffer.asUint8List().any((b) => b != 0));
 }
 
-void main() {
-  group('fillRandomBytes', () {
-    test('Uint8List', () {
-      final data = Uint8List(16 * 1024);
-      isAllZero(data);
-      fillRandomBytes(data);
-      isNotAllZero(data);
-    });
+void main() => runTests();
 
-    test('Uint16List', () {
-      final data = Uint16List(4 * 1024);
-      isAllZero(data);
-      fillRandomBytes(data);
-      isNotAllZero(data);
-    });
+/// Run all tests, exported for use in `../run_all_tests.dart`.
+void runTests({TestFn test = test}) {
+  test('fillRandomBytes: Uint8List', () {
+    final data = Uint8List(16 * 1024);
+    isAllZero(data);
+    fillRandomBytes(data);
+    isNotAllZero(data);
+  });
 
-    test('Uint32List', () {
-      final data = Uint32List(2 * 1024);
-      isAllZero(data);
-      fillRandomBytes(data);
-      isNotAllZero(data);
-    });
+  test('fillRandomBytes: Uint16List', () {
+    final data = Uint16List(4 * 1024);
+    isAllZero(data);
+    fillRandomBytes(data);
+    isNotAllZero(data);
+  });
 
-    test('Int8List', () {
-      final data = Int8List(16 * 1024);
-      isAllZero(data);
-      fillRandomBytes(data);
-      isNotAllZero(data);
-    });
+  test('fillRandomBytes: Uint32List', () {
+    final data = Uint32List(2 * 1024);
+    isAllZero(data);
+    fillRandomBytes(data);
+    isNotAllZero(data);
+  });
 
-    test('Int16List', () {
-      final data = Int16List(4 * 1024);
-      isAllZero(data);
-      fillRandomBytes(data);
-      isNotAllZero(data);
-    });
+  test('fillRandomBytes: Int8List', () {
+    final data = Int8List(16 * 1024);
+    isAllZero(data);
+    fillRandomBytes(data);
+    isNotAllZero(data);
+  });
 
-    test('Int32List', () {
-      final data = Int32List(2 * 1024);
-      isAllZero(data);
-      fillRandomBytes(data);
-      isNotAllZero(data);
-    });
+  test('fillRandomBytes: Int16List', () {
+    final data = Int16List(4 * 1024);
+    isAllZero(data);
+    fillRandomBytes(data);
+    isNotAllZero(data);
+  });
 
-    test('Maximum buffer', () {
-      final data = Uint8List(64 * 1024);
-      isAllZero(data);
-      fillRandomBytes(data);
-      isNotAllZero(data);
-    });
+  test('fillRandomBytes: Int32List', () {
+    final data = Int32List(2 * 1024);
+    isAllZero(data);
+    fillRandomBytes(data);
+    isNotAllZero(data);
+  });
+
+  test('fillRandomBytes: Maximum buffer', () {
+    final data = Uint8List(64 * 1024);
+    isAllZero(data);
+    fillRandomBytes(data);
+    isNotAllZero(data);
   });
 }

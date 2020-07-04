@@ -4,25 +4,20 @@ import 'dart:convert';
 import 'package:webcrypto/webcrypto.dart';
 import 'package:test/test.dart' as t;
 
+/// Log [value] from tests.
 void log(Object value) => print(value);
 
+/// Check if [condition] hold.
 void check(bool condition, [String message = 'check failed']) {
   if (!condition) {
     t.fail(message);
   }
 }
 
-/*
-void group(String name, void Function() fn) {
-  t.group(name, fn);
-}
+/// Test function compatible with `package:test/test.dart`.
+typedef TestFn = void Function(String name, FutureOr<void> Function() fn);
 
-void test(String name, FutureOr Function() fn) {
-  t.test(name, () async {
-    await checkErrorStack(fn);
-  });
-}*/
-
+/// Compare if two byte arrays are equal.
 bool equalBytes(List<int> a, List<int> b) => base64Encode(a) == base64Encode(b);
 
 /// Convert [Stream<List<int>>] to [Uint8List].
