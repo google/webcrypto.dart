@@ -1,17 +1,20 @@
-@TestOn('!firefox') // Firefox doesn't support pkcs8 import/export for ECDSA.
-library ecdsa_test;
-
+import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils.dart';
 import '../testrunner.dart';
-import 'package:test/test.dart' show TestOn;
+import '../detected_runtime.dart';
 
 final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
+  algorithm: 'ECDSA',
   importPrivateRawKey: null, // not supported
   exportPrivateRawKey: null,
-  importPrivatePkcs8Key: (keyData, keyImportParams) =>
-      EcdsaPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams)),
-  exportPrivatePkcs8Key: (key) => key.exportPkcs8Key(),
+  // HACK: PKCS8 is not support for ECDH / ECDSA on firefox:
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1133698
+  //
+  // So filter away PKCS8 test data and functions when running on gecko.
+  importPrivatePkcs8Key: nullOnGecko((keyData, keyImportParams) =>
+      EcdsaPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams))),
+  exportPrivatePkcs8Key: nullOnGecko((key) => key.exportPkcs8Key()),
   importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdsaPrivateKey.importJsonWebKey(
           jsonWebKeyData, curveFromJson(keyImportParams)),
@@ -37,6 +40,10 @@ final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
       key.verifyBytes(signature, data, hashFromJson(verifyParams)),
   verifyStream: (key, signature, data, verifyParams) =>
       key.verifyStream(signature, data, hashFromJson(verifyParams)),
+  testData: _testData.map((c) => {
+        ...c,
+        'privatePkcs8KeyData': nullOnGecko(c['privatePkcs8KeyData']),
+      }),
 );
 
 void main() {
@@ -50,11 +57,10 @@ void main() {
   });
 
   // TODO: Test more curves and hashes
-  runner.runAll(testCases);
+  runner.runTests();
 }
 
-// Exported for use in ecdsa_no_pkcs8_test.dart
-final testCases = [
+final _testData = [
   {
     "name": "test key generation",
     "generateKeyParams": {"curve": "p-256"},

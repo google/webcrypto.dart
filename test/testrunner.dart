@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 
+import 'package:test/test.dart';
 import 'package:meta/meta.dart';
 import 'package:webcrypto/webcrypto.dart';
 import 'ffibonacci_chunked_stream.dart';
 import 'utils.dart';
 import 'lipsum.dart';
+import 'err_stack_stub.dart' if (dart.library.ffi) 'err_stack_ffi.dart';
 
 List<int> _optionalBase64Decode(dynamic data) =>
     data == null ? null : base64.decode(data as String);
@@ -18,7 +20,7 @@ String _optionalBase64Encode(List<int> data) =>
     data == null ? null : base64.encode(data);
 
 @sealed
-class TestCase {
+class _TestCase {
   final String name;
 
   // Obtain a keyPair from import or key generation
@@ -53,7 +55,7 @@ class TestCase {
   // Parameters for deriveBits (required, if there is a derivedBits)
   final Map<String, dynamic> deriveParams;
 
-  TestCase(
+  _TestCase(
     this.name, {
     this.generateKeyParams,
     this.privateRawKeyData,
@@ -73,8 +75,8 @@ class TestCase {
     this.deriveParams,
   });
 
-  factory TestCase.fromJson(Map json) {
-    return TestCase(
+  factory _TestCase.fromJson(Map json) {
+    return _TestCase(
       json['name'] as String,
       generateKeyParams: _optionalStringMapDecode(json['generateKeyParams']),
       privateRawKeyData: _optionalBase64Decode(json['privateRawKeyData']),
@@ -120,6 +122,9 @@ class TestCase {
     }..removeWhere((_, v) => v == null);
   }
 }
+
+/// Test function compatible with `package:test/test.dart`.
+typedef TestFn = void Function(String name, FutureOr<void> Function() fn);
 
 /// Function for importing pkcs8, spki, or raw key.
 typedef ImportKeyFn<T> = Future<T> Function(
@@ -202,6 +207,8 @@ class _KeyPair<S, T> implements KeyPair<S, T> {
 
 @sealed
 class TestRunner<PrivateKey, PublicKey> {
+  final String algorithm;
+
   /// True, if private is a secret key and there is no public key.
   final bool _isSymmetric;
 
@@ -230,8 +237,11 @@ class TestRunner<PrivateKey, PublicKey> {
   final EncryptOrDecryptStreamFn<PrivateKey> _decryptStream;
   final DeriveBitsFn<KeyPair<PrivateKey, PublicKey>> _deriveBits;
 
+  final List<Map<dynamic, dynamic>> _testData;
+
   TestRunner._({
     @required bool isSymmetric,
+    @required this.algorithm,
     ImportKeyFn<PrivateKey> importPrivateRawKey,
     ExportKeyFn<PrivateKey> exportPrivateRawKey,
     ImportKeyFn<PrivateKey> importPrivatePkcs8Key,
@@ -254,6 +264,7 @@ class TestRunner<PrivateKey, PublicKey> {
     EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
     EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
     DeriveBitsFn<KeyPair<PrivateKey, PublicKey>> deriveBits,
+    Iterable<Map<dynamic, dynamic>> testData,
   })  : _isSymmetric = isSymmetric,
         _importPrivateRawKey = importPrivateRawKey,
         _exportPrivateRawKey = exportPrivateRawKey,
@@ -276,12 +287,14 @@ class TestRunner<PrivateKey, PublicKey> {
         _encryptStream = encryptStream,
         _decryptBytes = decryptBytes,
         _decryptStream = decryptStream,
-        _deriveBits = deriveBits {
+        _deriveBits = deriveBits,
+        _testData = List.from(testData ?? []) {
     _validate();
   }
 
   /// Create [TestRunner] for an asymmetric primitive.
   static TestRunner<PrivateKey, PublicKey> asymmetric<PrivateKey, PublicKey>({
+    @required String algorithm,
     ImportKeyFn<PrivateKey> importPrivateRawKey,
     ExportKeyFn<PrivateKey> exportPrivateRawKey,
     ImportKeyFn<PrivateKey> importPrivatePkcs8Key,
@@ -304,9 +317,11 @@ class TestRunner<PrivateKey, PublicKey> {
     EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
     EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
     DeriveBitsFn<KeyPair<PrivateKey, PublicKey>> deriveBits,
+    Iterable<Map<dynamic, dynamic>> testData,
   }) {
     return TestRunner._(
       isSymmetric: false,
+      algorithm: algorithm,
       importPrivateRawKey: importPrivateRawKey,
       exportPrivateRawKey: exportPrivateRawKey,
       importPrivatePkcs8Key: importPrivatePkcs8Key,
@@ -329,6 +344,7 @@ class TestRunner<PrivateKey, PublicKey> {
       decryptBytes: decryptBytes,
       decryptStream: decryptStream,
       deriveBits: deriveBits,
+      testData: testData,
     );
   }
 
@@ -338,6 +354,7 @@ class TestRunner<PrivateKey, PublicKey> {
   /// same type. This may give rise to a few unnecessary test cases as
   /// import/export of public and private key
   static TestRunner<PrivateKey, PrivateKey> symmetric<PrivateKey>({
+    @required String algorithm,
     ImportKeyFn<PrivateKey> importPrivateRawKey,
     ExportKeyFn<PrivateKey> exportPrivateRawKey,
     ImportKeyFn<PrivateKey> importPrivatePkcs8Key,
@@ -354,9 +371,11 @@ class TestRunner<PrivateKey, PublicKey> {
     EncryptOrDecryptBytesFn<PrivateKey> decryptBytes,
     EncryptOrDecryptStreamFn<PrivateKey> decryptStream,
     DeriveBitsFn<PrivateKey> deriveBits,
+    Iterable<Map<dynamic, dynamic>> testData,
   }) {
     return TestRunner._(
       isSymmetric: true,
+      algorithm: algorithm,
       importPrivateRawKey: importPrivateRawKey,
       exportPrivateRawKey: exportPrivateRawKey,
       importPrivatePkcs8Key: importPrivatePkcs8Key,
@@ -387,6 +406,7 @@ class TestRunner<PrivateKey, PublicKey> {
               check(equalBytes(a, b), 'expected both keys to derive the same');
               return a;
             },
+      testData: testData,
     );
   }
 
@@ -446,9 +466,20 @@ class TestRunner<PrivateKey, PublicKey> {
     check(
       (_importPublicJsonWebKey != null) == (_exportPublicJsonWebKey != null),
     );
+
+    // Check all test cases
+    for (final data in _testData) {
+      final c = _TestCase.fromJson(data);
+      try {
+        _validateTestCase(this, c);
+      } catch (e) {
+        log('Invalid test case: $c');
+        rethrow;
+      }
+    }
   }
 
-  Future<TestCase> generate({
+  Future<Map<String, dynamic>> generate({
     @required Map<String, dynamic> generateKeyParams,
     @required Map<String, dynamic> importKeyParams,
     Map<String, dynamic> signVerifyParams,
@@ -522,7 +553,7 @@ class TestRunner<PrivateKey, PublicKey> {
     }
 
     T optionalCall<S, T>(T Function(S) fn, S v) => fn != null ? fn(v) : null;
-    final c = TestCase(
+    final c = _TestCase(
       name,
       generateKeyParams: null, // omit generateKeyParams
       privateRawKeyData: await optionalCall(_exportPrivateRawKey, privateKey),
@@ -552,88 +583,104 @@ class TestRunner<PrivateKey, PublicKey> {
             .convert(c.toJson())
             .replaceAll('\n', '\n| '));
 
-    return c;
+    return c.toJson();
   }
 
-  void runAll(Iterable<Map<dynamic, dynamic>> cases) {
-    for (final c in cases) {
-      run(TestCase.fromJson(c));
+  /// Run tests for [testData] using the given [test] function.
+  ///
+  /// If no [testData] is given the `testData` given when the [TestRunner] was
+  /// created will be used.
+  ///
+  /// The [test] function must be compatible with `package:test/test.dart`.
+  void runTests({
+    TestFn test = test,
+    Iterable<Map<dynamic, dynamic>> testData,
+  }) {
+    testData ??= _testData;
+    for (final data in testData) {
+      final c = _TestCase.fromJson(data);
+
+      _runTests(this, c, (String name, FutureOr<void> Function() fn) {
+        // Prefix test names
+        test('$algorithm: ${c.name} -- $name', () async {
+          // Check BoringSSL error stack if running with dart:ffi
+          await checkErrorStack(fn);
+        });
+      });
     }
   }
+}
 
-  void run(TestCase c) {
-    group('${c.name}:', () => _runTests(this, c));
+/// Validate that the test case [c] is compatible with TestRunner [r].
+void _validateTestCase<PrivateKey, PublicKey>(
+  TestRunner<PrivateKey, PublicKey> r,
+  _TestCase c,
+) {
+  final hasPrivateKey = c.privateRawKeyData != null ||
+      c.privatePkcs8KeyData != null ||
+      c.privateJsonWebKeyData != null;
+  final hasPublicKey = c.publicRawKeyData != null ||
+      c.publicSpkiKeyData != null ||
+      c.publicJsonWebKeyData != null;
+
+  // Test that we have keys to import or generate some.
+  if (r._isSymmetric) {
+    check(!hasPublicKey);
+    check(
+      c.generateKeyParams != null || hasPrivateKey,
+      'A key must be generated or imported',
+    );
+  } else {
+    check(
+      c.generateKeyParams != null || (hasPrivateKey && hasPublicKey),
+      'A key-pair must be generated or imported',
+    );
   }
+
+  check(
+    c.generateKeyParams == null ||
+        (c.signature == null && c.ciphertext == null && c.derivedBits == null),
+    'Cannot verify signature/ciphertext/derivedBits for a generated key-pair',
+  );
+  check(
+    c.plaintext != null || (r._signBytes == null && r._encryptBytes == null),
+    'Cannot sign/encrypt without plaintext',
+  );
+  check(c.importKeyParams != null);
+  check((c.signVerifyParams != null) == (r._signBytes != null));
+  check((c.encryptDecryptParams != null) == (r._encryptBytes != null));
+  check((c.deriveParams != null) == (r._deriveBits != null));
+  if (c.signature != null) {
+    check(r._signBytes != null);
+  }
+  if (c.ciphertext != null) {
+    check(r._encryptBytes != null);
+  }
+  if (c.derivedBits != null) {
+    check(r._deriveBits != null);
+  }
+  if (r._deriveBits != null) {
+    check(c.derivedLength != null);
+  }
+
+  // Check that data matches the methods we have in the runner.
+  check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
+  check(r._importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
+  check(r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null);
+  check(r._importPublicRawKey != null || c.publicRawKeyData == null);
+  check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
+  check(r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
 }
 
 void _runTests<PrivateKey, PublicKey>(
   TestRunner<PrivateKey, PublicKey> r,
-  TestCase c,
+  _TestCase c,
+  void Function(String name, FutureOr Function() fn) test,
 ) {
-  // Validate that the test case [c] is compatible with TestRunner [r].
-  final validate = () {
-    final hasPrivateKey = c.privateRawKeyData != null ||
-        c.privatePkcs8KeyData != null ||
-        c.privateJsonWebKeyData != null;
-    final hasPublicKey = c.publicRawKeyData != null ||
-        c.publicSpkiKeyData != null ||
-        c.publicJsonWebKeyData != null;
-
-    // Test that we have keys to import or generate some.
-    if (r._isSymmetric) {
-      check(!hasPublicKey);
-      check(
-        c.generateKeyParams != null || hasPrivateKey,
-        'A key must be generated or imported',
-      );
-    } else {
-      check(
-        c.generateKeyParams != null || (hasPrivateKey && hasPublicKey),
-        'A key-pair must be generated or imported',
-      );
-    }
-
-    check(
-      c.generateKeyParams == null ||
-          (c.signature == null &&
-              c.ciphertext == null &&
-              c.derivedBits == null),
-      'Cannot verify signature/ciphertext/derivedBits for a generated key-pair',
-    );
-    check(
-      c.plaintext != null || (r._signBytes == null && r._encryptBytes == null),
-      'Cannot sign/encrypt without plaintext',
-    );
-    check(c.importKeyParams != null);
-    check((c.signVerifyParams != null) == (r._signBytes != null));
-    check((c.encryptDecryptParams != null) == (r._encryptBytes != null));
-    check((c.deriveParams != null) == (r._deriveBits != null));
-    if (c.signature != null) {
-      check(r._signBytes != null);
-    }
-    if (c.ciphertext != null) {
-      check(r._encryptBytes != null);
-    }
-    if (c.derivedBits != null) {
-      check(r._deriveBits != null);
-    }
-    if (r._deriveBits != null) {
-      check(c.derivedLength != null);
-    }
-
-    // Check that data matches the methods we have in the runner.
-    check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
-    check(r._importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
-    check(
-        r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null);
-    check(r._importPublicRawKey != null || c.publicRawKeyData == null);
-    check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
-    check(r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
-  };
-  test('validate test case', validate);
+  test('validate test case', () => _validateTestCase(r, c));
 
   try {
-    validate();
+    _validateTestCase(r, c);
   } catch (_) {
     // Don't register additional tests if the test-case is invalid!
     return;
