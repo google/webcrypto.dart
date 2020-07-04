@@ -32,6 +32,7 @@ library webcrypto;
 
 // TODO: Split this file into parts
 
+import 'package:meta/meta.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'src/webcrypto_impl_stub.dart'
@@ -39,11 +40,13 @@ import 'src/webcrypto_impl_stub.dart'
     if (dart.library.js) 'src/webcrypto_impl_js.dart' as impl;
 
 /// Thrown when an operation failed for an operation-specific reason.
+@sealed
 abstract class OperationError extends Error {
   OperationError._(); // keep the constructor private.
 }
 
 /// A key-pair as returned from key generation.
+@sealed
 abstract class KeyPair<S, T> {
   KeyPair._(); // keep the constructor private.
 
@@ -101,6 +104,7 @@ void fillRandomBytes(
 ///
 /// **WARNING:** Custom implementations of this class cannot be passed to
 /// to other methods in this library.
+@sealed
 abstract class Hash {
   Hash._(); // keep the constructor private.
 
@@ -241,6 +245,7 @@ abstract class Hash {
 /// [HmacSecretKey.importRawKey] or generated using [HmacSecretKey.generateKey].
 ///
 /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
+@sealed
 abstract class HmacSecretKey {
   HmacSecretKey._(); // keep the constructor private.
 
@@ -518,6 +523,7 @@ abstract class HmacSecretKey {
 /// key-pair.
 ///
 /// [1]: https://tools.ietf.org/html/rfc3447
+@sealed
 abstract class RsassaPkcs1V15PrivateKey {
   RsassaPkcs1V15PrivateKey._(); // keep the constructor private.
 
@@ -761,6 +767,7 @@ abstract class RsassaPkcs1V15PrivateKey {
 /// key-pair.
 ///
 /// [1]: https://tools.ietf.org/html/rfc3447
+@sealed
 abstract class RsassaPkcs1V15PublicKey {
   RsassaPkcs1V15PublicKey._(); // keep the constructor private.
 
@@ -924,6 +931,7 @@ abstract class RsassaPkcs1V15PublicKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class RsaPssPrivateKey {
   RsaPssPrivateKey._(); // keep the constructor private.
 
@@ -971,6 +979,7 @@ abstract class RsaPssPrivateKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class RsaPssPublicKey {
   RsaPssPublicKey._(); // keep the constructor private.
 
@@ -1020,6 +1029,7 @@ enum EllipticCurve {
   p521,
 }
 
+@sealed
 abstract class EcdsaPrivateKey {
   EcdsaPrivateKey._(); // keep the constructor private.
 
@@ -1067,6 +1077,7 @@ abstract class EcdsaPrivateKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class EcdsaPublicKey {
   EcdsaPublicKey._(); // keep the constructor private.
 
@@ -1121,6 +1132,7 @@ abstract class EcdsaPublicKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class RsaOaepPrivateKey {
   RsaOaepPrivateKey._(); // keep the constructor private.
 
@@ -1170,6 +1182,7 @@ abstract class RsaOaepPrivateKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class RsaOaepPublicKey {
   RsaOaepPublicKey._(); // keep the constructor private.
 
@@ -1203,6 +1216,7 @@ abstract class RsaOaepPublicKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class AesCtrSecretKey {
   AesCtrSecretKey._(); // keep the constructor private.
 
@@ -1254,6 +1268,7 @@ abstract class AesCtrSecretKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class AesCbcSecretKey {
   AesCbcSecretKey._(); // keep the constructor private.
 
@@ -1288,6 +1303,7 @@ abstract class AesCbcSecretKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class AesGcmSecretKey {
   AesGcmSecretKey._(); // keep the constructor private.
 
@@ -1331,6 +1347,7 @@ abstract class AesGcmSecretKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
 
@@ -1378,6 +1395,7 @@ abstract class EcdhPrivateKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class EcdhPublicKey {
   EcdhPublicKey._(); // keep the constructor private.
 
@@ -1436,6 +1454,7 @@ abstract class EcdhPublicKey {
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
+@sealed
 abstract class HkdfSecretKey {
   HkdfSecretKey._(); // keep the constructor private.
 
@@ -1453,6 +1472,7 @@ abstract class HkdfSecretKey {
   );
 }
 
+@sealed
 abstract class Pbkdf2SecretKey {
   Pbkdf2SecretKey._(); // keep the constructor private.
 
