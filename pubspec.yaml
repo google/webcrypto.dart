@@ -13,6 +13,10 @@ dependencies:
   ffi: ^0.1.3
   js: ^0.6.1
   meta: ^1.1.7
+  # Needed for `lib/src/flutter/webcrypto_plugin.dart` which allows boiler-plate
+  # in `flutter.plugin.platforms.web` added below.
+  flutter_web_plugins:
+    sdk: flutter
 
 dev_dependencies:
   test: ^1.5.2
@@ -29,3 +33,6 @@ flutter:
         # library with cmake
         package: com.example.webcrypto
         pluginClass: WebcryptoPlugin
+      web:
+        pluginClass: WebcryptoPlugin
+        fileName: src/flutter/webcrypto_plugin.dart
