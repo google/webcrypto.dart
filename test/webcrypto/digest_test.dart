@@ -17,26 +17,26 @@ void runTests({TestFn test = test}) {
   // echo -n 'hello-world' | sha1sum - | cut -d ' ' -f 1 | xxd -r -p | base64
 
   test('SHA-1: "hello-world"', () async {
-    final bytes = await Hash.sha1.digestStream(_utf8Stream("hello-world"));
+    final bytes = await Hash.sha1.digestStream(_utf8Stream('hello-world'));
     final hash = base64Encode(bytes);
     check(hash == '+7lpEX7fqRa4bftn/RHezx4zbfA=');
   });
 
   test('SHA-256: "hello-world"', () async {
-    final bytes = await Hash.sha256.digestStream(_utf8Stream("hello-world"));
+    final bytes = await Hash.sha256.digestStream(_utf8Stream('hello-world'));
     final hash = base64Encode(bytes);
     check(hash == 'r6J7RNQ7Aqn+pB0TztwuQBbPz4fF2/mQ5ZNmmqjOKG0=');
   });
 
   test('SHA-384: "hello-world"', () async {
-    final bytes = await Hash.sha384.digestStream(_utf8Stream("hello-world"));
+    final bytes = await Hash.sha384.digestStream(_utf8Stream('hello-world'));
     final hash = base64Encode(bytes);
     check(hash ==
         'UT6f7WCFp32YJnp1is4l/ZYnOeQKpE8xjmdkLOwZ3nIP+tmT2aMRFQGJomjVf5cE');
   });
 
   test('SHA-512: "hello-world"', () async {
-    final bytes = await Hash.sha512.digestStream(_utf8Stream("hello-world"));
+    final bytes = await Hash.sha512.digestStream(_utf8Stream('hello-world'));
     final hash = base64Encode(bytes);
     check(hash ==
         'au78KRIqOWLJDvg09sqtADO//NYpQbemIFppXMOeJ2fbd3inrXbRc6CDueFLIQ3AISkj'

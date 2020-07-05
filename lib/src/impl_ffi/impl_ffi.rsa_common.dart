@@ -42,8 +42,8 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
 
 ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
   JsonWebKey jwk, {
-  bool isPrivateKey,
-  String expectedAlg,
+  @required bool isPrivateKey,
+  @required String expectedAlg,
   String expectedUse,
 }) {
   assert(isPrivateKey != null);
@@ -71,7 +71,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
 
     ffi.Pointer<ssl.BIGNUM> readBN(String value, String prop) {
       final bin = _jwkDecodeBase64UrlNoPadding(value, prop);
-      checkJwk(bin.length != 0, prop, 'must not be empty');
+      checkJwk(bin.isNotEmpty, prop, 'must not be empty');
       checkJwk(
         bin.length == 1 || bin[0] != 0,
         prop,
@@ -143,9 +143,9 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
 
 Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
   ffi.Pointer<ssl.EVP_PKEY> key, {
-  bool isPrivateKey,
-  String jwkAlg,
-  String jwkUse,
+  @required bool isPrivateKey,
+  @required String jwkAlg,
+  @required String jwkUse,
 }) {
   assert(isPrivateKey != null);
   assert(jwkUse != null);

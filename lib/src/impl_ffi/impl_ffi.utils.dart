@@ -268,7 +268,7 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
     final ptr = buffer.cast<S>();
     final bytes = buffer.asTypedList(maxChunk);
     await for (final data in source) {
-      int offset = 0;
+      var offset = 0;
       while (offset < data.length) {
         final N = math.min(data.length - offset, maxChunk);
         bytes.setAll(0, data.skip(offset).take(N));

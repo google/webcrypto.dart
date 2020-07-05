@@ -286,6 +286,6 @@ const _SymName = [
 extension SymName on Sym {
   /// Get name of symbol in `libcrypto.so` from BoringSSL.
   String get name {
-    return _SymName[this.index];
+    return _SymName[index];
   }
 }

@@ -5,8 +5,12 @@ import '../testrunner.dart';
 import '../detected_runtime.dart';
 
 class _KeyPair<S, T> implements KeyPair<S, T> {
+  @override
   final S privateKey;
+
+  @override
   final T publicKey;
+
   _KeyPair({this.privateKey, this.publicKey});
 }
 
@@ -72,7 +76,8 @@ void main() {
   runner.runTests();
 }
 
-// Exported for use in ecdh_no_pkcs8_test.dart
+// Allow single quotes for hardcoded testData written as JSON:
+// ignore_for_file: prefer_single_quotes
 final _testData = [
   {
     "name": "generated on boringssl/linux at 2020-01-22T23:24:34",

@@ -114,8 +114,8 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
 ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
   JsonWebKey jwk,
   EllipticCurve curve, {
-  bool isPrivateKey,
-  String expectedUse,
+  @required bool isPrivateKey,
+  @required String expectedUse,
   String expectedAlg, // may be null, if 'alg' property isn't validated (ECDH)
 }) {
   assert(isPrivateKey != null);
@@ -268,7 +268,7 @@ Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
 
 Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
   ffi.Pointer<ssl.EVP_PKEY> key, {
-  bool isPrivateKey,
+  @required bool isPrivateKey,
   String jwkUse,
 }) {
   assert(isPrivateKey != null);

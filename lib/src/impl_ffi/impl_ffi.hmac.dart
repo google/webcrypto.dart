@@ -5,8 +5,8 @@ Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int lengthInBits]) {
   data = Uint8List.fromList(data);
   if (lengthInBits != null) {
     final startFrom = (lengthInBits / 8).floor();
-    int remainder = (lengthInBits % 8).toInt();
-    for (int i = startFrom; i < data.length; i++) {
+    var remainder = (lengthInBits % 8).toInt();
+    for (var i = startFrom; i < data.length; i++) {
       // TODO: This passes tests, but I think this should be >> instead.. hmm...
       final mask = 0xff & (0xff << (8 - remainder));
       data[i] = data[i] & mask;

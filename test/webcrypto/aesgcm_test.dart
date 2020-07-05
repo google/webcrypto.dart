@@ -51,6 +51,8 @@ void main() {
   runner.runTests();
 }
 
+// Allow single quotes for hardcoded testData written as JSON:
+// ignore_for_file: prefer_single_quotes
 final _testData = [
   {
     "name":

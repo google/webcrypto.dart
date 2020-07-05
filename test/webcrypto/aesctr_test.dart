@@ -58,6 +58,8 @@ void main() {
   runner.runTests();
 }
 
+// Allow single quotes for hardcoded testData written as JSON:
+// ignore_for_file: prefer_single_quotes
 final _testData = [
   {
     "name": "A128CTR/64 generated on boringssl/linux at 2020-01-19T16:40:39",

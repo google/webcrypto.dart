@@ -16,7 +16,7 @@ final runner = TestRunner.symmetric<HmacSecretKey>(
   exportPrivateJsonWebKey: (key) => key.exportJsonWebKey(),
   generateKey: (generateKeyPairParams) => HmacSecretKey.generateKey(
     hashFromJson(generateKeyPairParams),
-    length: generateKeyPairParams['length'] ?? null,
+    length: generateKeyPairParams['length'], // may be null
   ),
   signBytes: (key, data, signParams) => key.signBytes(data),
   signStream: (key, data, signParams) => key.signStream(data),
@@ -40,6 +40,8 @@ void main() {
   runner.runTests();
 }
 
+// Allow single quotes for hardcoded testData written as JSON:
+// ignore_for_file: prefer_single_quotes
 final _testData = [
   {
     "name": "HS256 generated on boringssl/linux at 2020-01-17T17:22:02",

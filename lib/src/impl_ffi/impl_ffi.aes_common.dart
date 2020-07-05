@@ -15,7 +15,7 @@ Uint8List _aesImportRawKey(List<int> keyData) {
 
 Uint8List _aesImportJwkKey(
   Map<String, dynamic> jwk, {
-  String expectedJwkAlgSuffix,
+  @required String expectedJwkAlgSuffix,
 }) {
   assert(expectedJwkAlgSuffix != null);
   ArgumentError.checkNotNull(jwk, 'jwk');
@@ -52,7 +52,7 @@ Uint8List _aesImportJwkKey(
 
 Map<String, dynamic> _aesExportJwkKey(
   List<int> keyData, {
-  String jwkAlgSuffix,
+  @required String jwkAlgSuffix,
 }) {
   assert(jwkAlgSuffix != null);
   assert(keyData.length == 16 || keyData.length == 32);

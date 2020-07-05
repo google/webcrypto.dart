@@ -197,8 +197,12 @@ typedef DeriveBitsFn<T> = Future<List<int>> Function(
 );
 
 class _KeyPair<S, T> implements KeyPair<S, T> {
+  @override
   final S privateKey;
+
+  @override
   final T publicKey;
+
   _KeyPair({this.privateKey, this.publicKey});
 }
 

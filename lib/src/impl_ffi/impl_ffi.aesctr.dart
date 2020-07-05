@@ -30,8 +30,8 @@ BigInt _parseBigEndian(List<int> data, [int bitLength]) {
     data[init] &= ~(0xff << remainder_bits);
   }
   // Parse BigInt as big-endian integer.
-  BigInt value = BigInt.from(0);
-  for (int i = init; i < data.length; i++) {
+  var value = BigInt.from(0);
+  for (var i = init; i < data.length; i++) {
     value = (value << 8) | BigInt.from(data[i] & 0xf);
   }
   return value;
@@ -108,7 +108,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     // Process data from source
     var isBeforeWrapAround = true;
     await for (final data in source) {
-      int offset = 0; // offset in data that we have consumed up-to.
+      var offset = 0; // offset in data that we have consumed up-to.
       while (offset < data.length) {
         int M; // Number of bytes consumed in this iteration
         if (isBeforeWrapAround) {
@@ -125,7 +125,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
         }
 
         // Consume the first M bytes from data.
-        int i = 0; // Number of bytes consumed, after offset
+        var i = 0; // Number of bytes consumed, after offset
         while (i < M) {
           final N = math.min(M, bufSize);
           inData.setAll(0, data.skip(offset + i).take(N));

@@ -60,7 +60,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
 
     // Process data from source
     await for (final data in source) {
-      int offset = 0;
+      var offset = 0;
       while (offset < data.length) {
         final N = math.min(data.length - offset, bufSize);
         inData.setAll(0, data.skip(offset).take(N));

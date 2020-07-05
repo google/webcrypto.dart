@@ -1,12 +1,12 @@
 import 'dart:ffi';
-import 'dart:io' show Platform, File;
+import 'dart:io' show Platform;
 import 'symbols.generated.dart';
 import 'utils.dart';
 
 /// Dynamically load `webcrypto_lookup_symbol` function.
 final Pointer<Void> Function(Sym) lookupSymbol = () {
   var library = Platform.isAndroid
-      ? DynamicLibrary.open("libwebcrypto.so")
+      ? DynamicLibrary.open('libwebcrypto.so')
       : DynamicLibrary.executable();
 
   try {
