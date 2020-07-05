@@ -1,0 +1,123 @@
+part of impl_ffi;
+
+Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) async =>
+    _AesCbcSecretKey(_aesImportRawKey(keyData));
+
+Future<AesCbcSecretKey> aesCbc_importJsonWebKey(
+  Map<String, dynamic> jwk,
+) async =>
+    _AesCbcSecretKey(_aesImportJwkKey(
+      jwk,
+      expectedJwkAlgSuffix: 'CBC',
+    ));
+
+Future<AesCbcSecretKey> aesCbc_generateKey(int length) async =>
+    _AesCbcSecretKey(_aesGenerateKey(length));
+
+Stream<Uint8List> _aesCbcEncryptOrDecrypt(
+  Uint8List key,
+  bool encrypt,
+  Stream<List<int>> source,
+  List<int> iv,
+) async* {
+  final scope = _Scope();
+  try {
+    assert(key.length == 16 || key.length == 32);
+    final cipher =
+        key.length == 16 ? ssl.EVP_aes_128_cbc() : ssl.EVP_aes_256_cbc();
+    final blockSize = ssl.AES_BLOCK_SIZE;
+
+    final ivSize = ssl.EVP_CIPHER_iv_length(cipher);
+    if (iv.length != ivSize) {
+      throw ArgumentError.value(iv, 'iv', 'must be $ivSize bytes');
+    }
+
+    final ctx = scope.create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
+    _checkOpIsOne(ssl.EVP_CipherInit_ex(
+      ctx,
+      cipher,
+      ffi.nullptr,
+      scope.dataAsPointer(key),
+      scope.dataAsPointer(iv),
+      encrypt ? 1 : 0,
+    ));
+
+    const bufSize = 4096;
+
+    // Allocate an input buffer
+    final inBuf = scope.allocate<ffi.Uint8>(count: bufSize);
+    final inData = inBuf.asTypedList(bufSize);
+    final inBytes = inBuf.cast<ssl.Bytes>();
+
+    // Allocate an output buffer, notice that BoringSSL says output cannot be
+    // more than input size + blockSize - 1
+    final outBuf = scope.allocate<ffi.Uint8>(count: bufSize + blockSize);
+    final outData = outBuf.asTypedList(bufSize + blockSize);
+    final outBytes = outBuf.cast<ssl.Bytes>();
+
+    // Allocate and output length integer
+    final outLen = scope.allocate<ffi.Int32>();
+
+    // Process data from source
+    await for (final data in source) {
+      int offset = 0;
+      while (offset < data.length) {
+        final N = math.min(data.length - offset, bufSize);
+        inData.setAll(0, data.skip(offset).take(N));
+
+        _checkOpIsOne(ssl.EVP_CipherUpdate(ctx, outBytes, outLen, inBytes, N));
+        if (outLen.value > 0) {
+          yield outData.sublist(0, outLen.value);
+        }
+        offset += N;
+      }
+    }
+    // Output final block
+    _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+    if (outLen.value > 0) {
+      yield outData.sublist(0, outLen.value);
+    }
+  } finally {
+    scope.release();
+  }
+}
+
+class _AesCbcSecretKey implements AesCbcSecretKey {
+  final Uint8List _key;
+  _AesCbcSecretKey(this._key);
+
+  @override
+  Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(iv, 'iv');
+    return await _bufferStream(decryptStream(Stream.value(data), iv));
+  }
+
+  @override
+  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(iv, 'iv');
+    return _aesCbcEncryptOrDecrypt(_key, false, data, iv);
+  }
+
+  @override
+  Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(iv, 'iv');
+    return await _bufferStream(encryptStream(Stream.value(data), iv));
+  }
+
+  @override
+  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) {
+    ArgumentError.checkNotNull(data, 'data');
+    ArgumentError.checkNotNull(iv, 'iv');
+    return _aesCbcEncryptOrDecrypt(_key, true, data, iv);
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() async =>
+      _aesExportJwkKey(_key, jwkAlgSuffix: 'CBC');
+
+  @override
+  Future<Uint8List> exportRawKey() async => Uint8List.fromList(_key);
+}

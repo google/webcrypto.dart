@@ -1,0 +1,53 @@
+// ignore_for_file: non_constant_identifier_names
+library impl_ffi;
+
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:convert' show utf8, base64Url;
+import 'dart:ffi' as ffi;
+import 'dart:math' as math;
+import 'package:ffi/ffi.dart' as ffi;
+import 'package:meta/meta.dart';
+
+import '../jsonwebkey.dart' show JsonWebKey;
+import '../webcrypto/webcrypto.dart';
+import '../boringssl/boringssl.dart' as ssl;
+
+part 'impl_ffi.aescbc.dart';
+part 'impl_ffi.aesctr.dart';
+part 'impl_ffi.aesgcm.dart';
+part 'impl_ffi.digest.dart';
+part 'impl_ffi.ecdh.dart';
+part 'impl_ffi.ecdsa.dart';
+part 'impl_ffi.hkdf.dart';
+part 'impl_ffi.hmac.dart';
+part 'impl_ffi.pbkdf2.dart';
+part 'impl_ffi.random.dart';
+part 'impl_ffi.rsaoaep.dart';
+part 'impl_ffi.rsapss.dart';
+part 'impl_ffi.rsassapkcs1v15.dart';
+part 'impl_ffi.utils.dart';
+part 'impl_ffi.rsa_common.dart';
+part 'impl_ffi.ec_common.dart';
+part 'impl_ffi.aes_common.dart';
+
+/// Implementation of [OperationError].
+class _OperationError extends Error implements OperationError {
+  final String _message;
+
+  _OperationError(this._message);
+
+  @override
+  String toString() => _message;
+}
+
+/// Implementation of [KeyPair].
+class _KeyPair<S, T> implements KeyPair<S, T> {
+  @override
+  final S privateKey;
+
+  @override
+  final T publicKey;
+
+  _KeyPair({this.privateKey, this.publicKey});
+}

@@ -1,0 +1,163 @@
+part of impl_ffi;
+
+/// Convert [data] to [Uint8List] and zero to [lengthInBits] if given.
+Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int lengthInBits]) {
+  data = Uint8List.fromList(data);
+  if (lengthInBits != null) {
+    final startFrom = (lengthInBits / 8).floor();
+    int remainder = (lengthInBits % 8).toInt();
+    for (int i = startFrom; i < data.length; i++) {
+      // TODO: This passes tests, but I think this should be >> instead.. hmm...
+      final mask = 0xff & (0xff << (8 - remainder));
+      data[i] = data[i] & mask;
+      remainder = 8;
+    }
+  }
+  return data;
+}
+
+String _hmacJwkAlgFromHash(_Hash hash) {
+  if (hash == Hash.sha1) {
+    return 'HS1';
+  }
+  if (hash == Hash.sha256) {
+    return 'HS256';
+  }
+  if (hash == Hash.sha384) {
+    return 'HS384';
+  }
+  if (hash == Hash.sha512) {
+    return 'HS512';
+  }
+  assert(false); // This should never happen!
+  throw UnsupportedError('hash is not supported');
+}
+
+Future<HmacSecretKey> hmacSecretKey_importRawKey(
+  List<int> keyData,
+  Hash hash, {
+  int length,
+}) async {
+  return _HmacSecretKey(
+    _asUint8ListZeroedToBitLength(keyData, length),
+    _Hash.fromHash(hash),
+  );
+}
+
+Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
+  Map<String, dynamic> jwk,
+  Hash hash, {
+  int length,
+}) async {
+  ArgumentError.checkNotNull(jwk, 'jwk');
+  ArgumentError.checkNotNull(hash, 'hash');
+
+  final h = _Hash.fromHash(hash);
+  final k = JsonWebKey.fromJson(jwk);
+
+  void checkJwk(bool condition, String prop, String message) =>
+      _checkData(condition, message: 'JWK property "$prop" $message');
+
+  checkJwk(k.kty == 'oct', 'kty', 'must be "oct"');
+  checkJwk(k.k != null, 'k', 'must be present');
+  checkJwk(k.use == null || k.use == 'sig', 'use', 'must be "sig", if present');
+  final expectedAlg = _hmacJwkAlgFromHash(h);
+  checkJwk(
+    k.alg == null || k.alg == expectedAlg,
+    'alg',
+    'must be "$expectedAlg"',
+  );
+
+  final keyData = _jwkDecodeBase64UrlNoPadding(k.k, 'k');
+
+  return hmacSecretKey_importRawKey(keyData, hash, length: length);
+}
+
+Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash, {int length}) async {
+  final h = _Hash.fromHash(hash);
+  length ??= ssl.EVP_MD_size(h.MD) * 8;
+  final keyData = Uint8List((length / 8).ceil());
+  fillRandomBytes(keyData);
+
+  return _HmacSecretKey(
+    _asUint8ListZeroedToBitLength(keyData, length),
+    h,
+  );
+}
+
+class _HmacSecretKey implements HmacSecretKey {
+  final _Hash _hash;
+  final Uint8List _keyData;
+
+  _HmacSecretKey(this._keyData, this._hash);
+
+  @override
+  Future<Uint8List> signBytes(List<int> data) {
+    ArgumentError.checkNotNull(data, 'data');
+
+    return signStream(Stream.value(data));
+  }
+
+  @override
+  Future<Uint8List> signStream(Stream<List<int>> data) async {
+    final ctx = ssl.HMAC_CTX_new();
+    _checkOp(ctx.address != 0, fallback: 'allocation error');
+    try {
+      _withDataAsPointer(_keyData, (ffi.Pointer<ssl.Data> p) {
+        final n = _keyData.length;
+        _checkOp(ssl.HMAC_Init_ex(ctx, p, n, _hash.MD, ffi.nullptr) == 1);
+      });
+      await _streamToUpdate(data, ctx, ssl.HMAC_Update);
+
+      final size = ssl.HMAC_size(ctx);
+      _checkOp(size > 0);
+      return _withAllocation(1, (ffi.Pointer<ffi.Uint32> psize) async {
+        psize.value = size;
+        return _withOutPointer(size, (ffi.Pointer<ssl.Bytes> p) {
+          _checkOp(ssl.HMAC_Final(ctx, p, psize) == 1);
+        }).sublist(0, psize.value);
+      });
+    } finally {
+      ssl.HMAC_CTX_free(ctx);
+    }
+  }
+
+  @override
+  Future<bool> verifyBytes(List<int> signature, List<int> data) {
+    ArgumentError.checkNotNull(signature, 'signature');
+    ArgumentError.checkNotNull(data, 'data');
+
+    return verifyStream(signature, Stream.value(data));
+  }
+
+  @override
+  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) async {
+    ArgumentError.checkNotNull(signature, 'signature');
+    ArgumentError.checkNotNull(data, 'data');
+
+    final other = await signStream(data);
+    if (signature.length != other.length) {
+      return false;
+    }
+    return _withDataAsPointer(signature, (ffi.Pointer<ssl.Data> s) {
+      return _withDataAsPointer(other, (ffi.Pointer<ssl.Data> o) {
+        return ssl.CRYPTO_memcmp(s, o, other.length) == 0;
+      });
+    });
+  }
+
+  @override
+  Future<Map<String, dynamic>> exportJsonWebKey() async {
+    return JsonWebKey(
+      kty: 'oct',
+      use: 'sig',
+      alg: _hmacJwkAlgFromHash(_hash),
+      k: _jwkEncodeBase64UrlNoPadding(_keyData),
+    ).toJson();
+  }
+
+  @override
+  Future<Uint8List> exportRawKey() async {
+    return Uint8List.fromList(_keyData);
+  }
+}

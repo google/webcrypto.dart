@@ -1,7 +1,9 @@
+//ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:typed_data';
 
-import '../webcrypto.dart';
+import 'webcrypto/webcrypto.dart';
 
 final _notImplemented = throw UnimplementedError('Not implemented');
 
@@ -30,7 +32,6 @@ const Hash sha384 = _UnimplementedHash();
 const Hash sha512 = _UnimplementedHash();
 
 //---------------------- HMAC
-
 Future<HmacSecretKey> hmacSecretKey_importRawKey(
   List<int> keyData,
   Hash hash, {
