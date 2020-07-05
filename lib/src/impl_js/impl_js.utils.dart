@@ -27,7 +27,7 @@ Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
 
 /// Convert [publicExponent] to [Uint8List].
 Uint8List _publicExponentAsBuffer(BigInt publicExponent) {
-// Limit publicExponent whitelist as in chromium:
+// Limit publicExponent allow-listed as in chromium:
   // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
   if (publicExponent != BigInt.from(3) &&
       publicExponent != BigInt.from(65537)) {

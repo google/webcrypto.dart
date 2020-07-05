@@ -2,7 +2,7 @@ name: webcrypto
 version: 0.1.0
 description: Cross-platform implementation of Web Cryptography APIs
 author: Jonas Finnemann Jensen <jonasfj@google.com>
-homepage: https://user.git.corp.google.com/jonasfj/dart-webcrypto
+#homepage: TODO: Add a homepage
 publish_to: None
 
 environment:
