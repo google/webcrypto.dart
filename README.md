@@ -87,3 +87,4 @@ Chrome and Firefox.
 [boringssl-docs]: https://commondatastorage.googleapis.com/chromium-boringssl-docs/headers.html
 [dart-ffi]: https://api.dart.dev/stable/2.8.4/dart-ffi/dart-ffi-library.html
 [chrome-src]: https://chromium.googlesource.com/chromium/src/+/master/components/webcrypto
+[webcrypto-mdn]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
