@@ -28,7 +28,7 @@ int _fibonacci(int n) {
 /// `4181` then it returns `4181` sized chunks until end of [data].
 ///
 /// This ensures that various chunks sizes are exercised in tests.
-Stream<List<T>> fibonacciChunkedStream<T>(List<T> data) async* {
+Stream<List<T>> fibonacciChunkedStream<T>(Iterable<T> data) async* {
   var i = 0;
   while (data.isNotEmpty) {
     final n = _fibonacci(i++);
