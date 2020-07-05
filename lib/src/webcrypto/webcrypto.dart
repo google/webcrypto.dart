@@ -14,8 +14,6 @@
 
 library webcrypto;
 
-// TODO: Split this file into parts
-
 import 'package:meta/meta.dart';
 import 'dart:async';
 import 'dart:typed_data';
