@@ -3,8 +3,8 @@ Notes on Parity with the Web Cryptography Specification
 
 The design outlined in this package attempts to be a reasonably typed variant of
 the API exposed in the [Web Cryptography Specification][1] (see also
-[Web Crypto API on MDN][2]). However, this package is not complete feature
-equivalence with the Web Crypto API.
+[Web Crypto API on MDN][2]). However, this package does not have complete
+feature equivalence with the Web Crypto API.
 
 This package is slightly more powerful in that methods like
 encrypt/decrypt/sign/verify accepts data as `Stream<List<int>>`, which allows
@@ -15,14 +15,37 @@ stream the data encrypting/decrypting chunk by chunk.
 
 In the other direction the Web Crypto API offers a few features this package
 does not expose. Mostly because typing would be awkward/complex and the utility
-is low as these are mostly convinience methods. These methods are:
+is low as these are mostly convenience methods. These are:
 
+ * Key capabilities expressed in `CryptoKey.usages` and `CryptoKey.extractable`,
  * `crypto.subtle.deriveKey`,
  * `crypto.sutble.wrapKey` / `crypto.sutble.wrapKey`, and,
  * The `'AES-KW'` algorithm.
 
 [1]: https://www.w3.org/TR/WebCryptoAPI/
 [2]: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto
+
+## Notes on `CryptoKey` capability bits
+In the Web Crypto APIs the `CryptoKey` has properties `CryptoKey.usages` and
+`CryptoKey.extractable` which specify what operations a key may do, and whether
+or not it can be exported. Specifying such capabilities on key objects allows
+developers to harden their applications against accidental misuse of keys.
+
+If we wanted to support this feature we would introduce a `KeyUsages` enum, and
+allow all key import and generation methods to accept a set of usages, as well
+as an `extractable` bit. Various key opertions would then throw
+`UnsupportedError` if the key capabilities is violated.
+
+This is not an unreasonable API design. However, this feature can also be
+implemented in a high-level crypto package wrapping the API offered by this
+package. Furthermore, if we wanted to introduce this later we could easily add
+optional `usages` and `extractable` parameters to all key import and generation
+methods.
+
+**Conclusion**, as the capability bits are exclusively intended to harden code
+against mistakes, and this can be done independently in a high level wrapper,
+this package shall omit this feature. Adding capability bits
+to keys in the future would be non-breaking, so long as they remain optional.
 
 ## Notes on `deriveKey`
 In the Web Crypto API algorithms `'ECDH'`, `'HKDF'` and `'PBKDF2'` can be used
@@ -39,7 +62,7 @@ be used to derive keys for AES variants. Thus, since it's trivial to call
 any of the AES key variants, the `deriveKey` operation is redundant.
 
 The primary motivation to feature the `deriveKey` operation would be that
-the `KeyUsage` enum would be able to contain both `deriveKey` and `deriveBits`.
+a `KeyUsage` enum would be able to contain both `deriveKey` and `deriveBits`.
 Limiting a key to specific usages when it is created is a nice way to harden
 your code against mistakes. But it's hardly a critical feature, as authors are
 responsible for locking down their own keys.

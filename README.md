@@ -1,24 +1,27 @@
-Web Cryptography for Dart
-=========================
+Cross-Platform Web Cryptography Implemenation
+=============================================
 
-This package aims to provide a useful cryptography package for Dart, by offering
-a Dartified interface for the [Web Cryptograph API][webcrypto-spec] available
-in modern browsers, and offer the same API when running on the VM/AOT.
+This package provides a cross-platform implementation of the
+[Web Cryptograph API][webcrypto-spec]. In browsers this package wraps the
+[`window.crypto`][window-crypto] APIs and provides an easy to use Dart API.
+On other platforms, the same API, is implemented by interfacing
+[BoringSSL][boringssl-src] using [`dart:ffi`][dart-ffi]. This way,
+`package:webcrypto` provides the same crypto API on multiple platforms.
 
-The rationale for choice of Web Cryptography and guidelines driving the API
-design is articulated in [doc/design-rationale.md](doc/design-rationale.md).
-In short this package aims to follow the [Web Cryptograph Spec][webcrypto-spec]
-while adding typing and accepting ugly names for the sake for future proofing.
+**Example**
+```dart
+import 'dart:convert' show base64, utf8;
+import 'package:webcrypto/webcrypto.dart';
 
-For a quick outline see [API reference on X20][api-docs].
+Future<void> main() async {
+  final digest = await Hash.sha256.digestBytes(utf8.encode('Hello World'));
+  print(base.encode(digest));
+}
+```
 
-## Status
-Implementation is complete using BoringSSL/`dart:ffi` on the VM and Web Crypto
-in javascript.
-
-**Completed**
+**Features:**
  * Get random bytes
- * digest (sha-1/sha-256/sha-384/sha-512)
+ * Digest (sha-1/sha-256/sha-384/sha-512)
  * HMAC (sign/verify)
  * RSASSA-PKCS1-v1_5 (sign/verify)
  * RSA-PSS (sign/verify)
@@ -28,40 +31,59 @@ in javascript.
  * ECDH (deriveBits)
  * HKDF (deriveBits)
  * PBKDF2	(deriveBits)
- * BoringSSL, Chrome and Firefox implementation pass the same test cases.
+ * BoringSSL, Chrome and Firefox implementations pass the same test cases.
 
-**Missing**
- * Exceptions/errors thrown for invalid input may still differ between
-   implementations, test cases have not been extended to cover invalid input.
+**Missing:**
+ * Exceptions and errors thrown for invalid input is not tested yet.
+ * Finalizers not implemented yet, hence, memory leaks of keys is a known
+   issues in the native implementation.
+ * The native implementation executes on the main-thread, however, all expensive
+   APIs are asynchronous, so they can be offloaded in the future.
+
+For a discussion of the API design of this package,
+see `doc/design-rationale-md`.
 
 ## Limitations
- 
- * `deriveKey` is not supported, keys can always be created from `derivedBits`
-    which is supported.
- * `wrapKey` / `unwrapKey` is not supported, keys can be exported/encrypted or
-    decrypted/imported.
- * `AES-KW` is not supported because it only supports `wrapKey` / `unwrapKey`
-    but doesn't support `encrypt`/`decrypt`.
+This package has a few limitations compared to the
+Web Cryptograph API][webcrypto-spec]. For a discussion of parity with
+Web Cryptography APIs see `doc/webcrypto-parity.md`.
+
+ * `deriveKey` is not supported, however, keys can always be created from
+    `derivedBits` which is supported.
+ * `wrapKey` is not supported, however, keys can be exported an encrypted.
+ * `unwrapKey` is not supported, however, keys can be decrypted and imported.
+ * `AES-KW` is not supported because it does not support `encrypt`/`decrypt`.
 
 ## Compatibility notes
+This package has many tests cases to asses compatibility across the native
+implementation using BoringSSL and various browser implementations of the
+Web Cryptography APIs.
 
+At the moment **compatibility testing is limited** to native implementation,
+Chrome and Firefox.
+
+**Known Issues:**
  * Chrome and BoringSSL does not support valid ECDH spki-formatted keys exported
    by Firefox prior to version 72.
- * Firefox does not support pkcs8 import/export for ECDSA and ECDH keys.
+ * Firefox does not support PKCS8 import/export for ECDSA and ECDH keys.
  * Firefox does not handle counter wrap around for `AES-CTR`.
+ * The browser implementation of streaming methods for _encryption_,
+   _decryption_, _signing_ and _verification_ buffers the entire input, because
+   `window.crypto` does not expose a streaming API. However, the native
+   implementation using BoringSSL does support streaming.
 
 ## References
 
- * [API Reference on X20][api-docs].
  * [Web Cryptograpy Specification][webcrypto-spec].
  * [MDN Web Crypto API][webcrypto-mdn].
  * [Chromium Web Crypto Source][chrome-src].
  * [BoringSSL Source][boringssl-src].
  * [BoringSSL Documentation][boringssl-docs].
 
-[api-docs]: https://jonasfj.users.x20web.corp.google.com/www/no_crawl/webcrypto.dart/webcrypto/webcrypto-library.html
+
+[window-crypto]: webcrypto-mdn
 [webcrypto-spec]: https://www.w3.org/TR/WebCryptoAPI/
-[webcrypto-mdn]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
-[chrome-src]: https://chromium.googlesource.com/chromium/src/+/master/components/webcrypto
 [boringssl-src]: https://boringssl.googlesource.com/boringssl/
 [boringssl-docs]: https://commondatastorage.googleapis.com/chromium-boringssl-docs/headers.html
+[dart-ffi]: https://api.dart.dev/stable/2.8.4/dart-ffi/dart-ffi-library.html
+[chrome-src]: https://chromium.googlesource.com/chromium/src/+/master/components/webcrypto
