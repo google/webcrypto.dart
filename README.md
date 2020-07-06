@@ -1,12 +1,20 @@
 Cross-Platform Web Cryptography Implemenation
 =============================================
-
 This package provides a cross-platform implementation of the
-[Web Cryptograph API][webcrypto-spec]. In browsers this package wraps the
-[`window.crypto`][window-crypto] APIs and provides an easy to use Dart API.
-On other platforms, the same API, is implemented by interfacing
-[BoringSSL][boringssl-src] using [`dart:ffi`][dart-ffi]. This way,
-`package:webcrypto` provides the same crypto API on multiple platforms.
+[Web Cryptograph API][webcrypto-spec].
+
+**Disclaimer:** This is not an officially supported Google product.
+
+This packages provides an implementation of the
+[Web Cryptograph API][webcrypto-spec] across multiple platforms. Outside the
+browser, this package features a native implementation embedding
+[BoringSSL][boringssl-src] using [`dart:ffi`][dart-ffi]. When used inside a
+web browser this package wraps the [`window.crypto`][window-crypto] APIs and
+providing the same Dart API as the native implementation.
+
+This way, `package:webcrypto` provides the same crypto API on multiple
+platforms. Initially targeting Flutter for **Android** and **Web**, with **iOS**
+and other platforms following as soon as the build system allows.
 
 **Example**
 ```dart
