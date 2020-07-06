@@ -56,7 +56,27 @@ def git_clone(target):
 FILES_TO_RETAIN = [
     'src/README.md',
     'src/LICENSE',
+    'src/INCORPORATING.md',
 ]
+
+BORINGSSL_FOLDER_README = """# Incorporation of BoringSSL in `package:webcrypto`
+
+**GENERATED FOLDER DO NOT MODIFY**
+
+This folder contains sources from BoringSSL allowing `package:webcrypto` to
+incorporate libcrypto from BoringSSL. Contents of this folder is generated
+using `tool/update-boringssl.py` which utilizes scripts and procedures from
+`src/INCORPORATING.md` to faciliate embedding of libcrypto from BoringSSL.
+
+Files in this folder are subject to `LICENSE` from the BoringSSL project.
+
+Notice that this folder does NOT contain all source files from the BoringSSL
+project. Only source files required to build `package:webcrypto` have been
+retained. This is essential to minimize package size. For additional source
+files and information about BoringSSL refer to the [BoringSSL repository][1].
+
+[1]: https://boringssl.googlesource.com/boringssl/
+"""
 
 
 def generate(target):
@@ -83,6 +103,16 @@ def generate(target):
         dst = os.path.join(BORINGSSL_PATH, f)
         mkdirp(os.path.dirname(dst))
         shutil.copy(src, dst)
+
+    # Add a README.md to the third_party/boringssl/ folder
+    with open(os.path.join(BORINGSSL_PATH, 'README.md'), 'w') as f:
+        f.write(BORINGSSL_FOLDER_README)
+
+    # Copy LICENSE file for BoringSSL into third_party/boringssl/LICENSE
+    # because all files in this folder are copied or generated from BoringSSL.
+    LICENSE_src = os.path.join(target, 'src', 'LICENSE')
+    LICENSE_dst = os.path.join(BORINGSSL_PATH, 'LICENSE')
+    shutil.copy(LICENSE_src, LICENSE_dst)
 
 
 SOURCES_CMAKE_HEADER = """# Copyright 2020 Google LLC
@@ -145,10 +175,10 @@ class SourcesCMakeGenerator(object):
         # Retain fips_fragments (otherwise, we can't build)
         self.files_used += file_sets['fips_fragments']
 
-        # Define and retain sources for libcrypto.so
+        # Define and retain sources for libcrypto
         self.define('crypto_sources', file_sets['crypto'])
 
-        # Define and sources various ASM files used by libcrypto.so
+        # Define and sources various ASM files used by libcrypto
         for ((osname, arch), asm_files) in asm_outputs:
             self.define('crypto_sources_%s_%s' % (osname, arch), asm_files)
 
@@ -161,7 +191,7 @@ def mkdirp(path):
 def main():
     try:
         print('Updating third_party/boringssl/')
-        tmp = tempfile.mkdtemp(prefix='roll-boring-')
+        tmp = tempfile.mkdtemp(prefix='update-boringssl-')
         cleanup()
         git_clone(tmp)
         generate(tmp)
