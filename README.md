@@ -53,7 +53,7 @@ see `doc/design-rationale-md`.
 
 ## Limitations
 This package has a few limitations compared to the
-Web Cryptograph API][webcrypto-spec]. For a discussion of parity with
+[Web Cryptograph API][webcrypto-spec]. For a discussion of parity with
 Web Cryptography APIs see `doc/webcrypto-parity.md`.
 
  * `deriveKey` is not supported, however, keys can always be created from
