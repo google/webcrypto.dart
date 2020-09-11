@@ -15,6 +15,5 @@
 include: package:pedantic/analysis_options.yaml
 analyzer:
   exclude:
-    - lib/src/boringssl/lookup/finddotdarttool_cli.dart
-    # Cannot analyzer subprojects
+    # Cannot analyze subprojects
     - example/**
