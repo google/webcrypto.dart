@@ -71,6 +71,8 @@ final CBS_init = resolve(Sym.CBS_init)
 class CBB extends Struct {
   Pointer<Void> base;
 
+  Pointer<CBB> child;
+
   @IntPtr()
   int offset;
 
