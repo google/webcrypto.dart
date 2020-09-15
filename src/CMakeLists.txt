@@ -37,6 +37,10 @@ set(BORINGSSL_ROOT ../third_party/boringssl/)
 #  - crypto_sources_linux_ppc64le
 #  - crypto_sources_linux_x86
 #  - crypto_sources_linux_x86_64
+#  - crypto_sources_mac_x86
+#  - crypto_sources_mac_x86_64
+#  - crypto_sources_win_x86
+#  - crypto_sources_win_x86_64
 include(
   ../third_party/boringssl/sources.cmake
 )
@@ -47,40 +51,49 @@ add_definitions(-DOPENSSL_SMALL)
 
 # Logic from CMakeLists.txt in BoringSSL
 if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-  set(crypto_sources_ARCH ${crypto_sources_linux_x86_64})
+  set(ARCH "x86_64")
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "amd64")
-  set(crypto_sources_ARCH ${crypto_sources_linux_x86_64})
+  set(ARCH "x86_64")
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "AMD64")
-  # cmake reports AMD64 on Windows, but we might be building for 32-bit.
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(crypto_sources_ARCH ${crypto_sources_linux_x86_64})
+    set(ARCH "x86_64")
   else()
-    set(crypto_sources_ARCH ${crypto_sources_linux_x86})
+    set(ARCH "x86")
   endif()
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86")
-  set(crypto_sources_ARCH ${crypto_sources_linux_x86})
+  set(ARCH "x86")
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i386")
-  set(crypto_sources_ARCH ${crypto_sources_linux_x86})
+  set(ARCH "x86")
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
-  set(crypto_sources_ARCH ${crypto_sources_linux_x86})
+  set(ARCH "x86")
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
-  set(crypto_sources_ARCH ${crypto_sources_linux_aarch64})
+  set(ARCH "aarch64")
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
-  set(crypto_sources_ARCH ${crypto_sources_linux_aarch64})
-# Apple A12 Bionic chipset which is added in iPhone XS/XS Max/XR uses arm64e architecture.
+  set(ARCH "aarch64")
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64e")
-  set(crypto_sources_ARCH ${crypto_sources_linux_aarch64})
+  set(ARCH "aarch64")
 elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm*")
-  set(crypto_sources_ARCH ${crypto_sources_linux_arm})
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "mips")
-  # Just to avoid the “unknown processor” error.
-  set(crypto_sources_ARCH ${crypto_sources_linux_generic})
+  set(ARCH "arm")
 elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
-  set(crypto_sources_ARCH ${crypto_sources_linux_ppc64le})
+  set(ARCH "ppc64le")
 else()
-  # If we can't match an architecture, we just disable assembler optimizations
-  set(crypto_sources_ARCH)
+  set(ARCH "generic")
+endif()
+
+# https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM_NAME.html
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+  set(PLATFORM "win")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+  set(PLATFORM "mac")
+else()
+  # Assume we're on linux or similar platform
+  set(PLATFORM "linux")
+endif()
+
+# If there is no assembly files disable ASM and set empty sources list
+if(NOT DEFINED crypto_sources_${PLATFORM}_${ARCH})
   add_definitions(-DOPENSSL_NO_ASM)
+  set(crypto_sources_${PLATFORM}_${ARCH})
 endif()
 
 add_library(
@@ -93,7 +106,7 @@ add_library(
   ../src/webcrypto.c
   ../src/symbols.generated.c
   ${crypto_sources}
-  ${crypto_sources_ARCH}
+  ${crypto_sources_${PLATFORM}_${ARCH}}
 )
 
 target_include_directories(
