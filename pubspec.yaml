@@ -50,3 +50,5 @@ flutter:
       web:
         pluginClass: WebcryptoPlugin
         fileName: src/flutter/webcrypto_plugin.dart
+      ios:
+        pluginClass: WebcryptoPlugin
