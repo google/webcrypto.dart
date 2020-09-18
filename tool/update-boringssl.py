@@ -26,7 +26,6 @@ import tempfile
 
 TOOL_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.dirname(TOOL_PATH)
-BORINGSSL_PATH = os.path.join(ROOT_PATH, 'third_party', 'boringssl')
 
 BORINGSSL_REPOSITORY = 'https://boringssl.googlesource.com/boringssl'
 BORINGSSL_REVISION = '33f8d33af0dcb083610e978baad5a8b6e1cfee82'
@@ -34,9 +33,14 @@ BORINGSSL_REVISION = '33f8d33af0dcb083610e978baad5a8b6e1cfee82'
 
 def cleanup():
     """ Remove boringssl sources and generated files """
-    if os.path.exists(BORINGSSL_PATH):
-        shutil.rmtree(BORINGSSL_PATH)
-    mkdirp(BORINGSSL_PATH)
+    paths = [
+        os.path.join(ROOT_PATH, 'third_party', 'boringssl'),
+        os.path.join(ROOT_PATH, 'ios', 'third_party', 'boringssl')
+    ]
+    for p in paths:
+        if os.path.exists(p):
+            shutil.rmtree(p)
+        mkdirp(p)
 
 
 def git_clone(target):
@@ -78,43 +82,6 @@ files and information about BoringSSL refer to the [BoringSSL repository][1].
 [1]: https://boringssl.googlesource.com/boringssl/
 """
 
-
-def generate(target):
-    # Change directory into target because generate_build_files expects to run
-    # from this location
-    os.chdir(target)
-
-    # Import src/util/generate_build_files.py
-    sys.path.append(os.path.join(target, 'src', 'util'))
-    import generate_build_files
-
-    gen = SourcesCMakeGenerator()
-    generate_build_files.EMBED_TEST_DATA = False
-    generate_build_files.main([gen])
-
-    # Write third_party/boringssl/sources.cmake
-    with open(os.path.join(BORINGSSL_PATH, 'sources.cmake'), 'w') as f:
-        f.write(gen.sources_cmake)
-
-    # Copy over all used files
-    files_to_copy = gen.files_used + FILES_TO_RETAIN
-    for f in sorted(set(files_to_copy)):
-        src = os.path.join(target, f)
-        dst = os.path.join(BORINGSSL_PATH, f)
-        mkdirp(os.path.dirname(dst))
-        shutil.copy(src, dst)
-
-    # Add a README.md to the third_party/boringssl/ folder
-    with open(os.path.join(BORINGSSL_PATH, 'README.md'), 'w') as f:
-        f.write(BORINGSSL_FOLDER_README)
-
-    # Copy LICENSE file for BoringSSL into third_party/boringssl/LICENSE
-    # because all files in this folder are copied or generated from BoringSSL.
-    LICENSE_src = os.path.join(target, 'src', 'LICENSE')
-    LICENSE_dst = os.path.join(BORINGSSL_PATH, 'LICENSE')
-    shutil.copy(LICENSE_src, LICENSE_dst)
-
-
 SOURCES_CMAKE_HEADER = """# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,52 +102,165 @@ SOURCES_CMAKE_HEADER = """# Copyright 2020 Google LLC
 # `tool/update-boringssl.py`
 """
 
+FAKE_IOS_SOURCE_HEADER = """/*
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-class SourcesCMakeGenerator(object):
+// **GENERATED FILE DO NOT MODIFY**
+//
+// This file is generated using:
+// `tool/update-boringssl.py`
+"""
+
+
+class BoringSSLGenerator(object):
     """
-        Generator for generate_build_files which holds contents for
-        sources.cmake and list of files to be used, when done.
+        Generator for src/util/generate_build_files.py from BoringSSL.
+
+        This simply stores the variables, so we easily access them in function.
     """
-
-    def __init__(self):
-        self.sources_cmake = SOURCES_CMAKE_HEADER
-        self.files_used = []
-
-    def define(self, variable, files):
-        """ Define variable in sources.cmake to hold files """
-        self.files_used += files
-        self.sources_cmake += '\nset(' + variable + '\n'
-        self.sources_cmake += '\n'.join((
-            '  ${BORINGSSL_ROOT}' + f for f in sorted(files)
-        ))
-        self.sources_cmake += '\n)\n'
-
     def WriteFiles(self, file_sets, asm_outputs):
         """
-            Implement WriteFiles as will be called by generate_build_files.
+            WriteFiles will be called by generate_build_files.main(..)
 
-            file_sets is a dict mapping from targets to list of files, and,
-            asm_outputs is a list of nested tuples on the form:
-                ((os, arch), list_of_files)
-            for each operating system and architecture.
+            Parameters
+            ----------
+            file_sets : dict
+                A dict mapping from targets to list of files.
+            asm_outputs : list
+                A list of nested tuples on the form:
+                    ((os, arch), list_of_files)
+                for each operating system and architecture.
 
-            All file paths are relative to target (current working directory)
+            All file paths are relative to root the BoringSSL repository.
         """
-        # Retain public headers
-        self.files_used += file_sets['crypto_headers']
+        self.file_sets = file_sets
+        self.asm_outputs = asm_outputs
 
-        # Retain internal headers (otherwise, we can't build)
-        self.files_used += file_sets['crypto_internal_headers']
 
-        # Retain fips_fragments (otherwise, we can't build)
-        self.files_used += file_sets['fips_fragments']
+def writeFile(path_relative_root, contents):
+    with open(os.path.join(ROOT_PATH, path_relative_root), 'w') as f:
+        f.write(contents)
 
-        # Define and retain sources for libcrypto
-        self.define('crypto_sources', file_sets['crypto'])
 
-        # Define and sources various ASM files used by libcrypto
-        for ((osname, arch), asm_files) in asm_outputs:
-            self.define('crypto_sources_%s_%s' % (osname, arch), asm_files)
+def writeSourcesCmake(g):
+    """
+        Write third_party/boringssl/sources.cmake
+    """
+    def define(variable, files):
+        """ Define variable in sources.cmake to hold files """
+        s = ''
+        s += '\nset(' + variable + '\n'
+        s += '\n'.join((
+            '  ${BORINGSSL_ROOT}' + f for f in sorted(files)
+        ))
+        s += '\n)\n'
+        return s
+    
+    # Define sources for libcrypto
+    sources_cmake = ''
+    sources_cmake += SOURCES_CMAKE_HEADER
+    sources_cmake += define('crypto_sources', g.file_sets['crypto'])
+    
+    # Define and sources various ASM files used by libcrypto
+    for ((osname, arch), asm_files) in g.asm_outputs:
+        name = 'crypto_sources_%s_%s' % (osname, arch)
+        sources_cmake += define(name, asm_files)
+    
+    # Write third_party/boringssl/sources.cmake
+    p = os.path.join('third_party', 'boringssl', 'sources.cmake')
+    writeFile(p, sources_cmake)
+
+
+def copySourceFiles(g, boringssl_clone):
+    """
+        Copy source files into third_party/boringssl/
+    """
+    files_to_copy = []
+    # Copy libcrypto sources
+    files_to_copy += g.file_sets['crypto']
+    # Copy public headers
+    files_to_copy += g.file_sets['crypto_headers']
+    # Copy internal headers (otherwise, we can't build)
+    files_to_copy += g.file_sets['crypto_internal_headers']
+    # Copy fips_fragments (otherwise, we can't build)
+    files_to_copy += g.file_sets['fips_fragments']
+    # Copy various ASM files used by libcrypto
+    for ((osname, arch), asm_files) in g.asm_outputs:
+        files_to_copy += asm_files
+    # Copy static files
+    files_to_copy += FILES_TO_RETAIN
+    
+    for f in sorted(set(files_to_copy)):
+        src = os.path.join(boringssl_clone, f)
+        dst = os.path.join(ROOT_PATH, 'third_party', 'boringssl', f)
+        mkdirp(os.path.dirname(dst))
+        shutil.copy(src, dst)
+
+
+def writeFakeIosSource(g):
+    """
+        Write fake-source files that each #include "../..." the original source
+        file for ios/
+    """
+    for f in sorted(set(g.file_sets['crypto'])):
+        target = os.path.join(ROOT_PATH, 'ios', 'third_party', 'boringssl', f)
+        original = os.path.join(ROOT_PATH, 'third_party', 'boringssl', f)
+        rel = os.path.relpath(original, os.path.dirname(target))
+        mkdirp(os.path.dirname(target))
+        contents = ''
+        contents += FAKE_IOS_SOURCE_HEADER
+        contents += '\n'
+        contents += '#include "'+rel+'"\n'
+        writeFile(os.path.join('ios', 'third_party', 'boringssl', f), contents)
+
+
+def generate(boringssl_clone):
+    # Change directory into boringssl_clone because generate_build_files.py
+    # expects to run from this location
+    os.chdir(boringssl_clone)
+
+    # Import src/util/generate_build_files.py
+    sys.path.append(os.path.join(boringssl_clone, 'src', 'util'))
+    import generate_build_files
+
+    g = BoringSSLGenerator()
+    generate_build_files.EMBED_TEST_DATA = False
+    generate_build_files.main([g])
+
+    # Write third_party/boringssl/sources.cmake
+    writeSourcesCmake(g)
+
+    # Copy source files into third_party/boringssl/
+    copySourceFiles(g, boringssl_clone)
+
+    # Write fake-source files for ios/ which use #include "../..." to include
+    # the original source file. This is necessary because webcrypto.podspec
+    # cannot reference sources not under the ios/ folder.
+    # But the C-preprocessor can still include them :D
+    writeFakeIosSource(g)
+
+    # Add a README.md to the third_party/boringssl/ folder
+    readmePath = os.path.join('third_party', 'boringssl', 'README.md')
+    writeFile(readmePath, BORINGSSL_FOLDER_README)
+    
+    # Copy LICENSE file for BoringSSL into third_party/boringssl/LICENSE
+    # because all files in this folder are copied or generated from BoringSSL.
+    LICENSE_src = os.path.join(boringssl_clone, 'src', 'LICENSE')
+    LICENSE_dst = os.path.join(ROOT_PATH, 'third_party', 'boringssl', 'LICENSE')
+    shutil.copy(LICENSE_src, LICENSE_dst)
 
 
 def mkdirp(path):
