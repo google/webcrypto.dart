@@ -1,3 +1,7 @@
+# 0.2.0
+ * Added `ios` support.
+ * Added `<2.0.0` upper-bound on Flutter SDK constraint.
+
 # 0.1.2
  * Fixed sizeof `ssl.CBB` causing occasional segfaults, as we previously
    allocated too few bytes.
