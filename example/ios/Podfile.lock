@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - webcrypto (0.1.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - webcrypto (from `.symlinks/plugins/webcrypto/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  webcrypto:
+    :path: ".symlinks/plugins/webcrypto/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  webcrypto: ffc5f7f64d4d71e3dcaf5c8deefd160103ecb76e
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.8.4
