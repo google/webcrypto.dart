@@ -13,8 +13,8 @@ web browser this package wraps the [`window.crypto`][window-crypto] APIs and
 providing the same Dart API as the native implementation.
 
 This way, `package:webcrypto` provides the same crypto API on multiple
-platforms. Initially targeting Flutter for **Android** and **Web**, with **iOS**
-and other platforms following as soon as the build system allows.
+platforms. Initially targeting Flutter for **Android**, **iOS** and **Web**,
+with other platforms following as soon as the build system allows.
 
 **Example**
 ```dart
@@ -50,6 +50,32 @@ Future<void> main() async {
 
 For a discussion of the API design of this package,
 see `doc/design-rationale-md`.
+
+## Use with `flutter test`
+
+Unlike most plugins it is possible to run code that uses `package:webcrypto`
+with `flutter test`. For this to work the native library must be built in the
+application folder where `flutter test` is called. This can be done with:
+
+```bash
+# Only necessary when package:webcrypto is used from 'flutter test'
+# This is not necessary for development with 'flutter run' and hot-reload
+$ flutter pub run webcrypto:setup
+
+# Now it's possible to run tests that uses package:webcrypto
+$ flutter test test/my_test_file_using_webcrypto.dart
+```
+
+This requires:
+ * `cmake`
+ * a C compiler (like `gcc` or `clang`)
+ * Linux or Mac.
+
+The native library will be stored in `.dart_tool/webcrypto/` which should
+_not_ be under source control.
+
+It is also possible to run tests with Flutter Web using
+`flutter test -p chrome`, this does not require any additional setup steps.
 
 ## Limitations
 This package has a few limitations compared to the
