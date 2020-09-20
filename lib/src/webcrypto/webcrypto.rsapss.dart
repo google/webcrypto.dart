@@ -54,6 +54,25 @@ abstract class RsaPssPrivateKey {
     );
   }
 
+  ///
+  ///
+  /// ## Notes on saltLength
+  /// [saltLength] is given in number of bytes.
+  ///
+  /// [WebKit on mac][1] uses [CommonCrypto][2] which uses [corecrypto][3] which
+  /// follows [FIPS 186-4, Section 5.5, Step (e)][4] restricting [saltLength] to
+  /// `0 <= saltLength <= hashLength`.
+  ///
+  /// TODO: Make a recommendation for the following:
+  /// [RFC 3447][5] notes that typical [saltLength] is 0 or _length of hash_.
+  /// For more information see [RFC 3447 Section 9.1, Notes 4][6].
+  ///
+  /// [1]: https://trac.webkit.org/browser/webkit/trunk/Source/WebCore/crypto/mac/CryptoAlgorithmRSA_PSSMac.cpp?rev=238754#L56
+  /// [2]: https://opensource.apple.com/source/CommonCrypto/CommonCrypto-60165.120.1/lib/CommonRSACryptor.c.auto.html
+  /// [3]: https://opensource.apple.com/source/xnu/xnu-4570.41.2/EXTERNAL_HEADERS/corecrypto/ccrsa.h.auto.html
+  /// [4]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
+  /// [5]: https://tools.ietf.org/html/rfc3447
+  /// [6]: https://tools.ietf.org/html/rfc3447#section-9.1
   Future<Uint8List> signBytes(List<int> data, int saltLength);
   Future<Uint8List> signStream(Stream<List<int>> data, int saltLength);
 

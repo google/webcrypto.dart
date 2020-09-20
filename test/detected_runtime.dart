@@ -15,14 +15,17 @@
 import 'detected_runtime_stub.dart'
     if (dart.library.html) 'detected_runtime_html.dart';
 
-export 'detected_runtime_stub.dart'
-    if (dart.library.html) 'detected_runtime_html.dart';
-
 /// Return `null` instead of [value] on Gecko.
 ///
 /// PKCS8 is not support for ECDH / ECDSA on firefox:
 /// https://bugzilla.mozilla.org/show_bug.cgi?id=1133698
 ///
-/// This utility helps filter away PKCS8 test data and functions when running
-/// on Firefox.
+/// This utility helps filter away test cases and features known to not work on
+/// Firefox and which has been documented in the API documentation.
 T nullOnGecko<T>(T value) => detectedRuntime == 'gecko' ? null : value;
+
+/// Return `null` instead of [value] on Webkit (Safari).
+///
+/// This utility helps filter away test cases and features known to not work on
+/// Safari and whcih has been documented in the API documentation.
+T nullOnWebkit<T>(T value) => detectedRuntime == 'webkit' ? null : value;
