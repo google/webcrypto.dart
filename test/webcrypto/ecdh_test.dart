@@ -169,6 +169,15 @@ final _testData = [
     "importKeyParams": {"curve": "p-256"},
     "deriveParams": {}
   },
+
+  /// Safari and WebKit on Mac (with CommonCrypto) does not support P-521, see:
+  /// https://bugs.webkit.org/show_bug.cgi?id=216755
+  ...(nullOnWebkit(_testDataWithP521) ?? <Map>[]),
+
+  // TODO: generate on firefox, once the import/export pkcs8 has been figured out
+];
+
+final _testDataWithP521 = [
   {
     "name": "P521/528 generated on boringssl/linux at 2020-01-23T18:24:14",
     "privatePkcs8KeyData":
@@ -262,7 +271,5 @@ final _testData = [
     "derivedLength": 528,
     "importKeyParams": {"curve": "p-521"},
     "deriveParams": {}
-  }
-
-  // TODO: generate on firefox, once the import/export pkcs8 has been figured out
+  },
 ];

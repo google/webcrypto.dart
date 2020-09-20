@@ -59,5 +59,11 @@ abstract class KeyPair<S, T> {
 enum EllipticCurve {
   p256,
   p384,
+
+  ///
+  ///
+  /// P-521 is **not supported on Safari**, see [bug 216755 (bugs.webkit.org)][1].
+  ///
+  /// [1]: https://bugs.webkit.org/show_bug.cgi?id=216755
   p521,
 }
