@@ -94,13 +94,14 @@ implementation using BoringSSL and various browser implementations of the
 Web Cryptography APIs.
 
 At the moment **compatibility testing is limited** to native implementation,
-Chrome and Firefox.
+Chrome, Firefox and Safari.
 
 **Known Issues:**
  * Chrome and BoringSSL does not support valid ECDH spki-formatted keys exported
    by Firefox prior to version 72.
  * Firefox does not support PKCS8 import/export for ECDSA and ECDH keys.
  * Firefox does not handle counter wrap around for `AES-CTR`.
+ * Safari does not support P-521 for ECDSA and ECDH.
  * The browser implementation of streaming methods for _encryption_,
    _decryption_, _signing_ and _verification_ buffers the entire input, because
    `window.crypto` does not expose a streaming API. However, the native
