@@ -119,13 +119,14 @@ class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
   Future<Uint8List> signStream(Stream<List<int>> data, int saltLength) {
     ArgumentError.checkNotNull(data, 'data');
     ArgumentError.checkNotNull(saltLength, 'saltLength');
-    if (saltLength <= 0) {
+    if (saltLength < 0) {
       throw ArgumentError.value(
         saltLength,
         'saltLength',
         'must be a positive integer',
       );
     }
+
     return _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
@@ -201,8 +202,7 @@ class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
     ArgumentError.checkNotNull(signature, 'signature');
     ArgumentError.checkNotNull(data, 'data');
     ArgumentError.checkNotNull(saltLength, 'saltLength');
-
-    if (saltLength <= 0) {
+    if (saltLength < 0) {
       throw ArgumentError.value(
         saltLength,
         'saltLength',

@@ -92,6 +92,15 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
 
   @override
   Future<Uint8List> signBytes(List<int> data, int saltLength) async {
+    ArgumentError.checkNotNull(saltLength, 'saltLength');
+    if (saltLength < 0) {
+      throw ArgumentError.value(
+        saltLength,
+        'saltLength',
+        'must be a positive integer',
+      );
+    }
+
     return await _sign(
       subtle.Algorithm(name: _rsaPssAlgorithmName, saltLength: saltLength),
       _key,
@@ -125,6 +134,15 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
     List<int> data,
     int saltLength,
   ) async {
+    ArgumentError.checkNotNull(saltLength, 'saltLength');
+    if (saltLength < 0) {
+      throw ArgumentError.value(
+        saltLength,
+        'saltLength',
+        'must be a positive integer',
+      );
+    }
+
     return await _verify(
       subtle.Algorithm(name: _rsaPssAlgorithmName, saltLength: saltLength),
       _key,
