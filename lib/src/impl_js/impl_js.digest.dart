@@ -20,6 +20,8 @@ class _Hash implements Hash {
 
   @override
   Future<Uint8List> digestBytes(List<int> data) async {
+    ArgumentError.checkNotNull(data, 'data');
+
     return await _handleDomException(() async {
       final result = await subtle.promiseAsFuture(subtle.digest(
         _algorithm,
@@ -42,6 +44,8 @@ const Hash sha512 = _Hash('SHA-512');
 
 /// Get the algorithm from [hash] or throw an [ArgumentError].
 String _getHashAlgorithm(Hash hash) {
+  ArgumentError.checkNotNull(hash, 'hash');
+
   if (hash is _Hash) {
     return hash._algorithm;
   }
