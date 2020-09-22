@@ -158,7 +158,7 @@ final _testData = [
   },
   // HACK: Exclude counter rollover test data on Firefox, where it is broken:
   // https://hg.mozilla.org/projects/nss/file/38f1c92a5e1175bb8388768a209ac0efdabd1bd7/lib/freebl/ctr.c#l86
-  ...(nullOnGecko(_rolloverTestData) ?? <Map>[]),
+  ...(nullOnFirefox(_rolloverTestData) ?? <Map>[]),
 ];
 
 final _rolloverTestData = [

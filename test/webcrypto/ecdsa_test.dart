@@ -26,9 +26,9 @@ final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1133698
   //
   // So filter away PKCS8 test data and functions when running on gecko.
-  importPrivatePkcs8Key: nullOnGecko((keyData, keyImportParams) =>
+  importPrivatePkcs8Key: nullOnFirefox((keyData, keyImportParams) =>
       EcdsaPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams))),
-  exportPrivatePkcs8Key: nullOnGecko((key) => key.exportPkcs8Key()),
+  exportPrivatePkcs8Key: nullOnFirefox((key) => key.exportPkcs8Key()),
   importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdsaPrivateKey.importJsonWebKey(
           jsonWebKeyData, curveFromJson(keyImportParams)),
@@ -56,7 +56,7 @@ final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
       key.verifyStream(signature, data, hashFromJson(verifyParams)),
   testData: _testData.map((c) => {
         ...c,
-        'privatePkcs8KeyData': nullOnGecko(c['privatePkcs8KeyData']),
+        'privatePkcs8KeyData': nullOnFirefox(c['privatePkcs8KeyData']),
       }),
 );
 

@@ -12,4 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-final String detectedRuntime = '';
+import 'dart:io' show Platform;
+
+final String detectedRuntime = Platform.operatingSystem;

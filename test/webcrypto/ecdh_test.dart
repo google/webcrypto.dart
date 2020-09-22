@@ -36,9 +36,9 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1133698
   //
   // So filter away PKCS8 test data and functions when running on gecko.
-  importPrivatePkcs8Key: nullOnGecko((keyData, keyImportParams) =>
+  importPrivatePkcs8Key: nullOnFirefox((keyData, keyImportParams) =>
       EcdhPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams))),
-  exportPrivatePkcs8Key: nullOnGecko((key) => key.exportPkcs8Key()),
+  exportPrivatePkcs8Key: nullOnFirefox((key) => key.exportPkcs8Key()),
   importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdhPrivateKey.importJsonWebKey(
           jsonWebKeyData, curveFromJson(keyImportParams)),
@@ -73,7 +73,7 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   ),
   testData: _testData.map((c) => {
         ...c,
-        'privatePkcs8KeyData': nullOnGecko(c['privatePkcs8KeyData']),
+        'privatePkcs8KeyData': nullOnFirefox(c['privatePkcs8KeyData']),
       }),
 );
 
@@ -172,7 +172,7 @@ final _testData = [
 
   /// Safari and WebKit on Mac (with CommonCrypto) does not support P-521, see:
   /// https://bugs.webkit.org/show_bug.cgi?id=216755
-  ...(nullOnWebkit(_testDataWithP521) ?? <Map>[]),
+  ...(nullOnSafari(_testDataWithP521) ?? <Map>[]),
 
   // TODO: generate on firefox, once the import/export pkcs8 has been figured out
 ];

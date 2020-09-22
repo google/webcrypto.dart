@@ -14,35 +14,44 @@
 
 import 'dart:html' show window;
 
-/// Detected [rendering engine][1], this is one of:
-///  * `'gecko'`,
-///  * `'webkit'`,
-///  * `'presto'`,
-///  * `'trident'`,
-///  * `'edgehtml'`,
-///  * `'blink'`, or,
-///  * `''` if nothing could be detected.
+/// Detected runtime based on [rendering engine][1], this is one of:
+///  * `'firefox'` (if rendering engine is `'gecko'`),
+///  * `'safari'` (if rendering engine is `'webkit'`),
+///  * `'presto'` (if rendering engine is `'presto'`),
+///  * `'trident'` (if rendering engine is `'trident'`),
+///  * `'edgehtml'` (if rendering engine is `'edgehtml'`),
+///  * `'chrome'` (if rendering engine is `'blink'`),
+///  * `'unknown'` if nothing could be detected.
+///
+/// We use product names for firefox, safari and chrome, because these link up
+/// with the terminal command line arguments for `pub run test -p <platform>`.
+/// Furthermore, it seems unlikely that we'll need to test on presto, trident,
+/// edgehtml as these are no longer being used in latest versions of Opera or
+/// Edge.
 ///
 /// [1]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 final String detectedRuntime = () {
-  final userAgent = window.navigator.userAgent ?? '';
-  if (userAgent.contains('Gecko/')) {
-    return 'gecko';
+  final ua = window.navigator.userAgent ?? '';
+
+  if (ua.contains('Gecko/')) {
+    return 'firefox';
   }
-  if (userAgent.contains('AppleWebKit/')) {
-    return 'webkit';
+  if (ua.contains('AppleWebKit/') &&
+      !ua.contains('Chrome/') &&
+      !ua.contains('Chromium/')) {
+    return 'safari';
   }
-  if (userAgent.contains('Opera/')) {
+  if (ua.contains('Opera/')) {
     return 'presto';
   }
-  if (userAgent.contains('Trident/')) {
+  if (ua.contains('Trident/')) {
     return 'trident';
   }
-  if (userAgent.contains('Edge/')) {
+  if (ua.contains('Edge/')) {
     return 'edgehtml';
   }
-  if (userAgent.contains('Chrome/')) {
-    return 'blink';
+  if (ua.contains('Chrome/')) {
+    return 'chrome';
   }
-  return '';
+  return 'unknown';
 }();
