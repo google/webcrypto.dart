@@ -19,6 +19,7 @@ import 'dart:async';
 import 'package:test/test.dart' show test;
 import 'package:meta/meta.dart';
 import 'package:webcrypto/webcrypto.dart';
+import 'detected_runtime.dart';
 import 'ffibonacci_chunked_stream.dart';
 import 'utils.dart';
 import 'lipsum.dart';
@@ -626,6 +627,25 @@ class TestRunner<PrivateKey, PublicKey> {
   }
 }
 
+/// Wraps a [test] function such that calls must always be ordered, and that
+/// any subsequent tests fails, if a previous test has failed.
+void Function(String name, FutureOr Function() fn) _withTestDependency(
+  void Function(String name, FutureOr Function() fn) test,
+) {
+  var count = 0;
+  var next = 0;
+  return (String name, FutureOr Function() fn) {
+    final order = count++;
+    test(name, () async {
+      if (next != order) {
+        check(false, 'Test dependency failed.');
+      }
+      await fn();
+      next++;
+    });
+  };
+}
+
 /// Validate that the test case [c] is compatible with TestRunner [r].
 void _validateTestCase<PrivateKey, PublicKey>(
   TestRunner<PrivateKey, PublicKey> r,
@@ -692,6 +712,8 @@ void _runTests<PrivateKey, PublicKey>(
   _TestCase c,
   void Function(String name, FutureOr Function() fn) test,
 ) {
+  test = _withTestDependency(test);
+
   test('validate test case', () => _validateTestCase(r, c));
 
   try {
@@ -1405,6 +1427,47 @@ void _runTests<PrivateKey, PublicKey>(
 
       final key = await r._importPublicJsonWebKey(jwk, c.importKeyParams);
       await checkPublicKey(key);
+    });
+  }
+
+  //------------------------------ validate the generated test case
+
+  if (c.generateKeyParams != null) {
+    test('validate generated test case', () async {
+      T optionalCall<S, T>(T Function(S) fn, S v) => fn != null ? fn(v) : null;
+      final date =
+          DateTime.now().toIso8601String().split('T').first; // drop time
+      final generated = _TestCase(
+        '${c.name} generated on $detectedRuntime at $date',
+        generateKeyParams: null, // omit generateKeyParams
+        privateRawKeyData:
+            await optionalCall(r._exportPrivateRawKey, privateKey),
+        privatePkcs8KeyData:
+            await optionalCall(r._exportPrivatePkcs8Key, privateKey),
+        privateJsonWebKeyData:
+            await optionalCall(r._exportPrivateJsonWebKey, privateKey),
+        publicRawKeyData: await optionalCall(r._exportPublicRawKey, publicKey),
+        publicSpkiKeyData:
+            await optionalCall(r._exportPublicSpkiKey, publicKey),
+        publicJsonWebKeyData:
+            await optionalCall(r._exportPublicJsonWebKey, publicKey),
+        plaintext: c.plaintext,
+        signature: signature,
+        ciphertext: ciphertext,
+        derivedBits: derivedBits,
+        importKeyParams: c.importKeyParams,
+        signVerifyParams: c.signVerifyParams,
+        encryptDecryptParams: c.encryptDecryptParams,
+        derivedLength: c.derivedLength,
+        deriveParams: c.deriveParams,
+      );
+
+      // Validate that the generated test case is sane.
+      _validateTestCase(r, generated);
+
+      // Log the generated test case. This makes it easy to copy/paste the test
+      // case into test files.
+      dump(generated.toJson());
     });
   }
 }

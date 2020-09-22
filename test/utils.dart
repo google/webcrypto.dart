@@ -21,6 +21,21 @@ import 'package:test/test.dart' as t;
 /// Log [value] from tests.
 void log(Object value) => print(value);
 
+/// True, if data should be dumped, this is mostly generated test case
+const _dumpData = bool.fromEnvironment('webcrypto.dump', defaultValue: false);
+//const _dumpData = true; // manual override
+
+/// Dump data, if enabled with `dart -D webcrypto.dump=true <file>`.
+///
+/// This can also be overwritten by manually tweaking the [_dumpData] variable.
+void dump(Map data) {
+  if (_dumpData) {
+    final json =
+        JsonEncoder.withIndent('  ').convert(data).replaceAll('\n', '\n| ');
+    log('| $json');
+  }
+}
+
 /// Check if [condition] hold.
 void check(bool condition, [String message = 'check failed']) {
   if (!condition) {
