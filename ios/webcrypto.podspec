@@ -18,6 +18,7 @@ Pod::Spec.new do |s|
     # Since we can't embed source from ../third_party/, we have create files
     # in ios/third_party/... that simply uses #include "../...", this is a hack!
     'third_party/boringssl/**/*.{c,h}',
+    'third_party/dart-sdk/**/*.{c,h}',
   ]
   s.compiler_flags      = [
     '-DOPENSSL_NO_ASM',
