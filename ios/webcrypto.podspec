@@ -29,7 +29,10 @@ Pod::Spec.new do |s|
 
   s.pod_target_xcconfig = {
     # Enable equivalent of '-Isrc/include' to make '#include <openssl/...>' work
-    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/../third_party/boringssl/src/include',
+    'HEADER_SEARCH_PATHS' => [
+      '$(PODS_TARGET_SRCROOT)/../third_party/boringssl/src/include',
+      '$(PODS_TARGET_SRCROOT)/../third_party/dart-sdk/src/runtime',
+    ],
     'DEFINES_MODULE' => 'YES',
     # Flutter.framework does not contain a i386 slice.
     # Only x86_64 simulators are supported.
