@@ -40,9 +40,16 @@ final EVP_PKEY_new = resolve(Sym.EVP_PKEY_new)
 /// ```c
 /// void EVP_PKEY_free(EVP_PKEY *pkey);
 /// ```
-final EVP_PKEY_free = resolve(Sym.EVP_PKEY_free)
-    .lookupFunc<Void Function(Pointer<EVP_PKEY>)>()
-    .asFunction<void Function(Pointer<EVP_PKEY>)>();
+final EVP_PKEY_free_ =
+    resolve(Sym.EVP_PKEY_free).lookupFunc<Void Function(Pointer<EVP_PKEY>)>();
+
+/// EVP_PKEY_free frees all data referenced by pkey and then frees pkey itself.
+///
+/// ```c
+/// void EVP_PKEY_free(EVP_PKEY *pkey);
+/// ```
+final EVP_PKEY_free =
+    EVP_PKEY_free_.asFunction<void Function(Pointer<EVP_PKEY>)>();
 
 /// EVP_PKEY_id returns the type of pkey, which is one of the EVP_PKEY_* values.
 ///
@@ -86,7 +93,7 @@ final EVP_PKEY_set1_RSA = resolve(Sym.EVP_PKEY_set1_RSA)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY>, Pointer<RSA>)>()
     .asFunction<int Function(Pointer<EVP_PKEY>, Pointer<RSA>)>();
 
-final EVP_PKEY_get0_RSA = resolve(Sym.EVP_PKEY_get0_RSA)
+final EVP_PKEY_get1_RSA = resolve(Sym.EVP_PKEY_get1_RSA)
     .lookupFunc<Pointer<RSA> Function(Pointer<EVP_PKEY>)>()
     .asFunction<Pointer<RSA> Function(Pointer<EVP_PKEY>)>();
 
@@ -94,7 +101,7 @@ final EVP_PKEY_set1_EC_KEY = resolve(Sym.EVP_PKEY_set1_EC_KEY)
     .lookupFunc<Int32 Function(Pointer<EVP_PKEY>, Pointer<EC_KEY>)>()
     .asFunction<int Function(Pointer<EVP_PKEY>, Pointer<EC_KEY>)>();
 
-final EVP_PKEY_get0_EC_KEY = resolve(Sym.EVP_PKEY_get0_EC_KEY)
+final EVP_PKEY_get1_EC_KEY = resolve(Sym.EVP_PKEY_get1_EC_KEY)
     .lookupFunc<Pointer<EC_KEY> Function(Pointer<EVP_PKEY>)>()
     .asFunction<Pointer<EC_KEY> Function(Pointer<EVP_PKEY>)>();
 

@@ -19,6 +19,8 @@
 
 #include <stddef.h>
 
+#include "webcrypto_dart_dl.h"
+
 // BoringSSL headers
 #include <openssl/aead.h>
 #include <openssl/bn.h>

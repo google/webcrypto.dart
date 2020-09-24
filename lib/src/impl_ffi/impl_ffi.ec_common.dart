@@ -69,22 +69,30 @@ void _validateEllipticCurveKey(
   ffi.Pointer<ssl.EVP_PKEY> key,
   EllipticCurve curve,
 ) {
-  _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_EC,
-      message: 'key is not an EC key');
+  final scope = _Scope();
+  try {
+    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_EC,
+        message: 'key is not an EC key');
 
-  final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
-  _checkData(ec.address != 0, fallback: 'key is not an EC key');
-  _checkDataIsOne(ssl.EC_KEY_check_key(ec), fallback: 'invalid key');
+    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
+    _checkData(ec.address != 0, fallback: 'key is not an EC key');
+    scope.defer(() => ssl.EC_KEY_free(ec));
 
-  // When importing BoringSSL will compute the public key if omitted, and
-  // leave a flag, such that exporting the private key won't include the
-  // public key.
-  final encFlags = ssl.EC_KEY_get_enc_flags(ec);
-  ssl.EC_KEY_set_enc_flags(ec, encFlags & ~ssl.EC_PKEY_NO_PUBKEY);
+    _checkDataIsOne(ssl.EC_KEY_check_key(ec), fallback: 'invalid key');
 
-  // Check the curve of the imported key
-  final nid = ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(ec));
-  _checkData(_ecCurveToNID(curve) == nid, message: 'incorrect elliptic curve');
+    // When importing BoringSSL will compute the public key if omitted, and
+    // leave a flag, such that exporting the private key won't include the
+    // public key.
+    final encFlags = ssl.EC_KEY_get_enc_flags(ec);
+    ssl.EC_KEY_set_enc_flags(ec, encFlags & ~ssl.EC_PKEY_NO_PUBKEY);
+
+    // Check the curve of the imported key
+    final nid = ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(ec));
+    _checkData(_ecCurveToNID(curve) == nid,
+        message: 'incorrect elliptic curve');
+  } finally {
+    scope.release();
+  }
 }
 
 ffi.Pointer<ssl.EVP_PKEY> _importPkcs8EcPrivateKey(
@@ -93,15 +101,10 @@ ffi.Pointer<ssl.EVP_PKEY> _importPkcs8EcPrivateKey(
 ) {
   final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
   _checkData(key.address != 0, fallback: 'unable to parse key');
+  _attachFinalizerEVP_PKEY(key);
 
-  try {
-    _validateEllipticCurveKey(key, curve);
-    return key;
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
-  }
+  _validateEllipticCurveKey(key, curve);
+  return key;
 }
 
 ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
@@ -113,16 +116,11 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
   // a FormatException. Notice that this the case for private/public keys, and RSA keys.
   final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
   _checkData(key.address != 0, fallback: 'unable to parse key');
+  _attachFinalizerEVP_PKEY(key);
 
-  try {
-    _validateEllipticCurveKey(key, curve);
+  _validateEllipticCurveKey(key, curve);
 
-    return key;
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
-  }
+  return key;
 }
 
 ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
@@ -211,10 +209,10 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
     _checkDataIsOne(ssl.EC_KEY_check_key(ec), fallback: 'invalid EC key');
 
     // Wrap with an EVP_KEY
-    final key = scope.create(ssl.EVP_PKEY_new, ssl.EVP_PKEY_free);
+    final key = _createEVP_PKEYwithFinalizer();
     _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
 
-    return scope.move(key);
+    return key;
   } finally {
     scope.release();
   }
@@ -246,15 +244,12 @@ ffi.Pointer<ssl.EVP_PKEY> _importRawEcPublicKey(
       // Copy pub point to ec
       _checkDataIsOne(ssl.EC_KEY_set_public_key(ec, pub),
           fallback: 'invalid keyData');
-      final key = ssl.EVP_PKEY_new();
-      try {
-        _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
-        _validateEllipticCurveKey(key, curve);
-        return key;
-      } catch (_) {
-        ssl.EVP_PKEY_free(key);
-        rethrow;
-      }
+
+      final key = _createEVP_PKEYwithFinalizer();
+      _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
+      _validateEllipticCurveKey(key, curve);
+
+      return key;
     } finally {
       ssl.EC_POINT_free(pub);
     }
@@ -264,20 +259,26 @@ ffi.Pointer<ssl.EVP_PKEY> _importRawEcPublicKey(
 }
 
 Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
-  final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
-  _checkOp(ec.address != null, fallback: 'internal key type invariant error');
+  final scope = _Scope();
+  try {
+    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
+    _checkOp(ec.address != null, fallback: 'internal key type invariant error');
+    scope.defer(() => ssl.EC_KEY_free(ec));
 
-  return _withOutCBB((cbb) {
-    return _checkOpIsOne(
-        ssl.EC_POINT_point2cbb(
-          cbb,
-          ssl.EC_KEY_get0_group(ec),
-          ssl.EC_KEY_get0_public_key(ec),
-          ssl.POINT_CONVERSION_UNCOMPRESSED,
-          ffi.nullptr,
-        ),
-        fallback: 'formatting failed');
-  });
+    return _withOutCBB((cbb) {
+      return _checkOpIsOne(
+          ssl.EC_POINT_point2cbb(
+            cbb,
+            ssl.EC_KEY_get0_group(ec),
+            ssl.EC_KEY_get0_public_key(ec),
+            ssl.POINT_CONVERSION_UNCOMPRESSED,
+            ffi.nullptr,
+          ),
+          fallback: 'formatting failed');
+    });
+  } finally {
+    scope.release();
+  }
 }
 
 Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
@@ -289,8 +290,9 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
 
   final scope = _Scope();
   try {
-    final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
+    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
     _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
+    scope.defer(() => ssl.EC_KEY_free(ec));
 
     final group = ssl.EC_KEY_get0_group(ec);
     final curve = _ecCurveFromNID(ssl.EC_GROUP_get_curve_name(group));
@@ -349,7 +351,7 @@ KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
 
     _checkOpIsOne(ssl.EC_KEY_generate_key(ecPriv));
 
-    final privKey = scope.create(ssl.EVP_PKEY_new, ssl.EVP_PKEY_free);
+    final privKey = _createEVP_PKEYwithFinalizer();
     _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(privKey, ecPriv));
 
     final ecPub = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
@@ -360,12 +362,12 @@ KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
       ssl.EC_KEY_get0_public_key(ecPriv),
     ));
 
-    final pubKey = scope.create(ssl.EVP_PKEY_new, ssl.EVP_PKEY_free);
+    final pubKey = _createEVP_PKEYwithFinalizer();
     _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(pubKey, ecPub));
 
     return _KeyPair(
-      privateKey: scope.move(privKey),
-      publicKey: scope.move(pubKey),
+      privateKey: privKey,
+      publicKey: pubKey,
     );
   } finally {
     scope.release();

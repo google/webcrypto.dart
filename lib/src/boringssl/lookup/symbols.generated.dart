@@ -20,6 +20,8 @@ library symbols.generated;
 
 /// BoringSSL symbols used in `package:webcrypto`.
 enum Sym {
+  webcrypto_dart_dl_initialize,
+  webcrypto_dart_dl_attach_finalizer,
   BN_bin2bn,
   BN_bn2bin_padded,
   BN_free,
@@ -109,8 +111,8 @@ enum Sym {
   EVP_PKEY_encrypt,
   EVP_PKEY_encrypt_init,
   EVP_PKEY_free,
-  EVP_PKEY_get0_EC_KEY,
-  EVP_PKEY_get0_RSA,
+  EVP_PKEY_get1_EC_KEY,
+  EVP_PKEY_get1_RSA,
   EVP_PKEY_id,
   EVP_PKEY_new,
   EVP_PKEY_set1_EC_KEY,
@@ -159,6 +161,8 @@ enum Sym {
 }
 
 const _SymName = [
+  'webcrypto_dart_dl_initialize',
+  'webcrypto_dart_dl_attach_finalizer',
   'BN_bin2bn',
   'BN_bn2bin_padded',
   'BN_free',
@@ -248,8 +252,8 @@ const _SymName = [
   'EVP_PKEY_encrypt',
   'EVP_PKEY_encrypt_init',
   'EVP_PKEY_free',
-  'EVP_PKEY_get0_EC_KEY',
-  'EVP_PKEY_get0_RSA',
+  'EVP_PKEY_get1_EC_KEY',
+  'EVP_PKEY_get1_RSA',
   'EVP_PKEY_id',
   'EVP_PKEY_new',
   'EVP_PKEY_set1_EC_KEY',

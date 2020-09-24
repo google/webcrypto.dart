@@ -176,16 +176,11 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   }
 }
 
-class _RsaOaepPrivateKey with _Disposable implements RsaOaepPrivateKey {
+class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsaOaepPrivateKey(this._key, this._hash);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<Uint8List> decryptBytes(List<int> data, {List<int> label}) async {
@@ -217,16 +212,11 @@ class _RsaOaepPrivateKey with _Disposable implements RsaOaepPrivateKey {
   }
 }
 
-class _RsaOaepPublicKey with _Disposable implements RsaOaepPublicKey {
+class _RsaOaepPublicKey implements RsaOaepPublicKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsaOaepPublicKey(this._key, this._hash);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<Uint8List> encryptBytes(List<int> data, {List<int> label}) async {

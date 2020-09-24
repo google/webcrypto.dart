@@ -33,7 +33,12 @@ final Pointer<Void> Function(Sym) lookupSymbol = () {
         .asFunction<Pointer<Void> Function(int)>();
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    return (Sym s) => webcrypto_lookup_symbol(s.index);
+    final lookup = (Sym s) => webcrypto_lookup_symbol(s.index);
+
+    // Initialize the dynamic linking with Dart.
+    initialize_dart_dl(lookup);
+
+    return lookup;
   } on ArgumentError {
     final lookup = lookupLibraryInDotDartTool();
     if (lookup != null) {

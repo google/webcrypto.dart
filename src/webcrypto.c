@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+#include <assert.h>
 #include <stdint.h>
 
-#include "include/dart_api_dl.h"
 #include "symbols.h"
 
 // Macro for annotating all functions to be exported

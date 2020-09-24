@@ -114,6 +114,7 @@ add_library(
   
   # Source files
   ../src/webcrypto.c
+  ../src/webcrypto_dart_dl.c
   ../src/symbols.generated.c
   ${dart_dl_sources}
   ${crypto_sources}

@@ -97,16 +97,11 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
   );
 }
 
-class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
+class _RsaPssPrivateKey implements RsaPssPrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsaPssPrivateKey(this._key, this._hash);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<Uint8List> signBytes(List<int> data, int saltLength) {
@@ -170,16 +165,11 @@ class _RsaPssPrivateKey with _Disposable implements RsaPssPrivateKey {
   }
 }
 
-class _RsaPssPublicKey with _Disposable implements RsaPssPublicKey {
+class _RsaPssPublicKey implements RsaPssPublicKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsaPssPublicKey(this._key, this._hash);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<bool> verifyBytes(

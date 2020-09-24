@@ -26,6 +26,7 @@ import 'package:meta/meta.dart';
 import '../jsonwebkey.dart' show JsonWebKey;
 import '../webcrypto/webcrypto.dart';
 import '../boringssl/boringssl.dart' as ssl;
+import '../boringssl/webcrypto_dart_dl.dart' as dl;
 
 part 'impl_ffi.aescbc.dart';
 part 'impl_ffi.aesctr.dart';

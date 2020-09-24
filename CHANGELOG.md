@@ -1,3 +1,8 @@
+# 0.2.1
+ * Added finalizers for `ssl.EVP_PKEY` and running tests under `valgrind` unable
+   to find any obvious memory leaks.
+ * Increased Flutter SDK constraint to `>=1.22.0-12.1.pre` (current beta).
+
 # 0.2.0
  * Added `ios` support.
  * Added `<2.0.0` upper-bound on Flutter SDK constraint.

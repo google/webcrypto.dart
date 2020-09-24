@@ -98,18 +98,11 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
   );
 }
 
-class _RsassaPkcs1V15PrivateKey
-    with _Disposable
-    implements RsassaPkcs1V15PrivateKey {
+class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsassaPkcs1V15PrivateKey(this._key, this._hash);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<Uint8List> signBytes(List<int> data) {
@@ -158,18 +151,11 @@ class _RsassaPkcs1V15PrivateKey
   }
 }
 
-class _RsassaPkcs1V15PublicKey
-    with _Disposable
-    implements RsassaPkcs1V15PublicKey {
+class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsassaPkcs1V15PublicKey(this._key, this._hash);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<bool> verifyBytes(List<int> signature, List<int> data) {

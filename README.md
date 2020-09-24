@@ -43,8 +43,6 @@ Future<void> main() async {
 
 **Missing:**
  * Exceptions and errors thrown for invalid input is not tested yet.
- * Finalizers not implemented yet, hence, memory leaks of keys is a known
-   issues in the native implementation.
  * The native implementation executes on the main-thread, however, all expensive
    APIs are asynchronous, so they can be offloaded in the future.
 

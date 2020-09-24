@@ -15,42 +15,46 @@
 part of impl_ffi;
 
 ffi.Pointer<ssl.EVP_PKEY> _importPkcs8RsaPrivateKey(List<int> keyData) {
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-
+  final scope = _Scope();
   try {
+    final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
+    _checkData(key.address != 0, fallback: 'unable to parse key');
+    _attachFinalizerEVP_PKEY(key);
+
     _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
         message: 'key is not an RSA key');
 
-    final rsa = ssl.EVP_PKEY_get0_RSA(key);
+    final rsa = ssl.EVP_PKEY_get1_RSA(key);
     _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
+    scope.defer(() => ssl.RSA_free(rsa));
+
     _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
 
     return key;
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
+  } finally {
+    scope.release();
   }
 }
 
 ffi.Pointer<ssl.EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-
+  final scope = _Scope();
   try {
+    final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
+    _checkData(key.address != 0, fallback: 'unable to parse key');
+    _attachFinalizerEVP_PKEY(key);
+
     _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
         message: 'key is not an RSA key');
 
-    final rsa = ssl.EVP_PKEY_get0_RSA(key);
+    final rsa = ssl.EVP_PKEY_get1_RSA(key);
     _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
+    scope.defer(() => ssl.RSA_free(rsa));
+
     _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
 
     return key;
-  } catch (_) {
-    // We only free key if an exception/error was thrown
-    ssl.EVP_PKEY_free(key);
-    rethrow;
+  } finally {
+    scope.release();
   }
 }
 
@@ -146,10 +150,10 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
 
     _checkDataIsOne(ssl.RSA_check_key(rsa), fallback: 'invalid RSA key');
 
-    final key = scope.create(ssl.EVP_PKEY_new, ssl.EVP_PKEY_free);
+    final key = _createEVP_PKEYwithFinalizer();
     _checkOpIsOne(ssl.EVP_PKEY_set1_RSA(key, rsa));
 
-    return scope.move(key);
+    return key;
   } finally {
     scope.release();
   }
@@ -167,8 +171,9 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
 
   final scope = _Scope();
   try {
-    final rsa = ssl.EVP_PKEY_get0_RSA(key);
+    final rsa = ssl.EVP_PKEY_get1_RSA(key);
     _checkOp(rsa.address != 0, fallback: 'internal key type error');
+    scope.defer(() => ssl.RSA_free(rsa));
 
     String encodeBN(ffi.Pointer<ssl.BIGNUM> bn) {
       final N = ssl.BN_num_bytes(bn);
@@ -250,52 +255,39 @@ _KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
     throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
   }
 
-  ffi.Pointer<ssl.RSA> privRSA, pubRSA;
-  ffi.Pointer<ssl.EVP_PKEY> privKey, pubKey;
+  final scope = _Scope();
   try {
     // Generate private RSA key
-    privRSA = ssl.RSA_new();
-    _checkOp(privRSA.address != 0, fallback: 'allocation failure');
-    _withBIGNUM((e) {
-      _checkOp(ssl.BN_set_word(e, publicExponent.toInt()) == 1);
-      _checkOp(
-          ssl.RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr) == 1);
-    });
+    final privRSA = scope.create(ssl.RSA_new, ssl.RSA_free);
+
+    final e = scope.create(ssl.BN_new, ssl.BN_free);
+    _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
+    _checkOpIsOne(ssl.RSA_generate_key_ex(
+      privRSA,
+      modulusLength,
+      e,
+      ffi.nullptr,
+    ));
 
     // Copy out the public RSA key
-    final pubRSA = ssl.RSAPublicKey_dup(privRSA);
-    _checkOp(pubRSA.address != 0);
+    final pubRSA = scope.create(
+      () => ssl.RSAPublicKey_dup(privRSA),
+      ssl.RSA_free,
+    );
 
     // Create private key
-    privKey = ssl.EVP_PKEY_new();
-    _checkOp(privKey.address != 0, fallback: 'allocation failure');
+    final privKey = _createEVP_PKEYwithFinalizer();
     _checkOp(ssl.EVP_PKEY_set1_RSA(privKey, privRSA) == 1);
 
     // Create public key
-    pubKey = ssl.EVP_PKEY_new();
-    _checkOp(pubKey.address != 0, fallback: 'allocation failure');
+    final pubKey = _createEVP_PKEYwithFinalizer();
     _checkOp(ssl.EVP_PKEY_set1_RSA(pubKey, pubRSA) == 1);
 
     return _KeyPair(
       privateKey: privKey,
       publicKey: pubKey,
     );
-  } catch (_) {
-    // Free privKey/pubKey on exception
-    if (privKey != null) {
-      ssl.EVP_PKEY_free(privKey);
-    }
-    if (pubKey != null) {
-      ssl.EVP_PKEY_free(pubKey);
-    }
-    rethrow;
   } finally {
-    // Always free RSA keys, we create a new reference with set1 method
-    if (privRSA != null) {
-      ssl.RSA_free(privRSA);
-    }
-    if (pubRSA != null) {
-      ssl.RSA_free(pubRSA);
-    }
+    scope.release();
   }
 }

@@ -22,6 +22,8 @@
 #include "symbols.h"
 
 void* _webcrypto_symbol_table[] = {
+    (void*)&webcrypto_dart_dl_initialize,
+    (void*)&webcrypto_dart_dl_attach_finalizer,
     (void*)&BN_bin2bn,
     (void*)&BN_bn2bin_padded,
     (void*)&BN_free,
@@ -111,8 +113,8 @@ void* _webcrypto_symbol_table[] = {
     (void*)&EVP_PKEY_encrypt,
     (void*)&EVP_PKEY_encrypt_init,
     (void*)&EVP_PKEY_free,
-    (void*)&EVP_PKEY_get0_EC_KEY,
-    (void*)&EVP_PKEY_get0_RSA,
+    (void*)&EVP_PKEY_get1_EC_KEY,
+    (void*)&EVP_PKEY_get1_RSA,
     (void*)&EVP_PKEY_id,
     (void*)&EVP_PKEY_new,
     (void*)&EVP_PKEY_set1_EC_KEY,

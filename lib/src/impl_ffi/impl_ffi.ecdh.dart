@@ -66,15 +66,10 @@ Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
       expectedAlg: null, // ECDH has no validation of 'jwk.alg'
     ));
 
-class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
+class _EcdhPrivateKey implements EcdhPrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
 
   _EcdhPrivateKey(this._key);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
@@ -90,62 +85,74 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
     if (length <= 0) {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }
-    final _publicKey = publicKey as _EcdhPublicKey;
 
-    final pubEcKey = ssl.EVP_PKEY_get0_EC_KEY(_publicKey._key);
-    final privEcKey = ssl.EVP_PKEY_get0_EC_KEY(_key);
+    final scope = _Scope();
+    try {
+      final _publicKey = publicKey as _EcdhPublicKey;
 
-    // Check that public/private key uses the same elliptic curve.
-    if (ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(pubEcKey)) !=
-        ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(privEcKey))) {
-      // Note: web crypto will throw an InvalidAccessError here.
-      throw ArgumentError.value(
-        publicKey,
-        'publicKey',
-        'Public and private key for ECDH key derivation have the same '
-            'elliptic curve',
-      );
+      final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY(_publicKey._key);
+      _checkOp(pubEcKey.address != 0, fallback: 'not an ec key');
+      scope.defer(() => ssl.EC_KEY_free(pubEcKey));
+
+      final privEcKey = ssl.EVP_PKEY_get1_EC_KEY(_key);
+      _checkOp(privEcKey.address != 0, fallback: 'not an ec key');
+      scope.defer(() => ssl.EC_KEY_free(privEcKey));
+
+      // Check that public/private key uses the same elliptic curve.
+      if (ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(pubEcKey)) !=
+          ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(privEcKey))) {
+        // Note: web crypto will throw an InvalidAccessError here.
+        throw ArgumentError.value(
+          publicKey,
+          'publicKey',
+          'Public and private key for ECDH key derivation have the same '
+              'elliptic curve',
+        );
+      }
+
+      // Field size rounded up to 8 bits is the maximum number of bits we can
+      // derive. The most significant bits will be zero in this case.
+      final fieldSize =
+          ssl.EC_GROUP_get_degree(ssl.EC_KEY_get0_group(privEcKey));
+      final maxLength = 8 * (fieldSize / 8).ceil();
+      if (length > maxLength) {
+        throw _OperationError(
+          'Length in ECDH key derivation is too large. '
+          'Maximum allowed is $maxLength bits.',
+        );
+      }
+
+      if (length == 0) {
+        return Uint8List.fromList([]);
+      }
+
+      final lengthInBytes = (length / 8).ceil();
+      final derived = _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Data> p) {
+        final outLen = ssl.ECDH_compute_key(
+          p,
+          lengthInBytes,
+          ssl.EC_KEY_get0_public_key(pubEcKey),
+          privEcKey,
+          ffi.nullptr,
+        );
+        _checkOp(outLen != -1, fallback: 'ECDH key derivation failed');
+        _checkOp(
+          outLen == lengthInBytes,
+          message: 'internal error in ECDH key derivation',
+        );
+      });
+
+      // Only return the first [length] bits from derived.
+      final zeroBits = lengthInBytes * 8 - length;
+      assert(zeroBits < 8);
+      if (zeroBits > 0) {
+        derived.last &= ((0xff << zeroBits) & 0xff);
+      }
+
+      return derived;
+    } finally {
+      scope.release();
     }
-
-    // Field size rounded up to 8 bits is the maximum number of bits we can
-    // derive. The most significant bits will be zero in this case.
-    final fieldSize = ssl.EC_GROUP_get_degree(ssl.EC_KEY_get0_group(privEcKey));
-    final maxLength = 8 * (fieldSize / 8).ceil();
-    if (length > maxLength) {
-      throw _OperationError(
-        'Length in ECDH key derivation is too large. '
-        'Maximum allowed is $maxLength bits.',
-      );
-    }
-
-    if (length == 0) {
-      return Uint8List.fromList([]);
-    }
-
-    final lengthInBytes = (length / 8).ceil();
-    final derived = _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Data> p) {
-      final outLen = ssl.ECDH_compute_key(
-        p,
-        lengthInBytes,
-        ssl.EC_KEY_get0_public_key(pubEcKey),
-        privEcKey,
-        ffi.nullptr,
-      );
-      _checkOp(outLen != -1, fallback: 'ECDH key derivation failed');
-      _checkOp(
-        outLen == lengthInBytes,
-        message: 'internal error in ECDH key derivation',
-      );
-    });
-
-    // Only return the first [length] bits from derived.
-    final zeroBits = lengthInBytes * 8 - length;
-    assert(zeroBits < 8);
-    if (zeroBits > 0) {
-      derived.last &= ((0xff << zeroBits) & 0xff);
-    }
-
-    return derived;
   }
 
   @override
@@ -164,15 +171,10 @@ class _EcdhPrivateKey with _Disposable implements EcdhPrivateKey {
   }
 }
 
-class _EcdhPublicKey with _Disposable implements EcdhPublicKey {
+class _EcdhPublicKey implements EcdhPublicKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
 
   _EcdhPublicKey(this._key);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>

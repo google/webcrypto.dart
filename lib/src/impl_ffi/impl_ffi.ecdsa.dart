@@ -92,12 +92,18 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
   ffi.Pointer<ssl.EVP_PKEY> key,
   Uint8List signature,
 ) {
-  final ecdsa = _withDataAsCBS(signature, ssl.ECDSA_SIG_parse);
-  _checkOp(ecdsa.address != 0, message: 'internal error formatting signature');
+  final scope = _Scope();
   try {
+    final ecdsa = _withDataAsCBS(signature, ssl.ECDSA_SIG_parse);
+    _checkOp(ecdsa.address != 0,
+        message: 'internal error formatting signature');
+    scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
+
     // Read EC key and get the number of bytes required to encode R and S.
-    final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
+    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
+    scope.defer(() => ssl.EC_KEY_free(ec));
+
     final N = ssl.BN_num_bytes(ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(
       ec,
     )));
@@ -121,7 +127,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
       });
     });
   } finally {
-    ssl.ECDSA_SIG_free(ecdsa);
+    scope.release();
   }
 }
 
@@ -135,23 +141,29 @@ Uint8List _convertEcdsaWebCryptoSignatureToDerSignature(
   ffi.Pointer<ssl.EVP_PKEY> key,
   Uint8List signature,
 ) {
-  // Read EC key and get the number of bytes required to encode R and S.
-  final ec = ssl.EVP_PKEY_get0_EC_KEY(key);
-  _checkOp(ec.address != 0, message: 'internal key type invariant violation');
-  final N = ssl.BN_num_bytes(ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(
-    ec,
-  )));
-
-  if (N * 2 != signature.length) {
-    // If the signature format is invalid we consider the signature invalid and
-    // return false from verification method. This follows:
-    // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#111
-    return null;
-  }
-
-  final ecdsa = ssl.ECDSA_SIG_new();
-  _checkOp(ecdsa.address != 0, message: 'internal error formatting signature');
+  final scope = _Scope();
   try {
+    // Read EC key and get the number of bytes required to encode R and S.
+    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
+    _checkOp(ec.address != 0, message: 'internal key type invariant violation');
+    scope.defer(() => ssl.EC_KEY_free(ec));
+
+    final N = ssl.BN_num_bytes(ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(
+      ec,
+    )));
+
+    if (N * 2 != signature.length) {
+      // If the signature format is invalid we consider the signature invalid and
+      // return false from verification method. This follows:
+      // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#111
+      return null;
+    }
+
+    final ecdsa = ssl.ECDSA_SIG_new();
+    _checkOp(ecdsa.address != 0,
+        message: 'internal error formatting signature');
+    scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
+
     return _withAllocation(2, (ffi.Pointer<ffi.Pointer<ssl.BIGNUM>> RS) {
       // Access R and S from the ecdsa signature
       final R = RS.elementAt(0);
@@ -176,19 +188,14 @@ Uint8List _convertEcdsaWebCryptoSignatureToDerSignature(
           ));
     });
   } finally {
-    ssl.ECDSA_SIG_free(ecdsa);
+    scope.release();
   }
 }
 
-class _EcdsaPrivateKey with _Disposable implements EcdsaPrivateKey {
+class _EcdsaPrivateKey implements EcdsaPrivateKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
 
   _EcdsaPrivateKey(this._key);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<Uint8List> signBytes(List<int> data, Hash hash) {
@@ -232,15 +239,10 @@ class _EcdsaPrivateKey with _Disposable implements EcdsaPrivateKey {
   }
 }
 
-class _EcdsaPublicKey with _Disposable implements EcdsaPublicKey {
+class _EcdsaPublicKey implements EcdsaPublicKey {
   final ffi.Pointer<ssl.EVP_PKEY> _key;
 
   _EcdsaPublicKey(this._key);
-
-  @override
-  void _finalize() {
-    ssl.EVP_PKEY_free(_key);
-  }
 
   @override
   Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) {

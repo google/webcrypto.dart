@@ -22,3 +22,4 @@
 
 #include "../../src/symbols.generated.c"
 #include "../../src/webcrypto.c"
+#include "../../src/webcrypto_dart_dl.c"
