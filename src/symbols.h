@@ -20,11 +20,11 @@
 #include <stddef.h>
 
 // BoringSSL headers
-#include <openssl/crypto.h>
 #include <openssl/aead.h>
 #include <openssl/bn.h>
 #include <openssl/bytestring.h>
 #include <openssl/cipher.h>
+#include <openssl/crypto.h>
 #include <openssl/digest.h>
 #include <openssl/ec.h>
 #include <openssl/ec_key.h>
@@ -40,6 +40,6 @@
 
 // Symbol lookup table defined in `symbols.generated.h`, with indexes matching
 // the enum values in `lib/src/boringssl/lookup/symbols.generated.dart`.
-extern void *_webcrypto_symbol_table[];
+extern void* _webcrypto_symbol_table[];
 
-#endif // WEBCRYPTO_SYMBOLS_H
+#endif  // WEBCRYPTO_SYMBOLS_H
