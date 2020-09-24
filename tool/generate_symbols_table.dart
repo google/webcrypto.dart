@@ -57,8 +57,8 @@ Future<void> main() async {
     '',
     '#include "symbols.h"',
     '',
-    'void *_webcrypto_symbol_table[] = {',
-    symbols.map((s) => '    (void *)&$s,').join('\n'),
+    'void* _webcrypto_symbol_table[] = {',
+    symbols.map((s) => '    (void*)&$s,').join('\n'),
     '};',
     ''
   ].join('\n'));
