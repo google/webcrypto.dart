@@ -15,7 +15,7 @@
 import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
-import '../utils.dart';
+import '../utils/utils.dart';
 
 void isAllZero(TypedData data) {
   data.buffer.asUint8List().forEach((b) => check(b == 0));

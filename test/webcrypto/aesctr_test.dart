@@ -16,9 +16,9 @@ library aesctr_test;
 
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
-import '../utils.dart';
-import '../testrunner.dart';
-import '../detected_runtime.dart';
+import '../utils/utils.dart';
+import '../utils/testrunner.dart';
+import '../utils/detected_runtime.dart';
 
 final runner = TestRunner.symmetric<AesCtrSecretKey>(
   algorithm: 'AES-CTR',

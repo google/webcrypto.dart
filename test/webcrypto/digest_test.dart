@@ -15,9 +15,9 @@
 import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
-import '../utils.dart';
-import '../lipsum.dart';
-import '../ffibonacci_chunked_stream.dart';
+import '../utils/utils.dart';
+import '../utils/lipsum.dart';
+import '../utils/ffibonacci_chunked_stream.dart';
 
 Stream<List<int>> _utf8Stream(String data) {
   return Stream.value(utf8.encode(data));

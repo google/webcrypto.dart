@@ -16,8 +16,8 @@ import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
-import '../utils.dart';
-import '../testrunner.dart';
+import '../utils/utils.dart';
+import '../utils/testrunner.dart';
 
 /// Utility to hold both [Pbkdf2SecretKey] and [rawKeyData], such that we can
 /// fake an implementation of `exportPrivaterawKey` for [TestRunner].

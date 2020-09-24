@@ -14,8 +14,8 @@
 
 import 'package:webcrypto/webcrypto.dart';
 import 'package:test/test.dart';
-import '../utils.dart';
-import '../testrunner.dart';
+import '../utils/utils.dart';
+import '../utils/testrunner.dart';
 
 final runner = TestRunner.asymmetric<RsaOaepPrivateKey, RsaOaepPublicKey>(
   algorithm: 'RSA-OAEP',

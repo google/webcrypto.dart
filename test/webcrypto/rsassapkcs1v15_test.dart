@@ -14,8 +14,8 @@
 
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
-import '../utils.dart';
-import '../testrunner.dart';
+import '../utils/utils.dart';
+import '../utils/testrunner.dart';
 
 final runner =
     TestRunner.asymmetric<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>(

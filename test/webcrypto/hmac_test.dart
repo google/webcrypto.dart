@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import 'package:webcrypto/webcrypto.dart';
-import '../utils.dart';
-import '../testrunner.dart';
+import '../utils/utils.dart';
+import '../utils/testrunner.dart';
 import 'package:test/test.dart';
 
 final runner = TestRunner.symmetric<HmacSecretKey>(

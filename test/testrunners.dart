@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'testrunner.dart' show TestRunner;
+import 'utils/utils.dart';
+import 'utils/testrunner.dart' show TestRunner;
+import 'package:test/test.dart' show test;
 
 import 'webcrypto/aescbc_test.dart' as aescbc_test;
 import 'webcrypto/aesctr_test.dart' as aesctr_test;
@@ -41,3 +43,13 @@ final testRunners = <TestRunner>[
   rsapss_test.runner,
   rsassapkcs1v15_test.runner,
 ];
+
+/// Utility function that runs all tests using [test].
+///
+/// This makes it easy to run tests from `flutter drive`, when testing on a
+/// device.
+void runAllTests({TestFn test = test}) {
+  for (final r in testRunners) {
+    r.runTests(test: test);
+  }
+}

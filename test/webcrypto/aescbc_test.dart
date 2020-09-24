@@ -14,8 +14,8 @@
 
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
-import '../utils.dart';
-import '../testrunner.dart';
+import '../utils/utils.dart';
+import '../utils/testrunner.dart';
 
 final runner = TestRunner.symmetric<AesCbcSecretKey>(
   algorithm: 'AES-CBC',
