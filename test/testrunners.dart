@@ -16,6 +16,7 @@ import 'utils/utils.dart';
 import 'utils/testrunner.dart' show TestRunner;
 import 'package:test/test.dart' show test;
 
+// TestRunner implementations
 import 'webcrypto/aescbc_test.dart' as aescbc_test;
 import 'webcrypto/aesctr_test.dart' as aesctr_test;
 import 'webcrypto/aesgcm_test.dart' as aesgcm_test;
@@ -27,6 +28,10 @@ import 'webcrypto/pbkdf2_test.dart' as pbkdf2_test;
 import 'webcrypto/rsaoaep_test.dart' as rsaoaep_test;
 import 'webcrypto/rsapss_test.dart' as rsapss_test;
 import 'webcrypto/rsassapkcs1v15_test.dart' as rsassapkcs1v15_test;
+
+// Other test files, that don't use TestRunner
+import 'webcrypto/random_test.dart' as random_test;
+import 'webcrypto/digest_test.dart' as digest_test;
 
 /// Test runners from all test files except `digest_test.dart` and
 /// `random_test.dart`, which do not use [TestRunner].
@@ -52,4 +57,7 @@ void runAllTests({TestFn test = test}) {
   for (final r in testRunners) {
     r.runTests(test: test);
   }
+  // We don't use [TestRunner] for all tests, so we just add them manually.
+  random_test.runTests(test: test);
+  digest_test.runTests(test: test);
 }

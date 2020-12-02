@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/detected_runtime.dart';
-import '../utils/utils.dart';
 import '../utils/testrunner.dart';
 
 final runner = TestRunner.asymmetric<RsaPssPrivateKey, RsaPssPublicKey>(

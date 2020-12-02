@@ -25,6 +25,9 @@ import 'utils.dart';
 import 'lipsum.dart';
 import 'err_stack_stub.dart' if (dart.library.ffi) 'err_stack_ffi.dart';
 
+// Export utilities necessary for implementing a `TestRunner`.
+export 'utils.dart' show hashFromJson, curveFromJson;
+
 List<int> _optionalBase64Decode(dynamic data) =>
     data == null ? null : base64.decode(data as String);
 
