@@ -15,6 +15,7 @@
 library webcrypto;
 
 import 'package:meta/meta.dart';
+import 'dart:convert';
 import 'dart:async';
 import 'dart:typed_data';
 import '../impl_stub.dart'

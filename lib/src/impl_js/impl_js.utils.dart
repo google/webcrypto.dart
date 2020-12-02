@@ -133,6 +133,8 @@ Future<subtle.CryptoKey> _importJsonWebKey(
 ) {
   return _handleDomException(() async {
     final jwkObj = subtle.JsonWebKey.fromJson(jwk);
+    // TODO: Validate expected 'use' the way we have it in the FFI implementation
+
     // Remove 'key_ops' and 'ext' as this library doesn't configuring
     // _usages_ and _extractable_.
     // Notice that we also strip 'key_ops' and 'ext' in [_exportJsonWebKey].
@@ -286,6 +288,7 @@ Future<Uint8List> _exportKey(
 /// Adapt `crypto.subtle.export` to Dart types.
 Future<Map<String, Object>> _exportJsonWebKey(
   subtle.CryptoKey key,
+  // TODO: Add expected 'use' the way we have it in the FFI implementation
 ) {
   return _handleDomException(() async {
     final result = await subtle.promiseAsFuture(subtle.exportJsonWebKey(

@@ -23,8 +23,13 @@ part of webcrypto;
 ///  * [Hash.sha384], and,
 ///  * [Hash.sha512].
 ///
+/// For a guidance on choice of hash function see
+/// [NIST SP 800-57 Part 1 Rev 5][1].
+///
 /// **WARNING:** Custom implementations of this class cannot be passed to
 /// to other methods in this library.
+///
+/// [1]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf
 @sealed
 abstract class Hash {
   Hash._(); // keep the constructor private.
