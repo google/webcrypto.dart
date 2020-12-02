@@ -1,3 +1,9 @@
+# 0.2.2
+ * Increased Flutter SDK constraint to `>=1.24.0-10.2.pre` (current beta),
+   because API version breakage in dynamic linking API for Dart SDK.
+ * Additional documentation for `RsassaPkcs1V15PrivateKey` and
+   `RsassaPkcs1V15PublicKey`.
+
 # 0.2.1
  * Added finalizers for `ssl.EVP_PKEY` and running tests under `valgrind` unable
    to find any obvious memory leaks.
