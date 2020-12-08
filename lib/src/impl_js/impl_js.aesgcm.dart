@@ -56,13 +56,10 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
   Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
+    List<int>? additionalData,
+    int? tagLength = 128,
   }) async {
-    ArgumentError.checkNotNull(iv, 'iv');
-    // TODO: Ask lrn@ how to implement default parameters -- should null be special
     tagLength ??= 128;
-    ArgumentError.checkNotNull(tagLength, 'tagLength');
     return await _decrypt(
       additionalData == null
           ? subtle.Algorithm(
@@ -85,12 +82,10 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
   Future<Uint8List> encryptBytes(
     List<int> data,
     List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
+    List<int>? additionalData,
+    int? tagLength = 128,
   }) async {
-    ArgumentError.checkNotNull(iv, 'iv');
     tagLength ??= 128;
-    ArgumentError.checkNotNull(tagLength, 'tagLength');
     return await _encrypt(
       additionalData == null
           ? subtle.Algorithm(

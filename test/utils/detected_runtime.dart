@@ -25,10 +25,10 @@ export 'detected_runtime_stub.dart'
 ///
 /// This utility helps filter away test cases and features known to not work on
 /// Firefox and which has been documented in the API documentation.
-T nullOnFirefox<T>(T value) => detectedRuntime == 'firefox' ? null : value;
+T? nullOnFirefox<T>(T value) => detectedRuntime == 'firefox' ? null : value;
 
 /// Return `null` instead of [value] on Safari.
 ///
 /// This utility helps filter away test cases and features known to not work on
 /// Safari and which has been documented in the API documentation.
-T nullOnSafari<T>(T value) => detectedRuntime == 'safari' ? null : value;
+T? nullOnSafari<T>(T value) => detectedRuntime == 'safari' ? null : value;

@@ -49,18 +49,18 @@ const Hash sha512 = _UnimplementedHash();
 Future<HmacSecretKey> hmacSecretKey_importRawKey(
   List<int> keyData,
   Hash hash, {
-  int length,
+  int? length,
 }) =>
     throw _notImplemented;
 
 Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash, {
-  int length,
+  int? length,
 }) =>
     throw _notImplemented;
 
-Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash, {int length}) =>
+Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash, {int? length}) =>
     throw _notImplemented;
 
 //---------------------- RSASSA_PKCS1_v1_5

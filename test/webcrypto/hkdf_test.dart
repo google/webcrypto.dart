@@ -52,8 +52,8 @@ final runner = TestRunner.symmetric<_ExportableHkdfSecretKey>(
   deriveBits: (key, length, deriveParams) => key.hkdfSecretKey.deriveBits(
     length,
     hashFromJson(deriveParams),
-    bytesFromJson(deriveParams, 'salt'),
-    bytesFromJson(deriveParams, 'info'),
+    bytesFromJson(deriveParams, 'salt')!,
+    bytesFromJson(deriveParams, 'info')!,
   ),
   testData: _testData,
 );

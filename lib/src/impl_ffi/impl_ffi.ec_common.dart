@@ -33,8 +33,6 @@ int _ecCurveToNID(EllipticCurve curve) {
 
 /// Get [EllipticCurve] from matching BoringSSL `ssl.NID_...`.
 EllipticCurve _ecCurveFromNID(int nid) {
-  assert(nid != null);
-
   if (nid == ssl.NID_X9_62_prime256v1) {
     return EllipticCurve.p256;
   }
@@ -126,16 +124,21 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
 ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
   JsonWebKey jwk,
   EllipticCurve curve, {
-  @required bool isPrivateKey,
-  @required String expectedUse,
-  String expectedAlg, // may be null, if 'alg' property isn't validated (ECDH)
+  required bool isPrivateKey,
+  required String expectedUse,
+  String? expectedAlg, // may be null, if 'alg' property isn't validated (ECDH)
 }) {
-  assert(isPrivateKey != null);
-  assert(expectedUse != null);
-
   _checkData(
     jwk.kty == 'EC',
     message: 'expected a elliptic-curve key, JWK property "kty" must be "EC"',
+  );
+  _checkData(
+    jwk.x != null,
+    message: 'expected a elliptic-curve key, JWK property "x" to be present',
+  );
+  _checkData(
+    jwk.y != null,
+    message: 'expected a elliptic-curve key, JWK property "y" to be present',
   );
   if (isPrivateKey) {
     _checkData(
@@ -193,15 +196,15 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
     _checkDataIsOne(
       ssl.EC_KEY_set_public_key_affine_coordinates(
         ec,
-        decodeParam(jwk.x, 'x'),
-        decodeParam(jwk.y, 'y'),
+        decodeParam(jwk.x!, 'x'),
+        decodeParam(jwk.y!, 'y'),
       ),
       fallback: 'invalid EC key',
     );
 
     if (isPrivateKey) {
       _checkDataIsOne(
-        ssl.EC_KEY_set_private_key(ec, decodeParam(jwk.d, 'd')),
+        ssl.EC_KEY_set_private_key(ec, decodeParam(jwk.d!, 'd')),
         fallback: 'invalid EC key',
       );
     }
@@ -262,7 +265,7 @@ Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
   final scope = _Scope();
   try {
     final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
-    _checkOp(ec.address != null, fallback: 'internal key type invariant error');
+    _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
     return _withOutCBB((cbb) {
@@ -283,11 +286,9 @@ Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
 
 Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
   ffi.Pointer<ssl.EVP_PKEY> key, {
-  @required bool isPrivateKey,
-  String jwkUse,
+  required bool isPrivateKey,
+  String? jwkUse,
 }) {
-  assert(isPrivateKey != null);
-
   final scope = _Scope();
   try {
     final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
@@ -318,7 +319,7 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
       _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, y));
     });
 
-    Uint8List dAsBytes;
+    Uint8List? dAsBytes;
     if (isPrivateKey) {
       final d = ssl.EC_KEY_get0_private_key(ec);
       dAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ssl.Bytes> p) {
@@ -332,7 +333,7 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
       crv: _ecCurveToJwkCrv(curve),
       x: _jwkEncodeBase64UrlNoPadding(xAsBytes),
       y: _jwkEncodeBase64UrlNoPadding(yAsBytes),
-      d: isPrivateKey ? _jwkEncodeBase64UrlNoPadding(dAsBytes) : null,
+      d: dAsBytes != null ? _jwkEncodeBase64UrlNoPadding(dAsBytes) : null,
     ).toJson();
   } finally {
     scope.release();

@@ -33,10 +33,10 @@ import 'lookup/lookup.dart';
 /// };
 /// ```
 class CBS extends Struct {
-  Pointer<Bytes> data;
+  external Pointer<Bytes> data;
 
   @IntPtr()
-  int len;
+  external int len;
 }
 
 /// CBS_init sets cbs to point to data. It does not take ownership of data.
@@ -69,21 +69,21 @@ final CBS_init = resolve(Sym.CBS_init)
 /// };
 /// ```
 class CBB extends Struct {
-  Pointer<Void> base;
+  external Pointer<Void> base;
 
-  Pointer<CBB> child;
+  external Pointer<CBB> child;
 
   @IntPtr()
-  int offset;
+  external int offset;
 
   @Uint8()
-  int pending_len_len;
+  external int pending_len_len;
 
   @Int8()
-  int pending_is_asn1;
+  external int pending_is_asn1;
 
   @Int8()
-  int is_top_level;
+  external int is_top_level;
 }
 
 /// CBB_zero sets an uninitialised cbb to the zero state. It must be initialised

@@ -31,13 +31,13 @@ final runner = TestRunner.symmetric<AesCbcSecretKey>(
     generateKeyPairParams['length'],
   ),
   encryptBytes: (key, data, encryptParams) =>
-      key.encryptBytes(data, bytesFromJson(encryptParams, 'iv')),
+      key.encryptBytes(data, bytesFromJson(encryptParams, 'iv')!),
   encryptStream: (key, data, encryptParams) =>
-      key.encryptStream(data, bytesFromJson(encryptParams, 'iv')),
+      key.encryptStream(data, bytesFromJson(encryptParams, 'iv')!),
   decryptBytes: (key, data, decryptParams) =>
-      key.decryptBytes(data, bytesFromJson(decryptParams, 'iv')),
+      key.decryptBytes(data, bytesFromJson(decryptParams, 'iv')!),
   decryptStream: (key, data, decryptParams) =>
-      key.decryptStream(data, bytesFromJson(decryptParams, 'iv')),
+      key.decryptStream(data, bytesFromJson(decryptParams, 'iv')!),
   testData: _testData,
 );
 

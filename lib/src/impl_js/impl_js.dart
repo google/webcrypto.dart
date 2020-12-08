@@ -53,5 +53,5 @@ class _KeyPair<S, T> implements KeyPair<S, T> {
   @override
   final T publicKey;
 
-  _KeyPair({this.privateKey, this.publicKey});
+  _KeyPair({required this.privateKey, required this.publicKey});
 }

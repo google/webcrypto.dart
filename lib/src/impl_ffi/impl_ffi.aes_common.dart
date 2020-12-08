@@ -29,9 +29,8 @@ Uint8List _aesImportRawKey(List<int> keyData) {
 
 Uint8List _aesImportJwkKey(
   Map<String, dynamic> jwk, {
-  @required String expectedJwkAlgSuffix,
+  required String expectedJwkAlgSuffix,
 }) {
-  assert(expectedJwkAlgSuffix != null);
   ArgumentError.checkNotNull(jwk, 'jwk');
 
   final k = JsonWebKey.fromJson(jwk);
@@ -43,7 +42,7 @@ Uint8List _aesImportJwkKey(
   checkJwk(k.k != null, 'k', 'must be present');
   checkJwk(k.use == null || k.use == 'enc', 'use', 'must be "enc", if present');
 
-  final keyData = _jwkDecodeBase64UrlNoPadding(k.k, 'k');
+  final keyData = _jwkDecodeBase64UrlNoPadding(k.k!, 'k');
   if (keyData.length == 24) {
     // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
     // If not supported in Chrome, there is not reason to support it in Dart.
@@ -66,9 +65,8 @@ Uint8List _aesImportJwkKey(
 
 Map<String, dynamic> _aesExportJwkKey(
   List<int> keyData, {
-  @required String jwkAlgSuffix,
+  required String jwkAlgSuffix,
 }) {
-  assert(jwkAlgSuffix != null);
   assert(keyData.length == 16 || keyData.length == 32);
   final algPrefix = keyData.length == 16 ? 'A128' : 'A256';
 

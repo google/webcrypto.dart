@@ -19,24 +19,24 @@
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
 /// [2]: https://www.iana.org/assignments/jose/jose.xhtml#web-key-parameters
 class JsonWebKey {
-  String kty;
-  String use;
-  List<String> key_ops;
-  String alg;
-  bool ext;
-  String crv;
-  String x;
-  String y;
-  String d;
-  String n;
-  String e;
-  String p;
-  String q;
-  String dp;
-  String dq;
-  String qi;
-  List<RsaOtherPrimesInfo> oth;
-  String k;
+  String? kty;
+  String? use;
+  List<String>? key_ops;
+  String? alg;
+  bool? ext;
+  String? crv;
+  String? x;
+  String? y;
+  String? d;
+  String? n;
+  String? e;
+  String? p;
+  String? q;
+  String? dp;
+  String? dq;
+  String? qi;
+  List<RsaOtherPrimesInfo>? oth;
+  String? k;
 
   JsonWebKey({
     this.kty,
@@ -59,7 +59,7 @@ class JsonWebKey {
     this.k,
   });
 
-  static JsonWebKey fromJson(Map<String, Object> json) {
+  static JsonWebKey fromJson(Map<String, dynamic> json) {
     const stringKeys = [
       'kty',
       'use',
@@ -82,7 +82,7 @@ class JsonWebKey {
         throw FormatException('JWK entry "$k" must be a string', json);
       }
     }
-    List<String> key_ops;
+    List<String>? key_ops;
     if (json.containsKey('key_ops')) {
       if (json['key_ops'] is! List ||
           (json['key_ops'] as List).any((e) => e is! String)) {
@@ -95,7 +95,7 @@ class JsonWebKey {
     if (json.containsKey('ext') && json['ext'] is! bool) {
       throw FormatException('JWK entry "ext" must be boolean', json);
     }
-    List<RsaOtherPrimesInfo> oth;
+    List<RsaOtherPrimesInfo>? oth;
     if (json.containsKey('oth')) {
       if (json['oth'] is! List || (json['oth'] as List).any((e) => e is! Map)) {
         throw FormatException('JWK entry "oth" must be list of maps', json);
@@ -105,24 +105,24 @@ class JsonWebKey {
       }).toList();
     }
     return JsonWebKey(
-      kty: json['kty'] as String,
-      use: json['use'] as String,
+      kty: json['kty'] as String?,
+      use: json['use'] as String?,
       key_ops: key_ops,
-      alg: json['alg'] as String,
-      ext: json['ext'] as bool,
-      crv: json['crv'] as String,
-      x: json['x'] as String,
-      y: json['y'] as String,
-      d: json['d'] as String,
-      n: json['n'] as String,
-      e: json['e'] as String,
-      p: json['p'] as String,
-      q: json['q'] as String,
-      dp: json['dp'] as String,
-      dq: json['dq'] as String,
-      qi: json['qi'] as String,
+      alg: json['alg'] as String?,
+      ext: json['ext'] as bool?,
+      crv: json['crv'] as String?,
+      x: json['x'] as String?,
+      y: json['y'] as String?,
+      d: json['d'] as String?,
+      n: json['n'] as String?,
+      e: json['e'] as String?,
+      p: json['p'] as String?,
+      q: json['q'] as String?,
+      dp: json['dp'] as String?,
+      dq: json['dq'] as String?,
+      qi: json['qi'] as String?,
       oth: oth,
-      k: json['k'] as String,
+      k: json['k'] as String?,
     );
   }
 
@@ -130,61 +130,79 @@ class JsonWebKey {
     final json = <String, Object>{};
 
     // Set properties from all the string keys
-    if (kty != null) {
-      json['kty'] = kty;
+    final kty_ = kty;
+    if (kty_ != null) {
+      json['kty'] = kty_;
     }
-    if (use != null) {
-      json['use'] = use;
+    final use_ = use;
+    if (use_ != null) {
+      json['use'] = use_;
     }
-    if (alg != null) {
-      json['alg'] = alg;
+    final alg_ = alg;
+    if (alg_ != null) {
+      json['alg'] = alg_;
     }
-    if (crv != null) {
-      json['crv'] = crv;
+    final crv_ = crv;
+    if (crv_ != null) {
+      json['crv'] = crv_;
     }
-    if (x != null) {
-      json['x'] = x;
+    final x_ = x;
+    if (x_ != null) {
+      json['x'] = x_;
     }
-    if (y != null) {
-      json['y'] = y;
+    final y_ = y;
+    if (y_ != null) {
+      json['y'] = y_;
     }
-    if (d != null) {
-      json['d'] = d;
+    final d_ = d;
+    if (d_ != null) {
+      json['d'] = d_;
     }
-    if (n != null) {
-      json['n'] = n;
+    final n_ = n;
+    if (n_ != null) {
+      json['n'] = n_;
     }
-    if (e != null) {
-      json['e'] = e;
+    final e_ = e;
+    if (e_ != null) {
+      json['e'] = e_;
     }
-    if (p != null) {
-      json['p'] = p;
+    final p_ = p;
+    if (p_ != null) {
+      json['p'] = p_;
     }
-    if (q != null) {
-      json['q'] = q;
+    final q_ = q;
+    if (q_ != null) {
+      json['q'] = q_;
     }
-    if (dp != null) {
-      json['dp'] = dp;
+    final dp_ = dp;
+    if (dp_ != null) {
+      json['dp'] = dp_;
     }
-    if (dq != null) {
-      json['dq'] = dq;
+    final dq_ = dq;
+    if (dq_ != null) {
+      json['dq'] = dq_;
     }
-    if (qi != null) {
-      json['qi'] = qi;
+    final qi_ = qi;
+    if (qi_ != null) {
+      json['qi'] = qi_;
     }
-    if (k != null) {
-      json['k'] = k;
+    final k_ = k;
+    if (k_ != null) {
+      json['k'] = k_;
     }
 
     // Set non-string properties
-    if (key_ops != null) {
-      json['key_ops'] = key_ops;
+    final key_ops_ = key_ops;
+    if (key_ops_ != null) {
+      json['key_ops'] = key_ops_;
     }
-    if (ext != null) {
-      json['ext'] = ext;
+    final ext_ = ext;
+    if (ext_ != null) {
+      json['ext'] = ext_;
     }
-    if (oth != null) {
-      json['oth'] = oth.map((e) => e.toJson()).toList();
+    final oth_ = oth;
+    if (oth_ != null) {
+      json['oth'] = oth_.map((e) => e.toJson()).toList();
     }
 
     return json;
@@ -203,9 +221,9 @@ class RsaOtherPrimesInfo {
   String t;
 
   RsaOtherPrimesInfo({
-    this.r,
-    this.d,
-    this.t,
+    required this.r,
+    required this.d,
+    required this.t,
   });
 
   static RsaOtherPrimesInfo fromJson(Map json) {

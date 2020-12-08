@@ -15,19 +15,19 @@
 part of impl_ffi;
 
 /// Convert [data] to [Uint8List] and zero to [lengthInBits] if given.
-Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int lengthInBits]) {
-  data = Uint8List.fromList(data);
+Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int? lengthInBits]) {
+  final buf = Uint8List.fromList(data);
   if (lengthInBits != null) {
     final startFrom = (lengthInBits / 8).floor();
     var remainder = (lengthInBits % 8).toInt();
-    for (var i = startFrom; i < data.length; i++) {
+    for (var i = startFrom; i < buf.length; i++) {
       // TODO: This passes tests, but I think this should be >> instead.. hmm...
       final mask = 0xff & (0xff << (8 - remainder));
-      data[i] = data[i] & mask;
+      buf[i] = buf[i] & mask;
       remainder = 8;
     }
   }
-  return data;
+  return buf;
 }
 
 String _hmacJwkAlgFromHash(_Hash hash) {
@@ -50,7 +50,7 @@ String _hmacJwkAlgFromHash(_Hash hash) {
 Future<HmacSecretKey> hmacSecretKey_importRawKey(
   List<int> keyData,
   Hash hash, {
-  int length,
+  int? length,
 }) async {
   return _HmacSecretKey(
     _asUint8ListZeroedToBitLength(keyData, length),
@@ -61,7 +61,7 @@ Future<HmacSecretKey> hmacSecretKey_importRawKey(
 Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash, {
-  int length,
+  int? length,
 }) async {
   ArgumentError.checkNotNull(jwk, 'jwk');
   ArgumentError.checkNotNull(hash, 'hash');
@@ -82,12 +82,13 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
     'must be "$expectedAlg"',
   );
 
-  final keyData = _jwkDecodeBase64UrlNoPadding(k.k, 'k');
+  final keyData = _jwkDecodeBase64UrlNoPadding(k.k!, 'k');
 
   return hmacSecretKey_importRawKey(keyData, hash, length: length);
 }
 
-Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash, {int length}) async {
+Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash,
+    {int? length}) async {
   final h = _Hash.fromHash(hash);
   length ??= ssl.EVP_MD_size(h.MD) * 8;
   final keyData = Uint8List((length / 8).ceil());

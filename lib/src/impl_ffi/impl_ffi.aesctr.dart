@@ -28,8 +28,7 @@ Future<AesCtrSecretKey> aesCtr_importJsonWebKey(
 Future<AesCtrSecretKey> aesCtr_generateKey(int length) async =>
     _AesCtrSecretKey(_aesGenerateKey(length));
 
-BigInt _parseBigEndian(List<int> data, [int bitLength]) {
-  assert(data != null);
+BigInt _parseBigEndian(List<int> data, [int? bitLength]) {
   bitLength ??= data.length * 8;
   assert(bitLength <= data.length * 8);
 

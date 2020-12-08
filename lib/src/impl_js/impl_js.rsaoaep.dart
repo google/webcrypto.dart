@@ -104,7 +104,7 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   _RsaOaepPrivateKey(this._key);
 
   @override
-  Future<Uint8List> decryptBytes(List<int> data, {List<int> label}) async {
+  Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) async {
     return _decrypt(
       label == null
           ? subtle.Algorithm(name: _rsaOaepAlgorithmName)
@@ -133,7 +133,7 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
   _RsaOaepPublicKey(this._key);
 
   @override
-  Future<Uint8List> encryptBytes(List<int> data, {List<int> label}) async {
+  Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) async {
     return _encrypt(
       label == null
           ? subtle.Algorithm(name: _rsaOaepAlgorithmName)

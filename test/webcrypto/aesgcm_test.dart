@@ -32,16 +32,16 @@ final runner = TestRunner.symmetric<AesGcmSecretKey>(
   ),
   encryptBytes: (key, data, encryptParams) => key.encryptBytes(
     data,
-    bytesFromJson(encryptParams, 'iv'),
+    bytesFromJson(encryptParams, 'iv')!,
     additionalData: bytesFromJson(encryptParams, 'additionalData'),
-    tagLength: encryptParams['length'],
+    tagLength: encryptParams['length'] ?? 128,
   ),
   encryptStream: null, // not supported
   decryptBytes: (key, data, decryptParams) => key.decryptBytes(
     data,
-    bytesFromJson(decryptParams, 'iv'),
+    bytesFromJson(decryptParams, 'iv')!,
     additionalData: bytesFromJson(decryptParams, 'additionalData'),
-    tagLength: decryptParams['length'],
+    tagLength: decryptParams['length'] ?? 128,
   ),
   decryptStream: null, // not supported
   testData: _testData,

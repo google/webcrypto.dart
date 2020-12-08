@@ -35,22 +35,22 @@ final runner = TestRunner.symmetric<AesCtrSecretKey>(
   ),
   encryptBytes: (key, data, encryptParams) => key.encryptBytes(
     data,
-    bytesFromJson(encryptParams, 'counter'),
+    bytesFromJson(encryptParams, 'counter')!,
     encryptParams['length'],
   ),
   encryptStream: (key, data, encryptParams) => key.encryptStream(
     data,
-    bytesFromJson(encryptParams, 'counter'),
+    bytesFromJson(encryptParams, 'counter')!,
     encryptParams['length'],
   ),
   decryptBytes: (key, data, decryptParams) => key.decryptBytes(
     data,
-    bytesFromJson(decryptParams, 'counter'),
+    bytesFromJson(decryptParams, 'counter')!,
     decryptParams['length'],
   ),
   decryptStream: (key, data, decryptParams) => key.decryptStream(
     data,
-    bytesFromJson(decryptParams, 'counter'),
+    bytesFromJson(decryptParams, 'counter')!,
     decryptParams['length'],
   ),
   testData: _testData,

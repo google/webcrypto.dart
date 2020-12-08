@@ -1,3 +1,6 @@
+# 0.5.0-null-safety.0
+ * Ported to null-safety without any breaking changes.
+
 # 0.2.2
  * Increased Flutter SDK constraint to `>=1.24.0-10.2.pre` (current beta),
    because API version breakage in dynamic linking API for Dart SDK.

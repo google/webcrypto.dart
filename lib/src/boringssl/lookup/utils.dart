@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:io' show Platform, Directory, File;
 import 'dart:ffi';
 import 'symbols.generated.dart';
@@ -38,7 +40,7 @@ String get libraryFileName {
 /// and initialize it with [initialize_dart_dl].
 ///
 /// Returns `null` if it could not be found.
-Pointer<Void> Function(Sym) lookupLibraryInDotDartTool() {
+Pointer<Void> Function(Sym)? lookupLibraryInDotDartTool() {
   final dotDartTool = _findDotDartTool();
   if (dotDartTool == null) {
     return null;
@@ -51,7 +53,6 @@ Pointer<Void> Function(Sym) lookupLibraryInDotDartTool() {
     final library = DynamicLibrary.open(libraryFile.path);
 
     // Try to lookup the 'webcrypto_lookup_symbol' symbol
-    // ignore: non_constant_identifier_names
     final webcrypto_lookup_symbol = library
         .lookup<NativeFunction<Pointer<Void> Function(Int32)>>(
           'webcrypto_lookup_symbol',
@@ -89,7 +90,7 @@ void initialize_dart_dl(Pointer<Void> Function(Sym) lookup) {
 }
 
 /// Find the `.dart_tool/` folder, returns `null` if unable to find it.
-Uri _findDotDartTool() {
+Uri? _findDotDartTool() {
   // HACK: Because 'dart:isolate' is unavailable in Flutter we have no means
   //       by which we can find the location of the package_config.json file.
   //       Which we need, because the binary library created by:

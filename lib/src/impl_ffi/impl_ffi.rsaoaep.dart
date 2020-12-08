@@ -118,10 +118,8 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   )
       encryptOrDecryptFn,
   List<int> data, {
-  List<int> label,
+  List<int>? label,
 }) async {
-  ArgumentError.checkNotNull(data, 'data');
-
   final ctx = ssl.EVP_PKEY_CTX_new(key, ffi.nullptr);
   _checkOp(ctx.address != 0, fallback: 'allocation error');
   try {
@@ -183,8 +181,7 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   _RsaOaepPrivateKey(this._key, this._hash);
 
   @override
-  Future<Uint8List> decryptBytes(List<int> data, {List<int> label}) async {
-    ArgumentError.checkNotNull(data, 'data');
+  Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) async {
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
       _hash.MD,
@@ -219,8 +216,7 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
   _RsaOaepPublicKey(this._key, this._hash);
 
   @override
-  Future<Uint8List> encryptBytes(List<int> data, {List<int> label}) async {
-    ArgumentError.checkNotNull(data, 'data');
+  Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) async {
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
       _hash.MD,

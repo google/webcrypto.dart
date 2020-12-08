@@ -19,7 +19,7 @@ final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 Future<HmacSecretKey> hmacSecretKey_importRawKey(
   List<int> keyData,
   Hash hash, {
-  int length,
+  int? length,
 }) async {
   return _HmacSecretKey(await _importKey(
     'raw',
@@ -42,7 +42,7 @@ Future<HmacSecretKey> hmacSecretKey_importRawKey(
 Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash, {
-  int length,
+  int? length,
 }) async {
   return _HmacSecretKey(await _importJsonWebKey(
     jwk,
@@ -61,7 +61,8 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   ));
 }
 
-Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash, {int length}) async {
+Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash,
+    {int? length}) async {
   return _HmacSecretKey(await _generateKey(
     length == null
         ? subtle.Algorithm(

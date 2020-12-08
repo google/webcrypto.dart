@@ -76,8 +76,7 @@ Hash hashFromJson(dynamic json) {
   if (json == 'sha-512') {
     return Hash.sha512;
   }
-  check(false, 'invalid hash specification');
-  return null; // unreachable
+  throw AssertionError('invalid hash specification');
 }
 
 String hashToJson(Hash h) {
@@ -93,8 +92,7 @@ String hashToJson(Hash h) {
   if (h == Hash.sha512) {
     return 'sha-512';
   }
-  check(false, 'invalid hash implementation');
-  return null; // unreachable
+  throw AssertionError('invalid hash implementation');
 }
 
 String curveToJson(EllipticCurve curve) {
@@ -107,8 +105,7 @@ String curveToJson(EllipticCurve curve) {
   if (curve == EllipticCurve.p521) {
     return 'p-521';
   }
-  check(false, 'invalid curve implementation');
-  return null; // unreachable
+  throw AssertionError('invalid curve implementation');
 }
 
 EllipticCurve curveFromJson(dynamic json) {
@@ -124,18 +121,17 @@ EllipticCurve curveFromJson(dynamic json) {
   if (json == 'p-521') {
     return EllipticCurve.p521;
   }
-  check(false, 'invalid curve specification');
-  return null; // unreachable
+  throw AssertionError('invalid curve specification');
 }
 
-List<int> bytesFromJson(Map<String, dynamic> json, String key) {
+List<int>? bytesFromJson(Map<String, dynamic> json, String key) {
   if (json[key] != null) {
     return base64Decode(json[key]);
   }
   return null;
 }
 
-String bytesToJson(List<int> bytes) {
+String? bytesToJson(List<int>? bytes) {
   if (bytes != null) {
     return base64Encode(bytes);
   }

@@ -51,7 +51,7 @@ abstract class HmacSecretKey {
   static Future<HmacSecretKey> importRawKey(
     List<int> keyData,
     Hash hash, {
-    int length,
+    int? length,
   }) {
     ArgumentError.checkNotNull(keyData, 'keyData');
     ArgumentError.checkNotNull(hash, 'hash');
@@ -87,7 +87,7 @@ abstract class HmacSecretKey {
     //       what is in the JWK matches what is also given.
     //       Note. it's not yet clear if JWK always contains key parameters.
     Hash hash, {
-    int length,
+    int? length,
   }) {
     ArgumentError.checkNotNull(jwk, 'jwk');
     ArgumentError.checkNotNull(hash, 'hash');
@@ -124,7 +124,7 @@ abstract class HmacSecretKey {
   /// // Generate a new random HMAC secret key.
   /// final key = await HmacSecretKey.generate(Hash.sha256);
   /// ```
-  static Future<HmacSecretKey> generateKey(Hash hash, {int length}) {
+  static Future<HmacSecretKey> generateKey(Hash hash, {int? length}) {
     ArgumentError.checkNotNull(hash, 'hash');
     if (length != null && length <= 0) {
       throw ArgumentError.value(length, 'length', 'must be positive');

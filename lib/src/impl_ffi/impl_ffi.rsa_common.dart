@@ -60,16 +60,17 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
 
 ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
   JsonWebKey jwk, {
-  @required bool isPrivateKey,
-  @required String expectedAlg,
-  String expectedUse,
+  required bool isPrivateKey,
+  required String expectedAlg,
+  required String expectedUse,
 }) {
-  assert(isPrivateKey != null);
-  assert(expectedAlg != null);
-
   final scope = _Scope();
   try {
-    void checkJwk(bool condition, String prop, String message) =>
+    void checkJwk(
+      bool condition,
+      String prop, [
+      String message = 'must be present',
+    ]) =>
         _checkData(condition, message: 'JWK property "$prop" $message');
 
     checkJwk(jwk.kty == 'RSA', 'kty', 'must be "RSA"');
@@ -107,8 +108,10 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
 
     final rsa = scope.create(ssl.RSA_new, ssl.RSA_free);
 
-    final n = readBN(jwk.n, 'n');
-    final e = readBN(jwk.e, 'e');
+    checkJwk(jwk.n != null, 'n');
+    checkJwk(jwk.e != null, 'e');
+    final n = readBN(jwk.n!, 'n');
+    final e = readBN(jwk.e!, 'e');
     _checkOpIsOne(ssl.RSA_set0_key(rsa, n, e, ffi.nullptr));
     scope.move(n); // ssl.RSA_set0_key takes ownership
     scope.move(e);
@@ -116,7 +119,8 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
     if (isPrivateKey) {
       // The "p", "q", "dp", "dq", and "qi" properties are optional in the JWA
       // spec. However they are required by Chromium's WebCrypto implementation.
-      final d = readBN(jwk.d, 'd');
+      checkJwk(jwk.d != null, 'd');
+      final d = readBN(jwk.d!, 'd');
       // If present properties p,q,dp,dq,qi enable optional optimizations, see:
       // https://tools.ietf.org/html/rfc7518#section-6.3.2
       // However, these are required by Chromes Web Crypto implementation:
@@ -127,11 +131,16 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
       // and, (b) following Chromes/Firefox behavior is safe.
       // Notice, we can choose to support this in the future without breaking
       // the public API.
-      final p = readBN(jwk.p, 'p');
-      final q = readBN(jwk.q, 'q');
-      final dp = readBN(jwk.dp, 'dp');
-      final dq = readBN(jwk.dq, 'dq');
-      final qi = readBN(jwk.qi, 'qi');
+      checkJwk(jwk.p != null, 'p');
+      checkJwk(jwk.q != null, 'q');
+      checkJwk(jwk.dp != null, 'dp');
+      checkJwk(jwk.dq != null, 'dq');
+      checkJwk(jwk.qi != null, 'qi');
+      final p = readBN(jwk.p!, 'p');
+      final q = readBN(jwk.q!, 'q');
+      final dp = readBN(jwk.dp!, 'dp');
+      final dq = readBN(jwk.dq!, 'dq');
+      final qi = readBN(jwk.qi!, 'qi');
 
       _checkOpIsOne(ssl.RSA_set0_key(rsa, ffi.nullptr, ffi.nullptr, d));
       scope.move(d); // ssl.RSA_set0_key takes ownership
@@ -165,14 +174,10 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
 
 Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
   ffi.Pointer<ssl.EVP_PKEY> key, {
-  @required bool isPrivateKey,
-  @required String jwkAlg,
-  @required String jwkUse,
+  required bool isPrivateKey,
+  required String jwkAlg,
+  required String jwkUse,
 }) {
-  assert(isPrivateKey != null);
-  assert(jwkUse != null);
-  assert(jwkAlg != null);
-
   final scope = _Scope();
   try {
     final rsa = ssl.EVP_PKEY_get1_RSA(key);

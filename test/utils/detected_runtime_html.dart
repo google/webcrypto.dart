@@ -31,7 +31,7 @@ import 'dart:html' show window;
 ///
 /// [1]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 final String detectedRuntime = () {
-  final ua = window.navigator.userAgent ?? '';
+  final ua = window.navigator.userAgent;
 
   if (ua.contains('Gecko/')) {
     return 'firefox';

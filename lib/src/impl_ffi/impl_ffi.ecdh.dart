@@ -88,9 +88,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
 
     final scope = _Scope();
     try {
-      final _publicKey = publicKey as _EcdhPublicKey;
-
-      final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY(_publicKey._key);
+      final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY(publicKey._key);
       _checkOp(pubEcKey.address != 0, fallback: 'not an ec key');
       scope.defer(() => ssl.EC_KEY_free(pubEcKey));
 

@@ -137,9 +137,9 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
 /// Returns `null` if the [signature] is invalid and should be rejected.
 ///
 /// See also: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#111
-Uint8List _convertEcdsaWebCryptoSignatureToDerSignature(
+Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
   ffi.Pointer<ssl.EVP_PKEY> key,
-  Uint8List signature,
+  List<int> signature,
 ) {
   final scope = _Scope();
   try {

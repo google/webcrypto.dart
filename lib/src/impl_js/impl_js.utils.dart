@@ -47,6 +47,7 @@ String _curveToName(EllipticCurve curve) {
       return 'P-521';
   }
   // This should never happen.
+  // ignore: dead_code
   throw AssertionError('Unknown curve "$curve"');
 }
 
@@ -126,7 +127,7 @@ final _usagesDeriveBits = ['deriveBits'];
 
 /// Adapt `crypto.subtle.importKey` to Dart types for JWK.
 Future<subtle.CryptoKey> _importJsonWebKey(
-  Map<String, Object> jwk,
+  Map<String, dynamic> jwk,
   subtle.Algorithm algorithm,
   List<String> usages,
   String expectedType,

@@ -52,7 +52,7 @@ final runner = TestRunner.symmetric<_ExportablePbkdf2SecretKey>(
   deriveBits: (key, length, deriveParams) => key.pbkdf2SecretKey.deriveBits(
     length,
     hashFromJson(deriveParams),
-    bytesFromJson(deriveParams, 'salt'),
+    bytesFromJson(deriveParams, 'salt')!,
     deriveParams['iterations'],
   ),
   testData: _testData,

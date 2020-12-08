@@ -54,7 +54,7 @@ ffi.Pointer<ssl.EVP_PKEY> _createEVP_PKEYwithFinalizer() {
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
 /// and if nothing is available there we use [fallback].
-void _checkOp(bool condition, {String message, String fallback}) {
+void _checkOp(bool condition, {String? message, String? fallback}) {
   if (!condition) {
     // Always extract the error to ensure we clear the error queue.
     final err = _extractError();
@@ -67,14 +67,14 @@ void _checkOp(bool condition, {String message, String fallback}) {
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
 /// and if nothing is available there we use [fallback].
-void _checkOpIsOne(int retval, {String message, String fallback}) =>
+void _checkOpIsOne(int retval, {String? message, String? fallback}) =>
     _checkOp(retval == 1, message: message, fallback: fallback);
 
 /// Throw [FormatException] if [condition] is `false`.
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
 /// and if nothing is available there we use [fallback].
-void _checkData(bool condition, {String message, String fallback}) {
+void _checkData(bool condition, {String? message, String? fallback}) {
   if (!condition) {
     // Always extract the error to ensure we clear the error queue.
     final err = _extractError();
@@ -87,14 +87,14 @@ void _checkData(bool condition, {String message, String fallback}) {
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
 /// and if nothing is available there we use [fallback].
-void _checkDataIsOne(int retval, {String message, String fallback}) =>
+void _checkDataIsOne(int retval, {String? message, String? fallback}) =>
     _checkData(retval == 1, message: message, fallback: fallback);
 
 /// Extract latest error on this thread as [String] and clear the error queue
 /// for this thread.
 ///
 /// Returns `null` if there is no error.
-String _extractError() {
+String? _extractError() {
   try {
     // Get the error.
     final err = ssl.ERR_get_error();
@@ -140,7 +140,7 @@ void _free<T extends ffi.NativeType>(ffi.Pointer<T> p) {
 }
 
 class _ScopeEntry {
-  final Object handle;
+  final Object? handle;
   final void Function() fn;
 
   _ScopeEntry(this.handle, this.fn);
@@ -151,7 +151,7 @@ class _Scope {
   final List<_ScopeEntry> _deferred = [];
 
   /// Defer [fn] to end of this scope.
-  void defer(void Function() fn, [Object handle]) =>
+  void defer(void Function() fn, [Object? handle]) =>
       _deferred.add(_ScopeEntry(handle, fn));
 
   /// Allocate an [ffi.Pointer<T>] in this scope.

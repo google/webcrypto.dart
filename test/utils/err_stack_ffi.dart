@@ -34,7 +34,7 @@ Future<T> checkErrorStack<T>(FutureOr<T> Function() fn) async {
       // Get the error.
       final err = ssl.ERR_get_error();
       if (err == 0) {
-        return null;
+        return ret;
       }
       const N = 4096; // Max error message size
       final p = ffi.allocate<ssl.Bytes>(count: N);

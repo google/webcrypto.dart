@@ -32,16 +32,15 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
   List<int> key,
   List<int> data,
   List<int> iv,
-  List<int> additionalData,
+  List<int>? additionalData,
   int tagLength,
   bool isEncrypt,
 ) async {
-  ArgumentError.checkNotNull(data, 'data');
+  final additionalData_ = additionalData ??= <int>[];
   if (isEncrypt && data.length > (1 << 39) - 256) {
     // More than this is not allowed by Web crypto spec, we shall honor that.
     throw _OperationError('data may not be more than 2^39 - 256 bytes');
   }
-  tagLength ??= 128;
   if (tagLength != 32 &&
       tagLength != 64 &&
       tagLength != 96 &&
@@ -51,7 +50,6 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
       tagLength != 128) {
     throw _OperationError('tagLength must be 32, 64, 96, 104, 112, 120 or 128');
   }
-  additionalData ??= [];
 
   // TODO: Check iv length is less than EVP_AEAD_nonce_length
   //       More importantly, add some test cases covering this, also consider
@@ -88,8 +86,8 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
           iv.length,
           scope.dataAsPointer(data),
           data.length,
-          scope.dataAsPointer(additionalData),
-          additionalData.length,
+          scope.dataAsPointer(additionalData_),
+          additionalData_.length,
         ));
       }).sublist(0, outLen.value);
     } else {
@@ -104,8 +102,8 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
           iv.length,
           scope.dataAsPointer(data),
           data.length,
-          scope.dataAsPointer(additionalData),
-          additionalData.length,
+          scope.dataAsPointer(additionalData_),
+          additionalData_.length,
         ));
       }).sublist(0, outLen.value);
     }
@@ -122,15 +120,15 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
   Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
+    List<int>? additionalData,
+    int? tagLength = 128,
   }) async =>
       _aesGcmEncryptDecrypt(
         _key,
         data,
         iv,
         additionalData,
-        tagLength,
+        tagLength ?? 128,
         false,
       );
 
@@ -138,15 +136,15 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
   Future<Uint8List> encryptBytes(
     List<int> data,
     List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
+    List<int>? additionalData,
+    int? tagLength = 128,
   }) async =>
       _aesGcmEncryptDecrypt(
         _key,
         data,
         iv,
         additionalData,
-        tagLength,
+        tagLength ?? 128,
         true,
       );
 

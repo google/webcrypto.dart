@@ -42,15 +42,15 @@ abstract class AesGcmSecretKey {
   Future<Uint8List> encryptBytes(
     List<int> data,
     List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
+    List<int>? additionalData,
+    int? tagLength = 128,
   });
 
   Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> iv, {
-    List<int> additionalData,
-    int tagLength = 128,
+    List<int>? additionalData,
+    int? tagLength = 128,
   });
 
   Future<Uint8List> exportRawKey();
