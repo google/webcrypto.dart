@@ -1,0 +1,63 @@
+name: test
+on:
+  push:
+    branches:
+      - try-github-actions
+  #    - master
+  #pull_request:
+  #schedule:
+  #  - cron: '0 0 * * 0'
+#defaults:
+#  run:
+#    shell: bash
+env:
+  PUB_ENVIRONMENT: bot.github
+
+jobs:
+  linux:
+    name: webcrypto on linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta'
+      - run: dart --version
+      - run: flutter --version
+      - run: flutter pub get
+      - run: flutter pub run webcrypto:setup
+      - run: flutter test
+      - run: flutter test --platform chrome
+      - run: xvfb-run flutter pub run test -p vm,chrome,firefox
+  macos:
+    name: webcrypto on macos
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta'
+      - run: dart --version
+      - run: flutter --version
+      - run: flutter pub get
+      - run: flutter pub run webcrypto:setup
+      - run: flutter test
+      - run: flutter test --platform chrome
+      - run: xcrun simctl list
+      - run: xcrun simctl list runtimes
+      - run: xcrun simctl list devices
+      - run: flutter pub run test -p vm,chrome,firefox,safari
+      - run: flutter pub get
+        working-directory: example/
+      - name: android emulator tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: flutter drive --target test_driver/webcrypto_tester.dart
+          working-directory: example/
