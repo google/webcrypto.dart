@@ -100,7 +100,7 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
 }
 
 class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
-  final subtle.CryptoKey _key;
+  final CryptoKey _key;
   _RsassaPkcs1V15PrivateKey(this._key);
 
   @override
@@ -125,7 +125,7 @@ class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
 }
 
 class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
-  final subtle.CryptoKey _key;
+  final CryptoKey _key;
   _RsassaPkcs1V15PublicKey(this._key);
 
   @override

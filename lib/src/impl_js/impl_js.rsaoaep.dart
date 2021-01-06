@@ -100,7 +100,7 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
 }
 
 class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
-  final subtle.CryptoKey _key;
+  final CryptoKey _key;
   _RsaOaepPrivateKey(this._key);
 
   @override
@@ -129,7 +129,7 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
 }
 
 class _RsaOaepPublicKey implements RsaOaepPublicKey {
-  final subtle.CryptoKey _key;
+  final CryptoKey _key;
   _RsaOaepPublicKey(this._key);
 
   @override

@@ -49,7 +49,7 @@ Future<AesCtrSecretKey> aesCtr_generateKey(int length) async {
 }
 
 class _AesCtrSecretKey implements AesCtrSecretKey {
-  final subtle.CryptoKey _key;
+  final CryptoKey _key;
   _AesCtrSecretKey(this._key);
 
   @override

@@ -22,7 +22,7 @@ import 'package:js/js.dart';
 import 'package:js/js_util.dart' as js_util;
 import 'dart:typed_data';
 import 'dart:convert' show jsonDecode;
-import 'dart:html' show DomException;
+import 'dart:html' show DomException, CryptoKey;
 import 'jsonwebkey.dart' show JsonWebKey;
 export 'jsonwebkey.dart' show JsonWebKey;
 export 'dart:html' show DomException;
@@ -68,30 +68,6 @@ Uint8List bigIntToUint8ListBigInteger(BigInt integer) {
   // supports 3 and 65537, so supporting other numbers is a low priority.
   // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
   throw UnimplementedError('Only supports 65537 and 3 for now');
-}
-
-/// Minimal interface for the CryptoKey type.
-@JS('CryptoKey')
-class CryptoKey {
-  /// Returns the _type_ of this key, as one of:
-  ///  * `'private'`
-  ///  * `'public'`
-  ///  * `'secret'`
-  external String get type;
-
-  /// True, if this key can be extracted.
-  external bool get extractable;
-
-  /// Ways in which this key can be used, list of one or more of:
-  ///  * `'encrypt'`,
-  ///  * `'decrypt'`,
-  ///  * `'sign'`,
-  ///  * `'verify'`,
-  ///  * `'deriveKey'`,
-  ///  * `'deriveBits'`,
-  ///  * `'wrapKey'`,
-  ///  * `'unwrapKey'`.
-  external List<String> get usages;
 }
 
 /// Interface for the [CryptoKeyPair][1].

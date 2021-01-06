@@ -18,6 +18,7 @@ library impl_js;
 
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:html' show CryptoKey;
 
 import '../webcrypto/webcrypto.dart';
 import '../crypto_subtle.dart' as subtle;

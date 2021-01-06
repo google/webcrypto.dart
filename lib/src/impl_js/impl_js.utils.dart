@@ -126,7 +126,7 @@ final _usagesEncrypt = ['encrypt'];
 final _usagesDeriveBits = ['deriveBits'];
 
 /// Adapt `crypto.subtle.importKey` to Dart types for JWK.
-Future<subtle.CryptoKey> _importJsonWebKey(
+Future<CryptoKey> _importJsonWebKey(
   Map<String, dynamic> jwk,
   subtle.Algorithm algorithm,
   List<String> usages,
@@ -156,7 +156,7 @@ Future<subtle.CryptoKey> _importJsonWebKey(
 }
 
 /// Adapt `crypto.subtle.importKey` to Dart types.
-Future<subtle.CryptoKey> _importKey(
+Future<CryptoKey> _importKey(
   String format,
   List<int> keyData,
   subtle.Algorithm algorithm,
@@ -183,7 +183,7 @@ Future<subtle.CryptoKey> _importKey(
 /// Adapt `crypto.subtle.sign` to Dart types.
 Future<Uint8List> _sign(
   subtle.Algorithm algorithm,
-  subtle.CryptoKey key,
+  CryptoKey key,
   List<int> data,
 ) {
   ArgumentError.checkNotNull(data, 'data');
@@ -201,7 +201,7 @@ Future<Uint8List> _sign(
 /// Adapt `crypto.subtle.verify` to Dart types.
 Future<bool> _verify(
   subtle.Algorithm algorithm,
-  subtle.CryptoKey key,
+  CryptoKey key,
   List<int> signature,
   List<int> data,
 ) {
@@ -221,7 +221,7 @@ Future<bool> _verify(
 /// Adapt `crypto.subtle.encrypt` to Dart types.
 Future<Uint8List> _encrypt(
   subtle.Algorithm algorithm,
-  subtle.CryptoKey key,
+  CryptoKey key,
   List<int> data,
 ) {
   ArgumentError.checkNotNull(data, 'data');
@@ -239,7 +239,7 @@ Future<Uint8List> _encrypt(
 /// Adapt `crypto.subtle.decrypt` to Dart types.
 Future<Uint8List> _decrypt(
   subtle.Algorithm algorithm,
-  subtle.CryptoKey key,
+  CryptoKey key,
   List<int> data,
 ) {
   ArgumentError.checkNotNull(data, 'data');
@@ -257,7 +257,7 @@ Future<Uint8List> _decrypt(
 /// Adapt `crypto.subtle.deriveBits` to Dart types.
 Future<Uint8List> _deriveBits(
   subtle.Algorithm algorithm,
-  subtle.CryptoKey key,
+  CryptoKey key,
   int length, {
   bool invalidAccessErrorIsArgumentError = false,
 }) {
@@ -276,7 +276,7 @@ Future<Uint8List> _deriveBits(
 /// Adapt `crypto.subtle.export` to Dart types.
 Future<Uint8List> _exportKey(
   String format,
-  subtle.CryptoKey key,
+  CryptoKey key,
 ) {
   ArgumentError.checkNotNull(format, 'format');
 
@@ -288,7 +288,7 @@ Future<Uint8List> _exportKey(
 
 /// Adapt `crypto.subtle.export` to Dart types.
 Future<Map<String, Object>> _exportJsonWebKey(
-  subtle.CryptoKey key,
+  CryptoKey key,
   // TODO: Add expected 'use' the way we have it in the FFI implementation
 ) {
   return _handleDomException(() async {
@@ -307,7 +307,7 @@ Future<Map<String, Object>> _exportJsonWebKey(
 }
 
 /// Adapt `crypto.subtle.generateKey` to Dart types.
-Future<subtle.CryptoKey> _generateKey(
+Future<CryptoKey> _generateKey(
   subtle.Algorithm algorithm,
   List<String> usages,
   String expectedType,
