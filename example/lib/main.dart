@@ -14,7 +14,7 @@
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:convert' show utf8;
+import 'dart:convert' show utf8, base64Decode, jsonEncode;
 
 import 'package:convert/convert.dart' show hex;
 import 'package:webcrypto/webcrypto.dart';
@@ -29,15 +29,18 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _output = '-';
-  final _input = TextEditingController();
+  String _hash = '-';
+  String _importedKey = '-';
+  String _generatedKey = '-';
+  final _inputPlain = TextEditingController();
+  final _inputRawKey = TextEditingController(text: "3nle6RpFx77jwrksoNUb1Q==");
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('SHA-1 Hashing'),
+          title: const Text('Webcrypto'),
         ),
         body: Container(
           padding: EdgeInsets.all(10),
@@ -49,18 +52,51 @@ class _MyAppState extends State<MyApp> {
                 'Output will be displayed in hexadecimal encoding.',
               ),
               Text(
-                'input',
+                'input plain text',
                 textScaleFactor: 1.2,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              _textEntry(),
+              _textEntryPlain(),
               SizedBox(height: 50),
               Text(
-                'output',
+                'hash',
                 textScaleFactor: 1.2,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text('$_output'),
+              Text('$_hash',
+                key: Key('HashOutput'),
+              ),
+              Text(
+                'Click the button to import the raw key.\n'
+                'Output will be key in jwk form or an error message.',
+              ),
+              Text(
+                'input raw key',
+                textScaleFactor: 1.2,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              _textEntryRawKey(),
+              Text(
+                'imported key',
+                textScaleFactor: 1.2,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text('$_importedKey',
+                key: Key('KeyOutput'),
+              ),
+              Text(
+                'generate AES key',
+                textScaleFactor: 1.2,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              RaisedButton(
+                key: Key("GenerateKey"),
+                child: Text('GENERATE KEY'),
+                onPressed: _generateKey,
+              ),
+              Text('$_generatedKey',
+                key: Key('GenKeyOutput'),
+              ),
             ],
           ),
         ),
@@ -68,18 +104,19 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget _textEntry() {
+  Widget _textEntryPlain() {
     return Row(
       children: <Widget>[
         Expanded(
           child: TextField(
-            controller: _input,
+            controller: _inputPlain,
             autofocus: true,
             autocorrect: false,
             enableSuggestions: false,
           ),
         ),
         IconButton(
+          key: Key('RefreshHash'),
           icon: Icon(Icons.autorenew),
           tooltip: 'compute hash',
           onPressed: _refreshHash,
@@ -88,10 +125,60 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  Widget _textEntryRawKey() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: TextField(
+            controller: _inputRawKey,
+            autofocus: true,
+            autocorrect: false,
+            enableSuggestions: false,
+          ),
+        ),
+        IconButton(
+          key: Key('ImportRawKey'),
+          icon: Icon(Icons.autorenew),
+          tooltip: 'import key',
+          onPressed: _importRawKey,
+        )
+      ],
+    );
+  }
+
   Future<void> _refreshHash() async {
-    final result = await Hash.sha1.digestBytes(utf8.encode(_input.text));
+    final result = await Hash.sha1.digestBytes(utf8.encode(_inputPlain.text));
     setState(() {
-      _output = hex.encode(result);
+      _hash = hex.encode(result);
     });
+  }
+
+  Future<void> _importRawKey() async {
+    final keyData = base64Decode(_inputRawKey.text);
+    try {
+      final key = await AesGcmSecretKey.importRawKey(keyData);
+      final jwk = await key.exportJsonWebKey();
+      setState(() {
+        _importedKey = jsonEncode(jwk);
+      });
+    } catch (e, stack) {
+      setState(() {
+        _importedKey = "import failed: $e \n\n $stack";
+      });
+    }
+  }
+
+  Future<void> _generateKey() async {
+    try {
+      final key = await AesCbcSecretKey.generateKey(256);
+      final jwk = await key.exportJsonWebKey();
+      setState(() {
+        _generatedKey = jsonEncode(jwk);
+      });
+    } catch (e, stack) {
+      setState(() {
+        _generatedKey = "generating key failed: $e \n\n $stack";
+      });
+    }
   }
 }

@@ -38,6 +38,8 @@ dev_dependencies:
   pedantic: ^1.9.0
   flutter_test:
     sdk: flutter
+  flutter_driver:
+    sdk: flutter
 
 flutter:
   plugin:
