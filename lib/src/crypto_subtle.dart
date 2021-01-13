@@ -97,7 +97,8 @@ class CryptoKey {
 /// Interface for the [CryptoKeyPair][1].
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#keypair
-@JS('CryptoKeyPair')
+@JS()
+@anonymous
 class CryptoKeyPair {
   external CryptoKey get privateKey;
   external CryptoKey get publicKey;
