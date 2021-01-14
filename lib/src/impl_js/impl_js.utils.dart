@@ -172,6 +172,12 @@ Future<CryptoKey> _importKey(
       extractable,
       usages,
     ));
+    // WORKAROUND
+    // The only purpose of the following line is to help
+    // the compiler resolving the type of k. Without this line
+    // k will not be of the type CryptoKey.
+    // The reason for this behaviour is currently unknown.
+    final type = getProperty(k, 'type');
     if (k.type != expectedType) {
       throw ArgumentError.value(
           keyData, 'keyData', 'must be a "$expectedType" key');
@@ -318,6 +324,12 @@ Future<CryptoKey> _generateKey(
       true, // extractable, keys should always be extractable.
       usages,
     ));
+    // WORKAROUND
+    // The only purpose of the following line is to help
+    // the compiler resolving the type of k. Without this line
+    // k will not be of the type CryptoKey.
+    // The reason for this behaviour is currently unknown.
+    final type = getProperty(k, "type");
     assert(k.type == expectedType, 'expected a "$expectedType" key');
     return k;
   });
