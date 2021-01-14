@@ -87,7 +87,7 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
 }
 
 class _RsaPssPrivateKey implements RsaPssPrivateKey {
-  final CryptoKey _key;
+  final subtle.CryptoKey _key;
   _RsaPssPrivateKey(this._key);
 
   @override
@@ -125,7 +125,7 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
 }
 
 class _RsaPssPublicKey implements RsaPssPublicKey {
-  final CryptoKey _key;
+  final subtle.CryptoKey _key;
   _RsaPssPublicKey(this._key);
 
   @override

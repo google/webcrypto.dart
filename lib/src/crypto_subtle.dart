@@ -25,7 +25,7 @@ import 'dart:convert' show jsonDecode;
 import 'dart:html' show DomException, CryptoKey;
 import 'jsonwebkey.dart' show JsonWebKey;
 export 'jsonwebkey.dart' show JsonWebKey;
-export 'dart:html' show DomException;
+export 'dart:html' show DomException, CryptoKey;
 
 /// Minimal interface for promises as returned from the browsers WebCrypto API.
 @JS('Promise')

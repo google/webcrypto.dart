@@ -111,7 +111,7 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
 }
 
 class _EcdsaPrivateKey implements EcdsaPrivateKey {
-  final CryptoKey _key;
+  final subtle.CryptoKey _key;
   _EcdsaPrivateKey(this._key);
 
   @override
@@ -143,7 +143,7 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
 }
 
 class _EcdsaPublicKey implements EcdsaPublicKey {
-  final CryptoKey _key;
+  final subtle.CryptoKey _key;
   _EcdsaPublicKey(this._key);
 
   @override

@@ -49,7 +49,7 @@ Future<AesGcmSecretKey> aesGcm_generateKey(int length) async {
 }
 
 class _AesGcmSecretKey implements AesGcmSecretKey {
-  final CryptoKey _key;
+  final subtle.CryptoKey _key;
   _AesGcmSecretKey(this._key);
 
   @override

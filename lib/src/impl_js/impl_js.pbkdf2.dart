@@ -30,7 +30,7 @@ Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
 }
 
 class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
-  final CryptoKey _key;
+  final subtle.CryptoKey _key;
   _Pbkdf2SecretKey(this._key);
 
   @override

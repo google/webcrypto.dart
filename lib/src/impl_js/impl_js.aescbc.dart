@@ -49,7 +49,7 @@ Future<AesCbcSecretKey> aesCbc_generateKey(int length) async {
 }
 
 class _AesCbcSecretKey implements AesCbcSecretKey {
-  final CryptoKey _key;
+  final subtle.CryptoKey _key;
   _AesCbcSecretKey(this._key);
 
   @override

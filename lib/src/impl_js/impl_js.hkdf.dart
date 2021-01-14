@@ -30,7 +30,7 @@ Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
 }
 
 class _HkdfSecretKey implements HkdfSecretKey {
-  final CryptoKey _key;
+  final subtle.CryptoKey _key;
   _HkdfSecretKey(this._key);
 
   @override
