@@ -63,7 +63,8 @@ class _MyAppState extends State<MyApp> {
                 textScaleFactor: 1.2,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text('$_hash',
+              Text(
+                '$_hash',
                 key: Key('HashOutput'),
               ),
               Text(
@@ -81,7 +82,8 @@ class _MyAppState extends State<MyApp> {
                 textScaleFactor: 1.2,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text('$_importedKey',
+              Text(
+                '$_importedKey',
                 key: Key('KeyOutput'),
               ),
               Text(
@@ -94,7 +96,8 @@ class _MyAppState extends State<MyApp> {
                 child: Text('GENERATE KEY'),
                 onPressed: _generateKey,
               ),
-              Text('$_generatedKey',
+              Text(
+                '$_generatedKey',
                 key: Key('GenKeyOutput'),
               ),
             ],
