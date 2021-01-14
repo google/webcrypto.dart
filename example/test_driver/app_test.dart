@@ -33,7 +33,8 @@ void main() {
       await driver.tap(importKeyButtonFinder);
 
       // The outout should contain the importet key now.
-      expect(await driver.getText(keyOutputFinder), '{"kty":"oct","alg":"A128GCM","k":"3nle6RpFx77jwrksoNUb1Q"}');
+      expect(await driver.getText(keyOutputFinder),
+          matches('.*"3nle6RpFx77jwrksoNUb1Q".*'));
     });
 
     test('no aes key generated', () async {
@@ -46,7 +47,8 @@ void main() {
       await driver.tap(generateKeyButtonFinder);
 
       // The outout should contain the importet key now.
-      expect(await driver.getText(genKeyOutputFinder), matches('{"kty":"oct","alg":"A256CBC","k":"[^"]{43}"}'));
+      expect(await driver.getText(genKeyOutputFinder),
+          matches('.*"alg":"A256CBC".*'));
     });
   });
 }
