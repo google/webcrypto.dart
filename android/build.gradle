@@ -27,7 +27,7 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 28
 
-    // We depend on cmake for the native parts
+    // We depend on cmake for the native parts.
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
