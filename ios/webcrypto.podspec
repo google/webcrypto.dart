@@ -15,8 +15,8 @@ Pod::Spec.new do |s|
   s.public_header_files = 'Classes/**/*.h'
   s.source_files        = [
     'Classes/**/*',
-    # Since we can't embed source from ../third_party/, we have create files
-    # in ios/third_party/... that simply uses #include "../...", this is a hack!
+    # Since we can't embed source from ../third_party/, we have created files
+    # in ios/third_party/... which simply use #include "../...". This is a hack!
     'third_party/boringssl/**/*.{c,h}',
     'third_party/dart-sdk/**/*.{c,h}',
   ]
