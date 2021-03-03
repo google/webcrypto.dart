@@ -54,7 +54,7 @@ class _HkdfSecretKey implements HkdfSecretKey {
         final r = ssl.HKDF(
           out,
           lengthInBytes,
-          md,
+          md.cast(),
           scope.dataAsPointer(_key),
           _key.length,
           scope.dataAsPointer(salt),

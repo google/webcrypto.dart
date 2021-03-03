@@ -66,7 +66,7 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
           scope.dataAsPointer(salt),
           salt.length,
           iterations,
-          md,
+          md.cast(),
           lengthInBytes,
           out,
         ));

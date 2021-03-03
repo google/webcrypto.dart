@@ -184,7 +184,7 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) async {
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
-      _hash.MD,
+      _hash.MD.cast(),
       ssl.EVP_PKEY_decrypt_init,
       ssl.EVP_PKEY_decrypt,
       data,
@@ -219,7 +219,7 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
   Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) async {
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
-      _hash.MD,
+      _hash.MD.cast(),
       ssl.EVP_PKEY_encrypt_init,
       ssl.EVP_PKEY_encrypt,
       data,

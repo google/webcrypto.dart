@@ -22,11 +22,13 @@ import 'dart:ffi' as ffi;
 import 'dart:math' as math;
 import 'package:ffi/ffi.dart' as ffi;
 import 'package:meta/meta.dart';
+import 'package:webcrypto/src/third_party/boringssl/generated_bindings.dart';
 
 import '../jsonwebkey.dart' show JsonWebKey;
 import '../webcrypto/webcrypto.dart';
 import '../boringssl/boringssl.dart' as ssl;
 import '../boringssl/webcrypto_dart_dl.dart' as dl;
+import '../boringssl/lookup/lookup.dart' show ssl2;
 
 part 'impl_ffi.aescbc.dart';
 part 'impl_ffi.aesctr.dart';

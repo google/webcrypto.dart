@@ -70,6 +70,44 @@ Pointer<Void> Function(Sym)? lookupLibraryInDotDartTool() {
   return null;
 }
 
+/// Look for the webcrypto binary library in the `.dart_tool/webcrypto/` folder,
+/// and initialize it with [initialize_dart_dl].
+///
+/// Returns `null` if it could not be found.
+Pointer<T> Function<T extends NativeType>(String symbolName)?
+    get libraryInDotDartTool {
+  final dotDartTool = _findDotDartTool();
+  if (dotDartTool == null) {
+    return null;
+  }
+
+  final libraryFile = File.fromUri(
+    dotDartTool.resolve('webcrypto/$libraryFileName'),
+  );
+  if (libraryFile.existsSync()) {
+    final library = DynamicLibrary.open(libraryFile.path);
+
+    // Try to lookup the 'webcrypto_lookup_symbol' symbol
+    final webcrypto_lookup_symbol = library
+        .lookup<NativeFunction<Pointer<Void> Function(Int32)>>(
+          'webcrypto_lookup_symbol',
+        )
+        .asFunction<Pointer<Void> Function(int)>();
+
+    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
+    final lookup = (Sym s) => webcrypto_lookup_symbol(s.index);
+
+    // Initialize library
+    initialize_dart_dl(lookup);
+
+    final lookup2 = <T extends NativeType>(String s) =>
+        webcrypto_lookup_symbol(s.symbol.index).cast<T>();
+
+    return lookup2;
+  }
+  return null;
+}
+
 /// Initialize library for use with Dart dynamic linking, by calling
 /// `webcrypto_dart_dl_initialize`.
 ///

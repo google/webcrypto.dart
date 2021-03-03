@@ -125,7 +125,7 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
     return _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestSignInit(ctx, pctx, _hash.MD, ffi.nullptr, _key),
+          ssl.EVP_DigestSignInit(ctx, pctx, _hash.MD.cast(), ffi.nullptr, _key),
         );
         _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
           pctx.value,
@@ -135,7 +135,8 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
           pctx.value,
           saltLength,
         ));
-        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash.MD));
+        _checkDataIsOne(
+            ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash.MD.cast()));
         await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
         return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
           len.value = 0;
@@ -203,7 +204,8 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
     return _withEVP_MD_CTX((ctx) async {
       return _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash.MD, ffi.nullptr, _key),
+          ssl.EVP_DigestVerifyInit(
+              ctx, pctx, _hash.MD.cast(), ffi.nullptr, _key),
         );
         _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
           pctx.value,
@@ -213,7 +215,8 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
           pctx.value,
           saltLength,
         ));
-        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash.MD));
+        _checkDataIsOne(
+            ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash.MD.cast()));
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
         return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
           final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);

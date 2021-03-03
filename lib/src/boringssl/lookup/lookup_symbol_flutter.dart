@@ -52,3 +52,42 @@ final Pointer<Void> Function(Sym) lookupSymbol = () {
     );
   }
 }();
+
+/// Dynamically load `webcrypto_lookup_symbol` function.
+final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
+  var library = Platform.isAndroid
+      ? DynamicLibrary.open('libwebcrypto.so')
+      : DynamicLibrary.executable();
+
+  try {
+    // Try to lookup the 'webcrypto_lookup_symbol' symbol
+    // ignore: non_constant_identifier_names
+    final webcrypto_lookup_symbol = library
+        .lookup<NativeFunction<Pointer<Void> Function(Int32)>>(
+          'webcrypto_lookup_symbol',
+        )
+        .asFunction<Pointer<Void> Function(int)>();
+
+    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
+    final lookup = (Sym s) => webcrypto_lookup_symbol(s.index);
+
+    // Initialize the dynamic linking with Dart.
+    initialize_dart_dl(lookup);
+
+    final lookup2 = <T extends NativeType>(String s) =>
+        webcrypto_lookup_symbol(s.symbol.index).cast<T>();
+
+    return lookup2;
+  } on ArgumentError {
+    final library = libraryInDotDartTool;
+    if (library != null) {
+      return library;
+    }
+
+    throw UnsupportedError(
+      'package:webcrypto cannot be used from scripts or `flutter test` '
+      'unless `flutter pub run webcrypto:setup` has been run for the current '
+      'root project.',
+    );
+  }
+}();

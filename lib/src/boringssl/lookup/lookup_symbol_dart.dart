@@ -29,3 +29,17 @@ final Pointer<Void> Function(Sym) lookupSymbol = () {
     'root project.',
   );
 }();
+
+/// Dynamically load `webcrypto_lookup_symbol` function.
+final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
+  final library = libraryInDotDartTool;
+  if (library != null) {
+    return library;
+  }
+
+  throw UnsupportedError(
+    'package:webcrypto cannot be used from Dart or `pub run test` '
+    'unless `flutter pub run webcrypto:setup` has been run for the current '
+    'root project.',
+  );
+}();

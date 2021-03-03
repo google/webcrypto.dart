@@ -287,6 +287,20 @@ Future<R> _withEVP_MD_CTX<R>(
   }
 }
 
+/// Invoke [fn] with an [ffi.Pointer<env_md_ctx_st>] that is free'd when
+/// [fn] returns.
+Future<R> _withEVP_MD_CTX_2<R>(
+  FutureOr<R> Function(ffi.Pointer<env_md_ctx_st>) fn,
+) async {
+  final ctx = ssl2.EVP_MD_CTX_new();
+  _checkOp(ctx.address != 0, fallback: 'allocation error');
+  try {
+    return await fn(ctx);
+  } finally {
+    ssl2.EVP_MD_CTX_free(ctx);
+  }
+}
+
 /// Invoke [fn] with an [ffi.Pointer<ffi.Pointer<ssl.EVP_PKEY_CTX>>] that is
 /// free'd when [fn] returns.
 Future<R> _withPEVP_PKEY_CTX<R>(

@@ -212,7 +212,8 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
 
     final sig = await _withEVP_MD_CTX((ctx) async {
       _checkOpIsOne(
-        ssl.EVP_DigestSignInit(ctx, ffi.nullptr, _hash, ffi.nullptr, _key),
+        ssl.EVP_DigestSignInit(
+            ctx, ffi.nullptr, _hash.cast(), ffi.nullptr, _key),
       );
 
       await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
@@ -273,7 +274,7 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
     return await _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash, ffi.nullptr, _key),
+          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash.cast(), ffi.nullptr, _key),
         );
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
         return _withDataAsPointer(sig, (ffi.Pointer<ssl.Bytes> p) {

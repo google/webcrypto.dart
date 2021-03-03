@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import 'dart:ffi';
+
 import 'symbols.generated.dart';
+import '../../third_party/boringssl/generated_bindings.dart';
 
 import 'lookup_symbol_dart.dart'
     if (dart.library.ui) 'lookup_symbol_flutter.dart';
@@ -32,3 +34,8 @@ class SymbolResolver {
 /// Helper function for looking up functions with two calls, such that
 /// we don't have multiple type arguments one the same line.
 SymbolResolver resolve(Sym symbol) => SymbolResolver._(symbol);
+
+final Pointer<T> Function<T extends NativeType>(String symbolName)
+    boringsslLibrary = lookup;
+
+final BoringSsl ssl2 = BoringSsl.fromLookup(boringsslLibrary);

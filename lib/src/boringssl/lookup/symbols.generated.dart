@@ -307,3 +307,10 @@ extension SymName on Sym {
     return _SymName[index];
   }
 }
+
+extension SymName2 on String {
+  /// Get name of symbol in `libcrypto.so` from BoringSSL.
+  Sym get symbol {
+    return Sym.values[_SymName.indexOf(this)];
+  }
+}

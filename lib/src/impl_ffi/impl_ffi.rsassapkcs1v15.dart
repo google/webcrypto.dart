@@ -117,7 +117,7 @@ class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
     return _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestSignInit(ctx, pctx, _hash.MD, ffi.nullptr, _key),
+          ssl.EVP_DigestSignInit(ctx, pctx, _hash.MD.cast(), ffi.nullptr, _key),
         );
         _checkOpIsOne(
           ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, ssl.RSA_PKCS1_PADDING),
@@ -172,7 +172,8 @@ class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
     return _withEVP_MD_CTX((ctx) async {
       return _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash.MD, ffi.nullptr, _key),
+          ssl.EVP_DigestVerifyInit(
+              ctx, pctx, _hash.MD.cast(), ffi.nullptr, _key),
         );
         _checkOpIsOne(
           ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, ssl.RSA_PKCS1_PADDING),

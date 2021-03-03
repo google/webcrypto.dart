@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// TODO(dacoharkes): Remove duplicate _withEVP_MD_CTX_2.
+// TODO(dacoharkes): Remove all the casts added for the Pointers due to not
+// having migrated the other files.
+
 part of impl_ffi;
 
 abstract class _Hash implements Hash {
@@ -31,10 +35,10 @@ abstract class _Hash implements Hash {
   }
 
   @protected
-  ffi.Pointer<ssl.EVP_MD> Function() get _algorithm;
+  ffi.Pointer<env_md_st> Function() get _algorithm;
 
-  /// Get an instantiated [ssl.EVP_MD] for this hash algorithm.
-  ffi.Pointer<ssl.EVP_MD> get MD {
+  /// Get an instantiated [env_md_st] for this hash algorithm.
+  ffi.Pointer<env_md_st> get MD {
     final md = _algorithm();
     _checkOp(md.address != 0, fallback: 'failed to instantiate hash algorithm');
     return md;
@@ -51,13 +55,13 @@ abstract class _Hash implements Hash {
   Future<Uint8List> digestStream(Stream<List<int>> data) async {
     ArgumentError.checkNotNull(data, 'data');
 
-    return await _withEVP_MD_CTX((ctx) async {
-      _checkOp(ssl.EVP_DigestInit(ctx, MD) == 1);
-      await _streamToUpdate(data, ctx, ssl.EVP_DigestUpdate);
-      final size = ssl.EVP_MD_CTX_size(ctx);
+    return await _withEVP_MD_CTX_2((ctx) async {
+      _checkOp(ssl2.EVP_DigestInit(ctx, MD) == 1);
+      await _streamToUpdate(data, ctx, ssl2.EVP_DigestUpdate);
+      final size = ssl2.EVP_MD_CTX_size(ctx);
       _checkOp(size > 0);
-      return _withOutPointer(size, (ffi.Pointer<ssl.Bytes> p) {
-        _checkOp(ssl.EVP_DigestFinal(ctx, p, ffi.nullptr) == 1);
+      return _withOutPointer(size, (ffi.Pointer<ffi.Uint8> p) {
+        _checkOp(ssl2.EVP_DigestFinal(ctx, p, ffi.nullptr) == 1);
       });
     });
   }
@@ -67,28 +71,28 @@ class _Sha1 extends _Hash {
   const _Sha1();
 
   @override
-  ffi.Pointer<ssl.EVP_MD> Function() get _algorithm => ssl.EVP_sha1;
+  ffi.Pointer<env_md_st> Function() get _algorithm => ssl2.EVP_sha1;
 }
 
 class _Sha256 extends _Hash {
   const _Sha256();
 
   @override
-  ffi.Pointer<ssl.EVP_MD> Function() get _algorithm => ssl.EVP_sha256;
+  ffi.Pointer<env_md_st> Function() get _algorithm => ssl2.EVP_sha256;
 }
 
 class _Sha384 extends _Hash {
   const _Sha384();
 
   @override
-  ffi.Pointer<ssl.EVP_MD> Function() get _algorithm => ssl.EVP_sha384;
+  ffi.Pointer<env_md_st> Function() get _algorithm => ssl2.EVP_sha384;
 }
 
 class _Sha512 extends _Hash {
   const _Sha512();
 
   @override
-  ffi.Pointer<ssl.EVP_MD> Function() get _algorithm => ssl.EVP_sha512;
+  ffi.Pointer<env_md_st> Function() get _algorithm => ssl2.EVP_sha512;
 }
 
 const Hash sha1 = _Sha1();
