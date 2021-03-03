@@ -37,7 +37,7 @@ Future<T> checkErrorStack<T>(FutureOr<T> Function() fn) async {
         return ret;
       }
       const N = 4096; // Max error message size
-      final p = ffi.allocate<ssl.Bytes>(count: N);
+      final p = ffi.calloc<ssl.Bytes>(N);
       try {
         ssl.ERR_error_string_n(err, p, N);
         final data = p.cast<ffi.Uint8>().asTypedList(N);
@@ -45,7 +45,7 @@ Future<T> checkErrorStack<T>(FutureOr<T> Function() fn) async {
         // Take everything until '\0'
         check(false, utf8.decode(data.takeWhile((i) => i != 0).toList()));
       } finally {
-        ffi.free(p);
+        ffi.calloc.free(p);
       }
     } finally {
       ssl.ERR_clear_error();
