@@ -70,6 +70,8 @@ ffigen:
   typedef-map:
     size_t: IntPtr
   structs:
+    include:
+      - 'nothing'
     rename:
       bignum_st: BIGNUM
       cbb_st: CBB

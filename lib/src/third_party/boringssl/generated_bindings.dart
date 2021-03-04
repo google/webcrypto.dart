@@ -1961,7 +1961,7 @@ class BoringSsl {
     int outlen,
     ffi.Pointer<ec_point_st> pub_key,
     ffi.Pointer<ec_key_st> priv_key,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_6>> kdf,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_16>> kdf,
   ) {
     return (_ECDH_compute_key ??=
         _lookup<ffi.NativeFunction<_c_ECDH_compute_key>>('ECDH_compute_key')
@@ -3443,312 +3443,6 @@ class BoringSsl {
   _dart_webcrypto_lookup_symbol? _webcrypto_lookup_symbol;
 }
 
-class __darwin_pthread_handler_rec extends ffi.Struct {
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_1>> __routine;
-
-  external ffi.Pointer<ffi.Void> __arg;
-
-  external ffi.Pointer<__darwin_pthread_handler_rec> __next;
-}
-
-class _opaque_pthread_attr_t extends ffi.Opaque {}
-
-class _opaque_pthread_cond_t extends ffi.Opaque {}
-
-class _opaque_pthread_condattr_t extends ffi.Opaque {}
-
-class _opaque_pthread_mutex_t extends ffi.Opaque {}
-
-class _opaque_pthread_mutexattr_t extends ffi.Opaque {}
-
-class _opaque_pthread_once_t extends ffi.Opaque {}
-
-class _opaque_pthread_rwlock_t extends ffi.Opaque {}
-
-class _opaque_pthread_rwlockattr_t extends ffi.Opaque {}
-
-class _opaque_pthread_t extends ffi.Opaque {}
-
-class fd_set extends ffi.Opaque {}
-
-class ASN1_ITEM_st extends ffi.Opaque {}
-
-class asn1_object_st extends ffi.Opaque {}
-
-class asn1_pctx_st extends ffi.Opaque {}
-
-/// This is the base type that holds just about everything :-)
-class asn1_string_st extends ffi.Opaque {}
-
-class asn1_type_st extends ffi.Opaque {}
-
-class AUTHORITY_KEYID_st extends ffi.Opaque {}
-
-class BASIC_CONSTRAINTS_st extends ffi.Opaque {}
-
-class DIST_POINT_st extends ffi.Opaque {}
-
-/// // DSA_SIG_st (aka |DSA_SIG|) contains a DSA signature as a pair of integers.
-class DSA_SIG_st extends ffi.Opaque {}
-
-class ISSUING_DIST_POINT_st extends ffi.Opaque {}
-
-class NAME_CONSTRAINTS_st extends ffi.Opaque {}
-
-/// // The next 2 structures and their 8 routines were sent to me by
-/// // Pat Richard <patr@x509.com> and are used to manipulate
-/// // Netscapes spki structures - useful if you are writing a CA web page
-class Netscape_spkac_st extends ffi.Opaque {}
-
-class Netscape_spki_st extends ffi.Opaque {}
-
-class RIPEMD160state_st extends ffi.Opaque {}
-
-class X509_POLICY_CACHE_st extends ffi.Opaque {}
-
-class X509_POLICY_LEVEL_st extends ffi.Opaque {}
-
-class X509_POLICY_NODE_st extends ffi.Opaque {}
-
-class X509_POLICY_TREE_st extends ffi.Opaque {}
-
-/// This structure hold all parameters associated with a verify operation
-/// by including an X509_VERIFY_PARAM structure in related structures the
-/// parameters used can be customized
-class X509_VERIFY_PARAM_st extends ffi.Opaque {}
-
-class X509_algor_st extends ffi.Opaque {}
-
-class X509_crl_info_st extends ffi.Opaque {}
-
-class X509_crl_st extends ffi.Opaque {}
-
-class X509_extension_st extends ffi.Opaque {}
-
-class X509_info_st extends ffi.Opaque {}
-
-class X509_name_entry_st extends ffi.Opaque {}
-
-/// // we always keep X509_NAMEs in 2 forms.
-class X509_name_st extends ffi.Opaque {}
-
-class X509_pubkey_st extends ffi.Opaque {}
-
-class X509_req_info_st extends ffi.Opaque {}
-
-class X509_req_st extends ffi.Opaque {}
-
-class X509_sig_st extends ffi.Opaque {}
-
-class X509_val_st extends ffi.Opaque {}
-
-class bignum_ctx extends ffi.Opaque {}
-
-/// // Private functions
-class BIGNUM extends ffi.Opaque {}
-
-class bio_method_st extends ffi.Opaque {}
-
-class bio_st extends ffi.Opaque {}
-
-/// // bn_gencb_st, or |BN_GENCB|, holds a callback function that is used by
-/// // generation functions that can take a very long time to complete. Use
-/// // |BN_GENCB_set| to initialise a |BN_GENCB| structure.
-/// //
-/// // The callback receives the address of that |BN_GENCB| structure as its last
-/// // argument and the user is free to put an arbitrary pointer in |arg|. The other
-/// // arguments are set as follows:
-/// //   event=BN_GENCB_GENERATED, n=i:   after generating the i'th possible prime
-/// //                                    number.
-/// //   event=BN_GENCB_PRIME_TEST, n=-1: when finished trial division primality
-/// //                                    checks.
-/// //   event=BN_GENCB_PRIME_TEST, n=i:  when the i'th primality test has finished.
-/// //
-/// // The callback can return zero to abort the generation progress or one to
-/// // allow it to continue.
-/// //
-/// // When other code needs to call a BN generation function it will often take a
-/// // BN_GENCB argument and may call the function with other argument values.
-class bn_gencb_st extends ffi.Opaque {}
-
-class bn_mont_ctx_st extends ffi.Opaque {}
-
-/// // buf_mem_st (aka |BUF_MEM|) is a generic buffer object used by OpenSSL.
-class buf_mem_st extends ffi.Opaque {}
-
-class CBB extends ffi.Struct {
-  external ffi.Pointer<ffi.Void> base;
-
-  external ffi.Pointer<CBB> child;
-
-  @ffi.IntPtr()
-  external int offset;
-
-  @ffi.Uint8()
-  external int pending_len_len;
-
-  @ffi.Int8()
-  external int pending_is_asn1;
-
-  @ffi.Int8()
-  external int is_top_level;
-}
-
-/// // CRYPTO ByteString
-class CBS extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint8> data;
-
-  @ffi.IntPtr()
-  external int len;
-}
-
-class cmac_ctx_st extends ffi.Opaque {}
-
-class conf_st extends ffi.Opaque {}
-
-class conf_value_st extends ffi.Opaque {}
-
-class crypto_buffer_pool_st extends ffi.Opaque {}
-
-class crypto_buffer_st extends ffi.Opaque {}
-
-class dh_st extends ffi.Opaque {}
-
-class dsa_st extends ffi.Opaque {}
-
-class ec_group_st extends ffi.Opaque {}
-
-class ec_key_st extends ffi.Opaque {}
-
-class ec_point_st extends ffi.Opaque {}
-
-/// // ecdsa_method_st is a structure of function pointers for implementing ECDSA.
-/// // See engine.h.
-class ecdsa_method_st extends ffi.Opaque {}
-
-/// // Low-level signing and verification.
-/// //
-/// // Low-level functions handle signatures as |ECDSA_SIG| structures which allow
-/// // the two values in an ECDSA signature to be handled separately.
-class ecdsa_sig_st extends ffi.Opaque {}
-
-class engine_st extends ffi.Opaque {}
-
-class EVP_MD_CTX extends ffi.Opaque {}
-
-class EVP_MD extends ffi.Opaque {}
-
-class evp_aead_st extends ffi.Opaque {}
-
-class evp_cipher_ctx_st extends ffi.Opaque {}
-
-class evp_cipher_st extends ffi.Opaque {}
-
-class evp_encode_ctx_st extends ffi.Opaque {}
-
-class evp_pkey_asn1_method_st extends ffi.Opaque {}
-
-class EVP_PKEY_CTX extends ffi.Opaque {}
-
-class evp_pkey_method_st extends ffi.Opaque {}
-
-/// // Private structures.
-class EVP_PKEY extends ffi.Opaque {}
-
-class hmac_ctx_st extends ffi.Opaque {}
-
-class md4_state_st extends ffi.Opaque {}
-
-class md5_state_st extends ffi.Opaque {}
-
-class ossl_init_settings_st extends ffi.Opaque {}
-
-class pkcs12_st extends ffi.Opaque {}
-
-/// // PKCS#8 private key info structure
-class pkcs8_priv_key_info_st extends ffi.Opaque {}
-
-class private_key_st extends ffi.Opaque {}
-
-class rand_meth_st extends ffi.Opaque {}
-
-class rc4_key_st extends ffi.Opaque {}
-
-class rsa_meth_st extends ffi.Opaque {}
-
-class rsa_st extends ffi.Opaque {}
-
-class sha256_state_st extends ffi.Opaque {}
-
-class sha512_state_st extends ffi.Opaque {}
-
-class sha_state_st extends ffi.Opaque {}
-
-class spake2_ctx_st extends ffi.Opaque {}
-
-class srtp_protection_profile_st extends ffi.Opaque {}
-
-class ssl_cipher_st extends ffi.Opaque {}
-
-class ssl_ctx_st extends ffi.Opaque {}
-
-class ssl_method_st extends ffi.Opaque {}
-
-class ssl_private_key_method_st extends ffi.Opaque {}
-
-class ssl_quic_method_st extends ffi.Opaque {}
-
-class ssl_session_st extends ffi.Opaque {}
-
-class ssl_st extends ffi.Opaque {}
-
-class ssl_ticket_aead_method_st extends ffi.Opaque {}
-
-class st_ERR_FNS extends ffi.Opaque {}
-
-class trust_token_st extends ffi.Opaque {}
-
-class trust_token_client_st extends ffi.Opaque {}
-
-class trust_token_issuer_st extends ffi.Opaque {}
-
-class trust_token_method_st extends ffi.Opaque {}
-
-class v3_ext_ctx extends ffi.Opaque {}
-
-/// // a sequence of these are used
-class x509_attributes_st extends ffi.Opaque {}
-
-/// // This stuff is certificate "auxiliary info"
-/// // it contains details which are useful in certificate
-/// // stores and databases. When used this is tagged onto
-/// // the end of the certificate itself
-class x509_cert_aux_st extends ffi.Opaque {}
-
-class x509_cinf_st extends ffi.Opaque {}
-
-class x509_crl_method_st extends ffi.Opaque {}
-
-/// This is the functions plus an instance of the local variables.
-class x509_lookup_st extends ffi.Opaque {}
-
-class x509_revoked_st extends ffi.Opaque {}
-
-class x509_st extends ffi.Opaque {}
-
-/// This is a used when verifying cert chains.  Since the
-/// gathering of the cert chain can take some time (and have to be
-/// 'retried', this needs to be kept and passed around.
-class x509_store_ctx_st extends ffi.Opaque {}
-
-/// This is used to hold everything.  It is used for all certificate
-/// validation.  Once we have a certificate chain, the 'verify'
-/// function is then called to actually check the cert chain.
-class x509_store_st extends ffi.Opaque {}
-
-/// // This is used for a table of trust checking functions
-class x509_trust_st extends ffi.Opaque {}
-
 class __sbuf extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> _base;
 
@@ -3760,49 +3454,77 @@ class __sFILEX extends ffi.Opaque {}
 
 class FILE extends ffi.Opaque {}
 
-/// // stack_st contains an array of pointers. It is not designed to be used
-/// // directly, rather the wrapper macros should be used.
-class _STACK extends ffi.Struct {
-  /// // num contains the number of valid pointers in |data|.
-  @ffi.IntPtr()
-  external int num;
+class evp_cipher_ctx_st extends ffi.Opaque {}
 
-  external ffi.Pointer<ffi.Pointer<ffi.Void>> data;
-
-  /// // sorted is non-zero if the values pointed to by |data| are in ascending
-  /// // order, based on |comp|.
+class evp_cipher_st extends ffi.Struct {
+  /// // type contains a NID identifing the cipher. (e.g. NID_aes_128_gcm.)
   @ffi.Int32()
-  external int sorted;
+  external int nid;
 
-  /// // num_alloc contains the number of pointers allocated in the buffer pointed
-  /// // to by |data|, which may be larger than |num|.
-  @ffi.IntPtr()
-  external int num_alloc;
+  /// // block_size contains the block size, in bytes, of the cipher, or 1 for a
+  /// // stream cipher.
+  @ffi.Uint32()
+  external int block_size;
 
-  /// // comp is an optional comparison function.
-  external ffi.Pointer<ffi.NativeFunction<stack_cmp_func>> comp;
+  /// // key_len contains the key size, in bytes, for the cipher. If the cipher
+  /// // takes a variable key size then this contains the default size.
+  @ffi.Uint32()
+  external int key_len;
+
+  /// // iv_len contains the IV size, in bytes, or zero if inapplicable.
+  @ffi.Uint32()
+  external int iv_len;
+
+  /// // ctx_size contains the size, in bytes, of the per-key context for this
+  /// // cipher.
+  @ffi.Uint32()
+  external int ctx_size;
+
+  /// // flags contains the OR of a number of flags. See |EVP_CIPH_*|.
+  @ffi.Uint32()
+  external int flags;
+
+  /// // app_data is a pointer to opaque, user data.
+  external ffi.Pointer<ffi.Void> app_data;
+
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_5>> init;
+
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_6>> cipher;
+
+  /// // cleanup, if non-NULL, releases memory associated with the context. It is
+  /// // called if |EVP_CTRL_INIT| succeeds. Note that |init| may not have been
+  /// // called at this point.
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_7>> cleanup;
+
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_8>> ctrl;
 }
 
-class stack_st_void extends ffi.Opaque {}
+class engine_st extends ffi.Opaque {}
 
-class stack_st_OPENSSL_STRING extends ffi.Opaque {}
+class EVP_MD extends ffi.Opaque {}
 
-class crypto_ex_data_st extends ffi.Opaque {}
-
-class CRYPTO_dynlock_value extends ffi.Opaque {}
-
-class CRYPTO_dynlock extends ffi.Struct {
-  @ffi.Int32()
-  external int references;
-
-  external ffi.Pointer<CRYPTO_dynlock_value> data;
-}
-
-class stack_st_BIO extends ffi.Opaque {}
-
-class EVP_CIPHER_INFO extends ffi.Opaque {}
+class EVP_PKEY_CTX extends ffi.Opaque {}
 
 class evp_md_pctx_ops extends ffi.Opaque {}
+
+class EVP_MD_CTX extends ffi.Struct {
+  /// // digest is the underlying digest function, or NULL if not set.
+  external ffi.Pointer<EVP_MD> digest;
+
+  /// // md_data points to a block of memory that contains the hash-specific
+  /// // context.
+  external ffi.Pointer<ffi.Void> md_data;
+
+  /// // pctx is an opaque (at this layer) pointer to additional context that
+  /// // EVP_PKEY functions may store in this object.
+  external ffi.Pointer<EVP_PKEY_CTX> pctx;
+
+  /// // pctx_ops, if not NULL, points to a vtable that contains functions to
+  /// // manipulate |pctx|.
+  external ffi.Pointer<evp_md_pctx_ops> pctx_ops;
+}
+
+class evp_aead_st extends ffi.Opaque {}
 
 /// // An EVP_AEAD_CTX represents an AEAD algorithm configured with a specific key
 /// // and message-independent IV.
@@ -3814,142 +3536,10 @@ abstract class evp_aead_direction_t {
   static const int evp_aead_seal = 1;
 }
 
-class stack_st_CRYPTO_BUFFER extends ffi.Opaque {}
+class evp_pkey_asn1_method_st extends ffi.Opaque {}
 
-class stack_st_X509 extends ffi.Opaque {}
-
-class stack_st_X509_CRL extends ffi.Opaque {}
-
-/// // Deprecated functions.
-/// //
-/// // These functions are a compatibility layer over a subset of OpenSSL's PKCS#7
-/// // API. It intentionally does not implement the whole thing, only the minimum
-/// // needed to build cryptography.io.
-class PKCS7_SIGNED extends ffi.Struct {
-  external ffi.Pointer<stack_st_X509> cert;
-
-  external ffi.Pointer<stack_st_X509_CRL> crl;
-}
-
-class PKCS7_SIGN_ENVELOPE extends ffi.Struct {
-  external ffi.Pointer<stack_st_X509> cert;
-
-  external ffi.Pointer<stack_st_X509_CRL> crl;
-}
-
-class PKCS7 extends ffi.Opaque {}
-
-class timespec extends ffi.Struct {
-  @ffi.Int64()
-  external int tv_sec;
-
-  @ffi.Int64()
-  external int tv_nsec;
-}
-
-class tm extends ffi.Struct {
-  @ffi.Int32()
-  external int tm_sec;
-
-  @ffi.Int32()
-  external int tm_min;
-
-  @ffi.Int32()
-  external int tm_hour;
-
-  @ffi.Int32()
-  external int tm_mday;
-
-  @ffi.Int32()
-  external int tm_mon;
-
-  @ffi.Int32()
-  external int tm_year;
-
-  @ffi.Int32()
-  external int tm_wday;
-
-  @ffi.Int32()
-  external int tm_yday;
-
-  @ffi.Int32()
-  external int tm_isdst;
-
-  @ffi.Int64()
-  external int tm_gmtoff;
-
-  external ffi.Pointer<ffi.Int8> tm_zone;
-}
-
-abstract class clockid_t {
-  static const int _CLOCK_REALTIME = 0;
-  static const int _CLOCK_MONOTONIC = 6;
-  static const int _CLOCK_MONOTONIC_RAW = 4;
-  static const int _CLOCK_MONOTONIC_RAW_APPROX = 5;
-  static const int _CLOCK_UPTIME_RAW = 8;
-  static const int _CLOCK_UPTIME_RAW_APPROX = 9;
-  static const int _CLOCK_PROCESS_CPUTIME_ID = 12;
-  static const int _CLOCK_THREAD_CPUTIME_ID = 16;
-}
-
-class imaxdiv_t extends ffi.Struct {
-  @ffi.Int64()
-  external int quot;
-
-  @ffi.Int64()
-  external int rem;
-}
-
-/// // bn_primality_result_t enumerates the outcomes of primality-testing.
-abstract class bn_primality_result_t {
-  static const int bn_probably_prime = 0;
-  static const int bn_composite = 1;
-  static const int bn_non_prime_power_composite = 2;
-}
-
-class stack_st_ASN1_OBJECT extends ffi.Opaque {}
-
-/// ASN1_ENCODING structure: this is used to save the received
-/// encoding of an ASN1 type. This is useful to get round
-/// problems with invalid encodings which can break signatures.
-class ASN1_ENCODING extends ffi.Opaque {}
-
-class ASN1_STRING_TABLE extends ffi.Struct {
-  @ffi.Int32()
-  external int nid;
-
-  @ffi.Int64()
-  external int minsize;
-
-  @ffi.Int64()
-  external int maxsize;
-
-  @ffi.Uint64()
-  external int mask;
-
-  @ffi.Uint64()
-  external int flags;
-}
-
-class ASN1_TEMPLATE_st extends ffi.Opaque {}
-
-class ASN1_TLC_st extends ffi.Opaque {}
-
-class ASN1_VALUE_st extends ffi.Opaque {}
-
-class stack_st_ASN1_INTEGER extends ffi.Opaque {}
-
-class stack_st_ASN1_TYPE extends ffi.Opaque {}
-
-/// This is used to contain a list of bit names
-class BIT_STRING_BITNAME extends ffi.Struct {
-  @ffi.Int32()
-  external int bitnum;
-
-  external ffi.Pointer<ffi.Int8> lname;
-
-  external ffi.Pointer<ffi.Int8> sname;
-}
+/// // Private structures.
+class EVP_PKEY extends ffi.Opaque {}
 
 /// // openssl_method_common_st contains the common part of all method structures.
 /// // This must be the first member of all method structures.
@@ -3962,34 +3552,101 @@ class openssl_method_common_st extends ffi.Struct {
   external int is_static;
 }
 
-/// // point_conversion_form_t enumerates forms, as defined in X9.62 (ECDSA), for
-/// // the encoding of a elliptic curve point (x,y)
-abstract class point_conversion_form_t {
-  /// // POINT_CONVERSION_COMPRESSED indicates that the point is encoded as z||x,
-  /// // where the octet z specifies which solution of the quadratic equation y
-  /// // is.
-  static const int POINT_CONVERSION_COMPRESSED = 2;
+class rsa_meth_st extends ffi.Struct {
+  external openssl_method_common_st common;
 
-  /// // POINT_CONVERSION_UNCOMPRESSED indicates that the point is encoded as
-  /// // z||x||y, where z is the octet 0x04.
-  static const int POINT_CONVERSION_UNCOMPRESSED = 4;
+  external ffi.Pointer<ffi.Void> app_data;
 
-  /// // POINT_CONVERSION_HYBRID indicates that the point is encoded as z||x||y,
-  /// // where z specifies which solution of the quadratic equation y is. This is
-  /// // not supported by the code and has never been observed in use.
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_9>> init;
+
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_10>> finish;
+
+  /// // size returns the size of the RSA modulus in bytes.
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_11>> size;
+
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_12>> sign;
+
+  /// // These functions mirror the |RSA_*| functions of the same name.
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_13>> sign_raw;
+
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_14>> decrypt;
+
+  /// // private_transform takes a big-endian integer from |in|, calculates the
+  /// // d'th power of it, modulo the RSA modulus and writes the result as a
+  /// // big-endian integer to |out|. Both |in| and |out| are |len| bytes long and
+  /// // |len| is always equal to |RSA_size(rsa)|. If the result of the transform
+  /// // can be represented in fewer than |len| bytes, then |out| must be zero
+  /// // padded on the left.
   /// //
-  /// // TODO(agl): remove once node.js no longer references this.
-  static const int POINT_CONVERSION_HYBRID = 6;
+  /// // It returns one on success and zero otherwise.
+  /// //
+  /// // RSA decrypt and sign operations will call this, thus an ENGINE might wish
+  /// // to override it in order to avoid having to implement the padding
+  /// // functionality demanded by those, higher level, operations.
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_15>> private_transform;
+
+  @ffi.Int32()
+  external int flags;
 }
 
-class ec_method_st extends ffi.Opaque {}
+/// // Private functions
+class BIGNUM extends ffi.Struct {
+  /// // d is a pointer to an array of |width| |BN_BITS2|-bit chunks in
+  /// // little-endian order. This stores the absolute value of the number.
+  external ffi.Pointer<ffi.Uint64> d;
 
-/// // EC_builtin_curve describes a supported elliptic curve.
-class EC_builtin_curve extends ffi.Struct {
+  /// // width is the number of elements of |d| which are valid. This value is not
+  /// // necessarily minimal; the most-significant words of |d| may be zero.
+  /// // |width| determines a potentially loose upper-bound on the absolute value
+  /// // of the |BIGNUM|.
+  /// //
+  /// // Functions taking |BIGNUM| inputs must compute the same answer for all
+  /// // possible widths. |bn_minimal_width|, |bn_set_minimal_width|, and other
+  /// // helpers may be used to recover the minimal width, provided it is not
+  /// // secret. If it is secret, use a different algorithm. Functions may output
+  /// // minimal or non-minimal |BIGNUM|s depending on secrecy requirements, but
+  /// // those which cause widths to unboundedly grow beyond the minimal value
+  /// // should be documented such.
+  /// //
+  /// // Note this is different from historical |BIGNUM| semantics.
   @ffi.Int32()
-  external int nid;
+  external int width;
 
-  external ffi.Pointer<ffi.Int8> comment;
+  /// // dmax is number of elements of |d| which are allocated.
+  @ffi.Int32()
+  external int dmax;
+
+  /// // neg is one if the number if negative and zero otherwise.
+  @ffi.Int32()
+  external int neg;
+
+  /// // flags is a bitmask of |BN_FLG_*| values
+  @ffi.Int32()
+  external int flags;
+}
+
+class stack_st_void extends ffi.Opaque {}
+
+class crypto_ex_data_st extends ffi.Struct {
+  external ffi.Pointer<stack_st_void> sk;
+}
+
+class _opaque_pthread_rwlock_t extends ffi.Opaque {}
+
+class bn_mont_ctx_st extends ffi.Opaque {}
+
+class bn_blinding_st extends ffi.Opaque {}
+
+class rsa_st extends ffi.Opaque {}
+
+class ec_key_st extends ffi.Opaque {}
+
+/// // CRYPTO ByteString
+class CBS extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> data;
+
+  @ffi.IntPtr()
+  external int len;
 }
 
 /// // CRYPTO ByteBuilder.
@@ -4028,88 +3685,110 @@ class cbb_buffer_st extends ffi.Struct {
   external int error;
 }
 
-/// // Deprecated functions.
-class OBJ_NAME extends ffi.Struct {
-  @ffi.Int32()
-  external int type;
+class CBB extends ffi.Struct {
+  external ffi.Pointer<cbb_buffer_st> base;
 
-  @ffi.Int32()
-  external int alias;
+  /// // child points to a child CBB if a length-prefix is pending.
+  external ffi.Pointer<CBB> child;
 
-  external ffi.Pointer<ffi.Int8> name;
+  /// // offset is the number of bytes from the start of |base->buf| to this |CBB|'s
+  /// // pending length prefix.
+  @ffi.IntPtr()
+  external int offset;
 
-  external ffi.Pointer<ffi.Int8> data;
+  /// // pending_len_len contains the number of bytes in this |CBB|'s pending
+  /// // length-prefix, or zero if no length-prefix is pending.
+  @ffi.Uint8()
+  external int pending_len_len;
+
+  @ffi.Int8()
+  external int pending_is_asn1;
+
+  /// // is_child is true iff this is a child |CBB| (as opposed to a top-level
+  /// // |CBB|). Top-level objects are valid arguments for |CBB_finish|.
+  @ffi.Int8()
+  external int is_child;
 }
 
-class bn_blinding_st extends ffi.Opaque {}
-
-class stack_st_X509_ALGOR extends ffi.Opaque {}
-
-class stack_st_X509_NAME_ENTRY extends ffi.Opaque {}
-
-class stack_st_X509_NAME extends ffi.Opaque {}
-
-class stack_st_X509_EXTENSION extends ffi.Opaque {}
-
-class stack_st_X509_ATTRIBUTE extends ffi.Opaque {}
-
-class stack_st_DIST_POINT extends ffi.Opaque {}
-
-class stack_st_GENERAL_NAME extends ffi.Opaque {}
-
-class stack_st_X509_TRUST extends ffi.Opaque {}
-
-class stack_st_X509_REVOKED extends ffi.Opaque {}
-
-class stack_st_GENERAL_NAMES extends ffi.Opaque {}
-
-class stack_st_X509_INFO extends ffi.Opaque {}
-
-class X509_OBJECT extends ffi.Opaque {}
-
-class stack_st_X509_LOOKUP extends ffi.Opaque {}
-
-class stack_st_X509_OBJECT extends ffi.Opaque {}
-
-/// This is a static that defines the function interface
-class X509_LOOKUP_METHOD extends ffi.Struct {
-  external ffi.Pointer<ffi.Int8> name;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_7>> new_item;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_8>> free;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_9>> init;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_10>> shutdown;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_11>> ctrl;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_12>> get_by_subject;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_13>> get_by_issuer_serial;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_14>> get_by_fingerprint;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_15>> get_by_alias;
+abstract class clockid_t {
+  static const int _CLOCK_REALTIME = 0;
+  static const int _CLOCK_MONOTONIC = 6;
+  static const int _CLOCK_MONOTONIC_RAW = 4;
+  static const int _CLOCK_MONOTONIC_RAW_APPROX = 5;
+  static const int _CLOCK_UPTIME_RAW = 8;
+  static const int _CLOCK_UPTIME_RAW_APPROX = 9;
+  static const int _CLOCK_PROCESS_CPUTIME_ID = 12;
+  static const int _CLOCK_THREAD_CPUTIME_ID = 16;
 }
 
-class X509_VERIFY_PARAM_ID_st extends ffi.Opaque {}
+/// // bn_primality_result_t enumerates the outcomes of primality-testing.
+abstract class bn_primality_result_t {
+  static const int bn_probably_prime = 0;
+  static const int bn_composite = 1;
+  static const int bn_non_prime_power_composite = 2;
+}
 
-class stack_st_X509_VERIFY_PARAM extends ffi.Opaque {}
+class ASN1_ITEM_st extends ffi.Opaque {}
 
-class stack_st_X509_POLICY_NODE extends ffi.Opaque {}
+/// // point_conversion_form_t enumerates forms, as defined in X9.62 (ECDSA), for
+/// // the encoding of a elliptic curve point (x,y)
+abstract class point_conversion_form_t {
+  /// // POINT_CONVERSION_COMPRESSED indicates that the point is encoded as z||x,
+  /// // where the octet z specifies which solution of the quadratic equation y
+  /// // is.
+  static const int POINT_CONVERSION_COMPRESSED = 2;
 
-class stack_st_POLICYQUALINFO extends ffi.Opaque {}
+  /// // POINT_CONVERSION_UNCOMPRESSED indicates that the point is encoded as
+  /// // z||x||y, where z is the octet 0x04.
+  static const int POINT_CONVERSION_UNCOMPRESSED = 4;
 
-class RSA_PSS_PARAMS extends ffi.Struct {
-  external ffi.Pointer<X509_algor_st> hashAlgorithm;
+  /// // POINT_CONVERSION_HYBRID indicates that the point is encoded as z||x||y,
+  /// // where z specifies which solution of the quadratic equation y is. This is
+  /// // not supported by the code and has never been observed in use.
+  /// //
+  /// // TODO(agl): remove once node.js no longer references this.
+  static const int POINT_CONVERSION_HYBRID = 6;
+}
 
-  external ffi.Pointer<X509_algor_st> maskGenAlgorithm;
+class ec_group_st extends ffi.Opaque {}
 
-  external ffi.Pointer<asn1_string_st> saltLength;
+class ec_point_st extends ffi.Opaque {}
 
-  external ffi.Pointer<asn1_string_st> trailerField;
+class bignum_ctx extends ffi.Opaque {}
+
+/// // Low-level signing and verification.
+/// //
+/// // Low-level functions handle signatures as |ECDSA_SIG| structures which allow
+/// // the two values in an ECDSA signature to be handled separately.
+class ecdsa_sig_st extends ffi.Struct {
+  external ffi.Pointer<BIGNUM> r;
+
+  external ffi.Pointer<BIGNUM> s;
+}
+
+/// // bn_gencb_st, or |BN_GENCB|, holds a callback function that is used by
+/// // generation functions that can take a very long time to complete. Use
+/// // |BN_GENCB_set| to initialise a |BN_GENCB| structure.
+/// //
+/// // The callback receives the address of that |BN_GENCB| structure as its last
+/// // argument and the user is free to put an arbitrary pointer in |arg|. The other
+/// // arguments are set as follows:
+/// //   event=BN_GENCB_GENERATED, n=i:   after generating the i'th possible prime
+/// //                                    number.
+/// //   event=BN_GENCB_PRIME_TEST, n=-1: when finished trial division primality
+/// //                                    checks.
+/// //   event=BN_GENCB_PRIME_TEST, n=i:  when the i'th primality test has finished.
+/// //
+/// // The callback can return zero to abort the generation progress or one to
+/// // allow it to continue.
+/// //
+/// // When other code needs to call a BN generation function it will often take a
+/// // BN_GENCB argument and may call the function with other argument values.
+class bn_gencb_st extends ffi.Struct {
+  /// // callback-specific data
+  external ffi.Pointer<ffi.Void> arg;
+
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_17>> callback;
 }
 
 abstract class idtype_t {
@@ -4118,608 +3797,16 @@ abstract class idtype_t {
   static const int P_PGID = 2;
 }
 
-class __darwin_i386_thread_state extends ffi.Struct {
-  @ffi.Uint32()
-  external int __eax;
+/// // Private functions
+class hmac_ctx_st extends ffi.Struct {
+  external ffi.Pointer<EVP_MD> md;
 
-  @ffi.Uint32()
-  external int __ebx;
+  external EVP_MD_CTX md_ctx;
 
-  @ffi.Uint32()
-  external int __ecx;
+  external EVP_MD_CTX i_ctx;
 
-  @ffi.Uint32()
-  external int __edx;
-
-  @ffi.Uint32()
-  external int __edi;
-
-  @ffi.Uint32()
-  external int __esi;
-
-  @ffi.Uint32()
-  external int __ebp;
-
-  @ffi.Uint32()
-  external int __esp;
-
-  @ffi.Uint32()
-  external int __ss;
-
-  @ffi.Uint32()
-  external int __eflags;
-
-  @ffi.Uint32()
-  external int __eip;
-
-  @ffi.Uint32()
-  external int __cs;
-
-  @ffi.Uint32()
-  external int __ds;
-
-  @ffi.Uint32()
-  external int __es;
-
-  @ffi.Uint32()
-  external int __fs;
-
-  @ffi.Uint32()
-  external int __gs;
+  external EVP_MD_CTX o_ctx;
 }
-
-class __darwin_fp_control extends ffi.Opaque {}
-
-class __darwin_fp_status extends ffi.Opaque {}
-
-class __darwin_mmst_reg extends ffi.Opaque {}
-
-class __darwin_xmm_reg extends ffi.Opaque {}
-
-class __darwin_ymm_reg extends ffi.Opaque {}
-
-class __darwin_zmm_reg extends ffi.Opaque {}
-
-class __darwin_opmask_reg extends ffi.Opaque {}
-
-class __darwin_i386_float_state extends ffi.Opaque {}
-
-class __darwin_i386_avx_state extends ffi.Opaque {}
-
-class __darwin_i386_avx512_state extends ffi.Opaque {}
-
-class __darwin_i386_exception_state extends ffi.Struct {
-  @ffi.Uint16()
-  external int __trapno;
-
-  @ffi.Uint16()
-  external int __cpu;
-
-  @ffi.Uint32()
-  external int __err;
-
-  @ffi.Uint32()
-  external int __faultvaddr;
-}
-
-class __darwin_x86_debug_state32 extends ffi.Struct {
-  @ffi.Uint32()
-  external int __dr0;
-
-  @ffi.Uint32()
-  external int __dr1;
-
-  @ffi.Uint32()
-  external int __dr2;
-
-  @ffi.Uint32()
-  external int __dr3;
-
-  @ffi.Uint32()
-  external int __dr4;
-
-  @ffi.Uint32()
-  external int __dr5;
-
-  @ffi.Uint32()
-  external int __dr6;
-
-  @ffi.Uint32()
-  external int __dr7;
-}
-
-class __x86_pagein_state extends ffi.Struct {
-  @ffi.Int32()
-  external int __pagein_error;
-}
-
-class __darwin_x86_thread_state64 extends ffi.Struct {
-  @ffi.Uint64()
-  external int __rax;
-
-  @ffi.Uint64()
-  external int __rbx;
-
-  @ffi.Uint64()
-  external int __rcx;
-
-  @ffi.Uint64()
-  external int __rdx;
-
-  @ffi.Uint64()
-  external int __rdi;
-
-  @ffi.Uint64()
-  external int __rsi;
-
-  @ffi.Uint64()
-  external int __rbp;
-
-  @ffi.Uint64()
-  external int __rsp;
-
-  @ffi.Uint64()
-  external int __r8;
-
-  @ffi.Uint64()
-  external int __r9;
-
-  @ffi.Uint64()
-  external int __r10;
-
-  @ffi.Uint64()
-  external int __r11;
-
-  @ffi.Uint64()
-  external int __r12;
-
-  @ffi.Uint64()
-  external int __r13;
-
-  @ffi.Uint64()
-  external int __r14;
-
-  @ffi.Uint64()
-  external int __r15;
-
-  @ffi.Uint64()
-  external int __rip;
-
-  @ffi.Uint64()
-  external int __rflags;
-
-  @ffi.Uint64()
-  external int __cs;
-
-  @ffi.Uint64()
-  external int __fs;
-
-  @ffi.Uint64()
-  external int __gs;
-}
-
-class __darwin_x86_thread_full_state64 extends ffi.Struct {
-  external __darwin_x86_thread_state64 __ss64;
-
-  @ffi.Uint64()
-  external int __ds;
-
-  @ffi.Uint64()
-  external int __es;
-
-  @ffi.Uint64()
-  external int __ss;
-
-  @ffi.Uint64()
-  external int __gsbase;
-}
-
-class __darwin_x86_float_state64 extends ffi.Opaque {}
-
-class __darwin_x86_avx_state64 extends ffi.Opaque {}
-
-class __darwin_x86_avx512_state64 extends ffi.Opaque {}
-
-class __darwin_x86_exception_state64 extends ffi.Struct {
-  @ffi.Uint16()
-  external int __trapno;
-
-  @ffi.Uint16()
-  external int __cpu;
-
-  @ffi.Uint32()
-  external int __err;
-
-  @ffi.Uint64()
-  external int __faultvaddr;
-}
-
-class __darwin_x86_debug_state64 extends ffi.Struct {
-  @ffi.Uint64()
-  external int __dr0;
-
-  @ffi.Uint64()
-  external int __dr1;
-
-  @ffi.Uint64()
-  external int __dr2;
-
-  @ffi.Uint64()
-  external int __dr3;
-
-  @ffi.Uint64()
-  external int __dr4;
-
-  @ffi.Uint64()
-  external int __dr5;
-
-  @ffi.Uint64()
-  external int __dr6;
-
-  @ffi.Uint64()
-  external int __dr7;
-}
-
-class __darwin_x86_cpmu_state64 extends ffi.Opaque {}
-
-class __darwin_mcontext32 extends ffi.Opaque {}
-
-class __darwin_mcontext_avx32 extends ffi.Opaque {}
-
-class __darwin_mcontext_avx512_32 extends ffi.Opaque {}
-
-class __darwin_mcontext64 extends ffi.Opaque {}
-
-class __darwin_mcontext64_full extends ffi.Opaque {}
-
-class __darwin_mcontext_avx64 extends ffi.Opaque {}
-
-class __darwin_mcontext_avx64_full extends ffi.Opaque {}
-
-class __darwin_mcontext_avx512_64 extends ffi.Opaque {}
-
-class __darwin_mcontext_avx512_64_full extends ffi.Opaque {}
-
-class __darwin_sigaltstack extends ffi.Struct {
-  external ffi.Pointer<ffi.Void> ss_sp;
-
-  @ffi.Uint64()
-  external int ss_size;
-
-  @ffi.Int32()
-  external int ss_flags;
-}
-
-class __darwin_ucontext extends ffi.Struct {
-  @ffi.Int32()
-  external int uc_onstack;
-
-  @ffi.Uint32()
-  external int uc_sigmask;
-
-  external __darwin_sigaltstack uc_stack;
-
-  external ffi.Pointer<__darwin_ucontext> uc_link;
-
-  @ffi.Uint64()
-  external int uc_mcsize;
-
-  external ffi.Pointer<__darwin_mcontext64> uc_mcontext;
-}
-
-class sigevent extends ffi.Opaque {}
-
-class siginfo_t extends ffi.Opaque {}
-
-class __sigaction extends ffi.Opaque {}
-
-class sigaction extends ffi.Opaque {}
-
-class sigvec extends ffi.Struct {
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_17>> sv_handler;
-
-  @ffi.Int32()
-  external int sv_mask;
-
-  @ffi.Int32()
-  external int sv_flags;
-}
-
-class sigstack extends ffi.Struct {
-  external ffi.Pointer<ffi.Int8> ss_sp;
-
-  @ffi.Int32()
-  external int ss_onstack;
-}
-
-class timeval extends ffi.Struct {
-  @ffi.Int64()
-  external int tv_sec;
-
-  @ffi.Int32()
-  external int tv_usec;
-}
-
-class rusage extends ffi.Struct {
-  external timeval ru_utime;
-
-  external timeval ru_stime;
-
-  @ffi.Int64()
-  external int ru_maxrss;
-
-  @ffi.Int64()
-  external int ru_ixrss;
-
-  @ffi.Int64()
-  external int ru_idrss;
-
-  @ffi.Int64()
-  external int ru_isrss;
-
-  @ffi.Int64()
-  external int ru_minflt;
-
-  @ffi.Int64()
-  external int ru_majflt;
-
-  @ffi.Int64()
-  external int ru_nswap;
-
-  @ffi.Int64()
-  external int ru_inblock;
-
-  @ffi.Int64()
-  external int ru_oublock;
-
-  @ffi.Int64()
-  external int ru_msgsnd;
-
-  @ffi.Int64()
-  external int ru_msgrcv;
-
-  @ffi.Int64()
-  external int ru_nsignals;
-
-  @ffi.Int64()
-  external int ru_nvcsw;
-
-  @ffi.Int64()
-  external int ru_nivcsw;
-}
-
-class rusage_info_v0 extends ffi.Opaque {}
-
-class rusage_info_v1 extends ffi.Opaque {}
-
-class rusage_info_v2 extends ffi.Opaque {}
-
-class rusage_info_v3 extends ffi.Opaque {}
-
-class rusage_info_v4 extends ffi.Opaque {}
-
-class rlimit extends ffi.Struct {
-  @ffi.Uint64()
-  external int rlim_cur;
-
-  @ffi.Uint64()
-  external int rlim_max;
-}
-
-class proc_rlimit_control_wakeupmon extends ffi.Struct {
-  @ffi.Uint32()
-  external int wm_flags;
-
-  @ffi.Int32()
-  external int wm_rate;
-}
-
-class div_t extends ffi.Struct {
-  @ffi.Int32()
-  external int quot;
-
-  @ffi.Int32()
-  external int rem;
-}
-
-class ldiv_t extends ffi.Struct {
-  @ffi.Int64()
-  external int quot;
-
-  @ffi.Int64()
-  external int rem;
-}
-
-class lldiv_t extends ffi.Struct {
-  @ffi.Int64()
-  external int quot;
-
-  @ffi.Int64()
-  external int rem;
-}
-
-class BF_KEY extends ffi.Opaque {}
-
-/// // lhash_item_st is an element of a hash chain. It points to the opaque data
-/// // for this element and to the next item in the chain. The linked-list is NULL
-/// // terminated.
-class LHASH_ITEM extends ffi.Struct {
-  external ffi.Pointer<ffi.Void> data;
-
-  external ffi.Pointer<LHASH_ITEM> next;
-
-  /// // hash contains the cached, hash value of |data|.
-  @ffi.Uint32()
-  external int hash;
-}
-
-class lhash_st extends ffi.Opaque {}
-
-class stack_st_CONF_VALUE extends ffi.Opaque {}
-
-class lhash_st_CONF_VALUE extends ffi.Opaque {}
-
-/// Forward reference
-class v3_ext_method extends ffi.Opaque {}
-
-class X509V3_CONF_METHOD extends ffi.Struct {
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_18>> get_string;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_19>> get_section;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_20>> free_string;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_21>> free_section;
-}
-
-class stack_st_X509V3_EXT_METHOD extends ffi.Opaque {}
-
-class PKEY_USAGE_PERIOD extends ffi.Struct {
-  external ffi.Pointer<asn1_string_st> notBefore;
-
-  external ffi.Pointer<asn1_string_st> notAfter;
-}
-
-class OTHERNAME extends ffi.Struct {
-  external ffi.Pointer<asn1_object_st> type_id;
-
-  external ffi.Pointer<asn1_type_st> value;
-}
-
-class EDIPARTYNAME extends ffi.Struct {
-  external ffi.Pointer<asn1_string_st> nameAssigner;
-
-  external ffi.Pointer<asn1_string_st> partyName;
-}
-
-class GENERAL_NAME extends ffi.Opaque {}
-
-class ACCESS_DESCRIPTION extends ffi.Struct {
-  external ffi.Pointer<asn1_object_st> method;
-
-  external ffi.Pointer<GENERAL_NAME> location;
-}
-
-class stack_st_ACCESS_DESCRIPTION extends ffi.Opaque {}
-
-class DIST_POINT_NAME extends ffi.Opaque {}
-
-/// Strong extranet structures
-class SXNETID extends ffi.Struct {
-  external ffi.Pointer<asn1_string_st> zone;
-
-  external ffi.Pointer<asn1_string_st> user;
-}
-
-class stack_st_SXNETID extends ffi.Opaque {}
-
-class SXNET extends ffi.Struct {
-  external ffi.Pointer<asn1_string_st> version;
-
-  external ffi.Pointer<stack_st_SXNETID> ids;
-}
-
-class NOTICEREF extends ffi.Struct {
-  external ffi.Pointer<asn1_string_st> organization;
-
-  external ffi.Pointer<stack_st_ASN1_INTEGER> noticenos;
-}
-
-class USERNOTICE extends ffi.Struct {
-  external ffi.Pointer<NOTICEREF> noticeref;
-
-  external ffi.Pointer<asn1_string_st> exptext;
-}
-
-class POLICYQUALINFO extends ffi.Opaque {}
-
-class POLICYINFO extends ffi.Struct {
-  external ffi.Pointer<asn1_object_st> policyid;
-
-  external ffi.Pointer<stack_st_POLICYQUALINFO> qualifiers;
-}
-
-class stack_st_POLICYINFO extends ffi.Opaque {}
-
-class POLICY_MAPPING extends ffi.Struct {
-  external ffi.Pointer<asn1_object_st> issuerDomainPolicy;
-
-  external ffi.Pointer<asn1_object_st> subjectDomainPolicy;
-}
-
-class stack_st_POLICY_MAPPING extends ffi.Opaque {}
-
-class GENERAL_SUBTREE extends ffi.Struct {
-  external ffi.Pointer<GENERAL_NAME> base;
-
-  external ffi.Pointer<asn1_string_st> minimum;
-
-  external ffi.Pointer<asn1_string_st> maximum;
-}
-
-class stack_st_GENERAL_SUBTREE extends ffi.Opaque {}
-
-class POLICY_CONSTRAINTS extends ffi.Struct {
-  external ffi.Pointer<asn1_string_st> requireExplicitPolicy;
-
-  external ffi.Pointer<asn1_string_st> inhibitPolicyMapping;
-}
-
-/// Proxy certificate structures, see RFC 3820
-class PROXY_POLICY extends ffi.Struct {
-  external ffi.Pointer<asn1_object_st> policyLanguage;
-
-  external ffi.Pointer<asn1_string_st> policy;
-}
-
-class PROXY_CERT_INFO_EXTENSION extends ffi.Struct {
-  external ffi.Pointer<asn1_string_st> pcPathLengthConstraint;
-
-  external ffi.Pointer<PROXY_POLICY> proxyPolicy;
-}
-
-class X509_PURPOSE extends ffi.Struct {
-  @ffi.Int32()
-  external int purpose;
-
-  /// Default trust ID
-  @ffi.Int32()
-  external int trust;
-
-  @ffi.Int32()
-  external int flags;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_22>> check_purpose;
-
-  external ffi.Pointer<ffi.Int8> name;
-
-  external ffi.Pointer<ffi.Int8> sname;
-
-  external ffi.Pointer<ffi.Void> usr_data;
-}
-
-class stack_st_X509_PURPOSE extends ffi.Opaque {}
-
-/// // aes_key_st should be an opaque type, but EVP requires that the size be
-/// // known.
-class aes_key_st extends ffi.Opaque {}
-
-class CAST_KEY extends ffi.Opaque {}
-
-/// // DES.
-class DES_cblock extends ffi.Opaque {}
-
-class DES_key_schedule extends ffi.Opaque {}
-
-/// // HRSS
-/// //
-/// // HRSS is a structured-lattice-based post-quantum key encapsulation mechanism.
-/// // The best exposition is https://eprint.iacr.org/2017/667.pdf although this
-/// // implementation uses a different KEM construction based on
-/// // https://eprint.iacr.org/2017/1005.pdf.
-class HRSS_private_key extends ffi.Opaque {}
-
-class HRSS_public_key extends ffi.Opaque {}
 
 /// // spake2_role_t enumerates the different “roles” in SPAKE2. The protocol
 /// // requires that the symmetry of the two parties be broken so one participant
@@ -4727,213 +3814,6 @@ class HRSS_public_key extends ffi.Opaque {}
 abstract class spake2_role_t {
   static const int spake2_role_alice = 0;
   static const int spake2_role_bob = 1;
-}
-
-class stack_st_TRUST_TOKEN extends ffi.Opaque {}
-
-class ASN1_ADB_TABLE_st extends ffi.Opaque {}
-
-class ASN1_ADB_st extends ffi.Opaque {}
-
-class asn1_must_be_null_st extends ffi.Opaque {}
-
-class ASN1_COMPAT_FUNCS extends ffi.Struct {
-  external ffi.Pointer<ffi.NativeFunction<ASN1_new_func>> asn1_new;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_free_func>> asn1_free;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_d2i_func>> asn1_d2i;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_i2d_func>> asn1_i2d;
-}
-
-class ASN1_EXTERN_FUNCS extends ffi.Struct {
-  external ffi.Pointer<ffi.Void> app_data;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_new_func>> asn1_ex_new;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_free_func>> asn1_ex_free;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_free_func>> asn1_ex_clear;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_d2i>> asn1_ex_d2i;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_i2d>> asn1_ex_i2d;
-
-  /// asn1_ex_print is unused.
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_print_func>> asn1_ex_print;
-}
-
-class ASN1_PRIMITIVE_FUNCS extends ffi.Struct {
-  external ffi.Pointer<ffi.Void> app_data;
-
-  @ffi.Uint64()
-  external int flags;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_new_func>> prim_new;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_free_func>> prim_free;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_ex_free_func>> prim_clear;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_primitive_c2i>> prim_c2i;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_primitive_i2c>> prim_i2c;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_primitive_print>> prim_print;
-}
-
-class ASN1_AUX extends ffi.Struct {
-  external ffi.Pointer<ffi.Void> app_data;
-
-  @ffi.Int32()
-  external int flags;
-
-  /// Offset of reference value
-  @ffi.Int32()
-  external int ref_offset;
-
-  external ffi.Pointer<ffi.NativeFunction<ASN1_aux_cb>> asn1_cb;
-
-  /// Offset of ASN1_ENCODING structure
-  @ffi.Int32()
-  external int enc_offset;
-}
-
-/// For print related callbacks exarg points to this structure
-class ASN1_PRINT_ARG extends ffi.Struct {
-  external ffi.Pointer<bio_st> out;
-
-  @ffi.Int32()
-  external int indent;
-
-  external ffi.Pointer<asn1_pctx_st> pctx;
-}
-
-/// For streaming related callbacks exarg points to this structure
-class ASN1_STREAM_ARG extends ffi.Struct {
-  /// BIO to stream through
-  external ffi.Pointer<bio_st> out;
-
-  /// BIO with filters appended
-  external ffi.Pointer<bio_st> ndef_bio;
-
-  /// Streaming I/O boundary
-  external ffi.Pointer<ffi.Pointer<ffi.Uint8>> boundary;
-}
-
-class stack_st_ASN1_VALUE extends ffi.Opaque {}
-
-class _Dart_Isolate extends ffi.Opaque {}
-
-class _Dart_IsolateGroup extends ffi.Opaque {}
-
-class _Dart_Handle extends ffi.Opaque {}
-
-class _Dart_WeakPersistentHandle extends ffi.Opaque {}
-
-class _Dart_FinalizableHandle extends ffi.Opaque {}
-
-class Dart_IsolateFlags extends ffi.Struct {
-  @ffi.Int32()
-  external int version;
-
-  @ffi.Uint8()
-  external int enable_asserts;
-
-  @ffi.Uint8()
-  external int use_field_guards;
-
-  @ffi.Uint8()
-  external int use_osr;
-
-  @ffi.Uint8()
-  external int obfuscate;
-
-  @ffi.Uint8()
-  external int load_vmservice_library;
-
-  @ffi.Uint8()
-  external int copy_parent_code;
-
-  @ffi.Uint8()
-  external int null_safety;
-
-  @ffi.Uint8()
-  external int is_system_isolate;
-}
-
-/// Forward declaration
-class Dart_CodeObserver extends ffi.Opaque {}
-
-/// Describes how to initialize the VM. Used with Dart_Initialize.
-///
-/// \param version Identifies the version of the struct used by the client.
-/// should be initialized to DART_INITIALIZE_PARAMS_CURRENT_VERSION.
-/// \param vm_isolate_snapshot A buffer containing a snapshot of the VM isolate
-/// or NULL if no snapshot is provided. If provided, the buffer must remain
-/// valid until Dart_Cleanup returns.
-/// \param instructions_snapshot A buffer containing a snapshot of precompiled
-/// instructions, or NULL if no snapshot is provided. If provided, the buffer
-/// must remain valid until Dart_Cleanup returns.
-/// \param initialize_isolate A function to be called during isolate
-/// initialization inside an existing isolate group.
-/// See Dart_InitializeIsolateCallback.
-/// \param create_group A function to be called during isolate group creation.
-/// See Dart_IsolateGroupCreateCallback.
-/// \param shutdown A function to be called right before an isolate is shutdown.
-/// See Dart_IsolateShutdownCallback.
-/// \param cleanup A function to be called after an isolate was shutdown.
-/// See Dart_IsolateCleanupCallback.
-/// \param cleanup_group A function to be called after an isolate group is shutdown.
-/// See Dart_IsolateGroupCleanupCallback.
-/// \param get_service_assets A function to be called by the service isolate when
-/// it requires the vmservice assets archive.
-/// See Dart_GetVMServiceAssetsArchive.
-/// \param code_observer An external code observer callback function.
-/// The observer can be invoked as early as during the Dart_Initialize() call.
-class Dart_InitializeParams extends ffi.Struct {
-  @ffi.Int32()
-  external int version;
-
-  external ffi.Pointer<ffi.Uint8> vm_snapshot_data;
-
-  external ffi.Pointer<ffi.Uint8> vm_snapshot_instructions;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_IsolateGroupCreateCallback>>
-      create_group;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_InitializeIsolateCallback>>
-      initialize_isolate;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_IsolateShutdownCallback>>
-      shutdown_isolate;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_IsolateCleanupCallback>>
-      cleanup_isolate;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_IsolateGroupCleanupCallback>>
-      cleanup_group;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_ThreadExitCallback>> thread_exit;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_FileOpenCallback>> file_open;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_FileReadCallback>> file_read;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_FileWriteCallback>> file_write;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_FileCloseCallback>> file_close;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_EntropySource>> entropy_source;
-
-  external ffi.Pointer<ffi.NativeFunction<Dart_GetVMServiceAssetsArchive>>
-      get_service_assets;
-
-  @ffi.Uint8()
-  external int start_kernel_isolate;
-
-  external ffi.Pointer<Dart_CodeObserver> code_observer;
 }
 
 abstract class Dart_CoreType_Id {
@@ -4964,8 +3844,6 @@ abstract class Dart_TypedData_Type {
   static const int Dart_TypedData_kInvalid = 15;
 }
 
-class _Dart_NativeArguments extends ffi.Opaque {}
-
 abstract class Dart_NativeArgument_Type {
   static const int Dart_NativeArgument_kBool = 0;
   static const int Dart_NativeArgument_kInt32 = 1;
@@ -4976,14 +3854,6 @@ abstract class Dart_NativeArgument_Type {
   static const int Dart_NativeArgument_kString = 6;
   static const int Dart_NativeArgument_kInstance = 7;
   static const int Dart_NativeArgument_kNativeFields = 8;
-}
-
-class Dart_NativeArgument_Descriptor extends ffi.Struct {
-  @ffi.Uint8()
-  external int type;
-
-  @ffi.Uint8()
-  external int index;
 }
 
 /// =====================
@@ -5004,32 +3874,11 @@ abstract class Dart_KernelCompilationStatus {
   static const int Dart_KernelCompilationStatus_Crash = 2;
 }
 
-class Dart_KernelCompilationResult extends ffi.Struct {
-  @ffi.Int32()
-  external int status;
-
-  @ffi.Uint8()
-  external int null_safety;
-
-  external ffi.Pointer<ffi.Int8> error;
-
-  external ffi.Pointer<ffi.Uint8> kernel;
-
-  @ffi.IntPtr()
-  external int kernel_size;
-}
-
 abstract class Dart_KernelCompilationVerbosityLevel {
   static const int Dart_KernelCompilationVerbosityLevel_Error = 0;
   static const int Dart_KernelCompilationVerbosityLevel_Warning = 1;
   static const int Dart_KernelCompilationVerbosityLevel_Info = 2;
   static const int Dart_KernelCompilationVerbosityLevel_All = 3;
-}
-
-class Dart_SourceFile extends ffi.Struct {
-  external ffi.Pointer<ffi.Int8> uri;
-
-  external ffi.Pointer<ffi.Int8> source;
 }
 
 /// A Dart_CObject is used for representing Dart objects as native C
@@ -5065,6 +3914,12 @@ abstract class Dart_CObject_Type {
 }
 
 class Dart_CObject extends ffi.Opaque {}
+
+class _Dart_WeakPersistentHandle extends ffi.Opaque {}
+
+class _Dart_FinalizableHandle extends ffi.Opaque {}
+
+class _Dart_Handle extends ffi.Opaque {}
 
 const int ERR_LIB_NONE = 1;
 
@@ -17170,7 +16025,7 @@ typedef _dart_EC_KEY_generate_key = int Function(
   ffi.Pointer<ec_key_st> key,
 );
 
-typedef _typedefC_6 = ffi.Pointer<ffi.Void> Function(
+typedef _typedefC_16 = ffi.Pointer<ffi.Void> Function(
   ffi.Pointer<ffi.Void>,
   ffi.IntPtr,
   ffi.Pointer<ffi.Void>,
@@ -17182,7 +16037,7 @@ typedef _c_ECDH_compute_key = ffi.Int32 Function(
   ffi.IntPtr outlen,
   ffi.Pointer<ec_point_st> pub_key,
   ffi.Pointer<ec_key_st> priv_key,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_6>> kdf,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_16>> kdf,
 );
 
 typedef _dart_ECDH_compute_key = int Function(
@@ -17190,7 +16045,7 @@ typedef _dart_ECDH_compute_key = int Function(
   int outlen,
   ffi.Pointer<ec_point_st> pub_key,
   ffi.Pointer<ec_key_st> priv_key,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_6>> kdf,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_16>> kdf,
 );
 
 typedef _c_ECDSA_SIG_new = ffi.Pointer<ecdsa_sig_st> Function();
@@ -17746,241 +16601,81 @@ typedef _dart_webcrypto_lookup_symbol = ffi.Pointer<ffi.Void> Function(
   int index,
 );
 
-typedef _typedefC_1 = ffi.Void Function(
+typedef _typedefC_5 = ffi.Int32 Function(
+  ffi.Pointer<evp_cipher_ctx_st>,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Int32,
+);
+
+typedef _typedefC_6 = ffi.Int32 Function(
+  ffi.Pointer<evp_cipher_ctx_st>,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.IntPtr,
+);
+
+typedef _typedefC_7 = ffi.Void Function(
+  ffi.Pointer<evp_cipher_ctx_st>,
+);
+
+typedef _typedefC_8 = ffi.Int32 Function(
+  ffi.Pointer<evp_cipher_ctx_st>,
+  ffi.Int32,
+  ffi.Int32,
   ffi.Pointer<ffi.Void>,
-);
-
-typedef stack_cmp_func = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<ffi.Void>>,
-  ffi.Pointer<ffi.Pointer<ffi.Void>>,
-);
-
-typedef _typedefC_7 = ffi.Int32 Function(
-  ffi.Pointer<x509_lookup_st>,
-);
-
-typedef _typedefC_8 = ffi.Void Function(
-  ffi.Pointer<x509_lookup_st>,
 );
 
 typedef _typedefC_9 = ffi.Int32 Function(
-  ffi.Pointer<x509_lookup_st>,
+  ffi.Pointer<rsa_st>,
 );
 
 typedef _typedefC_10 = ffi.Int32 Function(
-  ffi.Pointer<x509_lookup_st>,
+  ffi.Pointer<rsa_st>,
 );
 
-typedef _typedefC_11 = ffi.Int32 Function(
-  ffi.Pointer<x509_lookup_st>,
-  ffi.Int32,
-  ffi.Pointer<ffi.Int8>,
-  ffi.Int64,
-  ffi.Pointer<ffi.Pointer<ffi.Int8>>,
+typedef _typedefC_11 = ffi.IntPtr Function(
+  ffi.Pointer<rsa_st>,
 );
 
 typedef _typedefC_12 = ffi.Int32 Function(
-  ffi.Pointer<x509_lookup_st>,
   ffi.Int32,
-  ffi.Pointer<X509_name_st>,
-  ffi.Pointer<X509_OBJECT>,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Uint32,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.Pointer<ffi.Uint32>,
+  ffi.Pointer<rsa_st>,
 );
 
 typedef _typedefC_13 = ffi.Int32 Function(
-  ffi.Pointer<x509_lookup_st>,
+  ffi.Pointer<rsa_st>,
+  ffi.Pointer<ffi.IntPtr>,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.IntPtr,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.IntPtr,
   ffi.Int32,
-  ffi.Pointer<X509_name_st>,
-  ffi.Pointer<asn1_string_st>,
-  ffi.Pointer<X509_OBJECT>,
 );
 
 typedef _typedefC_14 = ffi.Int32 Function(
-  ffi.Pointer<x509_lookup_st>,
-  ffi.Int32,
+  ffi.Pointer<rsa_st>,
+  ffi.Pointer<ffi.IntPtr>,
   ffi.Pointer<ffi.Uint8>,
+  ffi.IntPtr,
+  ffi.Pointer<ffi.Uint8>,
+  ffi.IntPtr,
   ffi.Int32,
-  ffi.Pointer<X509_OBJECT>,
 );
 
 typedef _typedefC_15 = ffi.Int32 Function(
-  ffi.Pointer<x509_lookup_st>,
-  ffi.Int32,
-  ffi.Pointer<ffi.Int8>,
-  ffi.Int32,
-  ffi.Pointer<X509_OBJECT>,
-);
-
-typedef _typedefC_17 = ffi.Void Function(
-  ffi.Int32,
-);
-
-typedef _typedefC_18 = ffi.Pointer<ffi.Int8> Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Int8>,
-  ffi.Pointer<ffi.Int8>,
-);
-
-typedef _typedefC_19 = ffi.Pointer<stack_st_CONF_VALUE> Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Int8>,
-);
-
-typedef _typedefC_20 = ffi.Void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Int8>,
-);
-
-typedef _typedefC_21 = ffi.Void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<stack_st_CONF_VALUE>,
-);
-
-typedef _typedefC_22 = ffi.Int32 Function(
-  ffi.Pointer<X509_PURPOSE>,
-  ffi.Pointer<x509_st>,
-  ffi.Int32,
-);
-
-typedef ASN1_new_func = ffi.Pointer<ASN1_VALUE_st> Function();
-
-typedef ASN1_free_func = ffi.Void Function(
-  ffi.Pointer<ASN1_VALUE_st>,
-);
-
-typedef ASN1_d2i_func = ffi.Pointer<ASN1_VALUE_st> Function(
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
-  ffi.Int64,
-);
-
-typedef ASN1_i2d_func = ffi.Int32 Function(
-  ffi.Pointer<ASN1_VALUE_st>,
-  ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
-);
-
-typedef ASN1_ex_new_func = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Pointer<ASN1_ITEM_st>,
-);
-
-typedef ASN1_ex_free_func = ffi.Void Function(
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Pointer<ASN1_ITEM_st>,
-);
-
-typedef ASN1_ex_d2i = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
-  ffi.Int64,
-  ffi.Pointer<ASN1_ITEM_st>,
-  ffi.Int32,
-  ffi.Int32,
-  ffi.Int8,
-  ffi.Pointer<ASN1_TLC_st>,
-);
-
-typedef ASN1_ex_i2d = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
-  ffi.Pointer<ASN1_ITEM_st>,
-  ffi.Int32,
-  ffi.Int32,
-);
-
-typedef ASN1_ex_print_func = ffi.Int32 Function(
-  ffi.Pointer<bio_st>,
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Int32,
-  ffi.Pointer<ffi.Int8>,
-  ffi.Pointer<asn1_pctx_st>,
-);
-
-typedef ASN1_primitive_c2i = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
+  ffi.Pointer<rsa_st>,
   ffi.Pointer<ffi.Uint8>,
-  ffi.Int32,
-  ffi.Int32,
-  ffi.Pointer<ffi.Int8>,
-  ffi.Pointer<ASN1_ITEM_st>,
-);
-
-typedef ASN1_primitive_i2c = ffi.Int32 Function(
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.Pointer<ffi.Int32>,
-  ffi.Pointer<ASN1_ITEM_st>,
-);
-
-typedef ASN1_primitive_print = ffi.Int32 Function(
-  ffi.Pointer<bio_st>,
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Pointer<ASN1_ITEM_st>,
-  ffi.Int32,
-  ffi.Pointer<asn1_pctx_st>,
-);
-
-typedef ASN1_aux_cb = ffi.Int32 Function(
-  ffi.Int32,
-  ffi.Pointer<ffi.Pointer<ASN1_VALUE_st>>,
-  ffi.Pointer<ASN1_ITEM_st>,
-  ffi.Pointer<ffi.Void>,
-);
-
-typedef Dart_IsolateGroupCreateCallback = ffi.Pointer<_Dart_Isolate> Function(
-  ffi.Pointer<ffi.Int8>,
-  ffi.Pointer<ffi.Int8>,
-  ffi.Pointer<ffi.Int8>,
-  ffi.Pointer<ffi.Int8>,
-  ffi.Pointer<Dart_IsolateFlags>,
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-);
-
-typedef Dart_InitializeIsolateCallback = ffi.Uint8 Function(
-  ffi.Pointer<ffi.Pointer<ffi.Void>>,
-  ffi.Pointer<ffi.Pointer<ffi.Int8>>,
-);
-
-typedef Dart_IsolateShutdownCallback = ffi.Void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
-);
-
-typedef Dart_IsolateCleanupCallback = ffi.Void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
-);
-
-typedef Dart_IsolateGroupCleanupCallback = ffi.Void Function(
-  ffi.Pointer<ffi.Void>,
-);
-
-typedef Dart_ThreadExitCallback = ffi.Void Function();
-
-typedef Dart_FileOpenCallback = ffi.Pointer<ffi.Void> Function(
-  ffi.Pointer<ffi.Int8>,
-  ffi.Uint8,
-);
-
-typedef Dart_FileReadCallback = ffi.Void Function(
-  ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
-  ffi.Pointer<ffi.IntPtr>,
-  ffi.Pointer<ffi.Void>,
-);
-
-typedef Dart_FileWriteCallback = ffi.Void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.IntPtr,
-  ffi.Pointer<ffi.Void>,
-);
-
-typedef Dart_FileCloseCallback = ffi.Void Function(
-  ffi.Pointer<ffi.Void>,
-);
-
-typedef Dart_EntropySource = ffi.Uint8 Function(
   ffi.Pointer<ffi.Uint8>,
   ffi.IntPtr,
 );
 
-typedef Dart_GetVMServiceAssetsArchive = ffi.Handle Function();
+typedef _typedefC_17 = ffi.Int32 Function(
+  ffi.Int32,
+  ffi.Int32,
+  ffi.Pointer<bn_gencb_st>,
+);
