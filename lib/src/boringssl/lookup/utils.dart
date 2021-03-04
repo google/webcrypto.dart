@@ -17,6 +17,7 @@
 import 'dart:io' show Platform, Directory, File;
 import 'dart:ffi';
 import 'symbols.generated.dart';
+import '../../third_party/boringssl/generated_bindings.dart';
 
 /// Get platform-dependent library filename for the binary webcrypto library.
 String get libraryFileName {
@@ -40,7 +41,8 @@ String get libraryFileName {
 /// and initialize it with [initialize_dart_dl].
 ///
 /// Returns `null` if it could not be found.
-Pointer<Void> Function(Sym)? lookupLibraryInDotDartTool() {
+Pointer<T> Function<T extends NativeType>(String symbolName)?
+    lookupLibraryInDotDartTool() {
   final dotDartTool = _findDotDartTool();
   if (dotDartTool == null) {
     return null;
@@ -53,14 +55,12 @@ Pointer<Void> Function(Sym)? lookupLibraryInDotDartTool() {
     final library = DynamicLibrary.open(libraryFile.path);
 
     // Try to lookup the 'webcrypto_lookup_symbol' symbol
-    final webcrypto_lookup_symbol = library
-        .lookup<NativeFunction<Pointer<Void> Function(Int32)>>(
-          'webcrypto_lookup_symbol',
-        )
-        .asFunction<Pointer<Void> Function(int)>();
+    final ssl = BoringSsl(library);
+    final webcrypto_lookup_symbol = ssl.webcrypto_lookup_symbol;
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    final lookup = (Sym s) => webcrypto_lookup_symbol(s.index);
+    final lookup = <T extends NativeType>(String s) =>
+        webcrypto_lookup_symbol(s.symbol.index).cast<T>();
 
     // Initialize library
     initialize_dart_dl(lookup);
@@ -74,10 +74,10 @@ Pointer<Void> Function(Sym)? lookupLibraryInDotDartTool() {
 /// `webcrypto_dart_dl_initialize`.
 ///
 /// This must be called before we start using the library.
-void initialize_dart_dl(Pointer<Void> Function(Sym) lookup) {
-  final webcrypto_dart_dl_initialize = lookup(Sym.webcrypto_dart_dl_initialize)
-      .cast<NativeFunction<Int32 Function(Pointer<Void>)>>()
-      .asFunction<int Function(Pointer<Void>)>();
+void initialize_dart_dl(
+    Pointer<T> Function<T extends NativeType>(String) lookup) {
+  final webcrypto_dart_dl_initialize =
+      BoringSsl.fromLookup(lookup).webcrypto_dart_dl_initialize;
 
   if (webcrypto_dart_dl_initialize(NativeApi.initializeApiDLData) != 1) {
     throw UnsupportedError(

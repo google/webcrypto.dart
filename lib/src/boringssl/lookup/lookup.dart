@@ -13,22 +13,44 @@
 // limitations under the License.
 
 import 'dart:ffi';
-import 'symbols.generated.dart';
+
+import '../../third_party/boringssl/generated_bindings.dart';
 
 import 'lookup_symbol_dart.dart'
     if (dart.library.ui) 'lookup_symbol_flutter.dart';
 
 export 'symbols.generated.dart' show Sym;
 
-/// Auxiliary for loading functions from [_boringssl].
-class SymbolResolver {
-  final Sym symbolName;
-  SymbolResolver._(this.symbolName);
-  Pointer<NativeFunction<T>> lookupFunc<T extends Function>() {
-    return lookupSymbol(symbolName).cast<NativeFunction<T>>();
-  }
-}
+final Pointer<T> Function<T extends NativeType>(String symbolName)
+    boringsslLibrary = lookup;
 
-/// Helper function for looking up functions with two calls, such that
-/// we don't have multiple type arguments one the same line.
-SymbolResolver resolve(Sym symbol) => SymbolResolver._(symbol);
+final BoringSsl ssl = BoringSsl.fromLookup(boringsslLibrary);
+
+// TODO(dacoharkes): https://github.com/dart-lang/ffigen/issues/24.
+
+/// EVP_PKEY_free frees all data referenced by pkey and then frees pkey itself.
+///
+/// ```c
+/// void EVP_PKEY_free(EVP_PKEY *pkey);
+/// ```
+final EVP_PKEY_free_ =
+    lookup<NativeFunction<Void Function(Pointer<EVP_PKEY>)>>('EVP_PKEY_free');
+
+// TODO(dacoharkes): Move defines somewhere.
+
+/// ERR_GET_LIB returns the library code for the error. This is one of the
+/// ERR_LIB_* values.
+///
+/// ```c
+/// #define ERR_GET_LIB(packed_error) ((int)(((packed_error) >> 24) & 0xff))
+/// ```
+int ERR_GET_LIB(int packed_error) => (packed_error >> 24) & 0xff;
+
+/// ERR_GET_REASON returns the reason code for the error. This is one of
+/// library-specific LIB_R_* values where LIB is the library (see ERR_GET_LIB).
+/// Note that reason codes are specific to the library.
+///
+/// ```c
+/// #define ERR_GET_REASON(packed_error) ((int)((packed_error) & 0xfff))
+/// ```
+int ERR_GET_REASON(int packed_error) => packed_error & 0xfff;

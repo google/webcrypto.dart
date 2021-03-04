@@ -67,7 +67,7 @@ Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
     ));
 
 class _EcdhPrivateKey implements EcdhPrivateKey {
-  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<EVP_PKEY> _key;
 
   _EcdhPrivateKey(this._key);
 
@@ -125,7 +125,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       }
 
       final lengthInBytes = (length / 8).ceil();
-      final derived = _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Data> p) {
+      final derived = _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Void> p) {
         final outLen = ssl.ECDH_compute_key(
           p,
           lengthInBytes,
@@ -170,7 +170,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
 }
 
 class _EcdhPublicKey implements EcdhPublicKey {
-  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<EVP_PKEY> _key;
 
   _EcdhPublicKey(this._key);
 

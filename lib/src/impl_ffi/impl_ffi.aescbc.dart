@@ -39,7 +39,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
     assert(key.length == 16 || key.length == 32);
     final cipher =
         key.length == 16 ? ssl.EVP_aes_128_cbc() : ssl.EVP_aes_256_cbc();
-    final blockSize = ssl.AES_BLOCK_SIZE;
+    final blockSize = AES_BLOCK_SIZE;
 
     final ivSize = ssl.EVP_CIPHER_iv_length(cipher);
     if (iv.length != ivSize) {
@@ -61,13 +61,11 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
     // Allocate an input buffer
     final inBuf = scope.allocate<ffi.Uint8>(count: bufSize);
     final inData = inBuf.asTypedList(bufSize);
-    final inBytes = inBuf.cast<ssl.Bytes>();
 
     // Allocate an output buffer, notice that BoringSSL says output cannot be
     // more than input size + blockSize - 1
     final outBuf = scope.allocate<ffi.Uint8>(count: bufSize + blockSize);
     final outData = outBuf.asTypedList(bufSize + blockSize);
-    final outBytes = outBuf.cast<ssl.Bytes>();
 
     // Allocate and output length integer
     final outLen = scope.allocate<ffi.Int32>();
@@ -79,7 +77,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
         final N = math.min(data.length - offset, bufSize);
         inData.setAll(0, data.skip(offset).take(N));
 
-        _checkOpIsOne(ssl.EVP_CipherUpdate(ctx, outBytes, outLen, inBytes, N));
+        _checkOpIsOne(ssl.EVP_CipherUpdate(ctx, outBuf, outLen, inBuf, N));
         if (outLen.value > 0) {
           yield outData.sublist(0, outLen.value);
         }
@@ -87,7 +85,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
       }
     }
     // Output final block
-    _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+    _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBuf, outLen));
     if (outLen.value > 0) {
       yield outData.sublist(0, outLen.value);
     }

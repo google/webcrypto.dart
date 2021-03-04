@@ -104,16 +104,16 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
 ///  * [initFn] as [ssl.EVP_PKEY_encrypt_init] or [ssl.EVP_PKEY_decrypt_init] ,
 ///  * [encryptOrDecryptFn] as [ssl.EVP_PKEY_encrypt] or [ssl.EVP_PKEY_decrypt].
 Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
-  ffi.Pointer<ssl.EVP_PKEY> key,
-  ffi.Pointer<ssl.EVP_MD> md,
+  ffi.Pointer<EVP_PKEY> key,
+  ffi.Pointer<EVP_MD> md,
   // ssl.EVP_PKEY_encrypt_init
-  int Function(ffi.Pointer<ssl.EVP_PKEY_CTX>) initFn,
+  int Function(ffi.Pointer<EVP_PKEY_CTX>) initFn,
   // ssl.EVP_PKEY_encrypt
   int Function(
-    ffi.Pointer<ssl.EVP_PKEY_CTX>,
-    ffi.Pointer<ssl.Bytes>,
+    ffi.Pointer<EVP_PKEY_CTX>,
+    ffi.Pointer<ffi.Uint8>,
     ffi.Pointer<ffi.IntPtr>,
-    ffi.Pointer<ssl.Bytes>,
+    ffi.Pointer<ffi.Uint8>,
     int,
   )
       encryptOrDecryptFn,
@@ -125,7 +125,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   try {
     _checkOpIsOne(initFn(ctx));
     _checkOpIsOne(
-      ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, ssl.RSA_PKCS1_OAEP_PADDING),
+      ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING),
     );
     _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_oaep_md(ctx, md));
     _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, md));
@@ -138,7 +138,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
         plabel.cast<ffi.Uint8>().asTypedList(label.length).setAll(0, label);
         _checkOpIsOne(ssl.EVP_PKEY_CTX_set0_rsa_oaep_label(
           ctx,
-          plabel.cast<ssl.Bytes>(),
+          plabel.cast(),
           label.length,
         ));
       } catch (_) {
@@ -148,7 +148,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
       }
     }
 
-    return _withDataAsPointer(data, (ffi.Pointer<ssl.Bytes> input) {
+    return _withDataAsPointer(data, (ffi.Pointer<ffi.Uint8> input) {
       return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
         len.value = 0;
         _checkOpIsOne(encryptOrDecryptFn(
@@ -158,7 +158,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
           input,
           data.length,
         ));
-        return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> output) {
+        return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> output) {
           _checkOpIsOne(encryptOrDecryptFn(
             ctx,
             output,
@@ -175,7 +175,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
 }
 
 class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
-  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsaOaepPrivateKey(this._key, this._hash);
@@ -210,7 +210,7 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
 }
 
 class _RsaOaepPublicKey implements RsaOaepPublicKey {
-  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsaOaepPublicKey(this._key, this._hash);

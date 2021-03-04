@@ -118,7 +118,7 @@ class _HmacSecretKey implements HmacSecretKey {
     final ctx = ssl.HMAC_CTX_new();
     _checkOp(ctx.address != 0, fallback: 'allocation error');
     try {
-      _withDataAsPointer(_keyData, (ffi.Pointer<ssl.Data> p) {
+      _withDataAsPointer(_keyData, (ffi.Pointer<ffi.Void> p) {
         final n = _keyData.length;
         _checkOp(ssl.HMAC_Init_ex(ctx, p, n, _hash.MD, ffi.nullptr) == 1);
       });
@@ -128,7 +128,7 @@ class _HmacSecretKey implements HmacSecretKey {
       _checkOp(size > 0);
       return _withAllocation(1, (ffi.Pointer<ffi.Uint32> psize) async {
         psize.value = size;
-        return _withOutPointer(size, (ffi.Pointer<ssl.Bytes> p) {
+        return _withOutPointer(size, (ffi.Pointer<ffi.Uint8> p) {
           _checkOp(ssl.HMAC_Final(ctx, p, psize) == 1);
         }).sublist(0, psize.value);
       });
@@ -154,8 +154,8 @@ class _HmacSecretKey implements HmacSecretKey {
     if (signature.length != other.length) {
       return false;
     }
-    return _withDataAsPointer(signature, (ffi.Pointer<ssl.Data> s) {
-      return _withDataAsPointer(other, (ffi.Pointer<ssl.Data> o) {
+    return _withDataAsPointer(signature, (ffi.Pointer<ffi.Void> s) {
+      return _withDataAsPointer(other, (ffi.Pointer<ffi.Void> o) {
         return ssl.CRYPTO_memcmp(s, o, other.length) == 0;
       });
     });
