@@ -15,7 +15,7 @@
 import 'dart:io';
 import 'dart:convert';
 
-/// Build a `[lib]webcryto.{so|dll|dylib}` in ´.dart_tool/webcrypto/` for the
+/// Build a `[lib]webcrypto.{so|dll|dylib}` in ´.dart_tool/webcrypto/` for the
 /// current root project.
 ///
 /// Tricks in `lib/src/boringssl/lookup/lookup.dart` can find these files when
