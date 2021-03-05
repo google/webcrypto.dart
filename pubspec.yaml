@@ -69,6 +69,25 @@ ffigen:
     length: full
   typedef-map:
     size_t: IntPtr
+  macros:
+    include:
+      - AES_BLOCK_SIZE
+      - EC_PKEY_NO_PUBKEY
+      - EVP_PKEY_EC
+      - EVP_PKEY_RSA
+      - HKDF_R_OUTPUT_TOO_LARGE
+      - NID_secp384r1
+      - NID_secp521r1
+      - NID_X9_62_prime256v1
+      - RSA_PKCS1_OAEP_PADDING
+      - RSA_PKCS1_PADDING
+      - RSA_PKCS1_PSS_PADDING
+  enums:
+    include:
+      - point_conversion_form_t
+  unnamed-enums:
+    include:
+      - ERR_LIB_HKDF
   structs:
     include:
       - 'nothing'
