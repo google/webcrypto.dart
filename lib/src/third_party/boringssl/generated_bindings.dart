@@ -3945,28 +3945,6 @@ class _Dart_Handle extends ffi.Opaque {}
 
 const int ERR_LIB_HKDF = 31;
 
-const int ERR_LIB_HKDF_1 = 31;
-
-const int ERR_LIB_HKDF_2 = 31;
-
-const int ERR_LIB_HKDF_3 = 31;
-
-const int ERR_LIB_HKDF_4 = 31;
-
-const int ERR_LIB_HKDF_5 = 31;
-
-const int ERR_LIB_HKDF_6 = 31;
-
-const int ERR_LIB_HKDF_7 = 31;
-
-const int ERR_LIB_HKDF_8 = 31;
-
-const int ERR_LIB_HKDF_9 = 31;
-
-const int ERR_LIB_HKDF_10 = 31;
-
-const int ERR_LIB_HKDF_11 = 31;
-
 const int NID_X9_62_prime256v1 = 415;
 
 const int NID_secp384r1 = 715;
