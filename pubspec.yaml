@@ -19,7 +19,7 @@ homepage: https://github.com/google/webcrypto.dart
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
-  flutter: '>=1.24.0-10.2.pre'
+  flutter: '>=2.0.0'
 
 dependencies:
   ffi: ^1.0.0
@@ -33,7 +33,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  ffigen: ^2.1.0
+  ffigen: ^2.2.0
   test: ^1.16.0
   yaml: ^3.0.0
   pedantic: ^1.9.0
@@ -244,6 +244,9 @@ ffigen:
     - EVP_PKEY_set_type
     # Self testing only..
     - BORINGSSL_self_test
+    symbol-address:
+      include:
+        - EVP_PKEY_free
   preamble: |
     // ignore_for_file: camel_case_types
     // ignore_for_file: non_constant_identifier_names

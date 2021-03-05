@@ -63,22 +63,24 @@ class BoringSsl {
   /// // removes that error from the queue. If there are no errors in the queue then
   /// // it returns zero.
   int ERR_get_error() {
-    return (_ERR_get_error ??=
-        _lookup<ffi.NativeFunction<_c_ERR_get_error>>('ERR_get_error')
-            .asFunction<_dart_ERR_get_error>())();
+    return _ERR_get_error();
   }
 
-  _dart_ERR_get_error? _ERR_get_error;
+  late final _ERR_get_error_ptr =
+      _lookup<ffi.NativeFunction<_c_ERR_get_error>>('ERR_get_error');
+  late final _dart_ERR_get_error _ERR_get_error =
+      _ERR_get_error_ptr.asFunction<_dart_ERR_get_error>();
 
   /// // The "peek" functions act like the |ERR_get_error| functions, above, but they
   /// // do not remove the error from the queue.
   int ERR_peek_error() {
-    return (_ERR_peek_error ??=
-        _lookup<ffi.NativeFunction<_c_ERR_peek_error>>('ERR_peek_error')
-            .asFunction<_dart_ERR_peek_error>())();
+    return _ERR_peek_error();
   }
 
-  _dart_ERR_peek_error? _ERR_peek_error;
+  late final _ERR_peek_error_ptr =
+      _lookup<ffi.NativeFunction<_c_ERR_peek_error>>('ERR_peek_error');
+  late final _dart_ERR_peek_error _ERR_peek_error =
+      _ERR_peek_error_ptr.asFunction<_dart_ERR_peek_error>();
 
   /// // ERR_error_string_n generates a human-readable string representing
   /// // |packed_error|, places it at |buf|, and returns |buf|. It writes at most
@@ -96,82 +98,90 @@ class BoringSsl {
     ffi.Pointer<ffi.Int8> buf,
     int len,
   ) {
-    return (_ERR_error_string_n ??=
-        _lookup<ffi.NativeFunction<_c_ERR_error_string_n>>('ERR_error_string_n')
-            .asFunction<_dart_ERR_error_string_n>())(
+    return _ERR_error_string_n(
       packed_error,
       buf,
       len,
     );
   }
 
-  _dart_ERR_error_string_n? _ERR_error_string_n;
+  late final _ERR_error_string_n_ptr =
+      _lookup<ffi.NativeFunction<_c_ERR_error_string_n>>('ERR_error_string_n');
+  late final _dart_ERR_error_string_n _ERR_error_string_n =
+      _ERR_error_string_n_ptr.asFunction<_dart_ERR_error_string_n>();
 
   /// // ERR_clear_error clears the error queue for the current thread.
   void ERR_clear_error() {
-    return (_ERR_clear_error ??=
-        _lookup<ffi.NativeFunction<_c_ERR_clear_error>>('ERR_clear_error')
-            .asFunction<_dart_ERR_clear_error>())();
+    return _ERR_clear_error();
   }
 
-  _dart_ERR_clear_error? _ERR_clear_error;
+  late final _ERR_clear_error_ptr =
+      _lookup<ffi.NativeFunction<_c_ERR_clear_error>>('ERR_clear_error');
+  late final _dart_ERR_clear_error _ERR_clear_error =
+      _ERR_clear_error_ptr.asFunction<_dart_ERR_clear_error>();
 
   ffi.Pointer<evp_cipher_st> EVP_aes_128_cbc() {
-    return (_EVP_aes_128_cbc ??=
-        _lookup<ffi.NativeFunction<_c_EVP_aes_128_cbc>>('EVP_aes_128_cbc')
-            .asFunction<_dart_EVP_aes_128_cbc>())();
+    return _EVP_aes_128_cbc();
   }
 
-  _dart_EVP_aes_128_cbc? _EVP_aes_128_cbc;
+  late final _EVP_aes_128_cbc_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_aes_128_cbc>>('EVP_aes_128_cbc');
+  late final _dart_EVP_aes_128_cbc _EVP_aes_128_cbc =
+      _EVP_aes_128_cbc_ptr.asFunction<_dart_EVP_aes_128_cbc>();
 
   ffi.Pointer<evp_cipher_st> EVP_aes_128_ctr() {
-    return (_EVP_aes_128_ctr ??=
-        _lookup<ffi.NativeFunction<_c_EVP_aes_128_ctr>>('EVP_aes_128_ctr')
-            .asFunction<_dart_EVP_aes_128_ctr>())();
+    return _EVP_aes_128_ctr();
   }
 
-  _dart_EVP_aes_128_ctr? _EVP_aes_128_ctr;
+  late final _EVP_aes_128_ctr_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_aes_128_ctr>>('EVP_aes_128_ctr');
+  late final _dart_EVP_aes_128_ctr _EVP_aes_128_ctr =
+      _EVP_aes_128_ctr_ptr.asFunction<_dart_EVP_aes_128_ctr>();
 
   ffi.Pointer<evp_cipher_st> EVP_aes_256_cbc() {
-    return (_EVP_aes_256_cbc ??=
-        _lookup<ffi.NativeFunction<_c_EVP_aes_256_cbc>>('EVP_aes_256_cbc')
-            .asFunction<_dart_EVP_aes_256_cbc>())();
+    return _EVP_aes_256_cbc();
   }
 
-  _dart_EVP_aes_256_cbc? _EVP_aes_256_cbc;
+  late final _EVP_aes_256_cbc_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_aes_256_cbc>>('EVP_aes_256_cbc');
+  late final _dart_EVP_aes_256_cbc _EVP_aes_256_cbc =
+      _EVP_aes_256_cbc_ptr.asFunction<_dart_EVP_aes_256_cbc>();
 
   ffi.Pointer<evp_cipher_st> EVP_aes_256_ctr() {
-    return (_EVP_aes_256_ctr ??=
-        _lookup<ffi.NativeFunction<_c_EVP_aes_256_ctr>>('EVP_aes_256_ctr')
-            .asFunction<_dart_EVP_aes_256_ctr>())();
+    return _EVP_aes_256_ctr();
   }
 
-  _dart_EVP_aes_256_ctr? _EVP_aes_256_ctr;
+  late final _EVP_aes_256_ctr_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_aes_256_ctr>>('EVP_aes_256_ctr');
+  late final _dart_EVP_aes_256_ctr _EVP_aes_256_ctr =
+      _EVP_aes_256_ctr_ptr.asFunction<_dart_EVP_aes_256_ctr>();
 
   /// // EVP_CIPHER_CTX_new allocates a fresh |EVP_CIPHER_CTX|, calls
   /// // |EVP_CIPHER_CTX_init| and returns it, or NULL on allocation failure.
   ffi.Pointer<evp_cipher_ctx_st> EVP_CIPHER_CTX_new() {
-    return (_EVP_CIPHER_CTX_new ??=
-        _lookup<ffi.NativeFunction<_c_EVP_CIPHER_CTX_new>>('EVP_CIPHER_CTX_new')
-            .asFunction<_dart_EVP_CIPHER_CTX_new>())();
+    return _EVP_CIPHER_CTX_new();
   }
 
-  _dart_EVP_CIPHER_CTX_new? _EVP_CIPHER_CTX_new;
+  late final _EVP_CIPHER_CTX_new_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_CIPHER_CTX_new>>('EVP_CIPHER_CTX_new');
+  late final _dart_EVP_CIPHER_CTX_new _EVP_CIPHER_CTX_new =
+      _EVP_CIPHER_CTX_new_ptr.asFunction<_dart_EVP_CIPHER_CTX_new>();
 
   /// // EVP_CIPHER_CTX_free calls |EVP_CIPHER_CTX_cleanup| on |ctx| and then frees
   /// // |ctx| itself.
   void EVP_CIPHER_CTX_free(
     ffi.Pointer<evp_cipher_ctx_st> ctx,
   ) {
-    return (_EVP_CIPHER_CTX_free ??=
-        _lookup<ffi.NativeFunction<_c_EVP_CIPHER_CTX_free>>(
-                'EVP_CIPHER_CTX_free')
-            .asFunction<_dart_EVP_CIPHER_CTX_free>())(
+    return _EVP_CIPHER_CTX_free(
       ctx,
     );
   }
 
-  _dart_EVP_CIPHER_CTX_free? _EVP_CIPHER_CTX_free;
+  late final _EVP_CIPHER_CTX_free_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_CIPHER_CTX_free>>(
+          'EVP_CIPHER_CTX_free');
+  late final _dart_EVP_CIPHER_CTX_free _EVP_CIPHER_CTX_free =
+      _EVP_CIPHER_CTX_free_ptr.asFunction<_dart_EVP_CIPHER_CTX_free>();
 
   /// // EVP_CipherInit_ex configures |ctx| for a fresh encryption (or decryption, if
   /// // |enc| is zero) operation using |cipher|. If |ctx| has been previously
@@ -188,9 +198,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> iv,
     int enc,
   ) {
-    return (_EVP_CipherInit_ex ??=
-        _lookup<ffi.NativeFunction<_c_EVP_CipherInit_ex>>('EVP_CipherInit_ex')
-            .asFunction<_dart_EVP_CipherInit_ex>())(
+    return _EVP_CipherInit_ex(
       ctx,
       cipher,
       engine,
@@ -200,7 +208,10 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_CipherInit_ex? _EVP_CipherInit_ex;
+  late final _EVP_CipherInit_ex_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_CipherInit_ex>>('EVP_CipherInit_ex');
+  late final _dart_EVP_CipherInit_ex _EVP_CipherInit_ex =
+      _EVP_CipherInit_ex_ptr.asFunction<_dart_EVP_CipherInit_ex>();
 
   /// // EVP_CipherUpdate calls either |EVP_EncryptUpdate| or |EVP_DecryptUpdate|
   /// // depending on how |ctx| has been setup.
@@ -211,9 +222,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> in_1,
     int in_len,
   ) {
-    return (_EVP_CipherUpdate ??=
-        _lookup<ffi.NativeFunction<_c_EVP_CipherUpdate>>('EVP_CipherUpdate')
-            .asFunction<_dart_EVP_CipherUpdate>())(
+    return _EVP_CipherUpdate(
       ctx,
       out,
       out_len,
@@ -222,7 +231,10 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_CipherUpdate? _EVP_CipherUpdate;
+  late final _EVP_CipherUpdate_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_CipherUpdate>>('EVP_CipherUpdate');
+  late final _dart_EVP_CipherUpdate _EVP_CipherUpdate =
+      _EVP_CipherUpdate_ptr.asFunction<_dart_EVP_CipherUpdate>();
 
   /// // EVP_CipherFinal_ex calls either |EVP_EncryptFinal_ex| or
   /// // |EVP_DecryptFinal_ex| depending on how |ctx| has been setup.
@@ -231,101 +243,111 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Int32> out_len,
   ) {
-    return (_EVP_CipherFinal_ex ??=
-        _lookup<ffi.NativeFunction<_c_EVP_CipherFinal_ex>>('EVP_CipherFinal_ex')
-            .asFunction<_dart_EVP_CipherFinal_ex>())(
+    return _EVP_CipherFinal_ex(
       ctx,
       out,
       out_len,
     );
   }
 
-  _dart_EVP_CipherFinal_ex? _EVP_CipherFinal_ex;
+  late final _EVP_CipherFinal_ex_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_CipherFinal_ex>>('EVP_CipherFinal_ex');
+  late final _dart_EVP_CipherFinal_ex _EVP_CipherFinal_ex =
+      _EVP_CipherFinal_ex_ptr.asFunction<_dart_EVP_CipherFinal_ex>();
 
   /// // EVP_CIPHER_block_size returns the block size, in bytes, for |cipher|, or one
   /// // if |cipher| is a stream cipher.
   int EVP_CIPHER_block_size(
     ffi.Pointer<evp_cipher_st> cipher,
   ) {
-    return (_EVP_CIPHER_block_size ??=
-        _lookup<ffi.NativeFunction<_c_EVP_CIPHER_block_size>>(
-                'EVP_CIPHER_block_size')
-            .asFunction<_dart_EVP_CIPHER_block_size>())(
+    return _EVP_CIPHER_block_size(
       cipher,
     );
   }
 
-  _dart_EVP_CIPHER_block_size? _EVP_CIPHER_block_size;
+  late final _EVP_CIPHER_block_size_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_CIPHER_block_size>>(
+          'EVP_CIPHER_block_size');
+  late final _dart_EVP_CIPHER_block_size _EVP_CIPHER_block_size =
+      _EVP_CIPHER_block_size_ptr.asFunction<_dart_EVP_CIPHER_block_size>();
 
   /// // EVP_CIPHER_iv_length returns the IV size, in bytes, of |cipher|, or zero if
   /// // |cipher| doesn't take an IV.
   int EVP_CIPHER_iv_length(
     ffi.Pointer<evp_cipher_st> cipher,
   ) {
-    return (_EVP_CIPHER_iv_length ??=
-        _lookup<ffi.NativeFunction<_c_EVP_CIPHER_iv_length>>(
-                'EVP_CIPHER_iv_length')
-            .asFunction<_dart_EVP_CIPHER_iv_length>())(
+    return _EVP_CIPHER_iv_length(
       cipher,
     );
   }
 
-  _dart_EVP_CIPHER_iv_length? _EVP_CIPHER_iv_length;
+  late final _EVP_CIPHER_iv_length_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_CIPHER_iv_length>>(
+          'EVP_CIPHER_iv_length');
+  late final _dart_EVP_CIPHER_iv_length _EVP_CIPHER_iv_length =
+      _EVP_CIPHER_iv_length_ptr.asFunction<_dart_EVP_CIPHER_iv_length>();
 
   ffi.Pointer<EVP_MD> EVP_sha1() {
-    return (_EVP_sha1 ??= _lookup<ffi.NativeFunction<_c_EVP_sha1>>('EVP_sha1')
-        .asFunction<_dart_EVP_sha1>())();
+    return _EVP_sha1();
   }
 
-  _dart_EVP_sha1? _EVP_sha1;
+  late final _EVP_sha1_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_sha1>>('EVP_sha1');
+  late final _dart_EVP_sha1 _EVP_sha1 =
+      _EVP_sha1_ptr.asFunction<_dart_EVP_sha1>();
 
   ffi.Pointer<EVP_MD> EVP_sha256() {
-    return (_EVP_sha256 ??=
-        _lookup<ffi.NativeFunction<_c_EVP_sha256>>('EVP_sha256')
-            .asFunction<_dart_EVP_sha256>())();
+    return _EVP_sha256();
   }
 
-  _dart_EVP_sha256? _EVP_sha256;
+  late final _EVP_sha256_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_sha256>>('EVP_sha256');
+  late final _dart_EVP_sha256 _EVP_sha256 =
+      _EVP_sha256_ptr.asFunction<_dart_EVP_sha256>();
 
   ffi.Pointer<EVP_MD> EVP_sha384() {
-    return (_EVP_sha384 ??=
-        _lookup<ffi.NativeFunction<_c_EVP_sha384>>('EVP_sha384')
-            .asFunction<_dart_EVP_sha384>())();
+    return _EVP_sha384();
   }
 
-  _dart_EVP_sha384? _EVP_sha384;
+  late final _EVP_sha384_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_sha384>>('EVP_sha384');
+  late final _dart_EVP_sha384 _EVP_sha384 =
+      _EVP_sha384_ptr.asFunction<_dart_EVP_sha384>();
 
   ffi.Pointer<EVP_MD> EVP_sha512() {
-    return (_EVP_sha512 ??=
-        _lookup<ffi.NativeFunction<_c_EVP_sha512>>('EVP_sha512')
-            .asFunction<_dart_EVP_sha512>())();
+    return _EVP_sha512();
   }
 
-  _dart_EVP_sha512? _EVP_sha512;
+  late final _EVP_sha512_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_sha512>>('EVP_sha512');
+  late final _dart_EVP_sha512 _EVP_sha512 =
+      _EVP_sha512_ptr.asFunction<_dart_EVP_sha512>();
 
   /// // EVP_MD_CTX_new allocates and initialises a fresh |EVP_MD_CTX| and returns
   /// // it, or NULL on allocation failure. The caller must use |EVP_MD_CTX_free| to
   /// // release the resulting object.
   ffi.Pointer<EVP_MD_CTX> EVP_MD_CTX_new() {
-    return (_EVP_MD_CTX_new ??=
-        _lookup<ffi.NativeFunction<_c_EVP_MD_CTX_new>>('EVP_MD_CTX_new')
-            .asFunction<_dart_EVP_MD_CTX_new>())();
+    return _EVP_MD_CTX_new();
   }
 
-  _dart_EVP_MD_CTX_new? _EVP_MD_CTX_new;
+  late final _EVP_MD_CTX_new_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_MD_CTX_new>>('EVP_MD_CTX_new');
+  late final _dart_EVP_MD_CTX_new _EVP_MD_CTX_new =
+      _EVP_MD_CTX_new_ptr.asFunction<_dart_EVP_MD_CTX_new>();
 
   /// // EVP_MD_CTX_free calls |EVP_MD_CTX_cleanup| and then frees |ctx| itself.
   void EVP_MD_CTX_free(
     ffi.Pointer<EVP_MD_CTX> ctx,
   ) {
-    return (_EVP_MD_CTX_free ??=
-        _lookup<ffi.NativeFunction<_c_EVP_MD_CTX_free>>('EVP_MD_CTX_free')
-            .asFunction<_dart_EVP_MD_CTX_free>())(
+    return _EVP_MD_CTX_free(
       ctx,
     );
   }
 
-  _dart_EVP_MD_CTX_free? _EVP_MD_CTX_free;
+  late final _EVP_MD_CTX_free_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_MD_CTX_free>>('EVP_MD_CTX_free');
+  late final _dart_EVP_MD_CTX_free _EVP_MD_CTX_free =
+      _EVP_MD_CTX_free_ptr.asFunction<_dart_EVP_MD_CTX_free>();
 
   /// // EVP_DigestInit acts like |EVP_DigestInit_ex| except that |ctx| is
   /// // initialised before use.
@@ -333,15 +355,16 @@ class BoringSsl {
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<EVP_MD> type,
   ) {
-    return (_EVP_DigestInit ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestInit>>('EVP_DigestInit')
-            .asFunction<_dart_EVP_DigestInit>())(
+    return _EVP_DigestInit(
       ctx,
       type,
     );
   }
 
-  _dart_EVP_DigestInit? _EVP_DigestInit;
+  late final _EVP_DigestInit_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestInit>>('EVP_DigestInit');
+  late final _dart_EVP_DigestInit _EVP_DigestInit =
+      _EVP_DigestInit_ptr.asFunction<_dart_EVP_DigestInit>();
 
   /// // EVP_DigestUpdate hashes |len| bytes from |data| into the hashing operation
   /// // in |ctx|. It returns one.
@@ -350,16 +373,17 @@ class BoringSsl {
     ffi.Pointer<ffi.Void> data,
     int len,
   ) {
-    return (_EVP_DigestUpdate ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestUpdate>>('EVP_DigestUpdate')
-            .asFunction<_dart_EVP_DigestUpdate>())(
+    return _EVP_DigestUpdate(
       ctx,
       data,
       len,
     );
   }
 
-  _dart_EVP_DigestUpdate? _EVP_DigestUpdate;
+  late final _EVP_DigestUpdate_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestUpdate>>('EVP_DigestUpdate');
+  late final _dart_EVP_DigestUpdate _EVP_DigestUpdate =
+      _EVP_DigestUpdate_ptr.asFunction<_dart_EVP_DigestUpdate>();
 
   /// // EVP_DigestFinal acts like |EVP_DigestFinal_ex| except that
   /// // |EVP_MD_CTX_cleanup| is called on |ctx| before returning.
@@ -368,43 +392,46 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> md_out,
     ffi.Pointer<ffi.Uint32> out_size,
   ) {
-    return (_EVP_DigestFinal ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestFinal>>('EVP_DigestFinal')
-            .asFunction<_dart_EVP_DigestFinal>())(
+    return _EVP_DigestFinal(
       ctx,
       md_out,
       out_size,
     );
   }
 
-  _dart_EVP_DigestFinal? _EVP_DigestFinal;
+  late final _EVP_DigestFinal_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestFinal>>('EVP_DigestFinal');
+  late final _dart_EVP_DigestFinal _EVP_DigestFinal =
+      _EVP_DigestFinal_ptr.asFunction<_dart_EVP_DigestFinal>();
 
   /// // EVP_MD_size returns the digest size of |md|, in bytes.
   int EVP_MD_size(
     ffi.Pointer<EVP_MD> md,
   ) {
-    return (_EVP_MD_size ??=
-        _lookup<ffi.NativeFunction<_c_EVP_MD_size>>('EVP_MD_size')
-            .asFunction<_dart_EVP_MD_size>())(
+    return _EVP_MD_size(
       md,
     );
   }
 
-  _dart_EVP_MD_size? _EVP_MD_size;
+  late final _EVP_MD_size_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_MD_size>>('EVP_MD_size');
+  late final _dart_EVP_MD_size _EVP_MD_size =
+      _EVP_MD_size_ptr.asFunction<_dart_EVP_MD_size>();
 
   /// // EVP_MD_CTX_size returns the digest size of |ctx|, in bytes. It
   /// // will crash if a digest hasn't been set on |ctx|.
   int EVP_MD_CTX_size(
     ffi.Pointer<EVP_MD_CTX> ctx,
   ) {
-    return (_EVP_MD_CTX_size ??=
-        _lookup<ffi.NativeFunction<_c_EVP_MD_CTX_size>>('EVP_MD_CTX_size')
-            .asFunction<_dart_EVP_MD_CTX_size>())(
+    return _EVP_MD_CTX_size(
       ctx,
     );
   }
 
-  _dart_EVP_MD_CTX_size? _EVP_MD_CTX_size;
+  late final _EVP_MD_CTX_size_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_MD_CTX_size>>('EVP_MD_CTX_size');
+  late final _dart_EVP_MD_CTX_size _EVP_MD_CTX_size =
+      _EVP_MD_CTX_size_ptr.asFunction<_dart_EVP_MD_CTX_size>();
 
   /// // EVP_aead_aes_128_gcm is AES-128 in Galois Counter Mode.
   /// //
@@ -414,13 +441,14 @@ class BoringSsl {
   /// // implementing an existing protocol which has already specified incorrect
   /// // parameters, only use 12-byte nonces.
   ffi.Pointer<evp_aead_st> EVP_aead_aes_128_gcm() {
-    return (_EVP_aead_aes_128_gcm ??=
-        _lookup<ffi.NativeFunction<_c_EVP_aead_aes_128_gcm>>(
-                'EVP_aead_aes_128_gcm')
-            .asFunction<_dart_EVP_aead_aes_128_gcm>())();
+    return _EVP_aead_aes_128_gcm();
   }
 
-  _dart_EVP_aead_aes_128_gcm? _EVP_aead_aes_128_gcm;
+  late final _EVP_aead_aes_128_gcm_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_aead_aes_128_gcm>>(
+          'EVP_aead_aes_128_gcm');
+  late final _dart_EVP_aead_aes_128_gcm _EVP_aead_aes_128_gcm =
+      _EVP_aead_aes_128_gcm_ptr.asFunction<_dart_EVP_aead_aes_128_gcm>();
 
   /// // EVP_aead_aes_256_gcm is AES-256 in Galois Counter Mode.
   /// //
@@ -430,58 +458,62 @@ class BoringSsl {
   /// // implementing an existing protocol which has already specified incorrect
   /// // parameters, only use 12-byte nonces.
   ffi.Pointer<evp_aead_st> EVP_aead_aes_256_gcm() {
-    return (_EVP_aead_aes_256_gcm ??=
-        _lookup<ffi.NativeFunction<_c_EVP_aead_aes_256_gcm>>(
-                'EVP_aead_aes_256_gcm')
-            .asFunction<_dart_EVP_aead_aes_256_gcm>())();
+    return _EVP_aead_aes_256_gcm();
   }
 
-  _dart_EVP_aead_aes_256_gcm? _EVP_aead_aes_256_gcm;
+  late final _EVP_aead_aes_256_gcm_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_aead_aes_256_gcm>>(
+          'EVP_aead_aes_256_gcm');
+  late final _dart_EVP_aead_aes_256_gcm _EVP_aead_aes_256_gcm =
+      _EVP_aead_aes_256_gcm_ptr.asFunction<_dart_EVP_aead_aes_256_gcm>();
 
   /// // EVP_AEAD_key_length returns the length, in bytes, of the keys used by
   /// // |aead|.
   int EVP_AEAD_key_length(
     ffi.Pointer<evp_aead_st> aead,
   ) {
-    return (_EVP_AEAD_key_length ??=
-        _lookup<ffi.NativeFunction<_c_EVP_AEAD_key_length>>(
-                'EVP_AEAD_key_length')
-            .asFunction<_dart_EVP_AEAD_key_length>())(
+    return _EVP_AEAD_key_length(
       aead,
     );
   }
 
-  _dart_EVP_AEAD_key_length? _EVP_AEAD_key_length;
+  late final _EVP_AEAD_key_length_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_AEAD_key_length>>(
+          'EVP_AEAD_key_length');
+  late final _dart_EVP_AEAD_key_length _EVP_AEAD_key_length =
+      _EVP_AEAD_key_length_ptr.asFunction<_dart_EVP_AEAD_key_length>();
 
   /// // EVP_AEAD_nonce_length returns the length, in bytes, of the per-message nonce
   /// // for |aead|.
   int EVP_AEAD_nonce_length(
     ffi.Pointer<evp_aead_st> aead,
   ) {
-    return (_EVP_AEAD_nonce_length ??=
-        _lookup<ffi.NativeFunction<_c_EVP_AEAD_nonce_length>>(
-                'EVP_AEAD_nonce_length')
-            .asFunction<_dart_EVP_AEAD_nonce_length>())(
+    return _EVP_AEAD_nonce_length(
       aead,
     );
   }
 
-  _dart_EVP_AEAD_nonce_length? _EVP_AEAD_nonce_length;
+  late final _EVP_AEAD_nonce_length_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_AEAD_nonce_length>>(
+          'EVP_AEAD_nonce_length');
+  late final _dart_EVP_AEAD_nonce_length _EVP_AEAD_nonce_length =
+      _EVP_AEAD_nonce_length_ptr.asFunction<_dart_EVP_AEAD_nonce_length>();
 
   /// // EVP_AEAD_max_overhead returns the maximum number of additional bytes added
   /// // by the act of sealing data with |aead|.
   int EVP_AEAD_max_overhead(
     ffi.Pointer<evp_aead_st> aead,
   ) {
-    return (_EVP_AEAD_max_overhead ??=
-        _lookup<ffi.NativeFunction<_c_EVP_AEAD_max_overhead>>(
-                'EVP_AEAD_max_overhead')
-            .asFunction<_dart_EVP_AEAD_max_overhead>())(
+    return _EVP_AEAD_max_overhead(
       aead,
     );
   }
 
-  _dart_EVP_AEAD_max_overhead? _EVP_AEAD_max_overhead;
+  late final _EVP_AEAD_max_overhead_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_AEAD_max_overhead>>(
+          'EVP_AEAD_max_overhead');
+  late final _dart_EVP_AEAD_max_overhead _EVP_AEAD_max_overhead =
+      _EVP_AEAD_max_overhead_ptr.asFunction<_dart_EVP_AEAD_max_overhead>();
 
   /// // EVP_AEAD_max_tag_len returns the maximum tag length when using |aead|. This
   /// // is the largest value that can be passed as |tag_len| to
@@ -489,15 +521,16 @@ class BoringSsl {
   int EVP_AEAD_max_tag_len(
     ffi.Pointer<evp_aead_st> aead,
   ) {
-    return (_EVP_AEAD_max_tag_len ??=
-        _lookup<ffi.NativeFunction<_c_EVP_AEAD_max_tag_len>>(
-                'EVP_AEAD_max_tag_len')
-            .asFunction<_dart_EVP_AEAD_max_tag_len>())(
+    return _EVP_AEAD_max_tag_len(
       aead,
     );
   }
 
-  _dart_EVP_AEAD_max_tag_len? _EVP_AEAD_max_tag_len;
+  late final _EVP_AEAD_max_tag_len_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_AEAD_max_tag_len>>(
+          'EVP_AEAD_max_tag_len');
+  late final _dart_EVP_AEAD_max_tag_len _EVP_AEAD_max_tag_len =
+      _EVP_AEAD_max_tag_len_ptr.asFunction<_dart_EVP_AEAD_max_tag_len>();
 
   /// // EVP_AEAD_CTX_new allocates an |EVP_AEAD_CTX|, calls |EVP_AEAD_CTX_init| and
   /// // returns the |EVP_AEAD_CTX|, or NULL on error.
@@ -507,9 +540,7 @@ class BoringSsl {
     int key_len,
     int tag_len,
   ) {
-    return (_EVP_AEAD_CTX_new ??=
-        _lookup<ffi.NativeFunction<_c_EVP_AEAD_CTX_new>>('EVP_AEAD_CTX_new')
-            .asFunction<_dart_EVP_AEAD_CTX_new>())(
+    return _EVP_AEAD_CTX_new(
       aead,
       key,
       key_len,
@@ -517,21 +548,25 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_AEAD_CTX_new? _EVP_AEAD_CTX_new;
+  late final _EVP_AEAD_CTX_new_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_AEAD_CTX_new>>('EVP_AEAD_CTX_new');
+  late final _dart_EVP_AEAD_CTX_new _EVP_AEAD_CTX_new =
+      _EVP_AEAD_CTX_new_ptr.asFunction<_dart_EVP_AEAD_CTX_new>();
 
   /// // EVP_AEAD_CTX_free calls |EVP_AEAD_CTX_cleanup| and |OPENSSL_free| on
   /// // |ctx|.
   void EVP_AEAD_CTX_free(
     ffi.Pointer<EVP_AEAD_CTX> ctx,
   ) {
-    return (_EVP_AEAD_CTX_free ??=
-        _lookup<ffi.NativeFunction<_c_EVP_AEAD_CTX_free>>('EVP_AEAD_CTX_free')
-            .asFunction<_dart_EVP_AEAD_CTX_free>())(
+    return _EVP_AEAD_CTX_free(
       ctx,
     );
   }
 
-  _dart_EVP_AEAD_CTX_free? _EVP_AEAD_CTX_free;
+  late final _EVP_AEAD_CTX_free_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_AEAD_CTX_free>>('EVP_AEAD_CTX_free');
+  late final _dart_EVP_AEAD_CTX_free _EVP_AEAD_CTX_free =
+      _EVP_AEAD_CTX_free_ptr.asFunction<_dart_EVP_AEAD_CTX_free>();
 
   /// // EVP_AEAD_CTX_seal encrypts and authenticates |in_len| bytes from |in| and
   /// // authenticates |ad_len| bytes from |ad| and writes the result to |out|. It
@@ -565,9 +600,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> ad,
     int ad_len,
   ) {
-    return (_EVP_AEAD_CTX_seal ??=
-        _lookup<ffi.NativeFunction<_c_EVP_AEAD_CTX_seal>>('EVP_AEAD_CTX_seal')
-            .asFunction<_dart_EVP_AEAD_CTX_seal>())(
+    return _EVP_AEAD_CTX_seal(
       ctx,
       out,
       out_len,
@@ -581,7 +614,10 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_AEAD_CTX_seal? _EVP_AEAD_CTX_seal;
+  late final _EVP_AEAD_CTX_seal_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_AEAD_CTX_seal>>('EVP_AEAD_CTX_seal');
+  late final _dart_EVP_AEAD_CTX_seal _EVP_AEAD_CTX_seal =
+      _EVP_AEAD_CTX_seal_ptr.asFunction<_dart_EVP_AEAD_CTX_seal>();
 
   /// // EVP_AEAD_CTX_open authenticates |in_len| bytes from |in| and |ad_len| bytes
   /// // from |ad| and decrypts at most |in_len| bytes into |out|. It returns one on
@@ -614,9 +650,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> ad,
     int ad_len,
   ) {
-    return (_EVP_AEAD_CTX_open ??=
-        _lookup<ffi.NativeFunction<_c_EVP_AEAD_CTX_open>>('EVP_AEAD_CTX_open')
-            .asFunction<_dart_EVP_AEAD_CTX_open>())(
+    return _EVP_AEAD_CTX_open(
       ctx,
       out,
       out_len,
@@ -630,45 +664,51 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_AEAD_CTX_open? _EVP_AEAD_CTX_open;
+  late final _EVP_AEAD_CTX_open_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_AEAD_CTX_open>>('EVP_AEAD_CTX_open');
+  late final _dart_EVP_AEAD_CTX_open _EVP_AEAD_CTX_open =
+      _EVP_AEAD_CTX_open_ptr.asFunction<_dart_EVP_AEAD_CTX_open>();
 
   /// // EVP_PKEY_new creates a new, empty public-key object and returns it or NULL
   /// // on allocation failure.
   ffi.Pointer<EVP_PKEY> EVP_PKEY_new() {
-    return (_EVP_PKEY_new ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_new>>('EVP_PKEY_new')
-            .asFunction<_dart_EVP_PKEY_new>())();
+    return _EVP_PKEY_new();
   }
 
-  _dart_EVP_PKEY_new? _EVP_PKEY_new;
+  late final _EVP_PKEY_new_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_new>>('EVP_PKEY_new');
+  late final _dart_EVP_PKEY_new _EVP_PKEY_new =
+      _EVP_PKEY_new_ptr.asFunction<_dart_EVP_PKEY_new>();
 
   /// // EVP_PKEY_free frees all data referenced by |pkey| and then frees |pkey|
   /// // itself.
   void EVP_PKEY_free(
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
-    return (_EVP_PKEY_free ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_free>>('EVP_PKEY_free')
-            .asFunction<_dart_EVP_PKEY_free>())(
+    return _EVP_PKEY_free(
       pkey,
     );
   }
 
-  _dart_EVP_PKEY_free? _EVP_PKEY_free;
+  late final _EVP_PKEY_free_ptr =
+      _lookup<ffi.NativeFunction<Native_EVP_PKEY_free>>('EVP_PKEY_free');
+  late final _dart_EVP_PKEY_free _EVP_PKEY_free =
+      _EVP_PKEY_free_ptr.asFunction<_dart_EVP_PKEY_free>();
 
   /// // EVP_PKEY_id returns the type of |pkey|, which is one of the |EVP_PKEY_*|
   /// // values.
   int EVP_PKEY_id(
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
-    return (_EVP_PKEY_id ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_id>>('EVP_PKEY_id')
-            .asFunction<_dart_EVP_PKEY_id>())(
+    return _EVP_PKEY_id(
       pkey,
     );
   }
 
-  _dart_EVP_PKEY_id? _EVP_PKEY_id;
+  late final _EVP_PKEY_id_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_id>>('EVP_PKEY_id');
+  late final _dart_EVP_PKEY_id _EVP_PKEY_id =
+      _EVP_PKEY_id_ptr.asFunction<_dart_EVP_PKEY_id>();
 
   /// // Getting and setting concrete public key types.
   /// //
@@ -688,55 +728,59 @@ class BoringSsl {
     ffi.Pointer<EVP_PKEY> pkey,
     ffi.Pointer<rsa_st> key,
   ) {
-    return (_EVP_PKEY_set1_RSA ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_set1_RSA>>('EVP_PKEY_set1_RSA')
-            .asFunction<_dart_EVP_PKEY_set1_RSA>())(
+    return _EVP_PKEY_set1_RSA(
       pkey,
       key,
     );
   }
 
-  _dart_EVP_PKEY_set1_RSA? _EVP_PKEY_set1_RSA;
+  late final _EVP_PKEY_set1_RSA_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_set1_RSA>>('EVP_PKEY_set1_RSA');
+  late final _dart_EVP_PKEY_set1_RSA _EVP_PKEY_set1_RSA =
+      _EVP_PKEY_set1_RSA_ptr.asFunction<_dart_EVP_PKEY_set1_RSA>();
 
   ffi.Pointer<rsa_st> EVP_PKEY_get1_RSA(
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
-    return (_EVP_PKEY_get1_RSA ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_get1_RSA>>('EVP_PKEY_get1_RSA')
-            .asFunction<_dart_EVP_PKEY_get1_RSA>())(
+    return _EVP_PKEY_get1_RSA(
       pkey,
     );
   }
 
-  _dart_EVP_PKEY_get1_RSA? _EVP_PKEY_get1_RSA;
+  late final _EVP_PKEY_get1_RSA_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_get1_RSA>>('EVP_PKEY_get1_RSA');
+  late final _dart_EVP_PKEY_get1_RSA _EVP_PKEY_get1_RSA =
+      _EVP_PKEY_get1_RSA_ptr.asFunction<_dart_EVP_PKEY_get1_RSA>();
 
   int EVP_PKEY_set1_EC_KEY(
     ffi.Pointer<EVP_PKEY> pkey,
     ffi.Pointer<ec_key_st> key,
   ) {
-    return (_EVP_PKEY_set1_EC_KEY ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_set1_EC_KEY>>(
-                'EVP_PKEY_set1_EC_KEY')
-            .asFunction<_dart_EVP_PKEY_set1_EC_KEY>())(
+    return _EVP_PKEY_set1_EC_KEY(
       pkey,
       key,
     );
   }
 
-  _dart_EVP_PKEY_set1_EC_KEY? _EVP_PKEY_set1_EC_KEY;
+  late final _EVP_PKEY_set1_EC_KEY_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_set1_EC_KEY>>(
+          'EVP_PKEY_set1_EC_KEY');
+  late final _dart_EVP_PKEY_set1_EC_KEY _EVP_PKEY_set1_EC_KEY =
+      _EVP_PKEY_set1_EC_KEY_ptr.asFunction<_dart_EVP_PKEY_set1_EC_KEY>();
 
   ffi.Pointer<ec_key_st> EVP_PKEY_get1_EC_KEY(
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
-    return (_EVP_PKEY_get1_EC_KEY ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_get1_EC_KEY>>(
-                'EVP_PKEY_get1_EC_KEY')
-            .asFunction<_dart_EVP_PKEY_get1_EC_KEY>())(
+    return _EVP_PKEY_get1_EC_KEY(
       pkey,
     );
   }
 
-  _dart_EVP_PKEY_get1_EC_KEY? _EVP_PKEY_get1_EC_KEY;
+  late final _EVP_PKEY_get1_EC_KEY_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_get1_EC_KEY>>(
+          'EVP_PKEY_get1_EC_KEY');
+  late final _dart_EVP_PKEY_get1_EC_KEY _EVP_PKEY_get1_EC_KEY =
+      _EVP_PKEY_get1_EC_KEY_ptr.asFunction<_dart_EVP_PKEY_get1_EC_KEY>();
 
   /// // EVP_PKEY_set_type sets the type of |pkey| to |type|. It returns one if
   /// // successful or zero if the |type| argument is not one of the |EVP_PKEY_*|
@@ -745,15 +789,16 @@ class BoringSsl {
     ffi.Pointer<EVP_PKEY> pkey,
     int type,
   ) {
-    return (_EVP_PKEY_set_type ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_set_type>>('EVP_PKEY_set_type')
-            .asFunction<_dart_EVP_PKEY_set_type>())(
+    return _EVP_PKEY_set_type(
       pkey,
       type,
     );
   }
 
-  _dart_EVP_PKEY_set_type? _EVP_PKEY_set_type;
+  late final _EVP_PKEY_set_type_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_set_type>>('EVP_PKEY_set_type');
+  late final _dart_EVP_PKEY_set_type _EVP_PKEY_set_type =
+      _EVP_PKEY_set_type_ptr.asFunction<_dart_EVP_PKEY_set_type>();
 
   /// // EVP_parse_public_key decodes a DER-encoded SubjectPublicKeyInfo structure
   /// // (RFC 5280) from |cbs| and advances |cbs|. It returns a newly-allocated
@@ -766,15 +811,16 @@ class BoringSsl {
   ffi.Pointer<EVP_PKEY> EVP_parse_public_key(
     ffi.Pointer<CBS> cbs,
   ) {
-    return (_EVP_parse_public_key ??=
-        _lookup<ffi.NativeFunction<_c_EVP_parse_public_key>>(
-                'EVP_parse_public_key')
-            .asFunction<_dart_EVP_parse_public_key>())(
+    return _EVP_parse_public_key(
       cbs,
     );
   }
 
-  _dart_EVP_parse_public_key? _EVP_parse_public_key;
+  late final _EVP_parse_public_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_parse_public_key>>(
+          'EVP_parse_public_key');
+  late final _dart_EVP_parse_public_key _EVP_parse_public_key =
+      _EVP_parse_public_key_ptr.asFunction<_dart_EVP_parse_public_key>();
 
   /// // EVP_marshal_public_key marshals |key| as a DER-encoded SubjectPublicKeyInfo
   /// // structure (RFC 5280) and appends the result to |cbb|. It returns one on
@@ -783,16 +829,17 @@ class BoringSsl {
     ffi.Pointer<CBB> cbb,
     ffi.Pointer<EVP_PKEY> key,
   ) {
-    return (_EVP_marshal_public_key ??=
-        _lookup<ffi.NativeFunction<_c_EVP_marshal_public_key>>(
-                'EVP_marshal_public_key')
-            .asFunction<_dart_EVP_marshal_public_key>())(
+    return _EVP_marshal_public_key(
       cbb,
       key,
     );
   }
 
-  _dart_EVP_marshal_public_key? _EVP_marshal_public_key;
+  late final _EVP_marshal_public_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_marshal_public_key>>(
+          'EVP_marshal_public_key');
+  late final _dart_EVP_marshal_public_key _EVP_marshal_public_key =
+      _EVP_marshal_public_key_ptr.asFunction<_dart_EVP_marshal_public_key>();
 
   /// // EVP_parse_private_key decodes a DER-encoded PrivateKeyInfo structure (RFC
   /// // 5208) from |cbs| and advances |cbs|. It returns a newly-allocated |EVP_PKEY|
@@ -808,15 +855,16 @@ class BoringSsl {
   ffi.Pointer<EVP_PKEY> EVP_parse_private_key(
     ffi.Pointer<CBS> cbs,
   ) {
-    return (_EVP_parse_private_key ??=
-        _lookup<ffi.NativeFunction<_c_EVP_parse_private_key>>(
-                'EVP_parse_private_key')
-            .asFunction<_dart_EVP_parse_private_key>())(
+    return _EVP_parse_private_key(
       cbs,
     );
   }
 
-  _dart_EVP_parse_private_key? _EVP_parse_private_key;
+  late final _EVP_parse_private_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_parse_private_key>>(
+          'EVP_parse_private_key');
+  late final _dart_EVP_parse_private_key _EVP_parse_private_key =
+      _EVP_parse_private_key_ptr.asFunction<_dart_EVP_parse_private_key>();
 
   /// // EVP_marshal_private_key marshals |key| as a DER-encoded PrivateKeyInfo
   /// // structure (RFC 5208) and appends the result to |cbb|. It returns one on
@@ -825,16 +873,17 @@ class BoringSsl {
     ffi.Pointer<CBB> cbb,
     ffi.Pointer<EVP_PKEY> key,
   ) {
-    return (_EVP_marshal_private_key ??=
-        _lookup<ffi.NativeFunction<_c_EVP_marshal_private_key>>(
-                'EVP_marshal_private_key')
-            .asFunction<_dart_EVP_marshal_private_key>())(
+    return _EVP_marshal_private_key(
       cbb,
       key,
     );
   }
 
-  _dart_EVP_marshal_private_key? _EVP_marshal_private_key;
+  late final _EVP_marshal_private_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_marshal_private_key>>(
+          'EVP_marshal_private_key');
+  late final _dart_EVP_marshal_private_key _EVP_marshal_private_key =
+      _EVP_marshal_private_key_ptr.asFunction<_dart_EVP_marshal_private_key>();
 
   /// // EVP_DigestSignInit sets up |ctx| for a signing operation with |type| and
   /// // |pkey|. The |ctx| argument must have been initialised with
@@ -857,9 +906,7 @@ class BoringSsl {
     ffi.Pointer<engine_st> e,
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
-    return (_EVP_DigestSignInit ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestSignInit>>('EVP_DigestSignInit')
-            .asFunction<_dart_EVP_DigestSignInit>())(
+    return _EVP_DigestSignInit(
       ctx,
       pctx,
       type,
@@ -868,7 +915,10 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_DigestSignInit? _EVP_DigestSignInit;
+  late final _EVP_DigestSignInit_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestSignInit>>('EVP_DigestSignInit');
+  late final _dart_EVP_DigestSignInit _EVP_DigestSignInit =
+      _EVP_DigestSignInit_ptr.asFunction<_dart_EVP_DigestSignInit>();
 
   /// // EVP_DigestSignUpdate appends |len| bytes from |data| to the data which will
   /// // be signed in |EVP_DigestSignFinal|. It returns one.
@@ -881,17 +931,18 @@ class BoringSsl {
     ffi.Pointer<ffi.Void> data,
     int len,
   ) {
-    return (_EVP_DigestSignUpdate ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestSignUpdate>>(
-                'EVP_DigestSignUpdate')
-            .asFunction<_dart_EVP_DigestSignUpdate>())(
+    return _EVP_DigestSignUpdate(
       ctx,
       data,
       len,
     );
   }
 
-  _dart_EVP_DigestSignUpdate? _EVP_DigestSignUpdate;
+  late final _EVP_DigestSignUpdate_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestSignUpdate>>(
+          'EVP_DigestSignUpdate');
+  late final _dart_EVP_DigestSignUpdate _EVP_DigestSignUpdate =
+      _EVP_DigestSignUpdate_ptr.asFunction<_dart_EVP_DigestSignUpdate>();
 
   /// // EVP_DigestSignFinal signs the data that has been included by one or more
   /// // calls to |EVP_DigestSignUpdate|. If |out_sig| is NULL then |*out_sig_len| is
@@ -910,17 +961,18 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> out_sig,
     ffi.Pointer<ffi.IntPtr> out_sig_len,
   ) {
-    return (_EVP_DigestSignFinal ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestSignFinal>>(
-                'EVP_DigestSignFinal')
-            .asFunction<_dart_EVP_DigestSignFinal>())(
+    return _EVP_DigestSignFinal(
       ctx,
       out_sig,
       out_sig_len,
     );
   }
 
-  _dart_EVP_DigestSignFinal? _EVP_DigestSignFinal;
+  late final _EVP_DigestSignFinal_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestSignFinal>>(
+          'EVP_DigestSignFinal');
+  late final _dart_EVP_DigestSignFinal _EVP_DigestSignFinal =
+      _EVP_DigestSignFinal_ptr.asFunction<_dart_EVP_DigestSignFinal>();
 
   /// // EVP_DigestVerifyInit sets up |ctx| for a signature verification operation
   /// // with |type| and |pkey|. The |ctx| argument must have been initialised with
@@ -943,10 +995,7 @@ class BoringSsl {
     ffi.Pointer<engine_st> e,
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
-    return (_EVP_DigestVerifyInit ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestVerifyInit>>(
-                'EVP_DigestVerifyInit')
-            .asFunction<_dart_EVP_DigestVerifyInit>())(
+    return _EVP_DigestVerifyInit(
       ctx,
       pctx,
       type,
@@ -955,7 +1004,11 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_DigestVerifyInit? _EVP_DigestVerifyInit;
+  late final _EVP_DigestVerifyInit_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestVerifyInit>>(
+          'EVP_DigestVerifyInit');
+  late final _dart_EVP_DigestVerifyInit _EVP_DigestVerifyInit =
+      _EVP_DigestVerifyInit_ptr.asFunction<_dart_EVP_DigestVerifyInit>();
 
   /// // EVP_DigestVerifyUpdate appends |len| bytes from |data| to the data which
   /// // will be verified by |EVP_DigestVerifyFinal|. It returns one.
@@ -968,17 +1021,18 @@ class BoringSsl {
     ffi.Pointer<ffi.Void> data,
     int len,
   ) {
-    return (_EVP_DigestVerifyUpdate ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestVerifyUpdate>>(
-                'EVP_DigestVerifyUpdate')
-            .asFunction<_dart_EVP_DigestVerifyUpdate>())(
+    return _EVP_DigestVerifyUpdate(
       ctx,
       data,
       len,
     );
   }
 
-  _dart_EVP_DigestVerifyUpdate? _EVP_DigestVerifyUpdate;
+  late final _EVP_DigestVerifyUpdate_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestVerifyUpdate>>(
+          'EVP_DigestVerifyUpdate');
+  late final _dart_EVP_DigestVerifyUpdate _EVP_DigestVerifyUpdate =
+      _EVP_DigestVerifyUpdate_ptr.asFunction<_dart_EVP_DigestVerifyUpdate>();
 
   /// // EVP_DigestVerifyFinal verifies that |sig_len| bytes of |sig| are a valid
   /// // signature for the data that has been included by one or more calls to
@@ -992,17 +1046,18 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> sig,
     int sig_len,
   ) {
-    return (_EVP_DigestVerifyFinal ??=
-        _lookup<ffi.NativeFunction<_c_EVP_DigestVerifyFinal>>(
-                'EVP_DigestVerifyFinal')
-            .asFunction<_dart_EVP_DigestVerifyFinal>())(
+    return _EVP_DigestVerifyFinal(
       ctx,
       sig,
       sig_len,
     );
   }
 
-  _dart_EVP_DigestVerifyFinal? _EVP_DigestVerifyFinal;
+  late final _EVP_DigestVerifyFinal_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_DigestVerifyFinal>>(
+          'EVP_DigestVerifyFinal');
+  late final _dart_EVP_DigestVerifyFinal _EVP_DigestVerifyFinal =
+      _EVP_DigestVerifyFinal_ptr.asFunction<_dart_EVP_DigestVerifyFinal>();
 
   /// // PKCS5_PBKDF2_HMAC computes |iterations| iterations of PBKDF2 of |password|
   /// // and |salt|, using |digest|, and outputs |key_len| bytes to |out_key|. It
@@ -1017,9 +1072,7 @@ class BoringSsl {
     int key_len,
     ffi.Pointer<ffi.Uint8> out_key,
   ) {
-    return (_PKCS5_PBKDF2_HMAC ??=
-        _lookup<ffi.NativeFunction<_c_PKCS5_PBKDF2_HMAC>>('PKCS5_PBKDF2_HMAC')
-            .asFunction<_dart_PKCS5_PBKDF2_HMAC>())(
+    return _PKCS5_PBKDF2_HMAC(
       password,
       password_len,
       salt,
@@ -1031,7 +1084,10 @@ class BoringSsl {
     );
   }
 
-  _dart_PKCS5_PBKDF2_HMAC? _PKCS5_PBKDF2_HMAC;
+  late final _PKCS5_PBKDF2_HMAC_ptr =
+      _lookup<ffi.NativeFunction<_c_PKCS5_PBKDF2_HMAC>>('PKCS5_PBKDF2_HMAC');
+  late final _dart_PKCS5_PBKDF2_HMAC _PKCS5_PBKDF2_HMAC =
+      _PKCS5_PBKDF2_HMAC_ptr.asFunction<_dart_PKCS5_PBKDF2_HMAC>();
 
   /// // EVP_PKEY_CTX_new allocates a fresh |EVP_PKEY_CTX| for use with |pkey|. It
   /// // returns the context or NULL on error.
@@ -1039,28 +1095,30 @@ class BoringSsl {
     ffi.Pointer<EVP_PKEY> pkey,
     ffi.Pointer<engine_st> e,
   ) {
-    return (_EVP_PKEY_CTX_new ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_new>>('EVP_PKEY_CTX_new')
-            .asFunction<_dart_EVP_PKEY_CTX_new>())(
+    return _EVP_PKEY_CTX_new(
       pkey,
       e,
     );
   }
 
-  _dart_EVP_PKEY_CTX_new? _EVP_PKEY_CTX_new;
+  late final _EVP_PKEY_CTX_new_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_new>>('EVP_PKEY_CTX_new');
+  late final _dart_EVP_PKEY_CTX_new _EVP_PKEY_CTX_new =
+      _EVP_PKEY_CTX_new_ptr.asFunction<_dart_EVP_PKEY_CTX_new>();
 
   /// // EVP_PKEY_CTX_free frees |ctx| and the data it owns.
   void EVP_PKEY_CTX_free(
     ffi.Pointer<EVP_PKEY_CTX> ctx,
   ) {
-    return (_EVP_PKEY_CTX_free ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_free>>('EVP_PKEY_CTX_free')
-            .asFunction<_dart_EVP_PKEY_CTX_free>())(
+    return _EVP_PKEY_CTX_free(
       ctx,
     );
   }
 
-  _dart_EVP_PKEY_CTX_free? _EVP_PKEY_CTX_free;
+  late final _EVP_PKEY_CTX_free_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_free>>('EVP_PKEY_CTX_free');
+  late final _dart_EVP_PKEY_CTX_free _EVP_PKEY_CTX_free =
+      _EVP_PKEY_CTX_free_ptr.asFunction<_dart_EVP_PKEY_CTX_free>();
 
   /// // EVP_PKEY_encrypt_init initialises an |EVP_PKEY_CTX| for an encryption
   /// // operation. It should be called before |EVP_PKEY_encrypt|.
@@ -1069,15 +1127,16 @@ class BoringSsl {
   int EVP_PKEY_encrypt_init(
     ffi.Pointer<EVP_PKEY_CTX> ctx,
   ) {
-    return (_EVP_PKEY_encrypt_init ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_encrypt_init>>(
-                'EVP_PKEY_encrypt_init')
-            .asFunction<_dart_EVP_PKEY_encrypt_init>())(
+    return _EVP_PKEY_encrypt_init(
       ctx,
     );
   }
 
-  _dart_EVP_PKEY_encrypt_init? _EVP_PKEY_encrypt_init;
+  late final _EVP_PKEY_encrypt_init_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_encrypt_init>>(
+          'EVP_PKEY_encrypt_init');
+  late final _dart_EVP_PKEY_encrypt_init _EVP_PKEY_encrypt_init =
+      _EVP_PKEY_encrypt_init_ptr.asFunction<_dart_EVP_PKEY_encrypt_init>();
 
   /// // EVP_PKEY_encrypt encrypts |in_len| bytes from |in|. If |out| is NULL, the
   /// // maximum size of the ciphertext is written to |out_len|. Otherwise, |*out_len|
@@ -1096,9 +1155,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> in_1,
     int in_len,
   ) {
-    return (_EVP_PKEY_encrypt ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_encrypt>>('EVP_PKEY_encrypt')
-            .asFunction<_dart_EVP_PKEY_encrypt>())(
+    return _EVP_PKEY_encrypt(
       ctx,
       out,
       out_len,
@@ -1107,7 +1164,10 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_PKEY_encrypt? _EVP_PKEY_encrypt;
+  late final _EVP_PKEY_encrypt_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_encrypt>>('EVP_PKEY_encrypt');
+  late final _dart_EVP_PKEY_encrypt _EVP_PKEY_encrypt =
+      _EVP_PKEY_encrypt_ptr.asFunction<_dart_EVP_PKEY_encrypt>();
 
   /// // EVP_PKEY_decrypt_init initialises an |EVP_PKEY_CTX| for a decryption
   /// // operation. It should be called before |EVP_PKEY_decrypt|.
@@ -1116,15 +1176,16 @@ class BoringSsl {
   int EVP_PKEY_decrypt_init(
     ffi.Pointer<EVP_PKEY_CTX> ctx,
   ) {
-    return (_EVP_PKEY_decrypt_init ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_decrypt_init>>(
-                'EVP_PKEY_decrypt_init')
-            .asFunction<_dart_EVP_PKEY_decrypt_init>())(
+    return _EVP_PKEY_decrypt_init(
       ctx,
     );
   }
 
-  _dart_EVP_PKEY_decrypt_init? _EVP_PKEY_decrypt_init;
+  late final _EVP_PKEY_decrypt_init_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_decrypt_init>>(
+          'EVP_PKEY_decrypt_init');
+  late final _dart_EVP_PKEY_decrypt_init _EVP_PKEY_decrypt_init =
+      _EVP_PKEY_decrypt_init_ptr.asFunction<_dart_EVP_PKEY_decrypt_init>();
 
   /// // EVP_PKEY_decrypt decrypts |in_len| bytes from |in|. If |out| is NULL, the
   /// // maximum size of the plaintext is written to |out_len|. Otherwise, |*out_len|
@@ -1143,9 +1204,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> in_1,
     int in_len,
   ) {
-    return (_EVP_PKEY_decrypt ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_decrypt>>('EVP_PKEY_decrypt')
-            .asFunction<_dart_EVP_PKEY_decrypt>())(
+    return _EVP_PKEY_decrypt(
       ctx,
       out,
       out_len,
@@ -1154,7 +1213,10 @@ class BoringSsl {
     );
   }
 
-  _dart_EVP_PKEY_decrypt? _EVP_PKEY_decrypt;
+  late final _EVP_PKEY_decrypt_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_decrypt>>('EVP_PKEY_decrypt');
+  late final _dart_EVP_PKEY_decrypt _EVP_PKEY_decrypt =
+      _EVP_PKEY_decrypt_ptr.asFunction<_dart_EVP_PKEY_decrypt>();
 
   /// // EVP_PKEY_CTX_set_rsa_padding sets the padding type to use. It should be one
   /// // of the |RSA_*_PADDING| values. Returns one on success or zero on error.
@@ -1162,16 +1224,18 @@ class BoringSsl {
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     int padding,
   ) {
-    return (_EVP_PKEY_CTX_set_rsa_padding ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set_rsa_padding>>(
-                'EVP_PKEY_CTX_set_rsa_padding')
-            .asFunction<_dart_EVP_PKEY_CTX_set_rsa_padding>())(
+    return _EVP_PKEY_CTX_set_rsa_padding(
       ctx,
       padding,
     );
   }
 
-  _dart_EVP_PKEY_CTX_set_rsa_padding? _EVP_PKEY_CTX_set_rsa_padding;
+  late final _EVP_PKEY_CTX_set_rsa_padding_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set_rsa_padding>>(
+          'EVP_PKEY_CTX_set_rsa_padding');
+  late final _dart_EVP_PKEY_CTX_set_rsa_padding _EVP_PKEY_CTX_set_rsa_padding =
+      _EVP_PKEY_CTX_set_rsa_padding_ptr.asFunction<
+          _dart_EVP_PKEY_CTX_set_rsa_padding>();
 
   /// // EVP_PKEY_CTX_set_rsa_pss_saltlen sets the length of the salt in a PSS-padded
   /// // signature. A value of -1 cause the salt to be the same length as the digest
@@ -1186,16 +1250,18 @@ class BoringSsl {
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     int salt_len,
   ) {
-    return (_EVP_PKEY_CTX_set_rsa_pss_saltlen ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set_rsa_pss_saltlen>>(
-                'EVP_PKEY_CTX_set_rsa_pss_saltlen')
-            .asFunction<_dart_EVP_PKEY_CTX_set_rsa_pss_saltlen>())(
+    return _EVP_PKEY_CTX_set_rsa_pss_saltlen(
       ctx,
       salt_len,
     );
   }
 
-  _dart_EVP_PKEY_CTX_set_rsa_pss_saltlen? _EVP_PKEY_CTX_set_rsa_pss_saltlen;
+  late final _EVP_PKEY_CTX_set_rsa_pss_saltlen_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set_rsa_pss_saltlen>>(
+          'EVP_PKEY_CTX_set_rsa_pss_saltlen');
+  late final _dart_EVP_PKEY_CTX_set_rsa_pss_saltlen
+      _EVP_PKEY_CTX_set_rsa_pss_saltlen = _EVP_PKEY_CTX_set_rsa_pss_saltlen_ptr
+          .asFunction<_dart_EVP_PKEY_CTX_set_rsa_pss_saltlen>();
 
   /// // EVP_PKEY_CTX_set_rsa_oaep_md sets |md| as the digest used in OAEP padding.
   /// // Returns one on success or zero on error.
@@ -1203,16 +1269,18 @@ class BoringSsl {
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     ffi.Pointer<EVP_MD> md,
   ) {
-    return (_EVP_PKEY_CTX_set_rsa_oaep_md ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set_rsa_oaep_md>>(
-                'EVP_PKEY_CTX_set_rsa_oaep_md')
-            .asFunction<_dart_EVP_PKEY_CTX_set_rsa_oaep_md>())(
+    return _EVP_PKEY_CTX_set_rsa_oaep_md(
       ctx,
       md,
     );
   }
 
-  _dart_EVP_PKEY_CTX_set_rsa_oaep_md? _EVP_PKEY_CTX_set_rsa_oaep_md;
+  late final _EVP_PKEY_CTX_set_rsa_oaep_md_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set_rsa_oaep_md>>(
+          'EVP_PKEY_CTX_set_rsa_oaep_md');
+  late final _dart_EVP_PKEY_CTX_set_rsa_oaep_md _EVP_PKEY_CTX_set_rsa_oaep_md =
+      _EVP_PKEY_CTX_set_rsa_oaep_md_ptr.asFunction<
+          _dart_EVP_PKEY_CTX_set_rsa_oaep_md>();
 
   /// // EVP_PKEY_CTX_set_rsa_mgf1_md sets |md| as the digest used in MGF1. Returns
   /// // one on success or zero on error.
@@ -1220,16 +1288,18 @@ class BoringSsl {
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     ffi.Pointer<EVP_MD> md,
   ) {
-    return (_EVP_PKEY_CTX_set_rsa_mgf1_md ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set_rsa_mgf1_md>>(
-                'EVP_PKEY_CTX_set_rsa_mgf1_md')
-            .asFunction<_dart_EVP_PKEY_CTX_set_rsa_mgf1_md>())(
+    return _EVP_PKEY_CTX_set_rsa_mgf1_md(
       ctx,
       md,
     );
   }
 
-  _dart_EVP_PKEY_CTX_set_rsa_mgf1_md? _EVP_PKEY_CTX_set_rsa_mgf1_md;
+  late final _EVP_PKEY_CTX_set_rsa_mgf1_md_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set_rsa_mgf1_md>>(
+          'EVP_PKEY_CTX_set_rsa_mgf1_md');
+  late final _dart_EVP_PKEY_CTX_set_rsa_mgf1_md _EVP_PKEY_CTX_set_rsa_mgf1_md =
+      _EVP_PKEY_CTX_set_rsa_mgf1_md_ptr.asFunction<
+          _dart_EVP_PKEY_CTX_set_rsa_mgf1_md>();
 
   /// // EVP_PKEY_CTX_set0_rsa_oaep_label sets |label_len| bytes from |label| as the
   /// // label used in OAEP. DANGER: On success, this call takes ownership of |label|
@@ -1241,17 +1311,19 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> label,
     int label_len,
   ) {
-    return (_EVP_PKEY_CTX_set0_rsa_oaep_label ??=
-        _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set0_rsa_oaep_label>>(
-                'EVP_PKEY_CTX_set0_rsa_oaep_label')
-            .asFunction<_dart_EVP_PKEY_CTX_set0_rsa_oaep_label>())(
+    return _EVP_PKEY_CTX_set0_rsa_oaep_label(
       ctx,
       label,
       label_len,
     );
   }
 
-  _dart_EVP_PKEY_CTX_set0_rsa_oaep_label? _EVP_PKEY_CTX_set0_rsa_oaep_label;
+  late final _EVP_PKEY_CTX_set0_rsa_oaep_label_ptr =
+      _lookup<ffi.NativeFunction<_c_EVP_PKEY_CTX_set0_rsa_oaep_label>>(
+          'EVP_PKEY_CTX_set0_rsa_oaep_label');
+  late final _dart_EVP_PKEY_CTX_set0_rsa_oaep_label
+      _EVP_PKEY_CTX_set0_rsa_oaep_label = _EVP_PKEY_CTX_set0_rsa_oaep_label_ptr
+          .asFunction<_dart_EVP_PKEY_CTX_set0_rsa_oaep_label>();
 
   late final ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Int8>>> _tzname =
       _lookup<ffi.Pointer<ffi.Pointer<ffi.Int8>>>('tzname');
@@ -1281,47 +1353,49 @@ class BoringSsl {
 
   /// // BN_new creates a new, allocated BIGNUM and initialises it.
   ffi.Pointer<BIGNUM> BN_new() {
-    return (_BN_new ??= _lookup<ffi.NativeFunction<_c_BN_new>>('BN_new')
-        .asFunction<_dart_BN_new>())();
+    return _BN_new();
   }
 
-  _dart_BN_new? _BN_new;
+  late final _BN_new_ptr = _lookup<ffi.NativeFunction<_c_BN_new>>('BN_new');
+  late final _dart_BN_new _BN_new = _BN_new_ptr.asFunction<_dart_BN_new>();
 
   /// // BN_free frees the data referenced by |bn| and, if |bn| was originally
   /// // allocated on the heap, frees |bn| also.
   void BN_free(
     ffi.Pointer<BIGNUM> bn,
   ) {
-    return (_BN_free ??= _lookup<ffi.NativeFunction<_c_BN_free>>('BN_free')
-        .asFunction<_dart_BN_free>())(
+    return _BN_free(
       bn,
     );
   }
 
-  _dart_BN_free? _BN_free;
+  late final _BN_free_ptr = _lookup<ffi.NativeFunction<_c_BN_free>>('BN_free');
+  late final _dart_BN_free _BN_free = _BN_free_ptr.asFunction<_dart_BN_free>();
 
   /// // BN_value_one returns a static BIGNUM with value 1.
   ffi.Pointer<BIGNUM> BN_value_one() {
-    return (_BN_value_one ??=
-        _lookup<ffi.NativeFunction<_c_BN_value_one>>('BN_value_one')
-            .asFunction<_dart_BN_value_one>())();
+    return _BN_value_one();
   }
 
-  _dart_BN_value_one? _BN_value_one;
+  late final _BN_value_one_ptr =
+      _lookup<ffi.NativeFunction<_c_BN_value_one>>('BN_value_one');
+  late final _dart_BN_value_one _BN_value_one =
+      _BN_value_one_ptr.asFunction<_dart_BN_value_one>();
 
   /// // BN_num_bytes returns the minimum number of bytes needed to represent the
   /// // absolute value of |bn|.
   int BN_num_bytes(
     ffi.Pointer<BIGNUM> bn,
   ) {
-    return (_BN_num_bytes ??=
-        _lookup<ffi.NativeFunction<_c_BN_num_bytes>>('BN_num_bytes')
-            .asFunction<_dart_BN_num_bytes>())(
+    return _BN_num_bytes(
       bn,
     );
   }
 
-  _dart_BN_num_bytes? _BN_num_bytes;
+  late final _BN_num_bytes_ptr =
+      _lookup<ffi.NativeFunction<_c_BN_num_bytes>>('BN_num_bytes');
+  late final _dart_BN_num_bytes _BN_num_bytes =
+      _BN_num_bytes_ptr.asFunction<_dart_BN_num_bytes>();
 
   /// // BN_set_word sets |bn| to |value|. It returns one on success or zero on
   /// // allocation failure.
@@ -1329,15 +1403,16 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> bn,
     int value,
   ) {
-    return (_BN_set_word ??=
-        _lookup<ffi.NativeFunction<_c_BN_set_word>>('BN_set_word')
-            .asFunction<_dart_BN_set_word>())(
+    return _BN_set_word(
       bn,
       value,
     );
   }
 
-  _dart_BN_set_word? _BN_set_word;
+  late final _BN_set_word_ptr =
+      _lookup<ffi.NativeFunction<_c_BN_set_word>>('BN_set_word');
+  late final _dart_BN_set_word _BN_set_word =
+      _BN_set_word_ptr.asFunction<_dart_BN_set_word>();
 
   /// // BN_bin2bn sets |*ret| to the value of |len| bytes from |in|, interpreted as
   /// // a big-endian number, and returns |ret|. If |ret| is NULL then a fresh
@@ -1348,16 +1423,17 @@ class BoringSsl {
     int len,
     ffi.Pointer<BIGNUM> ret,
   ) {
-    return (_BN_bin2bn ??=
-        _lookup<ffi.NativeFunction<_c_BN_bin2bn>>('BN_bin2bn')
-            .asFunction<_dart_BN_bin2bn>())(
+    return _BN_bin2bn(
       in_1,
       len,
       ret,
     );
   }
 
-  _dart_BN_bin2bn? _BN_bin2bn;
+  late final _BN_bin2bn_ptr =
+      _lookup<ffi.NativeFunction<_c_BN_bin2bn>>('BN_bin2bn');
+  late final _dart_BN_bin2bn _BN_bin2bn =
+      _BN_bin2bn_ptr.asFunction<_dart_BN_bin2bn>();
 
   /// // BN_bn2bin_padded serialises the absolute value of |in| to |out| as a
   /// // big-endian integer. The integer is padded with leading zeros up to size
@@ -1368,16 +1444,17 @@ class BoringSsl {
     int len,
     ffi.Pointer<BIGNUM> in_1,
   ) {
-    return (_BN_bn2bin_padded ??=
-        _lookup<ffi.NativeFunction<_c_BN_bn2bin_padded>>('BN_bn2bin_padded')
-            .asFunction<_dart_BN_bn2bin_padded>())(
+    return _BN_bn2bin_padded(
       out,
       len,
       in_1,
     );
   }
 
-  _dart_BN_bn2bin_padded? _BN_bn2bin_padded;
+  late final _BN_bn2bin_padded_ptr =
+      _lookup<ffi.NativeFunction<_c_BN_bn2bin_padded>>('BN_bn2bin_padded');
+  late final _dart_BN_bn2bin_padded _BN_bn2bin_padded =
+      _BN_bn2bin_padded_ptr.asFunction<_dart_BN_bn2bin_padded>();
 
   /// // BN_add sets |r| = |a| + |b|, where |r| may be the same pointer as either |a|
   /// // or |b|. It returns one on success and zero on allocation failure.
@@ -1386,15 +1463,15 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> a,
     ffi.Pointer<BIGNUM> b,
   ) {
-    return (_BN_add ??= _lookup<ffi.NativeFunction<_c_BN_add>>('BN_add')
-        .asFunction<_dart_BN_add>())(
+    return _BN_add(
       r,
       a,
       b,
     );
   }
 
-  _dart_BN_add? _BN_add;
+  late final _BN_add_ptr = _lookup<ffi.NativeFunction<_c_BN_add>>('BN_add');
+  late final _dart_BN_add _BN_add = _BN_add_ptr.asFunction<_dart_BN_add>();
 
   /// // BN_sub sets |r| = |a| - |b|, where |r| may be the same pointer as either |a|
   /// // or |b|. It returns one on success and zero on allocation failure.
@@ -1403,15 +1480,15 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> a,
     ffi.Pointer<BIGNUM> b,
   ) {
-    return (_BN_sub ??= _lookup<ffi.NativeFunction<_c_BN_sub>>('BN_sub')
-        .asFunction<_dart_BN_sub>())(
+    return _BN_sub(
       r,
       a,
       b,
     );
   }
 
-  _dart_BN_sub? _BN_sub;
+  late final _BN_sub_ptr = _lookup<ffi.NativeFunction<_c_BN_sub>>('BN_sub');
+  late final _dart_BN_sub _BN_sub = _BN_sub_ptr.asFunction<_dart_BN_sub>();
 
   /// // BN_cmp returns a value less than, equal to or greater than zero if |a| is
   /// // less than, equal to or greater than |b|, respectively.
@@ -1419,14 +1496,14 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> a,
     ffi.Pointer<BIGNUM> b,
   ) {
-    return (_BN_cmp ??= _lookup<ffi.NativeFunction<_c_BN_cmp>>('BN_cmp')
-        .asFunction<_dart_BN_cmp>())(
+    return _BN_cmp(
       a,
       b,
     );
   }
 
-  _dart_BN_cmp? _BN_cmp;
+  late final _BN_cmp_ptr = _lookup<ffi.NativeFunction<_c_BN_cmp>>('BN_cmp');
+  late final _dart_BN_cmp _BN_cmp = _BN_cmp_ptr.asFunction<_dart_BN_cmp>();
 
   /// // BN_lshift sets |r| equal to |a| << n. The |a| and |r| arguments may be the
   /// // same |BIGNUM|. It returns one on success and zero on allocation failure.
@@ -1435,16 +1512,17 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> a,
     int n,
   ) {
-    return (_BN_lshift ??=
-        _lookup<ffi.NativeFunction<_c_BN_lshift>>('BN_lshift')
-            .asFunction<_dart_BN_lshift>())(
+    return _BN_lshift(
       r,
       a,
       n,
     );
   }
 
-  _dart_BN_lshift? _BN_lshift;
+  late final _BN_lshift_ptr =
+      _lookup<ffi.NativeFunction<_c_BN_lshift>>('BN_lshift');
+  late final _dart_BN_lshift _BN_lshift =
+      _BN_lshift_ptr.asFunction<_dart_BN_lshift>();
 
   late final ffi.Pointer<ASN1_ITEM_st> _ASN1_SEQUENCE_ANY_it =
       _lookup<ASN1_ITEM_st>('ASN1_SEQUENCE_ANY_it');
@@ -1589,99 +1667,107 @@ class BoringSsl {
   ffi.Pointer<ec_group_st> EC_GROUP_new_by_curve_name(
     int nid,
   ) {
-    return (_EC_GROUP_new_by_curve_name ??=
-        _lookup<ffi.NativeFunction<_c_EC_GROUP_new_by_curve_name>>(
-                'EC_GROUP_new_by_curve_name')
-            .asFunction<_dart_EC_GROUP_new_by_curve_name>())(
+    return _EC_GROUP_new_by_curve_name(
       nid,
     );
   }
 
-  _dart_EC_GROUP_new_by_curve_name? _EC_GROUP_new_by_curve_name;
+  late final _EC_GROUP_new_by_curve_name_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_GROUP_new_by_curve_name>>(
+          'EC_GROUP_new_by_curve_name');
+  late final _dart_EC_GROUP_new_by_curve_name _EC_GROUP_new_by_curve_name =
+      _EC_GROUP_new_by_curve_name_ptr.asFunction<
+          _dart_EC_GROUP_new_by_curve_name>();
 
   /// // EC_GROUP_free releases a reference to |group|.
   void EC_GROUP_free(
     ffi.Pointer<ec_group_st> group,
   ) {
-    return (_EC_GROUP_free ??=
-        _lookup<ffi.NativeFunction<_c_EC_GROUP_free>>('EC_GROUP_free')
-            .asFunction<_dart_EC_GROUP_free>())(
+    return _EC_GROUP_free(
       group,
     );
   }
 
-  _dart_EC_GROUP_free? _EC_GROUP_free;
+  late final _EC_GROUP_free_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_GROUP_free>>('EC_GROUP_free');
+  late final _dart_EC_GROUP_free _EC_GROUP_free =
+      _EC_GROUP_free_ptr.asFunction<_dart_EC_GROUP_free>();
 
   /// // EC_GROUP_get0_order returns a pointer to the internal |BIGNUM| object in
   /// // |group| that specifies the order of the group.
   ffi.Pointer<BIGNUM> EC_GROUP_get0_order(
     ffi.Pointer<ec_group_st> group,
   ) {
-    return (_EC_GROUP_get0_order ??=
-        _lookup<ffi.NativeFunction<_c_EC_GROUP_get0_order>>(
-                'EC_GROUP_get0_order')
-            .asFunction<_dart_EC_GROUP_get0_order>())(
+    return _EC_GROUP_get0_order(
       group,
     );
   }
 
-  _dart_EC_GROUP_get0_order? _EC_GROUP_get0_order;
+  late final _EC_GROUP_get0_order_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_GROUP_get0_order>>(
+          'EC_GROUP_get0_order');
+  late final _dart_EC_GROUP_get0_order _EC_GROUP_get0_order =
+      _EC_GROUP_get0_order_ptr.asFunction<_dart_EC_GROUP_get0_order>();
 
   /// // EC_GROUP_get_curve_name returns a NID that identifies |group|.
   int EC_GROUP_get_curve_name(
     ffi.Pointer<ec_group_st> group,
   ) {
-    return (_EC_GROUP_get_curve_name ??=
-        _lookup<ffi.NativeFunction<_c_EC_GROUP_get_curve_name>>(
-                'EC_GROUP_get_curve_name')
-            .asFunction<_dart_EC_GROUP_get_curve_name>())(
+    return _EC_GROUP_get_curve_name(
       group,
     );
   }
 
-  _dart_EC_GROUP_get_curve_name? _EC_GROUP_get_curve_name;
+  late final _EC_GROUP_get_curve_name_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_GROUP_get_curve_name>>(
+          'EC_GROUP_get_curve_name');
+  late final _dart_EC_GROUP_get_curve_name _EC_GROUP_get_curve_name =
+      _EC_GROUP_get_curve_name_ptr.asFunction<_dart_EC_GROUP_get_curve_name>();
 
   /// // EC_GROUP_get_degree returns the number of bits needed to represent an
   /// // element of the field underlying |group|.
   int EC_GROUP_get_degree(
     ffi.Pointer<ec_group_st> group,
   ) {
-    return (_EC_GROUP_get_degree ??=
-        _lookup<ffi.NativeFunction<_c_EC_GROUP_get_degree>>(
-                'EC_GROUP_get_degree')
-            .asFunction<_dart_EC_GROUP_get_degree>())(
+    return _EC_GROUP_get_degree(
       group,
     );
   }
 
-  _dart_EC_GROUP_get_degree? _EC_GROUP_get_degree;
+  late final _EC_GROUP_get_degree_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_GROUP_get_degree>>(
+          'EC_GROUP_get_degree');
+  late final _dart_EC_GROUP_get_degree _EC_GROUP_get_degree =
+      _EC_GROUP_get_degree_ptr.asFunction<_dart_EC_GROUP_get_degree>();
 
   /// // EC_POINT_new returns a fresh |EC_POINT| object in the given group, or NULL
   /// // on error.
   ffi.Pointer<ec_point_st> EC_POINT_new(
     ffi.Pointer<ec_group_st> group,
   ) {
-    return (_EC_POINT_new ??=
-        _lookup<ffi.NativeFunction<_c_EC_POINT_new>>('EC_POINT_new')
-            .asFunction<_dart_EC_POINT_new>())(
+    return _EC_POINT_new(
       group,
     );
   }
 
-  _dart_EC_POINT_new? _EC_POINT_new;
+  late final _EC_POINT_new_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_POINT_new>>('EC_POINT_new');
+  late final _dart_EC_POINT_new _EC_POINT_new =
+      _EC_POINT_new_ptr.asFunction<_dart_EC_POINT_new>();
 
   /// // EC_POINT_free frees |point| and the data that it points to.
   void EC_POINT_free(
     ffi.Pointer<ec_point_st> point,
   ) {
-    return (_EC_POINT_free ??=
-        _lookup<ffi.NativeFunction<_c_EC_POINT_free>>('EC_POINT_free')
-            .asFunction<_dart_EC_POINT_free>())(
+    return _EC_POINT_free(
       point,
     );
   }
 
-  _dart_EC_POINT_free? _EC_POINT_free;
+  late final _EC_POINT_free_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_POINT_free>>('EC_POINT_free');
+  late final _dart_EC_POINT_free _EC_POINT_free =
+      _EC_POINT_free_ptr.asFunction<_dart_EC_POINT_free>();
 
   /// // EC_POINT_get_affine_coordinates_GFp sets |x| and |y| to the affine value of
   /// // |point| using |ctx|, if it's not NULL. It returns one on success and zero
@@ -1696,10 +1782,7 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> y,
     ffi.Pointer<bignum_ctx> ctx,
   ) {
-    return (_EC_POINT_get_affine_coordinates_GFp ??=
-        _lookup<ffi.NativeFunction<_c_EC_POINT_get_affine_coordinates_GFp>>(
-                'EC_POINT_get_affine_coordinates_GFp')
-            .asFunction<_dart_EC_POINT_get_affine_coordinates_GFp>())(
+    return _EC_POINT_get_affine_coordinates_GFp(
       group,
       point,
       x,
@@ -1708,8 +1791,13 @@ class BoringSsl {
     );
   }
 
-  _dart_EC_POINT_get_affine_coordinates_GFp?
-      _EC_POINT_get_affine_coordinates_GFp;
+  late final _EC_POINT_get_affine_coordinates_GFp_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_POINT_get_affine_coordinates_GFp>>(
+          'EC_POINT_get_affine_coordinates_GFp');
+  late final _dart_EC_POINT_get_affine_coordinates_GFp
+      _EC_POINT_get_affine_coordinates_GFp =
+      _EC_POINT_get_affine_coordinates_GFp_ptr.asFunction<
+          _dart_EC_POINT_get_affine_coordinates_GFp>();
 
   /// // EC_POINT_point2cbb behaves like |EC_POINT_point2oct| but appends the
   /// // serialised point to |cbb|. It returns one on success and zero on error.
@@ -1720,9 +1808,7 @@ class BoringSsl {
     int form,
     ffi.Pointer<bignum_ctx> ctx,
   ) {
-    return (_EC_POINT_point2cbb ??=
-        _lookup<ffi.NativeFunction<_c_EC_POINT_point2cbb>>('EC_POINT_point2cbb')
-            .asFunction<_dart_EC_POINT_point2cbb>())(
+    return _EC_POINT_point2cbb(
       out,
       group,
       point,
@@ -1731,7 +1817,10 @@ class BoringSsl {
     );
   }
 
-  _dart_EC_POINT_point2cbb? _EC_POINT_point2cbb;
+  late final _EC_POINT_point2cbb_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_POINT_point2cbb>>('EC_POINT_point2cbb');
+  late final _dart_EC_POINT_point2cbb _EC_POINT_point2cbb =
+      _EC_POINT_point2cbb_ptr.asFunction<_dart_EC_POINT_point2cbb>();
 
   /// // EC_POINT_oct2point sets |point| from |len| bytes of X9.62 format
   /// // serialisation in |buf|. It returns one on success and zero on error. The
@@ -1744,9 +1833,7 @@ class BoringSsl {
     int len,
     ffi.Pointer<bignum_ctx> ctx,
   ) {
-    return (_EC_POINT_oct2point ??=
-        _lookup<ffi.NativeFunction<_c_EC_POINT_oct2point>>('EC_POINT_oct2point')
-            .asFunction<_dart_EC_POINT_oct2point>())(
+    return _EC_POINT_oct2point(
       group,
       point,
       buf,
@@ -1755,62 +1842,70 @@ class BoringSsl {
     );
   }
 
-  _dart_EC_POINT_oct2point? _EC_POINT_oct2point;
+  late final _EC_POINT_oct2point_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_POINT_oct2point>>('EC_POINT_oct2point');
+  late final _dart_EC_POINT_oct2point _EC_POINT_oct2point =
+      _EC_POINT_oct2point_ptr.asFunction<_dart_EC_POINT_oct2point>();
 
   /// // EC_KEY_new_by_curve_name returns a fresh EC_KEY for group specified by |nid|
   /// // or NULL on error.
   ffi.Pointer<ec_key_st> EC_KEY_new_by_curve_name(
     int nid,
   ) {
-    return (_EC_KEY_new_by_curve_name ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_new_by_curve_name>>(
-                'EC_KEY_new_by_curve_name')
-            .asFunction<_dart_EC_KEY_new_by_curve_name>())(
+    return _EC_KEY_new_by_curve_name(
       nid,
     );
   }
 
-  _dart_EC_KEY_new_by_curve_name? _EC_KEY_new_by_curve_name;
+  late final _EC_KEY_new_by_curve_name_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_new_by_curve_name>>(
+          'EC_KEY_new_by_curve_name');
+  late final _dart_EC_KEY_new_by_curve_name _EC_KEY_new_by_curve_name =
+      _EC_KEY_new_by_curve_name_ptr.asFunction<
+          _dart_EC_KEY_new_by_curve_name>();
 
   /// // EC_KEY_free frees all the data owned by |key| and |key| itself.
   void EC_KEY_free(
     ffi.Pointer<ec_key_st> key,
   ) {
-    return (_EC_KEY_free ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_free>>('EC_KEY_free')
-            .asFunction<_dart_EC_KEY_free>())(
+    return _EC_KEY_free(
       key,
     );
   }
 
-  _dart_EC_KEY_free? _EC_KEY_free;
+  late final _EC_KEY_free_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_free>>('EC_KEY_free');
+  late final _dart_EC_KEY_free _EC_KEY_free =
+      _EC_KEY_free_ptr.asFunction<_dart_EC_KEY_free>();
 
   /// // EC_KEY_get0_group returns a pointer to the |EC_GROUP| object inside |key|.
   ffi.Pointer<ec_group_st> EC_KEY_get0_group(
     ffi.Pointer<ec_key_st> key,
   ) {
-    return (_EC_KEY_get0_group ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_get0_group>>('EC_KEY_get0_group')
-            .asFunction<_dart_EC_KEY_get0_group>())(
+    return _EC_KEY_get0_group(
       key,
     );
   }
 
-  _dart_EC_KEY_get0_group? _EC_KEY_get0_group;
+  late final _EC_KEY_get0_group_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_get0_group>>('EC_KEY_get0_group');
+  late final _dart_EC_KEY_get0_group _EC_KEY_get0_group =
+      _EC_KEY_get0_group_ptr.asFunction<_dart_EC_KEY_get0_group>();
 
   /// // EC_KEY_get0_private_key returns a pointer to the private key inside |key|.
   ffi.Pointer<BIGNUM> EC_KEY_get0_private_key(
     ffi.Pointer<ec_key_st> key,
   ) {
-    return (_EC_KEY_get0_private_key ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_get0_private_key>>(
-                'EC_KEY_get0_private_key')
-            .asFunction<_dart_EC_KEY_get0_private_key>())(
+    return _EC_KEY_get0_private_key(
       key,
     );
   }
 
-  _dart_EC_KEY_get0_private_key? _EC_KEY_get0_private_key;
+  late final _EC_KEY_get0_private_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_get0_private_key>>(
+          'EC_KEY_get0_private_key');
+  late final _dart_EC_KEY_get0_private_key _EC_KEY_get0_private_key =
+      _EC_KEY_get0_private_key_ptr.asFunction<_dart_EC_KEY_get0_private_key>();
 
   /// // EC_KEY_set_private_key sets the private key of |key| to |priv|. It returns
   /// // one on success and zero otherwise. |key| must already have had a group
@@ -1819,31 +1914,33 @@ class BoringSsl {
     ffi.Pointer<ec_key_st> key,
     ffi.Pointer<BIGNUM> priv,
   ) {
-    return (_EC_KEY_set_private_key ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_set_private_key>>(
-                'EC_KEY_set_private_key')
-            .asFunction<_dart_EC_KEY_set_private_key>())(
+    return _EC_KEY_set_private_key(
       key,
       priv,
     );
   }
 
-  _dart_EC_KEY_set_private_key? _EC_KEY_set_private_key;
+  late final _EC_KEY_set_private_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_set_private_key>>(
+          'EC_KEY_set_private_key');
+  late final _dart_EC_KEY_set_private_key _EC_KEY_set_private_key =
+      _EC_KEY_set_private_key_ptr.asFunction<_dart_EC_KEY_set_private_key>();
 
   /// // EC_KEY_get0_public_key returns a pointer to the public key point inside
   /// // |key|.
   ffi.Pointer<ec_point_st> EC_KEY_get0_public_key(
     ffi.Pointer<ec_key_st> key,
   ) {
-    return (_EC_KEY_get0_public_key ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_get0_public_key>>(
-                'EC_KEY_get0_public_key')
-            .asFunction<_dart_EC_KEY_get0_public_key>())(
+    return _EC_KEY_get0_public_key(
       key,
     );
   }
 
-  _dart_EC_KEY_get0_public_key? _EC_KEY_get0_public_key;
+  late final _EC_KEY_get0_public_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_get0_public_key>>(
+          'EC_KEY_get0_public_key');
+  late final _dart_EC_KEY_get0_public_key _EC_KEY_get0_public_key =
+      _EC_KEY_get0_public_key_ptr.asFunction<_dart_EC_KEY_get0_public_key>();
 
   /// // EC_KEY_set_public_key sets the public key of |key| to |pub|, by copying it.
   /// // It returns one on success and zero otherwise. |key| must already have had a
@@ -1853,31 +1950,33 @@ class BoringSsl {
     ffi.Pointer<ec_key_st> key,
     ffi.Pointer<ec_point_st> pub,
   ) {
-    return (_EC_KEY_set_public_key ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_set_public_key>>(
-                'EC_KEY_set_public_key')
-            .asFunction<_dart_EC_KEY_set_public_key>())(
+    return _EC_KEY_set_public_key(
       key,
       pub,
     );
   }
 
-  _dart_EC_KEY_set_public_key? _EC_KEY_set_public_key;
+  late final _EC_KEY_set_public_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_set_public_key>>(
+          'EC_KEY_set_public_key');
+  late final _dart_EC_KEY_set_public_key _EC_KEY_set_public_key =
+      _EC_KEY_set_public_key_ptr.asFunction<_dart_EC_KEY_set_public_key>();
 
   /// // EC_KEY_get_enc_flags returns the encoding flags for |key|, which is a
   /// // bitwise-OR of |EC_PKEY_*| values.
   int EC_KEY_get_enc_flags(
     ffi.Pointer<ec_key_st> key,
   ) {
-    return (_EC_KEY_get_enc_flags ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_get_enc_flags>>(
-                'EC_KEY_get_enc_flags')
-            .asFunction<_dart_EC_KEY_get_enc_flags>())(
+    return _EC_KEY_get_enc_flags(
       key,
     );
   }
 
-  _dart_EC_KEY_get_enc_flags? _EC_KEY_get_enc_flags;
+  late final _EC_KEY_get_enc_flags_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_get_enc_flags>>(
+          'EC_KEY_get_enc_flags');
+  late final _dart_EC_KEY_get_enc_flags _EC_KEY_get_enc_flags =
+      _EC_KEY_get_enc_flags_ptr.asFunction<_dart_EC_KEY_get_enc_flags>();
 
   /// // EC_KEY_set_enc_flags sets the encoding flags for |key|, which is a
   /// // bitwise-OR of |EC_PKEY_*| values.
@@ -1885,16 +1984,17 @@ class BoringSsl {
     ffi.Pointer<ec_key_st> key,
     int flags,
   ) {
-    return (_EC_KEY_set_enc_flags ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_set_enc_flags>>(
-                'EC_KEY_set_enc_flags')
-            .asFunction<_dart_EC_KEY_set_enc_flags>())(
+    return _EC_KEY_set_enc_flags(
       key,
       flags,
     );
   }
 
-  _dart_EC_KEY_set_enc_flags? _EC_KEY_set_enc_flags;
+  late final _EC_KEY_set_enc_flags_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_set_enc_flags>>(
+          'EC_KEY_set_enc_flags');
+  late final _dart_EC_KEY_set_enc_flags _EC_KEY_set_enc_flags =
+      _EC_KEY_set_enc_flags_ptr.asFunction<_dart_EC_KEY_set_enc_flags>();
 
   /// // EC_KEY_check_key performs several checks on |key| (possibly including an
   /// // expensive check that the public key is in the primary subgroup). It returns
@@ -1903,14 +2003,15 @@ class BoringSsl {
   int EC_KEY_check_key(
     ffi.Pointer<ec_key_st> key,
   ) {
-    return (_EC_KEY_check_key ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_check_key>>('EC_KEY_check_key')
-            .asFunction<_dart_EC_KEY_check_key>())(
+    return _EC_KEY_check_key(
       key,
     );
   }
 
-  _dart_EC_KEY_check_key? _EC_KEY_check_key;
+  late final _EC_KEY_check_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_check_key>>('EC_KEY_check_key');
+  late final _dart_EC_KEY_check_key _EC_KEY_check_key =
+      _EC_KEY_check_key_ptr.asFunction<_dart_EC_KEY_check_key>();
 
   /// // EC_KEY_set_public_key_affine_coordinates sets the public key in |key| to
   /// // (|x|, |y|). It returns one on success and zero on error. It's considered an
@@ -1920,19 +2021,20 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> x,
     ffi.Pointer<BIGNUM> y,
   ) {
-    return (_EC_KEY_set_public_key_affine_coordinates ??= _lookup<
-                ffi.NativeFunction<
-                    _c_EC_KEY_set_public_key_affine_coordinates>>(
-            'EC_KEY_set_public_key_affine_coordinates')
-        .asFunction<_dart_EC_KEY_set_public_key_affine_coordinates>())(
+    return _EC_KEY_set_public_key_affine_coordinates(
       key,
       x,
       y,
     );
   }
 
-  _dart_EC_KEY_set_public_key_affine_coordinates?
-      _EC_KEY_set_public_key_affine_coordinates;
+  late final _EC_KEY_set_public_key_affine_coordinates_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_set_public_key_affine_coordinates>>(
+          'EC_KEY_set_public_key_affine_coordinates');
+  late final _dart_EC_KEY_set_public_key_affine_coordinates
+      _EC_KEY_set_public_key_affine_coordinates =
+      _EC_KEY_set_public_key_affine_coordinates_ptr.asFunction<
+          _dart_EC_KEY_set_public_key_affine_coordinates>();
 
   /// // EC_KEY_generate_key generates a random, private key, calculates the
   /// // corresponding public key and stores both in |key|. It returns one on success
@@ -1940,15 +2042,16 @@ class BoringSsl {
   int EC_KEY_generate_key(
     ffi.Pointer<ec_key_st> key,
   ) {
-    return (_EC_KEY_generate_key ??=
-        _lookup<ffi.NativeFunction<_c_EC_KEY_generate_key>>(
-                'EC_KEY_generate_key')
-            .asFunction<_dart_EC_KEY_generate_key>())(
+    return _EC_KEY_generate_key(
       key,
     );
   }
 
-  _dart_EC_KEY_generate_key? _EC_KEY_generate_key;
+  late final _EC_KEY_generate_key_ptr =
+      _lookup<ffi.NativeFunction<_c_EC_KEY_generate_key>>(
+          'EC_KEY_generate_key');
+  late final _dart_EC_KEY_generate_key _EC_KEY_generate_key =
+      _EC_KEY_generate_key_ptr.asFunction<_dart_EC_KEY_generate_key>();
 
   /// // ECDH_compute_key calculates the shared key between |pub_key| and |priv_key|.
   /// // If |kdf| is not NULL, then it is called with the bytes of the shared key and
@@ -1963,9 +2066,7 @@ class BoringSsl {
     ffi.Pointer<ec_key_st> priv_key,
     ffi.Pointer<ffi.NativeFunction<_typedefC_16>> kdf,
   ) {
-    return (_ECDH_compute_key ??=
-        _lookup<ffi.NativeFunction<_c_ECDH_compute_key>>('ECDH_compute_key')
-            .asFunction<_dart_ECDH_compute_key>())(
+    return _ECDH_compute_key(
       out,
       outlen,
       pub_key,
@@ -1974,29 +2075,34 @@ class BoringSsl {
     );
   }
 
-  _dart_ECDH_compute_key? _ECDH_compute_key;
+  late final _ECDH_compute_key_ptr =
+      _lookup<ffi.NativeFunction<_c_ECDH_compute_key>>('ECDH_compute_key');
+  late final _dart_ECDH_compute_key _ECDH_compute_key =
+      _ECDH_compute_key_ptr.asFunction<_dart_ECDH_compute_key>();
 
   /// // ECDSA_SIG_new returns a fresh |ECDSA_SIG| structure or NULL on error.
   ffi.Pointer<ecdsa_sig_st> ECDSA_SIG_new() {
-    return (_ECDSA_SIG_new ??=
-        _lookup<ffi.NativeFunction<_c_ECDSA_SIG_new>>('ECDSA_SIG_new')
-            .asFunction<_dart_ECDSA_SIG_new>())();
+    return _ECDSA_SIG_new();
   }
 
-  _dart_ECDSA_SIG_new? _ECDSA_SIG_new;
+  late final _ECDSA_SIG_new_ptr =
+      _lookup<ffi.NativeFunction<_c_ECDSA_SIG_new>>('ECDSA_SIG_new');
+  late final _dart_ECDSA_SIG_new _ECDSA_SIG_new =
+      _ECDSA_SIG_new_ptr.asFunction<_dart_ECDSA_SIG_new>();
 
   /// // ECDSA_SIG_free frees |sig| its member |BIGNUM|s.
   void ECDSA_SIG_free(
     ffi.Pointer<ecdsa_sig_st> sig,
   ) {
-    return (_ECDSA_SIG_free ??=
-        _lookup<ffi.NativeFunction<_c_ECDSA_SIG_free>>('ECDSA_SIG_free')
-            .asFunction<_dart_ECDSA_SIG_free>())(
+    return _ECDSA_SIG_free(
       sig,
     );
   }
 
-  _dart_ECDSA_SIG_free? _ECDSA_SIG_free;
+  late final _ECDSA_SIG_free_ptr =
+      _lookup<ffi.NativeFunction<_c_ECDSA_SIG_free>>('ECDSA_SIG_free');
+  late final _dart_ECDSA_SIG_free _ECDSA_SIG_free =
+      _ECDSA_SIG_free_ptr.asFunction<_dart_ECDSA_SIG_free>();
 
   /// // ECDSA_SIG_get0 sets |*out_r| and |*out_s|, if non-NULL, to the two
   /// // components of |sig|.
@@ -2005,30 +2111,32 @@ class BoringSsl {
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_r,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_s,
   ) {
-    return (_ECDSA_SIG_get0 ??=
-        _lookup<ffi.NativeFunction<_c_ECDSA_SIG_get0>>('ECDSA_SIG_get0')
-            .asFunction<_dart_ECDSA_SIG_get0>())(
+    return _ECDSA_SIG_get0(
       sig,
       out_r,
       out_s,
     );
   }
 
-  _dart_ECDSA_SIG_get0? _ECDSA_SIG_get0;
+  late final _ECDSA_SIG_get0_ptr =
+      _lookup<ffi.NativeFunction<_c_ECDSA_SIG_get0>>('ECDSA_SIG_get0');
+  late final _dart_ECDSA_SIG_get0 _ECDSA_SIG_get0 =
+      _ECDSA_SIG_get0_ptr.asFunction<_dart_ECDSA_SIG_get0>();
 
   /// // ECDSA_SIG_parse parses a DER-encoded ECDSA-Sig-Value structure from |cbs| and
   /// // advances |cbs|. It returns a newly-allocated |ECDSA_SIG| or NULL on error.
   ffi.Pointer<ecdsa_sig_st> ECDSA_SIG_parse(
     ffi.Pointer<CBS> cbs,
   ) {
-    return (_ECDSA_SIG_parse ??=
-        _lookup<ffi.NativeFunction<_c_ECDSA_SIG_parse>>('ECDSA_SIG_parse')
-            .asFunction<_dart_ECDSA_SIG_parse>())(
+    return _ECDSA_SIG_parse(
       cbs,
     );
   }
 
-  _dart_ECDSA_SIG_parse? _ECDSA_SIG_parse;
+  late final _ECDSA_SIG_parse_ptr =
+      _lookup<ffi.NativeFunction<_c_ECDSA_SIG_parse>>('ECDSA_SIG_parse');
+  late final _dart_ECDSA_SIG_parse _ECDSA_SIG_parse =
+      _ECDSA_SIG_parse_ptr.asFunction<_dart_ECDSA_SIG_parse>();
 
   /// // ECDSA_SIG_marshal marshals |sig| as a DER-encoded ECDSA-Sig-Value and appends
   /// // the result to |cbb|. It returns one on success and zero on error.
@@ -2036,15 +2144,16 @@ class BoringSsl {
     ffi.Pointer<CBB> cbb,
     ffi.Pointer<ecdsa_sig_st> sig,
   ) {
-    return (_ECDSA_SIG_marshal ??=
-        _lookup<ffi.NativeFunction<_c_ECDSA_SIG_marshal>>('ECDSA_SIG_marshal')
-            .asFunction<_dart_ECDSA_SIG_marshal>())(
+    return _ECDSA_SIG_marshal(
       cbb,
       sig,
     );
   }
 
-  _dart_ECDSA_SIG_marshal? _ECDSA_SIG_marshal;
+  late final _ECDSA_SIG_marshal_ptr =
+      _lookup<ffi.NativeFunction<_c_ECDSA_SIG_marshal>>('ECDSA_SIG_marshal');
+  late final _dart_ECDSA_SIG_marshal _ECDSA_SIG_marshal =
+      _ECDSA_SIG_marshal_ptr.asFunction<_dart_ECDSA_SIG_marshal>();
 
   /// // CBS_init sets |cbs| to point to |data|. It does not take ownership of
   /// // |data|.
@@ -2053,15 +2162,17 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> data,
     int len,
   ) {
-    return (_CBS_init ??= _lookup<ffi.NativeFunction<_c_CBS_init>>('CBS_init')
-        .asFunction<_dart_CBS_init>())(
+    return _CBS_init(
       cbs,
       data,
       len,
     );
   }
 
-  _dart_CBS_init? _CBS_init;
+  late final _CBS_init_ptr =
+      _lookup<ffi.NativeFunction<_c_CBS_init>>('CBS_init');
+  late final _dart_CBS_init _CBS_init =
+      _CBS_init_ptr.asFunction<_dart_CBS_init>();
 
   /// // CBB_zero sets an uninitialised |cbb| to the zero state. It must be
   /// // initialised with |CBB_init| or |CBB_init_fixed| before use, but it is safe to
@@ -2070,13 +2181,15 @@ class BoringSsl {
   void CBB_zero(
     ffi.Pointer<CBB> cbb,
   ) {
-    return (_CBB_zero ??= _lookup<ffi.NativeFunction<_c_CBB_zero>>('CBB_zero')
-        .asFunction<_dart_CBB_zero>())(
+    return _CBB_zero(
       cbb,
     );
   }
 
-  _dart_CBB_zero? _CBB_zero;
+  late final _CBB_zero_ptr =
+      _lookup<ffi.NativeFunction<_c_CBB_zero>>('CBB_zero');
+  late final _dart_CBB_zero _CBB_zero =
+      _CBB_zero_ptr.asFunction<_dart_CBB_zero>();
 
   /// // CBB_init initialises |cbb| with |initial_capacity|. Since a |CBB| grows as
   /// // needed, the |initial_capacity| is just a hint. It returns one on success or
@@ -2085,14 +2198,16 @@ class BoringSsl {
     ffi.Pointer<CBB> cbb,
     int initial_capacity,
   ) {
-    return (_CBB_init ??= _lookup<ffi.NativeFunction<_c_CBB_init>>('CBB_init')
-        .asFunction<_dart_CBB_init>())(
+    return _CBB_init(
       cbb,
       initial_capacity,
     );
   }
 
-  _dart_CBB_init? _CBB_init;
+  late final _CBB_init_ptr =
+      _lookup<ffi.NativeFunction<_c_CBB_init>>('CBB_init');
+  late final _dart_CBB_init _CBB_init =
+      _CBB_init_ptr.asFunction<_dart_CBB_init>();
 
   /// // CBB_cleanup frees all resources owned by |cbb| and other |CBB| objects
   /// // writing to the same buffer. This should be used in an error case where a
@@ -2104,14 +2219,15 @@ class BoringSsl {
   void CBB_cleanup(
     ffi.Pointer<CBB> cbb,
   ) {
-    return (_CBB_cleanup ??=
-        _lookup<ffi.NativeFunction<_c_CBB_cleanup>>('CBB_cleanup')
-            .asFunction<_dart_CBB_cleanup>())(
+    return _CBB_cleanup(
       cbb,
     );
   }
 
-  _dart_CBB_cleanup? _CBB_cleanup;
+  late final _CBB_cleanup_ptr =
+      _lookup<ffi.NativeFunction<_c_CBB_cleanup>>('CBB_cleanup');
+  late final _dart_CBB_cleanup _CBB_cleanup =
+      _CBB_cleanup_ptr.asFunction<_dart_CBB_cleanup>();
 
   /// // CBB_flush causes any pending length prefixes to be written out and any child
   /// // |CBB| objects of |cbb| to be invalidated. This allows |cbb| to continue to be
@@ -2121,14 +2237,15 @@ class BoringSsl {
   int CBB_flush(
     ffi.Pointer<CBB> cbb,
   ) {
-    return (_CBB_flush ??=
-        _lookup<ffi.NativeFunction<_c_CBB_flush>>('CBB_flush')
-            .asFunction<_dart_CBB_flush>())(
+    return _CBB_flush(
       cbb,
     );
   }
 
-  _dart_CBB_flush? _CBB_flush;
+  late final _CBB_flush_ptr =
+      _lookup<ffi.NativeFunction<_c_CBB_flush>>('CBB_flush');
+  late final _dart_CBB_flush _CBB_flush =
+      _CBB_flush_ptr.asFunction<_dart_CBB_flush>();
 
   /// // CBB_data returns a pointer to the bytes written to |cbb|. It does not flush
   /// // |cbb|. The pointer is valid until the next operation to |cbb|.
@@ -2138,13 +2255,15 @@ class BoringSsl {
   ffi.Pointer<ffi.Uint8> CBB_data(
     ffi.Pointer<CBB> cbb,
   ) {
-    return (_CBB_data ??= _lookup<ffi.NativeFunction<_c_CBB_data>>('CBB_data')
-        .asFunction<_dart_CBB_data>())(
+    return _CBB_data(
       cbb,
     );
   }
 
-  _dart_CBB_data? _CBB_data;
+  late final _CBB_data_ptr =
+      _lookup<ffi.NativeFunction<_c_CBB_data>>('CBB_data');
+  late final _dart_CBB_data _CBB_data =
+      _CBB_data_ptr.asFunction<_dart_CBB_data>();
 
   /// // CBB_len returns the number of bytes written to |cbb|. It does not flush
   /// // |cbb|.
@@ -2154,34 +2273,36 @@ class BoringSsl {
   int CBB_len(
     ffi.Pointer<CBB> cbb,
   ) {
-    return (_CBB_len ??= _lookup<ffi.NativeFunction<_c_CBB_len>>('CBB_len')
-        .asFunction<_dart_CBB_len>())(
+    return _CBB_len(
       cbb,
     );
   }
 
-  _dart_CBB_len? _CBB_len;
+  late final _CBB_len_ptr = _lookup<ffi.NativeFunction<_c_CBB_len>>('CBB_len');
+  late final _dart_CBB_len _CBB_len = _CBB_len_ptr.asFunction<_dart_CBB_len>();
 
   /// // RSA_new returns a new, empty |RSA| object or NULL on error.
   ffi.Pointer<rsa_st> RSA_new() {
-    return (_RSA_new ??= _lookup<ffi.NativeFunction<_c_RSA_new>>('RSA_new')
-        .asFunction<_dart_RSA_new>())();
+    return _RSA_new();
   }
 
-  _dart_RSA_new? _RSA_new;
+  late final _RSA_new_ptr = _lookup<ffi.NativeFunction<_c_RSA_new>>('RSA_new');
+  late final _dart_RSA_new _RSA_new = _RSA_new_ptr.asFunction<_dart_RSA_new>();
 
   /// // RSA_free decrements the reference count of |rsa| and frees it if the
   /// // reference count drops to zero.
   void RSA_free(
     ffi.Pointer<rsa_st> rsa,
   ) {
-    return (_RSA_free ??= _lookup<ffi.NativeFunction<_c_RSA_free>>('RSA_free')
-        .asFunction<_dart_RSA_free>())(
+    return _RSA_free(
       rsa,
     );
   }
 
-  _dart_RSA_free? _RSA_free;
+  late final _RSA_free_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_free>>('RSA_free');
+  late final _dart_RSA_free _RSA_free =
+      _RSA_free_ptr.asFunction<_dart_RSA_free>();
 
   /// // RSA_get0_key sets |*out_n|, |*out_e|, and |*out_d|, if non-NULL, to |rsa|'s
   /// // modulus, public exponent, and private exponent, respectively. If |rsa| is a
@@ -2192,9 +2313,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_e,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_d,
   ) {
-    return (_RSA_get0_key ??=
-        _lookup<ffi.NativeFunction<_c_RSA_get0_key>>('RSA_get0_key')
-            .asFunction<_dart_RSA_get0_key>())(
+    return _RSA_get0_key(
       rsa,
       out_n,
       out_e,
@@ -2202,7 +2321,10 @@ class BoringSsl {
     );
   }
 
-  _dart_RSA_get0_key? _RSA_get0_key;
+  late final _RSA_get0_key_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_get0_key>>('RSA_get0_key');
+  late final _dart_RSA_get0_key _RSA_get0_key =
+      _RSA_get0_key_ptr.asFunction<_dart_RSA_get0_key>();
 
   /// // RSA_get0_factors sets |*out_p| and |*out_q|, if non-NULL, to |rsa|'s prime
   /// // factors. If |rsa| is a public key, they will be set to NULL.
@@ -2211,16 +2333,17 @@ class BoringSsl {
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_p,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_q,
   ) {
-    return (_RSA_get0_factors ??=
-        _lookup<ffi.NativeFunction<_c_RSA_get0_factors>>('RSA_get0_factors')
-            .asFunction<_dart_RSA_get0_factors>())(
+    return _RSA_get0_factors(
       rsa,
       out_p,
       out_q,
     );
   }
 
-  _dart_RSA_get0_factors? _RSA_get0_factors;
+  late final _RSA_get0_factors_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_get0_factors>>('RSA_get0_factors');
+  late final _dart_RSA_get0_factors _RSA_get0_factors =
+      _RSA_get0_factors_ptr.asFunction<_dart_RSA_get0_factors>();
 
   /// // RSA_get0_crt_params sets |*out_dmp1|, |*out_dmq1|, and |*out_iqmp|, if
   /// // non-NULL, to |rsa|'s CRT parameters. These are d (mod p-1), d (mod q-1) and
@@ -2232,10 +2355,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmq1,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_iqmp,
   ) {
-    return (_RSA_get0_crt_params ??=
-        _lookup<ffi.NativeFunction<_c_RSA_get0_crt_params>>(
-                'RSA_get0_crt_params')
-            .asFunction<_dart_RSA_get0_crt_params>())(
+    return _RSA_get0_crt_params(
       rsa,
       out_dmp1,
       out_dmq1,
@@ -2243,7 +2363,11 @@ class BoringSsl {
     );
   }
 
-  _dart_RSA_get0_crt_params? _RSA_get0_crt_params;
+  late final _RSA_get0_crt_params_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_get0_crt_params>>(
+          'RSA_get0_crt_params');
+  late final _dart_RSA_get0_crt_params _RSA_get0_crt_params =
+      _RSA_get0_crt_params_ptr.asFunction<_dart_RSA_get0_crt_params>();
 
   /// // RSA_set0_key sets |rsa|'s modulus, public exponent, and private exponent to
   /// // |n|, |e|, and |d| respectively, if non-NULL. On success, it takes ownership
@@ -2260,9 +2384,7 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> e,
     ffi.Pointer<BIGNUM> d,
   ) {
-    return (_RSA_set0_key ??=
-        _lookup<ffi.NativeFunction<_c_RSA_set0_key>>('RSA_set0_key')
-            .asFunction<_dart_RSA_set0_key>())(
+    return _RSA_set0_key(
       rsa,
       n,
       e,
@@ -2270,7 +2392,10 @@ class BoringSsl {
     );
   }
 
-  _dart_RSA_set0_key? _RSA_set0_key;
+  late final _RSA_set0_key_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_set0_key>>('RSA_set0_key');
+  late final _dart_RSA_set0_key _RSA_set0_key =
+      _RSA_set0_key_ptr.asFunction<_dart_RSA_set0_key>();
 
   /// // RSA_set0_factors sets |rsa|'s prime factors to |p| and |q|, if non-NULL, and
   /// // takes ownership of them. On success, it takes ownership of each argument and
@@ -2285,16 +2410,17 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> p,
     ffi.Pointer<BIGNUM> q,
   ) {
-    return (_RSA_set0_factors ??=
-        _lookup<ffi.NativeFunction<_c_RSA_set0_factors>>('RSA_set0_factors')
-            .asFunction<_dart_RSA_set0_factors>())(
+    return _RSA_set0_factors(
       rsa,
       p,
       q,
     );
   }
 
-  _dart_RSA_set0_factors? _RSA_set0_factors;
+  late final _RSA_set0_factors_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_set0_factors>>('RSA_set0_factors');
+  late final _dart_RSA_set0_factors _RSA_set0_factors =
+      _RSA_set0_factors_ptr.asFunction<_dart_RSA_set0_factors>();
 
   /// // RSA_set0_crt_params sets |rsa|'s CRT parameters to |dmp1|, |dmq1|, and
   /// // |iqmp|, if non-NULL, and takes ownership of them. On success, it takes
@@ -2310,10 +2436,7 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> dmq1,
     ffi.Pointer<BIGNUM> iqmp,
   ) {
-    return (_RSA_set0_crt_params ??=
-        _lookup<ffi.NativeFunction<_c_RSA_set0_crt_params>>(
-                'RSA_set0_crt_params')
-            .asFunction<_dart_RSA_set0_crt_params>())(
+    return _RSA_set0_crt_params(
       rsa,
       dmp1,
       dmq1,
@@ -2321,7 +2444,11 @@ class BoringSsl {
     );
   }
 
-  _dart_RSA_set0_crt_params? _RSA_set0_crt_params;
+  late final _RSA_set0_crt_params_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_set0_crt_params>>(
+          'RSA_set0_crt_params');
+  late final _dart_RSA_set0_crt_params _RSA_set0_crt_params =
+      _RSA_set0_crt_params_ptr.asFunction<_dart_RSA_set0_crt_params>();
 
   /// // RSA_generate_key_ex generates a new RSA key where the modulus has size
   /// // |bits| and the public exponent is |e|. If unsure, |RSA_F4| is a good value
@@ -2337,10 +2464,7 @@ class BoringSsl {
     ffi.Pointer<BIGNUM> e,
     ffi.Pointer<bn_gencb_st> cb,
   ) {
-    return (_RSA_generate_key_ex ??=
-        _lookup<ffi.NativeFunction<_c_RSA_generate_key_ex>>(
-                'RSA_generate_key_ex')
-            .asFunction<_dart_RSA_generate_key_ex>())(
+    return _RSA_generate_key_ex(
       rsa,
       bits,
       e,
@@ -2348,21 +2472,26 @@ class BoringSsl {
     );
   }
 
-  _dart_RSA_generate_key_ex? _RSA_generate_key_ex;
+  late final _RSA_generate_key_ex_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_generate_key_ex>>(
+          'RSA_generate_key_ex');
+  late final _dart_RSA_generate_key_ex _RSA_generate_key_ex =
+      _RSA_generate_key_ex_ptr.asFunction<_dart_RSA_generate_key_ex>();
 
   /// // RSAPublicKey_dup allocates a fresh |RSA| and copies the public key from
   /// // |rsa| into it. It returns the fresh |RSA| object, or NULL on error.
   ffi.Pointer<rsa_st> RSAPublicKey_dup(
     ffi.Pointer<rsa_st> rsa,
   ) {
-    return (_RSAPublicKey_dup ??=
-        _lookup<ffi.NativeFunction<_c_RSAPublicKey_dup>>('RSAPublicKey_dup')
-            .asFunction<_dart_RSAPublicKey_dup>())(
+    return _RSAPublicKey_dup(
       rsa,
     );
   }
 
-  _dart_RSAPublicKey_dup? _RSAPublicKey_dup;
+  late final _RSAPublicKey_dup_ptr =
+      _lookup<ffi.NativeFunction<_c_RSAPublicKey_dup>>('RSAPublicKey_dup');
+  late final _dart_RSAPublicKey_dup _RSAPublicKey_dup =
+      _RSAPublicKey_dup_ptr.asFunction<_dart_RSAPublicKey_dup>();
 
   /// // RSA_check_key performs basic validity tests on |rsa|. It returns one if
   /// // they pass and zero otherwise. Opaque keys and public keys always pass. If it
@@ -2370,14 +2499,15 @@ class BoringSsl {
   int RSA_check_key(
     ffi.Pointer<rsa_st> rsa,
   ) {
-    return (_RSA_check_key ??=
-        _lookup<ffi.NativeFunction<_c_RSA_check_key>>('RSA_check_key')
-            .asFunction<_dart_RSA_check_key>())(
+    return _RSA_check_key(
       rsa,
     );
   }
 
-  _dart_RSA_check_key? _RSA_check_key;
+  late final _RSA_check_key_ptr =
+      _lookup<ffi.NativeFunction<_c_RSA_check_key>>('RSA_check_key');
+  late final _dart_RSA_check_key _RSA_check_key =
+      _RSA_check_key_ptr.asFunction<_dart_RSA_check_key>();
 
   late final ffi.Pointer<ASN1_ITEM_st> _X509_ALGORS_it =
       _lookup<ASN1_ITEM_st>('X509_ALGORS_it');
@@ -2503,28 +2633,30 @@ class BoringSsl {
   ffi.Pointer<ffi.Void> OPENSSL_malloc(
     int size,
   ) {
-    return (_OPENSSL_malloc ??=
-        _lookup<ffi.NativeFunction<_c_OPENSSL_malloc>>('OPENSSL_malloc')
-            .asFunction<_dart_OPENSSL_malloc>())(
+    return _OPENSSL_malloc(
       size,
     );
   }
 
-  _dart_OPENSSL_malloc? _OPENSSL_malloc;
+  late final _OPENSSL_malloc_ptr =
+      _lookup<ffi.NativeFunction<_c_OPENSSL_malloc>>('OPENSSL_malloc');
+  late final _dart_OPENSSL_malloc _OPENSSL_malloc =
+      _OPENSSL_malloc_ptr.asFunction<_dart_OPENSSL_malloc>();
 
   /// // OPENSSL_free does nothing if |ptr| is NULL. Otherwise it zeros out the
   /// // memory allocated at |ptr| and frees it.
   void OPENSSL_free(
     ffi.Pointer<ffi.Void> ptr,
   ) {
-    return (_OPENSSL_free ??=
-        _lookup<ffi.NativeFunction<_c_OPENSSL_free>>('OPENSSL_free')
-            .asFunction<_dart_OPENSSL_free>())(
+    return _OPENSSL_free(
       ptr,
     );
   }
 
-  _dart_OPENSSL_free? _OPENSSL_free;
+  late final _OPENSSL_free_ptr =
+      _lookup<ffi.NativeFunction<_c_OPENSSL_free>>('OPENSSL_free');
+  late final _dart_OPENSSL_free _OPENSSL_free =
+      _OPENSSL_free_ptr.asFunction<_dart_OPENSSL_free>();
 
   /// // CRYPTO_memcmp returns zero iff the |len| bytes at |a| and |b| are equal. It
   /// // takes an amount of time dependent on |len|, but independent of the contents
@@ -2536,16 +2668,17 @@ class BoringSsl {
     ffi.Pointer<ffi.Void> b,
     int len,
   ) {
-    return (_CRYPTO_memcmp ??=
-        _lookup<ffi.NativeFunction<_c_CRYPTO_memcmp>>('CRYPTO_memcmp')
-            .asFunction<_dart_CRYPTO_memcmp>())(
+    return _CRYPTO_memcmp(
       a,
       b,
       len,
     );
   }
 
-  _dart_CRYPTO_memcmp? _CRYPTO_memcmp;
+  late final _CRYPTO_memcmp_ptr =
+      _lookup<ffi.NativeFunction<_c_CRYPTO_memcmp>>('CRYPTO_memcmp');
+  late final _dart_CRYPTO_memcmp _CRYPTO_memcmp =
+      _CRYPTO_memcmp_ptr.asFunction<_dart_CRYPTO_memcmp>();
 
   /// // OPENSSL_memdup returns an allocated, duplicate of |size| bytes from |data| or
   /// // NULL on allocation failure.
@@ -2553,26 +2686,28 @@ class BoringSsl {
     ffi.Pointer<ffi.Void> data,
     int size,
   ) {
-    return (_OPENSSL_memdup ??=
-        _lookup<ffi.NativeFunction<_c_OPENSSL_memdup>>('OPENSSL_memdup')
-            .asFunction<_dart_OPENSSL_memdup>())(
+    return _OPENSSL_memdup(
       data,
       size,
     );
   }
 
-  _dart_OPENSSL_memdup? _OPENSSL_memdup;
+  late final _OPENSSL_memdup_ptr =
+      _lookup<ffi.NativeFunction<_c_OPENSSL_memdup>>('OPENSSL_memdup');
+  late final _dart_OPENSSL_memdup _OPENSSL_memdup =
+      _OPENSSL_memdup_ptr.asFunction<_dart_OPENSSL_memdup>();
 
   /// // BORINGSSL_self_test triggers the FIPS KAT-based self tests. It returns one on
   /// // success and zero on error.
   int BORINGSSL_self_test() {
-    return (_BORINGSSL_self_test ??=
-        _lookup<ffi.NativeFunction<_c_BORINGSSL_self_test>>(
-                'BORINGSSL_self_test')
-            .asFunction<_dart_BORINGSSL_self_test>())();
+    return _BORINGSSL_self_test();
   }
 
-  _dart_BORINGSSL_self_test? _BORINGSSL_self_test;
+  late final _BORINGSSL_self_test_ptr =
+      _lookup<ffi.NativeFunction<_c_BORINGSSL_self_test>>(
+          'BORINGSSL_self_test');
+  late final _dart_BORINGSSL_self_test _BORINGSSL_self_test =
+      _BORINGSSL_self_test_ptr.asFunction<_dart_BORINGSSL_self_test>();
 
   late final ffi.Pointer<ASN1_ITEM_st> _PROXY_POLICY_it =
       _lookup<ASN1_ITEM_st>('PROXY_POLICY_it');
@@ -2735,8 +2870,7 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> info,
     int info_len,
   ) {
-    return (_HKDF ??=
-        _lookup<ffi.NativeFunction<_c_HKDF>>('HKDF').asFunction<_dart_HKDF>())(
+    return _HKDF(
       out_key,
       out_len,
       digest,
@@ -2749,31 +2883,34 @@ class BoringSsl {
     );
   }
 
-  _dart_HKDF? _HKDF;
+  late final _HKDF_ptr = _lookup<ffi.NativeFunction<_c_HKDF>>('HKDF');
+  late final _dart_HKDF _HKDF = _HKDF_ptr.asFunction<_dart_HKDF>();
 
   /// // HMAC_CTX_new allocates and initialises a new |HMAC_CTX| and returns it, or
   /// // NULL on allocation failure. The caller must use |HMAC_CTX_free| to release
   /// // the resulting object.
   ffi.Pointer<hmac_ctx_st> HMAC_CTX_new() {
-    return (_HMAC_CTX_new ??=
-        _lookup<ffi.NativeFunction<_c_HMAC_CTX_new>>('HMAC_CTX_new')
-            .asFunction<_dart_HMAC_CTX_new>())();
+    return _HMAC_CTX_new();
   }
 
-  _dart_HMAC_CTX_new? _HMAC_CTX_new;
+  late final _HMAC_CTX_new_ptr =
+      _lookup<ffi.NativeFunction<_c_HMAC_CTX_new>>('HMAC_CTX_new');
+  late final _dart_HMAC_CTX_new _HMAC_CTX_new =
+      _HMAC_CTX_new_ptr.asFunction<_dart_HMAC_CTX_new>();
 
   /// // HMAC_CTX_free calls |HMAC_CTX_cleanup| and then frees |ctx| itself.
   void HMAC_CTX_free(
     ffi.Pointer<hmac_ctx_st> ctx,
   ) {
-    return (_HMAC_CTX_free ??=
-        _lookup<ffi.NativeFunction<_c_HMAC_CTX_free>>('HMAC_CTX_free')
-            .asFunction<_dart_HMAC_CTX_free>())(
+    return _HMAC_CTX_free(
       ctx,
     );
   }
 
-  _dart_HMAC_CTX_free? _HMAC_CTX_free;
+  late final _HMAC_CTX_free_ptr =
+      _lookup<ffi.NativeFunction<_c_HMAC_CTX_free>>('HMAC_CTX_free');
+  late final _dart_HMAC_CTX_free _HMAC_CTX_free =
+      _HMAC_CTX_free_ptr.asFunction<_dart_HMAC_CTX_free>();
 
   /// // HMAC_Init_ex sets up an initialised |HMAC_CTX| to use |md| as the hash
   /// // function and |key| as the key. For a non-initial call, |md| may be NULL, in
@@ -2791,9 +2928,7 @@ class BoringSsl {
     ffi.Pointer<EVP_MD> md,
     ffi.Pointer<engine_st> impl,
   ) {
-    return (_HMAC_Init_ex ??=
-        _lookup<ffi.NativeFunction<_c_HMAC_Init_ex>>('HMAC_Init_ex')
-            .asFunction<_dart_HMAC_Init_ex>())(
+    return _HMAC_Init_ex(
       ctx,
       key,
       key_len,
@@ -2802,7 +2937,10 @@ class BoringSsl {
     );
   }
 
-  _dart_HMAC_Init_ex? _HMAC_Init_ex;
+  late final _HMAC_Init_ex_ptr =
+      _lookup<ffi.NativeFunction<_c_HMAC_Init_ex>>('HMAC_Init_ex');
+  late final _dart_HMAC_Init_ex _HMAC_Init_ex =
+      _HMAC_Init_ex_ptr.asFunction<_dart_HMAC_Init_ex>();
 
   /// // HMAC_Update hashes |data_len| bytes from |data| into the current HMAC
   /// // operation in |ctx|. It returns one.
@@ -2811,16 +2949,17 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> data,
     int data_len,
   ) {
-    return (_HMAC_Update ??=
-        _lookup<ffi.NativeFunction<_c_HMAC_Update>>('HMAC_Update')
-            .asFunction<_dart_HMAC_Update>())(
+    return _HMAC_Update(
       ctx,
       data,
       data_len,
     );
   }
 
-  _dart_HMAC_Update? _HMAC_Update;
+  late final _HMAC_Update_ptr =
+      _lookup<ffi.NativeFunction<_c_HMAC_Update>>('HMAC_Update');
+  late final _dart_HMAC_Update _HMAC_Update =
+      _HMAC_Update_ptr.asFunction<_dart_HMAC_Update>();
 
   /// // HMAC_Final completes the HMAC operation in |ctx| and writes the result to
   /// // |out| and the sets |*out_len| to the length of the result. On entry, |out|
@@ -2832,30 +2971,32 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Uint32> out_len,
   ) {
-    return (_HMAC_Final ??=
-        _lookup<ffi.NativeFunction<_c_HMAC_Final>>('HMAC_Final')
-            .asFunction<_dart_HMAC_Final>())(
+    return _HMAC_Final(
       ctx,
       out,
       out_len,
     );
   }
 
-  _dart_HMAC_Final? _HMAC_Final;
+  late final _HMAC_Final_ptr =
+      _lookup<ffi.NativeFunction<_c_HMAC_Final>>('HMAC_Final');
+  late final _dart_HMAC_Final _HMAC_Final =
+      _HMAC_Final_ptr.asFunction<_dart_HMAC_Final>();
 
   /// // HMAC_size returns the size, in bytes, of the HMAC that will be produced by
   /// // |ctx|. On entry, |ctx| must have been setup with |HMAC_Init_ex|.
   int HMAC_size(
     ffi.Pointer<hmac_ctx_st> ctx,
   ) {
-    return (_HMAC_size ??=
-        _lookup<ffi.NativeFunction<_c_HMAC_size>>('HMAC_size')
-            .asFunction<_dart_HMAC_size>())(
+    return _HMAC_size(
       ctx,
     );
   }
 
-  _dart_HMAC_size? _HMAC_size;
+  late final _HMAC_size_ptr =
+      _lookup<ffi.NativeFunction<_c_HMAC_size>>('HMAC_size');
+  late final _dart_HMAC_size _HMAC_size =
+      _HMAC_size_ptr.asFunction<_dart_HMAC_size>();
 
   /// // OPENSSL_ia32cap_P contains the Intel CPUID bits when running on an x86 or
   /// // x86-64 system.
@@ -2889,15 +3030,16 @@ class BoringSsl {
     ffi.Pointer<ffi.Uint8> buf,
     int len,
   ) {
-    return (_RAND_bytes ??=
-        _lookup<ffi.NativeFunction<_c_RAND_bytes>>('RAND_bytes')
-            .asFunction<_dart_RAND_bytes>())(
+    return _RAND_bytes(
       buf,
       len,
     );
   }
 
-  _dart_RAND_bytes? _RAND_bytes;
+  late final _RAND_bytes_ptr =
+      _lookup<ffi.NativeFunction<_c_RAND_bytes>>('RAND_bytes');
+  late final _dart_RAND_bytes _RAND_bytes =
+      _RAND_bytes_ptr.asFunction<_dart_RAND_bytes>();
 
   late final ffi.Pointer<ASN1_ITEM_st> _ASN1_BOOLEAN_it =
       _lookup<ASN1_ITEM_st>('ASN1_BOOLEAN_it');
@@ -3379,15 +3521,17 @@ class BoringSsl {
   int webcrypto_dart_dl_initialize(
     ffi.Pointer<ffi.Void> initialize_api_dl_data,
   ) {
-    return (_webcrypto_dart_dl_initialize ??=
-        _lookup<ffi.NativeFunction<_c_webcrypto_dart_dl_initialize>>(
-                'webcrypto_dart_dl_initialize')
-            .asFunction<_dart_webcrypto_dart_dl_initialize>())(
+    return _webcrypto_dart_dl_initialize(
       initialize_api_dl_data,
     );
   }
 
-  _dart_webcrypto_dart_dl_initialize? _webcrypto_dart_dl_initialize;
+  late final _webcrypto_dart_dl_initialize_ptr =
+      _lookup<ffi.NativeFunction<_c_webcrypto_dart_dl_initialize>>(
+          'webcrypto_dart_dl_initialize');
+  late final _dart_webcrypto_dart_dl_initialize _webcrypto_dart_dl_initialize =
+      _webcrypto_dart_dl_initialize_ptr
+          .asFunction<_dart_webcrypto_dart_dl_initialize>();
 
   /// // Attach a finalizer for pointer to object, such that `finalizer(pointer)` will
   /// // be called when `object` is collected by the Dart garbage collector.
@@ -3402,10 +3546,7 @@ class BoringSsl {
     ffi.Pointer<ffi.NativeFunction<webcrypto_finalizer_t>> finalizer,
     int external_allocation_size,
   ) {
-    return (_webcrypto_dart_dl_attach_finalizer ??=
-        _lookup<ffi.NativeFunction<_c_webcrypto_dart_dl_attach_finalizer>>(
-                'webcrypto_dart_dl_attach_finalizer')
-            .asFunction<_dart_webcrypto_dart_dl_attach_finalizer>())(
+    return _webcrypto_dart_dl_attach_finalizer(
       object,
       pointer,
       finalizer,
@@ -3413,7 +3554,13 @@ class BoringSsl {
     );
   }
 
-  _dart_webcrypto_dart_dl_attach_finalizer? _webcrypto_dart_dl_attach_finalizer;
+  late final _webcrypto_dart_dl_attach_finalizer_ptr =
+      _lookup<ffi.NativeFunction<_c_webcrypto_dart_dl_attach_finalizer>>(
+          'webcrypto_dart_dl_attach_finalizer');
+  late final _dart_webcrypto_dart_dl_attach_finalizer
+      _webcrypto_dart_dl_attach_finalizer =
+      _webcrypto_dart_dl_attach_finalizer_ptr
+          .asFunction<_dart_webcrypto_dart_dl_attach_finalizer>();
 
   /// // Symbol lookup table defined in `symbols.generated.h`, with indexes matching
   /// // the enum values in `lib/src/boringssl/lookup/symbols.generated.dart`.
@@ -3432,15 +3579,25 @@ class BoringSsl {
   ffi.Pointer<ffi.Void> webcrypto_lookup_symbol(
     int index,
   ) {
-    return (_webcrypto_lookup_symbol ??=
-        _lookup<ffi.NativeFunction<_c_webcrypto_lookup_symbol>>(
-                'webcrypto_lookup_symbol')
-            .asFunction<_dart_webcrypto_lookup_symbol>())(
+    return _webcrypto_lookup_symbol(
       index,
     );
   }
 
-  _dart_webcrypto_lookup_symbol? _webcrypto_lookup_symbol;
+  late final _webcrypto_lookup_symbol_ptr =
+      _lookup<ffi.NativeFunction<_c_webcrypto_lookup_symbol>>(
+          'webcrypto_lookup_symbol');
+  late final _dart_webcrypto_lookup_symbol _webcrypto_lookup_symbol =
+      _webcrypto_lookup_symbol_ptr.asFunction<_dart_webcrypto_lookup_symbol>();
+
+  late final addresses = _SymbolAddresses(this);
+}
+
+class _SymbolAddresses {
+  final BoringSsl _library;
+  _SymbolAddresses(this._library);
+  ffi.Pointer<ffi.NativeFunction<Native_EVP_PKEY_free>> get EVP_PKEY_free =>
+      _library._EVP_PKEY_free_ptr;
 }
 
 class __sbuf extends ffi.Struct {
@@ -4142,7 +4299,7 @@ typedef _c_EVP_PKEY_new = ffi.Pointer<EVP_PKEY> Function();
 
 typedef _dart_EVP_PKEY_new = ffi.Pointer<EVP_PKEY> Function();
 
-typedef _c_EVP_PKEY_free = ffi.Void Function(
+typedef Native_EVP_PKEY_free = ffi.Void Function(
   ffi.Pointer<EVP_PKEY> pkey,
 );
 

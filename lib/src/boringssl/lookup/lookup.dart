@@ -26,16 +26,6 @@ final Pointer<T> Function<T extends NativeType>(String symbolName)
 
 final BoringSsl ssl = BoringSsl.fromLookup(boringsslLibrary);
 
-// TODO(dacoharkes): https://github.com/dart-lang/ffigen/issues/24.
-
-/// EVP_PKEY_free frees all data referenced by pkey and then frees pkey itself.
-///
-/// ```c
-/// void EVP_PKEY_free(EVP_PKEY *pkey);
-/// ```
-final EVP_PKEY_free_ =
-    lookup<NativeFunction<Void Function(Pointer<EVP_PKEY>)>>('EVP_PKEY_free');
-
 // TODO(dacoharkes): Move defines somewhere.
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
