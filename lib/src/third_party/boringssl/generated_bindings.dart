@@ -2064,7 +2064,7 @@ class BoringSsl {
     int outlen,
     ffi.Pointer<ec_point_st> pub_key,
     ffi.Pointer<ec_key_st> priv_key,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_16>> kdf,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_5>> kdf,
   ) {
     return _ECDH_compute_key(
       out,
@@ -3600,18 +3600,7 @@ class _SymbolAddresses {
       _library._EVP_PKEY_free_ptr;
 }
 
-class __sbuf extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint8> _base;
-
-  @ffi.Int32()
-  external int _size;
-}
-
-class __sFILEX extends ffi.Opaque {}
-
 class FILE extends ffi.Opaque {}
-
-class evp_cipher_ctx_st extends ffi.Opaque {}
 
 class evp_cipher_st extends ffi.Struct {
   /// // type contains a NID identifing the cipher. (e.g. NID_aes_128_gcm.)
@@ -3644,25 +3633,23 @@ class evp_cipher_st extends ffi.Struct {
   /// // app_data is a pointer to opaque, user data.
   external ffi.Pointer<ffi.Void> app_data;
 
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_5>> init;
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_1>> init;
 
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_6>> cipher;
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_2>> cipher;
 
   /// // cleanup, if non-NULL, releases memory associated with the context. It is
   /// // called if |EVP_CTRL_INIT| succeeds. Note that |init| may not have been
   /// // called at this point.
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_7>> cleanup;
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_3>> cleanup;
 
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_8>> ctrl;
+  external ffi.Pointer<ffi.NativeFunction<_typedefC_4>> ctrl;
 }
+
+class evp_cipher_ctx_st extends ffi.Opaque {}
 
 class engine_st extends ffi.Opaque {}
 
 class EVP_MD extends ffi.Opaque {}
-
-class EVP_PKEY_CTX extends ffi.Opaque {}
-
-class evp_md_pctx_ops extends ffi.Opaque {}
 
 class EVP_MD_CTX extends ffi.Struct {
   /// // digest is the underlying digest function, or NULL if not set.
@@ -3681,64 +3668,57 @@ class EVP_MD_CTX extends ffi.Struct {
   external ffi.Pointer<evp_md_pctx_ops> pctx_ops;
 }
 
+class EVP_PKEY_CTX extends ffi.Opaque {}
+
+class evp_md_pctx_ops extends ffi.Opaque {}
+
 class evp_aead_st extends ffi.Opaque {}
 
 /// // An EVP_AEAD_CTX represents an AEAD algorithm configured with a specific key
 /// // and message-independent IV.
 class EVP_AEAD_CTX extends ffi.Opaque {}
 
-class evp_pkey_asn1_method_st extends ffi.Opaque {}
-
 /// // Private structures.
 class EVP_PKEY extends ffi.Opaque {}
 
-/// // openssl_method_common_st contains the common part of all method structures.
-/// // This must be the first member of all method structures.
-class openssl_method_common_st extends ffi.Struct {
-  /// // dummy – not used.
-  @ffi.Int32()
-  external int references;
+class rsa_st extends ffi.Opaque {}
+
+class ec_key_st extends ffi.Opaque {}
+
+/// // CRYPTO ByteString
+class CBS extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> data;
+
+  @ffi.IntPtr()
+  external int len;
+}
+
+class CBB extends ffi.Struct {
+  external ffi.Pointer<cbb_buffer_st> base;
+
+  /// // child points to a child CBB if a length-prefix is pending.
+  external ffi.Pointer<CBB> child;
+
+  /// // offset is the number of bytes from the start of |base->buf| to this |CBB|'s
+  /// // pending length prefix.
+  @ffi.IntPtr()
+  external int offset;
+
+  /// // pending_len_len contains the number of bytes in this |CBB|'s pending
+  /// // length-prefix, or zero if no length-prefix is pending.
+  @ffi.Uint8()
+  external int pending_len_len;
 
   @ffi.Int8()
-  external int is_static;
+  external int pending_is_asn1;
+
+  /// // is_child is true iff this is a child |CBB| (as opposed to a top-level
+  /// // |CBB|). Top-level objects are valid arguments for |CBB_finish|.
+  @ffi.Int8()
+  external int is_child;
 }
 
-class rsa_meth_st extends ffi.Struct {
-  external openssl_method_common_st common;
-
-  external ffi.Pointer<ffi.Void> app_data;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_9>> init;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_10>> finish;
-
-  /// // size returns the size of the RSA modulus in bytes.
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_11>> size;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_12>> sign;
-
-  /// // These functions mirror the |RSA_*| functions of the same name.
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_13>> sign_raw;
-
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_14>> decrypt;
-
-  /// // private_transform takes a big-endian integer from |in|, calculates the
-  /// // d'th power of it, modulo the RSA modulus and writes the result as a
-  /// // big-endian integer to |out|. Both |in| and |out| are |len| bytes long and
-  /// // |len| is always equal to |RSA_size(rsa)|. If the result of the transform
-  /// // can be represented in fewer than |len| bytes, then |out| must be zero
-  /// // padded on the left.
-  /// //
-  /// // It returns one on success and zero otherwise.
-  /// //
-  /// // RSA decrypt and sign operations will call this, thus an ENGINE might wish
-  /// // to override it in order to avoid having to implement the padding
-  /// // functionality demanded by those, higher level, operations.
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_15>> private_transform;
-
-  @ffi.Int32()
-  external int flags;
-}
+class evp_pkey_asn1_method_st extends ffi.Opaque {}
 
 /// // Private functions
 class BIGNUM extends ffi.Struct {
@@ -3776,29 +3756,39 @@ class BIGNUM extends ffi.Struct {
   external int flags;
 }
 
-class stack_st_void extends ffi.Opaque {}
+class ASN1_ITEM_st extends ffi.Opaque {}
 
-class crypto_ex_data_st extends ffi.Struct {
-  external ffi.Pointer<stack_st_void> sk;
+/// // point_conversion_form_t enumerates forms, as defined in X9.62 (ECDSA), for
+/// // the encoding of a elliptic curve point (x,y)
+abstract class point_conversion_form_t {
+  /// // POINT_CONVERSION_COMPRESSED indicates that the point is encoded as z||x,
+  /// // where the octet z specifies which solution of the quadratic equation y
+  /// // is.
+  static const int POINT_CONVERSION_COMPRESSED = 2;
+
+  /// // POINT_CONVERSION_UNCOMPRESSED indicates that the point is encoded as
+  /// // z||x||y, where z is the octet 0x04.
+  static const int POINT_CONVERSION_UNCOMPRESSED = 4;
+
+  /// // POINT_CONVERSION_HYBRID indicates that the point is encoded as z||x||y,
+  /// // where z specifies which solution of the quadratic equation y is. This is
+  /// // not supported by the code and has never been observed in use.
+  /// //
+  /// // TODO(agl): remove once node.js no longer references this.
+  static const int POINT_CONVERSION_HYBRID = 6;
 }
 
-class _opaque_pthread_rwlock_t extends ffi.Opaque {}
+class ec_group_st extends ffi.Opaque {}
 
-class bn_mont_ctx_st extends ffi.Opaque {}
+class ec_point_st extends ffi.Opaque {}
 
-class bn_blinding_st extends ffi.Opaque {}
+class bignum_ctx extends ffi.Opaque {}
 
-class rsa_st extends ffi.Opaque {}
-
-class ec_key_st extends ffi.Opaque {}
-
-/// // CRYPTO ByteString
-class CBS extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint8> data;
-
-  @ffi.IntPtr()
-  external int len;
-}
+/// // Low-level signing and verification.
+/// //
+/// // Low-level functions handle signatures as |ECDSA_SIG| structures which allow
+/// // the two values in an ECDSA signature to be handled separately.
+class ecdsa_sig_st extends ffi.Opaque {}
 
 /// // CRYPTO ByteBuilder.
 /// //
@@ -3836,69 +3826,6 @@ class cbb_buffer_st extends ffi.Struct {
   external int error;
 }
 
-class CBB extends ffi.Struct {
-  external ffi.Pointer<cbb_buffer_st> base;
-
-  /// // child points to a child CBB if a length-prefix is pending.
-  external ffi.Pointer<CBB> child;
-
-  /// // offset is the number of bytes from the start of |base->buf| to this |CBB|'s
-  /// // pending length prefix.
-  @ffi.IntPtr()
-  external int offset;
-
-  /// // pending_len_len contains the number of bytes in this |CBB|'s pending
-  /// // length-prefix, or zero if no length-prefix is pending.
-  @ffi.Uint8()
-  external int pending_len_len;
-
-  @ffi.Int8()
-  external int pending_is_asn1;
-
-  /// // is_child is true iff this is a child |CBB| (as opposed to a top-level
-  /// // |CBB|). Top-level objects are valid arguments for |CBB_finish|.
-  @ffi.Int8()
-  external int is_child;
-}
-
-class ASN1_ITEM_st extends ffi.Opaque {}
-
-/// // point_conversion_form_t enumerates forms, as defined in X9.62 (ECDSA), for
-/// // the encoding of a elliptic curve point (x,y)
-abstract class point_conversion_form_t {
-  /// // POINT_CONVERSION_COMPRESSED indicates that the point is encoded as z||x,
-  /// // where the octet z specifies which solution of the quadratic equation y
-  /// // is.
-  static const int POINT_CONVERSION_COMPRESSED = 2;
-
-  /// // POINT_CONVERSION_UNCOMPRESSED indicates that the point is encoded as
-  /// // z||x||y, where z is the octet 0x04.
-  static const int POINT_CONVERSION_UNCOMPRESSED = 4;
-
-  /// // POINT_CONVERSION_HYBRID indicates that the point is encoded as z||x||y,
-  /// // where z specifies which solution of the quadratic equation y is. This is
-  /// // not supported by the code and has never been observed in use.
-  /// //
-  /// // TODO(agl): remove once node.js no longer references this.
-  static const int POINT_CONVERSION_HYBRID = 6;
-}
-
-class ec_group_st extends ffi.Opaque {}
-
-class ec_point_st extends ffi.Opaque {}
-
-class bignum_ctx extends ffi.Opaque {}
-
-/// // Low-level signing and verification.
-/// //
-/// // Low-level functions handle signatures as |ECDSA_SIG| structures which allow
-/// // the two values in an ECDSA signature to be handled separately.
-class ecdsa_sig_st extends ffi.Struct {
-  external ffi.Pointer<BIGNUM> r;
-
-  external ffi.Pointer<BIGNUM> s;
-}
-
 /// // bn_gencb_st, or |BN_GENCB|, holds a callback function that is used by
 /// // generation functions that can take a very long time to complete. Use
 /// // |BN_GENCB_set| to initialise a |BN_GENCB| structure.
@@ -3917,12 +3844,30 @@ class ecdsa_sig_st extends ffi.Struct {
 /// //
 /// // When other code needs to call a BN generation function it will often take a
 /// // BN_GENCB argument and may call the function with other argument values.
-class bn_gencb_st extends ffi.Struct {
-  /// // callback-specific data
-  external ffi.Pointer<ffi.Void> arg;
+class bn_gencb_st extends ffi.Opaque {}
 
-  external ffi.Pointer<ffi.NativeFunction<_typedefC_17>> callback;
+class rsa_meth_st extends ffi.Opaque {}
+
+class stack_st_void extends ffi.Opaque {}
+
+class crypto_ex_data_st extends ffi.Struct {
+  external ffi.Pointer<stack_st_void> sk;
 }
+
+class _opaque_pthread_rwlock_t extends ffi.Opaque {}
+
+class bn_mont_ctx_st extends ffi.Opaque {}
+
+class bn_blinding_st extends ffi.Opaque {}
+
+class __sbuf extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> _base;
+
+  @ffi.Int32()
+  external int _size;
+}
+
+class __sFILEX extends ffi.Opaque {}
 
 /// // Private functions
 class hmac_ctx_st extends ffi.Struct {
@@ -4909,7 +4854,7 @@ typedef _dart_EC_KEY_generate_key = int Function(
   ffi.Pointer<ec_key_st> key,
 );
 
-typedef _typedefC_16 = ffi.Pointer<ffi.Void> Function(
+typedef _typedefC_5 = ffi.Pointer<ffi.Void> Function(
   ffi.Pointer<ffi.Void>,
   ffi.IntPtr,
   ffi.Pointer<ffi.Void>,
@@ -4921,7 +4866,7 @@ typedef _c_ECDH_compute_key = ffi.Int32 Function(
   ffi.IntPtr outlen,
   ffi.Pointer<ec_point_st> pub_key,
   ffi.Pointer<ec_key_st> priv_key,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_16>> kdf,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_5>> kdf,
 );
 
 typedef _dart_ECDH_compute_key = int Function(
@@ -4929,7 +4874,7 @@ typedef _dart_ECDH_compute_key = int Function(
   int outlen,
   ffi.Pointer<ec_point_st> pub_key,
   ffi.Pointer<ec_key_st> priv_key,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_16>> kdf,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_5>> kdf,
 );
 
 typedef _c_ECDSA_SIG_new = ffi.Pointer<ecdsa_sig_st> Function();
@@ -5485,81 +5430,27 @@ typedef _dart_webcrypto_lookup_symbol = ffi.Pointer<ffi.Void> Function(
   int index,
 );
 
-typedef _typedefC_5 = ffi.Int32 Function(
+typedef _typedefC_1 = ffi.Int32 Function(
   ffi.Pointer<evp_cipher_ctx_st>,
   ffi.Pointer<ffi.Uint8>,
   ffi.Pointer<ffi.Uint8>,
   ffi.Int32,
 );
 
-typedef _typedefC_6 = ffi.Int32 Function(
+typedef _typedefC_2 = ffi.Int32 Function(
   ffi.Pointer<evp_cipher_ctx_st>,
   ffi.Pointer<ffi.Uint8>,
   ffi.Pointer<ffi.Uint8>,
   ffi.IntPtr,
 );
 
-typedef _typedefC_7 = ffi.Void Function(
+typedef _typedefC_3 = ffi.Void Function(
   ffi.Pointer<evp_cipher_ctx_st>,
 );
 
-typedef _typedefC_8 = ffi.Int32 Function(
+typedef _typedefC_4 = ffi.Int32 Function(
   ffi.Pointer<evp_cipher_ctx_st>,
   ffi.Int32,
   ffi.Int32,
   ffi.Pointer<ffi.Void>,
-);
-
-typedef _typedefC_9 = ffi.Int32 Function(
-  ffi.Pointer<rsa_st>,
-);
-
-typedef _typedefC_10 = ffi.Int32 Function(
-  ffi.Pointer<rsa_st>,
-);
-
-typedef _typedefC_11 = ffi.IntPtr Function(
-  ffi.Pointer<rsa_st>,
-);
-
-typedef _typedefC_12 = ffi.Int32 Function(
-  ffi.Int32,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.Uint32,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.Pointer<ffi.Uint32>,
-  ffi.Pointer<rsa_st>,
-);
-
-typedef _typedefC_13 = ffi.Int32 Function(
-  ffi.Pointer<rsa_st>,
-  ffi.Pointer<ffi.IntPtr>,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.IntPtr,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.IntPtr,
-  ffi.Int32,
-);
-
-typedef _typedefC_14 = ffi.Int32 Function(
-  ffi.Pointer<rsa_st>,
-  ffi.Pointer<ffi.IntPtr>,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.IntPtr,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.IntPtr,
-  ffi.Int32,
-);
-
-typedef _typedefC_15 = ffi.Int32 Function(
-  ffi.Pointer<rsa_st>,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.Pointer<ffi.Uint8>,
-  ffi.IntPtr,
-);
-
-typedef _typedefC_17 = ffi.Int32 Function(
-  ffi.Int32,
-  ffi.Int32,
-  ffi.Pointer<bn_gencb_st>,
 );

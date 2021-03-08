@@ -33,7 +33,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  ffigen: ^2.2.1
+  ffigen: ^2.2.3
   test: ^1.16.0
   yaml: ^3.0.0
   pedantic: ^1.9.0
@@ -67,7 +67,9 @@ ffigen:
   comments:
     style: any
     length: full
+  sort: true
   typedef-map:
+    # TODO(dacoharkes): https://github.com/dart-lang/sdk/issues/42563 https://github.com/dart-lang/ffigen/issues/7
     size_t: IntPtr
   macros:
     include:
@@ -99,6 +101,7 @@ ffigen:
       env_md_st: EVP_MD
       evp_pkey_ctx_st: EVP_PKEY_CTX
       evp_pkey_st: EVP_PKEY
+    dependency-only: opaque
   functions:
     include:
     - webcrypto_lookup_symbol
