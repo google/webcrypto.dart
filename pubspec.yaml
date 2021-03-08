@@ -94,13 +94,30 @@ ffigen:
     include:
       - 'nothing'
     rename:
+      bignum_ctx: BN_CTX
       bignum_st: BIGNUM
+      bn_blinding_st: BN_BLINDING
+      bn_gencb_st: BN_GENCB
+      bn_mont_ctx_st: BN_MONT_CTX
       cbb_st: CBB
       cbs_st: CBS
+      crypto_ex_data_st: CRYPTO_EX_DATA
+      ecdsa_sig_st: ECDSA_SIG
+      ec_group_st: EC_GROUP
+      ec_key_st: EC_KEY
+      ec_point_st: EC_POINT
+      engine_st: ENGINE
       env_md_ctx_st: EVP_MD_CTX
       env_md_st: EVP_MD
+      evp_aead_st: EVP_AEAD
+      evp_cipher_ctx_st: EVP_CIPHER_CTX
+      evp_cipher_st: EVP_CIPHER
+      evp_pkey_asn1_method_st: EVP_PKEY_ASN1_METHOD
       evp_pkey_ctx_st: EVP_PKEY_CTX
       evp_pkey_st: EVP_PKEY
+      hmac_ctx_st: HMAC_CTX
+      rsa_meth_st: RSA_METHOD
+      rsa_st: RSA
     dependency-only: opaque
   functions:
     include:

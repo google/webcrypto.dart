@@ -120,7 +120,7 @@ class BoringSsl {
   late final _dart_ERR_clear_error _ERR_clear_error =
       _ERR_clear_error_ptr.asFunction<_dart_ERR_clear_error>();
 
-  ffi.Pointer<evp_cipher_st> EVP_aes_128_cbc() {
+  ffi.Pointer<EVP_CIPHER> EVP_aes_128_cbc() {
     return _EVP_aes_128_cbc();
   }
 
@@ -129,7 +129,7 @@ class BoringSsl {
   late final _dart_EVP_aes_128_cbc _EVP_aes_128_cbc =
       _EVP_aes_128_cbc_ptr.asFunction<_dart_EVP_aes_128_cbc>();
 
-  ffi.Pointer<evp_cipher_st> EVP_aes_128_ctr() {
+  ffi.Pointer<EVP_CIPHER> EVP_aes_128_ctr() {
     return _EVP_aes_128_ctr();
   }
 
@@ -138,7 +138,7 @@ class BoringSsl {
   late final _dart_EVP_aes_128_ctr _EVP_aes_128_ctr =
       _EVP_aes_128_ctr_ptr.asFunction<_dart_EVP_aes_128_ctr>();
 
-  ffi.Pointer<evp_cipher_st> EVP_aes_256_cbc() {
+  ffi.Pointer<EVP_CIPHER> EVP_aes_256_cbc() {
     return _EVP_aes_256_cbc();
   }
 
@@ -147,7 +147,7 @@ class BoringSsl {
   late final _dart_EVP_aes_256_cbc _EVP_aes_256_cbc =
       _EVP_aes_256_cbc_ptr.asFunction<_dart_EVP_aes_256_cbc>();
 
-  ffi.Pointer<evp_cipher_st> EVP_aes_256_ctr() {
+  ffi.Pointer<EVP_CIPHER> EVP_aes_256_ctr() {
     return _EVP_aes_256_ctr();
   }
 
@@ -158,7 +158,7 @@ class BoringSsl {
 
   /// // EVP_CIPHER_CTX_new allocates a fresh |EVP_CIPHER_CTX|, calls
   /// // |EVP_CIPHER_CTX_init| and returns it, or NULL on allocation failure.
-  ffi.Pointer<evp_cipher_ctx_st> EVP_CIPHER_CTX_new() {
+  ffi.Pointer<EVP_CIPHER_CTX> EVP_CIPHER_CTX_new() {
     return _EVP_CIPHER_CTX_new();
   }
 
@@ -170,7 +170,7 @@ class BoringSsl {
   /// // EVP_CIPHER_CTX_free calls |EVP_CIPHER_CTX_cleanup| on |ctx| and then frees
   /// // |ctx| itself.
   void EVP_CIPHER_CTX_free(
-    ffi.Pointer<evp_cipher_ctx_st> ctx,
+    ffi.Pointer<EVP_CIPHER_CTX> ctx,
   ) {
     return _EVP_CIPHER_CTX_free(
       ctx,
@@ -191,9 +191,9 @@ class BoringSsl {
   /// // lengths given by |EVP_CIPHER_key_length| and |EVP_CIPHER_iv_length|. It
   /// // returns one on success and zero on error.
   int EVP_CipherInit_ex(
-    ffi.Pointer<evp_cipher_ctx_st> ctx,
-    ffi.Pointer<evp_cipher_st> cipher,
-    ffi.Pointer<engine_st> engine,
+    ffi.Pointer<EVP_CIPHER_CTX> ctx,
+    ffi.Pointer<EVP_CIPHER> cipher,
+    ffi.Pointer<ENGINE> engine,
     ffi.Pointer<ffi.Uint8> key,
     ffi.Pointer<ffi.Uint8> iv,
     int enc,
@@ -216,7 +216,7 @@ class BoringSsl {
   /// // EVP_CipherUpdate calls either |EVP_EncryptUpdate| or |EVP_DecryptUpdate|
   /// // depending on how |ctx| has been setup.
   int EVP_CipherUpdate(
-    ffi.Pointer<evp_cipher_ctx_st> ctx,
+    ffi.Pointer<EVP_CIPHER_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Int32> out_len,
     ffi.Pointer<ffi.Uint8> in_1,
@@ -239,7 +239,7 @@ class BoringSsl {
   /// // EVP_CipherFinal_ex calls either |EVP_EncryptFinal_ex| or
   /// // |EVP_DecryptFinal_ex| depending on how |ctx| has been setup.
   int EVP_CipherFinal_ex(
-    ffi.Pointer<evp_cipher_ctx_st> ctx,
+    ffi.Pointer<EVP_CIPHER_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Int32> out_len,
   ) {
@@ -258,7 +258,7 @@ class BoringSsl {
   /// // EVP_CIPHER_block_size returns the block size, in bytes, for |cipher|, or one
   /// // if |cipher| is a stream cipher.
   int EVP_CIPHER_block_size(
-    ffi.Pointer<evp_cipher_st> cipher,
+    ffi.Pointer<EVP_CIPHER> cipher,
   ) {
     return _EVP_CIPHER_block_size(
       cipher,
@@ -274,7 +274,7 @@ class BoringSsl {
   /// // EVP_CIPHER_iv_length returns the IV size, in bytes, of |cipher|, or zero if
   /// // |cipher| doesn't take an IV.
   int EVP_CIPHER_iv_length(
-    ffi.Pointer<evp_cipher_st> cipher,
+    ffi.Pointer<EVP_CIPHER> cipher,
   ) {
     return _EVP_CIPHER_iv_length(
       cipher,
@@ -440,7 +440,7 @@ class BoringSsl {
   /// // effectively randomized, which means one must consider collisions. Unless
   /// // implementing an existing protocol which has already specified incorrect
   /// // parameters, only use 12-byte nonces.
-  ffi.Pointer<evp_aead_st> EVP_aead_aes_128_gcm() {
+  ffi.Pointer<EVP_AEAD> EVP_aead_aes_128_gcm() {
     return _EVP_aead_aes_128_gcm();
   }
 
@@ -457,7 +457,7 @@ class BoringSsl {
   /// // effectively randomized, which means one must consider collisions. Unless
   /// // implementing an existing protocol which has already specified incorrect
   /// // parameters, only use 12-byte nonces.
-  ffi.Pointer<evp_aead_st> EVP_aead_aes_256_gcm() {
+  ffi.Pointer<EVP_AEAD> EVP_aead_aes_256_gcm() {
     return _EVP_aead_aes_256_gcm();
   }
 
@@ -470,7 +470,7 @@ class BoringSsl {
   /// // EVP_AEAD_key_length returns the length, in bytes, of the keys used by
   /// // |aead|.
   int EVP_AEAD_key_length(
-    ffi.Pointer<evp_aead_st> aead,
+    ffi.Pointer<EVP_AEAD> aead,
   ) {
     return _EVP_AEAD_key_length(
       aead,
@@ -486,7 +486,7 @@ class BoringSsl {
   /// // EVP_AEAD_nonce_length returns the length, in bytes, of the per-message nonce
   /// // for |aead|.
   int EVP_AEAD_nonce_length(
-    ffi.Pointer<evp_aead_st> aead,
+    ffi.Pointer<EVP_AEAD> aead,
   ) {
     return _EVP_AEAD_nonce_length(
       aead,
@@ -502,7 +502,7 @@ class BoringSsl {
   /// // EVP_AEAD_max_overhead returns the maximum number of additional bytes added
   /// // by the act of sealing data with |aead|.
   int EVP_AEAD_max_overhead(
-    ffi.Pointer<evp_aead_st> aead,
+    ffi.Pointer<EVP_AEAD> aead,
   ) {
     return _EVP_AEAD_max_overhead(
       aead,
@@ -519,7 +519,7 @@ class BoringSsl {
   /// // is the largest value that can be passed as |tag_len| to
   /// // |EVP_AEAD_CTX_init|.
   int EVP_AEAD_max_tag_len(
-    ffi.Pointer<evp_aead_st> aead,
+    ffi.Pointer<EVP_AEAD> aead,
   ) {
     return _EVP_AEAD_max_tag_len(
       aead,
@@ -535,7 +535,7 @@ class BoringSsl {
   /// // EVP_AEAD_CTX_new allocates an |EVP_AEAD_CTX|, calls |EVP_AEAD_CTX_init| and
   /// // returns the |EVP_AEAD_CTX|, or NULL on error.
   ffi.Pointer<EVP_AEAD_CTX> EVP_AEAD_CTX_new(
-    ffi.Pointer<evp_aead_st> aead,
+    ffi.Pointer<EVP_AEAD> aead,
     ffi.Pointer<ffi.Uint8> key,
     int key_len,
     int tag_len,
@@ -726,7 +726,7 @@ class BoringSsl {
   /// // may not be called concurrently with other operations on the |EVP_PKEY|.
   int EVP_PKEY_set1_RSA(
     ffi.Pointer<EVP_PKEY> pkey,
-    ffi.Pointer<rsa_st> key,
+    ffi.Pointer<RSA> key,
   ) {
     return _EVP_PKEY_set1_RSA(
       pkey,
@@ -739,7 +739,7 @@ class BoringSsl {
   late final _dart_EVP_PKEY_set1_RSA _EVP_PKEY_set1_RSA =
       _EVP_PKEY_set1_RSA_ptr.asFunction<_dart_EVP_PKEY_set1_RSA>();
 
-  ffi.Pointer<rsa_st> EVP_PKEY_get1_RSA(
+  ffi.Pointer<RSA> EVP_PKEY_get1_RSA(
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
     return _EVP_PKEY_get1_RSA(
@@ -754,7 +754,7 @@ class BoringSsl {
 
   int EVP_PKEY_set1_EC_KEY(
     ffi.Pointer<EVP_PKEY> pkey,
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
   ) {
     return _EVP_PKEY_set1_EC_KEY(
       pkey,
@@ -768,7 +768,7 @@ class BoringSsl {
   late final _dart_EVP_PKEY_set1_EC_KEY _EVP_PKEY_set1_EC_KEY =
       _EVP_PKEY_set1_EC_KEY_ptr.asFunction<_dart_EVP_PKEY_set1_EC_KEY>();
 
-  ffi.Pointer<ec_key_st> EVP_PKEY_get1_EC_KEY(
+  ffi.Pointer<EC_KEY> EVP_PKEY_get1_EC_KEY(
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
     return _EVP_PKEY_get1_EC_KEY(
@@ -903,7 +903,7 @@ class BoringSsl {
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx,
     ffi.Pointer<EVP_MD> type,
-    ffi.Pointer<engine_st> e,
+    ffi.Pointer<ENGINE> e,
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
     return _EVP_DigestSignInit(
@@ -992,7 +992,7 @@ class BoringSsl {
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx,
     ffi.Pointer<EVP_MD> type,
-    ffi.Pointer<engine_st> e,
+    ffi.Pointer<ENGINE> e,
     ffi.Pointer<EVP_PKEY> pkey,
   ) {
     return _EVP_DigestVerifyInit(
@@ -1093,7 +1093,7 @@ class BoringSsl {
   /// // returns the context or NULL on error.
   ffi.Pointer<EVP_PKEY_CTX> EVP_PKEY_CTX_new(
     ffi.Pointer<EVP_PKEY> pkey,
-    ffi.Pointer<engine_st> e,
+    ffi.Pointer<ENGINE> e,
   ) {
     return _EVP_PKEY_CTX_new(
       pkey,
@@ -1664,7 +1664,7 @@ class BoringSsl {
   /// //
   /// // If in doubt, use |NID_X9_62_prime256v1|, or see the curve25519.h header for
   /// // more modern primitives.
-  ffi.Pointer<ec_group_st> EC_GROUP_new_by_curve_name(
+  ffi.Pointer<EC_GROUP> EC_GROUP_new_by_curve_name(
     int nid,
   ) {
     return _EC_GROUP_new_by_curve_name(
@@ -1681,7 +1681,7 @@ class BoringSsl {
 
   /// // EC_GROUP_free releases a reference to |group|.
   void EC_GROUP_free(
-    ffi.Pointer<ec_group_st> group,
+    ffi.Pointer<EC_GROUP> group,
   ) {
     return _EC_GROUP_free(
       group,
@@ -1696,7 +1696,7 @@ class BoringSsl {
   /// // EC_GROUP_get0_order returns a pointer to the internal |BIGNUM| object in
   /// // |group| that specifies the order of the group.
   ffi.Pointer<BIGNUM> EC_GROUP_get0_order(
-    ffi.Pointer<ec_group_st> group,
+    ffi.Pointer<EC_GROUP> group,
   ) {
     return _EC_GROUP_get0_order(
       group,
@@ -1711,7 +1711,7 @@ class BoringSsl {
 
   /// // EC_GROUP_get_curve_name returns a NID that identifies |group|.
   int EC_GROUP_get_curve_name(
-    ffi.Pointer<ec_group_st> group,
+    ffi.Pointer<EC_GROUP> group,
   ) {
     return _EC_GROUP_get_curve_name(
       group,
@@ -1727,7 +1727,7 @@ class BoringSsl {
   /// // EC_GROUP_get_degree returns the number of bits needed to represent an
   /// // element of the field underlying |group|.
   int EC_GROUP_get_degree(
-    ffi.Pointer<ec_group_st> group,
+    ffi.Pointer<EC_GROUP> group,
   ) {
     return _EC_GROUP_get_degree(
       group,
@@ -1742,8 +1742,8 @@ class BoringSsl {
 
   /// // EC_POINT_new returns a fresh |EC_POINT| object in the given group, or NULL
   /// // on error.
-  ffi.Pointer<ec_point_st> EC_POINT_new(
-    ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_POINT> EC_POINT_new(
+    ffi.Pointer<EC_GROUP> group,
   ) {
     return _EC_POINT_new(
       group,
@@ -1757,7 +1757,7 @@ class BoringSsl {
 
   /// // EC_POINT_free frees |point| and the data that it points to.
   void EC_POINT_free(
-    ffi.Pointer<ec_point_st> point,
+    ffi.Pointer<EC_POINT> point,
   ) {
     return _EC_POINT_free(
       point,
@@ -1776,11 +1776,11 @@ class BoringSsl {
   /// // Either |x| or |y| may be NULL to skip computing that coordinate. This is
   /// // slightly faster in the common case where only the x-coordinate is needed.
   int EC_POINT_get_affine_coordinates_GFp(
-    ffi.Pointer<ec_group_st> group,
-    ffi.Pointer<ec_point_st> point,
+    ffi.Pointer<EC_GROUP> group,
+    ffi.Pointer<EC_POINT> point,
     ffi.Pointer<BIGNUM> x,
     ffi.Pointer<BIGNUM> y,
-    ffi.Pointer<bignum_ctx> ctx,
+    ffi.Pointer<BN_CTX> ctx,
   ) {
     return _EC_POINT_get_affine_coordinates_GFp(
       group,
@@ -1803,10 +1803,10 @@ class BoringSsl {
   /// // serialised point to |cbb|. It returns one on success and zero on error.
   int EC_POINT_point2cbb(
     ffi.Pointer<CBB> out,
-    ffi.Pointer<ec_group_st> group,
-    ffi.Pointer<ec_point_st> point,
+    ffi.Pointer<EC_GROUP> group,
+    ffi.Pointer<EC_POINT> point,
     int form,
-    ffi.Pointer<bignum_ctx> ctx,
+    ffi.Pointer<BN_CTX> ctx,
   ) {
     return _EC_POINT_point2cbb(
       out,
@@ -1827,11 +1827,11 @@ class BoringSsl {
   /// // |ctx| argument may be used if not NULL. It's considered an error if |buf|
   /// // does not represent a point on the curve.
   int EC_POINT_oct2point(
-    ffi.Pointer<ec_group_st> group,
-    ffi.Pointer<ec_point_st> point,
+    ffi.Pointer<EC_GROUP> group,
+    ffi.Pointer<EC_POINT> point,
     ffi.Pointer<ffi.Uint8> buf,
     int len,
-    ffi.Pointer<bignum_ctx> ctx,
+    ffi.Pointer<BN_CTX> ctx,
   ) {
     return _EC_POINT_oct2point(
       group,
@@ -1849,7 +1849,7 @@ class BoringSsl {
 
   /// // EC_KEY_new_by_curve_name returns a fresh EC_KEY for group specified by |nid|
   /// // or NULL on error.
-  ffi.Pointer<ec_key_st> EC_KEY_new_by_curve_name(
+  ffi.Pointer<EC_KEY> EC_KEY_new_by_curve_name(
     int nid,
   ) {
     return _EC_KEY_new_by_curve_name(
@@ -1866,7 +1866,7 @@ class BoringSsl {
 
   /// // EC_KEY_free frees all the data owned by |key| and |key| itself.
   void EC_KEY_free(
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
   ) {
     return _EC_KEY_free(
       key,
@@ -1879,8 +1879,8 @@ class BoringSsl {
       _EC_KEY_free_ptr.asFunction<_dart_EC_KEY_free>();
 
   /// // EC_KEY_get0_group returns a pointer to the |EC_GROUP| object inside |key|.
-  ffi.Pointer<ec_group_st> EC_KEY_get0_group(
-    ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_GROUP> EC_KEY_get0_group(
+    ffi.Pointer<EC_KEY> key,
   ) {
     return _EC_KEY_get0_group(
       key,
@@ -1894,7 +1894,7 @@ class BoringSsl {
 
   /// // EC_KEY_get0_private_key returns a pointer to the private key inside |key|.
   ffi.Pointer<BIGNUM> EC_KEY_get0_private_key(
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
   ) {
     return _EC_KEY_get0_private_key(
       key,
@@ -1911,7 +1911,7 @@ class BoringSsl {
   /// // one on success and zero otherwise. |key| must already have had a group
   /// // configured (see |EC_KEY_set_group| and |EC_KEY_new_by_curve_name|).
   int EC_KEY_set_private_key(
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
     ffi.Pointer<BIGNUM> priv,
   ) {
     return _EC_KEY_set_private_key(
@@ -1928,8 +1928,8 @@ class BoringSsl {
 
   /// // EC_KEY_get0_public_key returns a pointer to the public key point inside
   /// // |key|.
-  ffi.Pointer<ec_point_st> EC_KEY_get0_public_key(
-    ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_POINT> EC_KEY_get0_public_key(
+    ffi.Pointer<EC_KEY> key,
   ) {
     return _EC_KEY_get0_public_key(
       key,
@@ -1947,8 +1947,8 @@ class BoringSsl {
   /// // group configured (see |EC_KEY_set_group| and |EC_KEY_new_by_curve_name|), and
   /// // |pub| must also belong to that group.
   int EC_KEY_set_public_key(
-    ffi.Pointer<ec_key_st> key,
-    ffi.Pointer<ec_point_st> pub,
+    ffi.Pointer<EC_KEY> key,
+    ffi.Pointer<EC_POINT> pub,
   ) {
     return _EC_KEY_set_public_key(
       key,
@@ -1965,7 +1965,7 @@ class BoringSsl {
   /// // EC_KEY_get_enc_flags returns the encoding flags for |key|, which is a
   /// // bitwise-OR of |EC_PKEY_*| values.
   int EC_KEY_get_enc_flags(
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
   ) {
     return _EC_KEY_get_enc_flags(
       key,
@@ -1981,7 +1981,7 @@ class BoringSsl {
   /// // EC_KEY_set_enc_flags sets the encoding flags for |key|, which is a
   /// // bitwise-OR of |EC_PKEY_*| values.
   void EC_KEY_set_enc_flags(
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
     int flags,
   ) {
     return _EC_KEY_set_enc_flags(
@@ -2001,7 +2001,7 @@ class BoringSsl {
   /// // one if all checks pass and zero otherwise. If it returns zero then detail
   /// // about the problem can be found on the error stack.
   int EC_KEY_check_key(
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
   ) {
     return _EC_KEY_check_key(
       key,
@@ -2017,7 +2017,7 @@ class BoringSsl {
   /// // (|x|, |y|). It returns one on success and zero on error. It's considered an
   /// // error if |x| and |y| do not represent a point on |key|'s curve.
   int EC_KEY_set_public_key_affine_coordinates(
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
     ffi.Pointer<BIGNUM> x,
     ffi.Pointer<BIGNUM> y,
   ) {
@@ -2040,7 +2040,7 @@ class BoringSsl {
   /// // corresponding public key and stores both in |key|. It returns one on success
   /// // or zero otherwise.
   int EC_KEY_generate_key(
-    ffi.Pointer<ec_key_st> key,
+    ffi.Pointer<EC_KEY> key,
   ) {
     return _EC_KEY_generate_key(
       key,
@@ -2062,8 +2062,8 @@ class BoringSsl {
   int ECDH_compute_key(
     ffi.Pointer<ffi.Void> out,
     int outlen,
-    ffi.Pointer<ec_point_st> pub_key,
-    ffi.Pointer<ec_key_st> priv_key,
+    ffi.Pointer<EC_POINT> pub_key,
+    ffi.Pointer<EC_KEY> priv_key,
     ffi.Pointer<ffi.NativeFunction<_typedefC_5>> kdf,
   ) {
     return _ECDH_compute_key(
@@ -2081,7 +2081,7 @@ class BoringSsl {
       _ECDH_compute_key_ptr.asFunction<_dart_ECDH_compute_key>();
 
   /// // ECDSA_SIG_new returns a fresh |ECDSA_SIG| structure or NULL on error.
-  ffi.Pointer<ecdsa_sig_st> ECDSA_SIG_new() {
+  ffi.Pointer<ECDSA_SIG> ECDSA_SIG_new() {
     return _ECDSA_SIG_new();
   }
 
@@ -2092,7 +2092,7 @@ class BoringSsl {
 
   /// // ECDSA_SIG_free frees |sig| its member |BIGNUM|s.
   void ECDSA_SIG_free(
-    ffi.Pointer<ecdsa_sig_st> sig,
+    ffi.Pointer<ECDSA_SIG> sig,
   ) {
     return _ECDSA_SIG_free(
       sig,
@@ -2107,7 +2107,7 @@ class BoringSsl {
   /// // ECDSA_SIG_get0 sets |*out_r| and |*out_s|, if non-NULL, to the two
   /// // components of |sig|.
   void ECDSA_SIG_get0(
-    ffi.Pointer<ecdsa_sig_st> sig,
+    ffi.Pointer<ECDSA_SIG> sig,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_r,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_s,
   ) {
@@ -2125,7 +2125,7 @@ class BoringSsl {
 
   /// // ECDSA_SIG_parse parses a DER-encoded ECDSA-Sig-Value structure from |cbs| and
   /// // advances |cbs|. It returns a newly-allocated |ECDSA_SIG| or NULL on error.
-  ffi.Pointer<ecdsa_sig_st> ECDSA_SIG_parse(
+  ffi.Pointer<ECDSA_SIG> ECDSA_SIG_parse(
     ffi.Pointer<CBS> cbs,
   ) {
     return _ECDSA_SIG_parse(
@@ -2142,7 +2142,7 @@ class BoringSsl {
   /// // the result to |cbb|. It returns one on success and zero on error.
   int ECDSA_SIG_marshal(
     ffi.Pointer<CBB> cbb,
-    ffi.Pointer<ecdsa_sig_st> sig,
+    ffi.Pointer<ECDSA_SIG> sig,
   ) {
     return _ECDSA_SIG_marshal(
       cbb,
@@ -2282,7 +2282,7 @@ class BoringSsl {
   late final _dart_CBB_len _CBB_len = _CBB_len_ptr.asFunction<_dart_CBB_len>();
 
   /// // RSA_new returns a new, empty |RSA| object or NULL on error.
-  ffi.Pointer<rsa_st> RSA_new() {
+  ffi.Pointer<RSA> RSA_new() {
     return _RSA_new();
   }
 
@@ -2292,7 +2292,7 @@ class BoringSsl {
   /// // RSA_free decrements the reference count of |rsa| and frees it if the
   /// // reference count drops to zero.
   void RSA_free(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
   ) {
     return _RSA_free(
       rsa,
@@ -2308,7 +2308,7 @@ class BoringSsl {
   /// // modulus, public exponent, and private exponent, respectively. If |rsa| is a
   /// // public key, the private exponent will be set to NULL.
   void RSA_get0_key(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_n,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_e,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_d,
@@ -2329,7 +2329,7 @@ class BoringSsl {
   /// // RSA_get0_factors sets |*out_p| and |*out_q|, if non-NULL, to |rsa|'s prime
   /// // factors. If |rsa| is a public key, they will be set to NULL.
   void RSA_get0_factors(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_p,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_q,
   ) {
@@ -2350,7 +2350,7 @@ class BoringSsl {
   /// // q^-1 (mod p), respectively. If |rsa| is a public key, each parameter will be
   /// // set to NULL.
   void RSA_get0_crt_params(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmp1,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmq1,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_iqmp,
@@ -2379,7 +2379,7 @@ class BoringSsl {
   /// // It is an error to call this function after |rsa| has been used for a
   /// // cryptographic operation. Construct a new |RSA| object instead.
   int RSA_set0_key(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
     ffi.Pointer<BIGNUM> n,
     ffi.Pointer<BIGNUM> e,
     ffi.Pointer<BIGNUM> d,
@@ -2406,7 +2406,7 @@ class BoringSsl {
   /// // It is an error to call this function after |rsa| has been used for a
   /// // cryptographic operation. Construct a new |RSA| object instead.
   int RSA_set0_factors(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
     ffi.Pointer<BIGNUM> p,
     ffi.Pointer<BIGNUM> q,
   ) {
@@ -2431,7 +2431,7 @@ class BoringSsl {
   /// // It is an error to call this function after |rsa| has been used for a
   /// // cryptographic operation. Construct a new |RSA| object instead.
   int RSA_set0_crt_params(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
     ffi.Pointer<BIGNUM> dmp1,
     ffi.Pointer<BIGNUM> dmq1,
     ffi.Pointer<BIGNUM> iqmp,
@@ -2459,10 +2459,10 @@ class BoringSsl {
   /// //
   /// // It returns one on success or zero on error.
   int RSA_generate_key_ex(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
     int bits,
     ffi.Pointer<BIGNUM> e,
-    ffi.Pointer<bn_gencb_st> cb,
+    ffi.Pointer<BN_GENCB> cb,
   ) {
     return _RSA_generate_key_ex(
       rsa,
@@ -2480,8 +2480,8 @@ class BoringSsl {
 
   /// // RSAPublicKey_dup allocates a fresh |RSA| and copies the public key from
   /// // |rsa| into it. It returns the fresh |RSA| object, or NULL on error.
-  ffi.Pointer<rsa_st> RSAPublicKey_dup(
-    ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> RSAPublicKey_dup(
+    ffi.Pointer<RSA> rsa,
   ) {
     return _RSAPublicKey_dup(
       rsa,
@@ -2497,7 +2497,7 @@ class BoringSsl {
   /// // they pass and zero otherwise. Opaque keys and public keys always pass. If it
   /// // returns zero then a more detailed error is available on the error queue.
   int RSA_check_key(
-    ffi.Pointer<rsa_st> rsa,
+    ffi.Pointer<RSA> rsa,
   ) {
     return _RSA_check_key(
       rsa,
@@ -2889,7 +2889,7 @@ class BoringSsl {
   /// // HMAC_CTX_new allocates and initialises a new |HMAC_CTX| and returns it, or
   /// // NULL on allocation failure. The caller must use |HMAC_CTX_free| to release
   /// // the resulting object.
-  ffi.Pointer<hmac_ctx_st> HMAC_CTX_new() {
+  ffi.Pointer<HMAC_CTX> HMAC_CTX_new() {
     return _HMAC_CTX_new();
   }
 
@@ -2900,7 +2900,7 @@ class BoringSsl {
 
   /// // HMAC_CTX_free calls |HMAC_CTX_cleanup| and then frees |ctx| itself.
   void HMAC_CTX_free(
-    ffi.Pointer<hmac_ctx_st> ctx,
+    ffi.Pointer<HMAC_CTX> ctx,
   ) {
     return _HMAC_CTX_free(
       ctx,
@@ -2922,11 +2922,11 @@ class BoringSsl {
   /// // |key| but repeating the previous |md| reuses the previous key rather than the
   /// // empty key.
   int HMAC_Init_ex(
-    ffi.Pointer<hmac_ctx_st> ctx,
+    ffi.Pointer<HMAC_CTX> ctx,
     ffi.Pointer<ffi.Void> key,
     int key_len,
     ffi.Pointer<EVP_MD> md,
-    ffi.Pointer<engine_st> impl,
+    ffi.Pointer<ENGINE> impl,
   ) {
     return _HMAC_Init_ex(
       ctx,
@@ -2945,7 +2945,7 @@ class BoringSsl {
   /// // HMAC_Update hashes |data_len| bytes from |data| into the current HMAC
   /// // operation in |ctx|. It returns one.
   int HMAC_Update(
-    ffi.Pointer<hmac_ctx_st> ctx,
+    ffi.Pointer<HMAC_CTX> ctx,
     ffi.Pointer<ffi.Uint8> data,
     int data_len,
   ) {
@@ -2967,7 +2967,7 @@ class BoringSsl {
   /// // |EVP_MAX_MD_SIZE| will always be large enough. It returns one on success or
   /// // zero on allocation failure.
   int HMAC_Final(
-    ffi.Pointer<hmac_ctx_st> ctx,
+    ffi.Pointer<HMAC_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Uint32> out_len,
   ) {
@@ -2986,7 +2986,7 @@ class BoringSsl {
   /// // HMAC_size returns the size, in bytes, of the HMAC that will be produced by
   /// // |ctx|. On entry, |ctx| must have been setup with |HMAC_Init_ex|.
   int HMAC_size(
-    ffi.Pointer<hmac_ctx_st> ctx,
+    ffi.Pointer<HMAC_CTX> ctx,
   ) {
     return _HMAC_size(
       ctx,
@@ -3602,7 +3602,7 @@ class _SymbolAddresses {
 
 class FILE extends ffi.Opaque {}
 
-class evp_cipher_st extends ffi.Struct {
+class EVP_CIPHER extends ffi.Struct {
   /// // type contains a NID identifing the cipher. (e.g. NID_aes_128_gcm.)
   @ffi.Int32()
   external int nid;
@@ -3645,9 +3645,9 @@ class evp_cipher_st extends ffi.Struct {
   external ffi.Pointer<ffi.NativeFunction<_typedefC_4>> ctrl;
 }
 
-class evp_cipher_ctx_st extends ffi.Opaque {}
+class EVP_CIPHER_CTX extends ffi.Opaque {}
 
-class engine_st extends ffi.Opaque {}
+class ENGINE extends ffi.Opaque {}
 
 class EVP_MD extends ffi.Opaque {}
 
@@ -3672,7 +3672,7 @@ class EVP_PKEY_CTX extends ffi.Opaque {}
 
 class evp_md_pctx_ops extends ffi.Opaque {}
 
-class evp_aead_st extends ffi.Opaque {}
+class EVP_AEAD extends ffi.Opaque {}
 
 /// // An EVP_AEAD_CTX represents an AEAD algorithm configured with a specific key
 /// // and message-independent IV.
@@ -3681,9 +3681,9 @@ class EVP_AEAD_CTX extends ffi.Opaque {}
 /// // Private structures.
 class EVP_PKEY extends ffi.Opaque {}
 
-class rsa_st extends ffi.Opaque {}
+class RSA extends ffi.Opaque {}
 
-class ec_key_st extends ffi.Opaque {}
+class EC_KEY extends ffi.Opaque {}
 
 /// // CRYPTO ByteString
 class CBS extends ffi.Struct {
@@ -3718,7 +3718,7 @@ class CBB extends ffi.Struct {
   external int is_child;
 }
 
-class evp_pkey_asn1_method_st extends ffi.Opaque {}
+class EVP_PKEY_ASN1_METHOD extends ffi.Opaque {}
 
 /// // Private functions
 class BIGNUM extends ffi.Struct {
@@ -3778,17 +3778,17 @@ abstract class point_conversion_form_t {
   static const int POINT_CONVERSION_HYBRID = 6;
 }
 
-class ec_group_st extends ffi.Opaque {}
+class EC_GROUP extends ffi.Opaque {}
 
-class ec_point_st extends ffi.Opaque {}
+class EC_POINT extends ffi.Opaque {}
 
-class bignum_ctx extends ffi.Opaque {}
+class BN_CTX extends ffi.Opaque {}
 
 /// // Low-level signing and verification.
 /// //
 /// // Low-level functions handle signatures as |ECDSA_SIG| structures which allow
 /// // the two values in an ECDSA signature to be handled separately.
-class ecdsa_sig_st extends ffi.Opaque {}
+class ECDSA_SIG extends ffi.Opaque {}
 
 /// // CRYPTO ByteBuilder.
 /// //
@@ -3844,21 +3844,21 @@ class cbb_buffer_st extends ffi.Struct {
 /// //
 /// // When other code needs to call a BN generation function it will often take a
 /// // BN_GENCB argument and may call the function with other argument values.
-class bn_gencb_st extends ffi.Opaque {}
+class BN_GENCB extends ffi.Opaque {}
 
-class rsa_meth_st extends ffi.Opaque {}
+class RSA_METHOD extends ffi.Opaque {}
 
 class stack_st_void extends ffi.Opaque {}
 
-class crypto_ex_data_st extends ffi.Struct {
+class CRYPTO_EX_DATA extends ffi.Struct {
   external ffi.Pointer<stack_st_void> sk;
 }
 
 class _opaque_pthread_rwlock_t extends ffi.Opaque {}
 
-class bn_mont_ctx_st extends ffi.Opaque {}
+class BN_MONT_CTX extends ffi.Opaque {}
 
-class bn_blinding_st extends ffi.Opaque {}
+class BN_BLINDING extends ffi.Opaque {}
 
 class __sbuf extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> _base;
@@ -3870,7 +3870,7 @@ class __sbuf extends ffi.Struct {
 class __sFILEX extends ffi.Opaque {}
 
 /// // Private functions
-class hmac_ctx_st extends ffi.Struct {
+class HMAC_CTX extends ffi.Struct {
   external ffi.Pointer<EVP_MD> md;
 
   external EVP_MD_CTX md_ctx;
@@ -3936,54 +3936,54 @@ typedef _c_ERR_clear_error = ffi.Void Function();
 
 typedef _dart_ERR_clear_error = void Function();
 
-typedef _c_EVP_aes_128_cbc = ffi.Pointer<evp_cipher_st> Function();
+typedef _c_EVP_aes_128_cbc = ffi.Pointer<EVP_CIPHER> Function();
 
-typedef _dart_EVP_aes_128_cbc = ffi.Pointer<evp_cipher_st> Function();
+typedef _dart_EVP_aes_128_cbc = ffi.Pointer<EVP_CIPHER> Function();
 
-typedef _c_EVP_aes_128_ctr = ffi.Pointer<evp_cipher_st> Function();
+typedef _c_EVP_aes_128_ctr = ffi.Pointer<EVP_CIPHER> Function();
 
-typedef _dart_EVP_aes_128_ctr = ffi.Pointer<evp_cipher_st> Function();
+typedef _dart_EVP_aes_128_ctr = ffi.Pointer<EVP_CIPHER> Function();
 
-typedef _c_EVP_aes_256_cbc = ffi.Pointer<evp_cipher_st> Function();
+typedef _c_EVP_aes_256_cbc = ffi.Pointer<EVP_CIPHER> Function();
 
-typedef _dart_EVP_aes_256_cbc = ffi.Pointer<evp_cipher_st> Function();
+typedef _dart_EVP_aes_256_cbc = ffi.Pointer<EVP_CIPHER> Function();
 
-typedef _c_EVP_aes_256_ctr = ffi.Pointer<evp_cipher_st> Function();
+typedef _c_EVP_aes_256_ctr = ffi.Pointer<EVP_CIPHER> Function();
 
-typedef _dart_EVP_aes_256_ctr = ffi.Pointer<evp_cipher_st> Function();
+typedef _dart_EVP_aes_256_ctr = ffi.Pointer<EVP_CIPHER> Function();
 
-typedef _c_EVP_CIPHER_CTX_new = ffi.Pointer<evp_cipher_ctx_st> Function();
+typedef _c_EVP_CIPHER_CTX_new = ffi.Pointer<EVP_CIPHER_CTX> Function();
 
-typedef _dart_EVP_CIPHER_CTX_new = ffi.Pointer<evp_cipher_ctx_st> Function();
+typedef _dart_EVP_CIPHER_CTX_new = ffi.Pointer<EVP_CIPHER_CTX> Function();
 
 typedef _c_EVP_CIPHER_CTX_free = ffi.Void Function(
-  ffi.Pointer<evp_cipher_ctx_st> ctx,
+  ffi.Pointer<EVP_CIPHER_CTX> ctx,
 );
 
 typedef _dart_EVP_CIPHER_CTX_free = void Function(
-  ffi.Pointer<evp_cipher_ctx_st> ctx,
+  ffi.Pointer<EVP_CIPHER_CTX> ctx,
 );
 
 typedef _c_EVP_CipherInit_ex = ffi.Int32 Function(
-  ffi.Pointer<evp_cipher_ctx_st> ctx,
-  ffi.Pointer<evp_cipher_st> cipher,
-  ffi.Pointer<engine_st> engine,
+  ffi.Pointer<EVP_CIPHER_CTX> ctx,
+  ffi.Pointer<EVP_CIPHER> cipher,
+  ffi.Pointer<ENGINE> engine,
   ffi.Pointer<ffi.Uint8> key,
   ffi.Pointer<ffi.Uint8> iv,
   ffi.Int32 enc,
 );
 
 typedef _dart_EVP_CipherInit_ex = int Function(
-  ffi.Pointer<evp_cipher_ctx_st> ctx,
-  ffi.Pointer<evp_cipher_st> cipher,
-  ffi.Pointer<engine_st> engine,
+  ffi.Pointer<EVP_CIPHER_CTX> ctx,
+  ffi.Pointer<EVP_CIPHER> cipher,
+  ffi.Pointer<ENGINE> engine,
   ffi.Pointer<ffi.Uint8> key,
   ffi.Pointer<ffi.Uint8> iv,
   int enc,
 );
 
 typedef _c_EVP_CipherUpdate = ffi.Int32 Function(
-  ffi.Pointer<evp_cipher_ctx_st> ctx,
+  ffi.Pointer<EVP_CIPHER_CTX> ctx,
   ffi.Pointer<ffi.Uint8> out,
   ffi.Pointer<ffi.Int32> out_len,
   ffi.Pointer<ffi.Uint8> in_1,
@@ -3991,7 +3991,7 @@ typedef _c_EVP_CipherUpdate = ffi.Int32 Function(
 );
 
 typedef _dart_EVP_CipherUpdate = int Function(
-  ffi.Pointer<evp_cipher_ctx_st> ctx,
+  ffi.Pointer<EVP_CIPHER_CTX> ctx,
   ffi.Pointer<ffi.Uint8> out,
   ffi.Pointer<ffi.Int32> out_len,
   ffi.Pointer<ffi.Uint8> in_1,
@@ -3999,31 +3999,31 @@ typedef _dart_EVP_CipherUpdate = int Function(
 );
 
 typedef _c_EVP_CipherFinal_ex = ffi.Int32 Function(
-  ffi.Pointer<evp_cipher_ctx_st> ctx,
+  ffi.Pointer<EVP_CIPHER_CTX> ctx,
   ffi.Pointer<ffi.Uint8> out,
   ffi.Pointer<ffi.Int32> out_len,
 );
 
 typedef _dart_EVP_CipherFinal_ex = int Function(
-  ffi.Pointer<evp_cipher_ctx_st> ctx,
+  ffi.Pointer<EVP_CIPHER_CTX> ctx,
   ffi.Pointer<ffi.Uint8> out,
   ffi.Pointer<ffi.Int32> out_len,
 );
 
 typedef _c_EVP_CIPHER_block_size = ffi.Uint32 Function(
-  ffi.Pointer<evp_cipher_st> cipher,
+  ffi.Pointer<EVP_CIPHER> cipher,
 );
 
 typedef _dart_EVP_CIPHER_block_size = int Function(
-  ffi.Pointer<evp_cipher_st> cipher,
+  ffi.Pointer<EVP_CIPHER> cipher,
 );
 
 typedef _c_EVP_CIPHER_iv_length = ffi.Uint32 Function(
-  ffi.Pointer<evp_cipher_st> cipher,
+  ffi.Pointer<EVP_CIPHER> cipher,
 );
 
 typedef _dart_EVP_CIPHER_iv_length = int Function(
-  ffi.Pointer<evp_cipher_st> cipher,
+  ffi.Pointer<EVP_CIPHER> cipher,
 );
 
 typedef _c_EVP_sha1 = ffi.Pointer<EVP_MD> Function();
@@ -4104,55 +4104,55 @@ typedef _dart_EVP_MD_CTX_size = int Function(
   ffi.Pointer<EVP_MD_CTX> ctx,
 );
 
-typedef _c_EVP_aead_aes_128_gcm = ffi.Pointer<evp_aead_st> Function();
+typedef _c_EVP_aead_aes_128_gcm = ffi.Pointer<EVP_AEAD> Function();
 
-typedef _dart_EVP_aead_aes_128_gcm = ffi.Pointer<evp_aead_st> Function();
+typedef _dart_EVP_aead_aes_128_gcm = ffi.Pointer<EVP_AEAD> Function();
 
-typedef _c_EVP_aead_aes_256_gcm = ffi.Pointer<evp_aead_st> Function();
+typedef _c_EVP_aead_aes_256_gcm = ffi.Pointer<EVP_AEAD> Function();
 
-typedef _dart_EVP_aead_aes_256_gcm = ffi.Pointer<evp_aead_st> Function();
+typedef _dart_EVP_aead_aes_256_gcm = ffi.Pointer<EVP_AEAD> Function();
 
 typedef _c_EVP_AEAD_key_length = ffi.IntPtr Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
 );
 
 typedef _dart_EVP_AEAD_key_length = int Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
 );
 
 typedef _c_EVP_AEAD_nonce_length = ffi.IntPtr Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
 );
 
 typedef _dart_EVP_AEAD_nonce_length = int Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
 );
 
 typedef _c_EVP_AEAD_max_overhead = ffi.IntPtr Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
 );
 
 typedef _dart_EVP_AEAD_max_overhead = int Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
 );
 
 typedef _c_EVP_AEAD_max_tag_len = ffi.IntPtr Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
 );
 
 typedef _dart_EVP_AEAD_max_tag_len = int Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
 );
 
 typedef _c_EVP_AEAD_CTX_new = ffi.Pointer<EVP_AEAD_CTX> Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
   ffi.Pointer<ffi.Uint8> key,
   ffi.IntPtr key_len,
   ffi.IntPtr tag_len,
 );
 
 typedef _dart_EVP_AEAD_CTX_new = ffi.Pointer<EVP_AEAD_CTX> Function(
-  ffi.Pointer<evp_aead_st> aead,
+  ffi.Pointer<EVP_AEAD> aead,
   ffi.Pointer<ffi.Uint8> key,
   int key_len,
   int tag_len,
@@ -4240,37 +4240,37 @@ typedef _dart_EVP_PKEY_id = int Function(
 
 typedef _c_EVP_PKEY_set1_RSA = ffi.Int32 Function(
   ffi.Pointer<EVP_PKEY> pkey,
-  ffi.Pointer<rsa_st> key,
+  ffi.Pointer<RSA> key,
 );
 
 typedef _dart_EVP_PKEY_set1_RSA = int Function(
   ffi.Pointer<EVP_PKEY> pkey,
-  ffi.Pointer<rsa_st> key,
+  ffi.Pointer<RSA> key,
 );
 
-typedef _c_EVP_PKEY_get1_RSA = ffi.Pointer<rsa_st> Function(
+typedef _c_EVP_PKEY_get1_RSA = ffi.Pointer<RSA> Function(
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
-typedef _dart_EVP_PKEY_get1_RSA = ffi.Pointer<rsa_st> Function(
+typedef _dart_EVP_PKEY_get1_RSA = ffi.Pointer<RSA> Function(
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
 typedef _c_EVP_PKEY_set1_EC_KEY = ffi.Int32 Function(
   ffi.Pointer<EVP_PKEY> pkey,
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _dart_EVP_PKEY_set1_EC_KEY = int Function(
   ffi.Pointer<EVP_PKEY> pkey,
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
-typedef _c_EVP_PKEY_get1_EC_KEY = ffi.Pointer<ec_key_st> Function(
+typedef _c_EVP_PKEY_get1_EC_KEY = ffi.Pointer<EC_KEY> Function(
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
-typedef _dart_EVP_PKEY_get1_EC_KEY = ffi.Pointer<ec_key_st> Function(
+typedef _dart_EVP_PKEY_get1_EC_KEY = ffi.Pointer<EC_KEY> Function(
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
@@ -4324,7 +4324,7 @@ typedef _c_EVP_DigestSignInit = ffi.Int32 Function(
   ffi.Pointer<EVP_MD_CTX> ctx,
   ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx,
   ffi.Pointer<EVP_MD> type,
-  ffi.Pointer<engine_st> e,
+  ffi.Pointer<ENGINE> e,
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
@@ -4332,7 +4332,7 @@ typedef _dart_EVP_DigestSignInit = int Function(
   ffi.Pointer<EVP_MD_CTX> ctx,
   ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx,
   ffi.Pointer<EVP_MD> type,
-  ffi.Pointer<engine_st> e,
+  ffi.Pointer<ENGINE> e,
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
@@ -4364,7 +4364,7 @@ typedef _c_EVP_DigestVerifyInit = ffi.Int32 Function(
   ffi.Pointer<EVP_MD_CTX> ctx,
   ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx,
   ffi.Pointer<EVP_MD> type,
-  ffi.Pointer<engine_st> e,
+  ffi.Pointer<ENGINE> e,
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
@@ -4372,7 +4372,7 @@ typedef _dart_EVP_DigestVerifyInit = int Function(
   ffi.Pointer<EVP_MD_CTX> ctx,
   ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx,
   ffi.Pointer<EVP_MD> type,
-  ffi.Pointer<engine_st> e,
+  ffi.Pointer<ENGINE> e,
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
@@ -4424,12 +4424,12 @@ typedef _dart_PKCS5_PBKDF2_HMAC = int Function(
 
 typedef _c_EVP_PKEY_CTX_new = ffi.Pointer<EVP_PKEY_CTX> Function(
   ffi.Pointer<EVP_PKEY> pkey,
-  ffi.Pointer<engine_st> e,
+  ffi.Pointer<ENGINE> e,
 );
 
 typedef _dart_EVP_PKEY_CTX_new = ffi.Pointer<EVP_PKEY_CTX> Function(
   ffi.Pointer<EVP_PKEY> pkey,
-  ffi.Pointer<engine_st> e,
+  ffi.Pointer<ENGINE> e,
 );
 
 typedef _c_EVP_PKEY_CTX_free = ffi.Void Function(
@@ -4644,214 +4644,214 @@ typedef _dart_BN_lshift = int Function(
   int n,
 );
 
-typedef _c_EC_GROUP_new_by_curve_name = ffi.Pointer<ec_group_st> Function(
+typedef _c_EC_GROUP_new_by_curve_name = ffi.Pointer<EC_GROUP> Function(
   ffi.Int32 nid,
 );
 
-typedef _dart_EC_GROUP_new_by_curve_name = ffi.Pointer<ec_group_st> Function(
+typedef _dart_EC_GROUP_new_by_curve_name = ffi.Pointer<EC_GROUP> Function(
   int nid,
 );
 
 typedef _c_EC_GROUP_free = ffi.Void Function(
-  ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_GROUP> group,
 );
 
 typedef _dart_EC_GROUP_free = void Function(
-  ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_GROUP> group,
 );
 
 typedef _c_EC_GROUP_get0_order = ffi.Pointer<BIGNUM> Function(
-  ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_GROUP> group,
 );
 
 typedef _dart_EC_GROUP_get0_order = ffi.Pointer<BIGNUM> Function(
-  ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_GROUP> group,
 );
 
 typedef _c_EC_GROUP_get_curve_name = ffi.Int32 Function(
-  ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_GROUP> group,
 );
 
 typedef _dart_EC_GROUP_get_curve_name = int Function(
-  ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_GROUP> group,
 );
 
 typedef _c_EC_GROUP_get_degree = ffi.Uint32 Function(
-  ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_GROUP> group,
 );
 
 typedef _dart_EC_GROUP_get_degree = int Function(
-  ffi.Pointer<ec_group_st> group,
+  ffi.Pointer<EC_GROUP> group,
 );
 
-typedef _c_EC_POINT_new = ffi.Pointer<ec_point_st> Function(
-  ffi.Pointer<ec_group_st> group,
+typedef _c_EC_POINT_new = ffi.Pointer<EC_POINT> Function(
+  ffi.Pointer<EC_GROUP> group,
 );
 
-typedef _dart_EC_POINT_new = ffi.Pointer<ec_point_st> Function(
-  ffi.Pointer<ec_group_st> group,
+typedef _dart_EC_POINT_new = ffi.Pointer<EC_POINT> Function(
+  ffi.Pointer<EC_GROUP> group,
 );
 
 typedef _c_EC_POINT_free = ffi.Void Function(
-  ffi.Pointer<ec_point_st> point,
+  ffi.Pointer<EC_POINT> point,
 );
 
 typedef _dart_EC_POINT_free = void Function(
-  ffi.Pointer<ec_point_st> point,
+  ffi.Pointer<EC_POINT> point,
 );
 
 typedef _c_EC_POINT_get_affine_coordinates_GFp = ffi.Int32 Function(
-  ffi.Pointer<ec_group_st> group,
-  ffi.Pointer<ec_point_st> point,
+  ffi.Pointer<EC_GROUP> group,
+  ffi.Pointer<EC_POINT> point,
   ffi.Pointer<BIGNUM> x,
   ffi.Pointer<BIGNUM> y,
-  ffi.Pointer<bignum_ctx> ctx,
+  ffi.Pointer<BN_CTX> ctx,
 );
 
 typedef _dart_EC_POINT_get_affine_coordinates_GFp = int Function(
-  ffi.Pointer<ec_group_st> group,
-  ffi.Pointer<ec_point_st> point,
+  ffi.Pointer<EC_GROUP> group,
+  ffi.Pointer<EC_POINT> point,
   ffi.Pointer<BIGNUM> x,
   ffi.Pointer<BIGNUM> y,
-  ffi.Pointer<bignum_ctx> ctx,
+  ffi.Pointer<BN_CTX> ctx,
 );
 
 typedef _c_EC_POINT_point2cbb = ffi.Int32 Function(
   ffi.Pointer<CBB> out,
-  ffi.Pointer<ec_group_st> group,
-  ffi.Pointer<ec_point_st> point,
+  ffi.Pointer<EC_GROUP> group,
+  ffi.Pointer<EC_POINT> point,
   ffi.Int32 form,
-  ffi.Pointer<bignum_ctx> ctx,
+  ffi.Pointer<BN_CTX> ctx,
 );
 
 typedef _dart_EC_POINT_point2cbb = int Function(
   ffi.Pointer<CBB> out,
-  ffi.Pointer<ec_group_st> group,
-  ffi.Pointer<ec_point_st> point,
+  ffi.Pointer<EC_GROUP> group,
+  ffi.Pointer<EC_POINT> point,
   int form,
-  ffi.Pointer<bignum_ctx> ctx,
+  ffi.Pointer<BN_CTX> ctx,
 );
 
 typedef _c_EC_POINT_oct2point = ffi.Int32 Function(
-  ffi.Pointer<ec_group_st> group,
-  ffi.Pointer<ec_point_st> point,
+  ffi.Pointer<EC_GROUP> group,
+  ffi.Pointer<EC_POINT> point,
   ffi.Pointer<ffi.Uint8> buf,
   ffi.IntPtr len,
-  ffi.Pointer<bignum_ctx> ctx,
+  ffi.Pointer<BN_CTX> ctx,
 );
 
 typedef _dart_EC_POINT_oct2point = int Function(
-  ffi.Pointer<ec_group_st> group,
-  ffi.Pointer<ec_point_st> point,
+  ffi.Pointer<EC_GROUP> group,
+  ffi.Pointer<EC_POINT> point,
   ffi.Pointer<ffi.Uint8> buf,
   int len,
-  ffi.Pointer<bignum_ctx> ctx,
+  ffi.Pointer<BN_CTX> ctx,
 );
 
-typedef _c_EC_KEY_new_by_curve_name = ffi.Pointer<ec_key_st> Function(
+typedef _c_EC_KEY_new_by_curve_name = ffi.Pointer<EC_KEY> Function(
   ffi.Int32 nid,
 );
 
-typedef _dart_EC_KEY_new_by_curve_name = ffi.Pointer<ec_key_st> Function(
+typedef _dart_EC_KEY_new_by_curve_name = ffi.Pointer<EC_KEY> Function(
   int nid,
 );
 
 typedef _c_EC_KEY_free = ffi.Void Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _dart_EC_KEY_free = void Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
-typedef _c_EC_KEY_get0_group = ffi.Pointer<ec_group_st> Function(
-  ffi.Pointer<ec_key_st> key,
+typedef _c_EC_KEY_get0_group = ffi.Pointer<EC_GROUP> Function(
+  ffi.Pointer<EC_KEY> key,
 );
 
-typedef _dart_EC_KEY_get0_group = ffi.Pointer<ec_group_st> Function(
-  ffi.Pointer<ec_key_st> key,
+typedef _dart_EC_KEY_get0_group = ffi.Pointer<EC_GROUP> Function(
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _c_EC_KEY_get0_private_key = ffi.Pointer<BIGNUM> Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _dart_EC_KEY_get0_private_key = ffi.Pointer<BIGNUM> Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _c_EC_KEY_set_private_key = ffi.Int32 Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
   ffi.Pointer<BIGNUM> priv,
 );
 
 typedef _dart_EC_KEY_set_private_key = int Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
   ffi.Pointer<BIGNUM> priv,
 );
 
-typedef _c_EC_KEY_get0_public_key = ffi.Pointer<ec_point_st> Function(
-  ffi.Pointer<ec_key_st> key,
+typedef _c_EC_KEY_get0_public_key = ffi.Pointer<EC_POINT> Function(
+  ffi.Pointer<EC_KEY> key,
 );
 
-typedef _dart_EC_KEY_get0_public_key = ffi.Pointer<ec_point_st> Function(
-  ffi.Pointer<ec_key_st> key,
+typedef _dart_EC_KEY_get0_public_key = ffi.Pointer<EC_POINT> Function(
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _c_EC_KEY_set_public_key = ffi.Int32 Function(
-  ffi.Pointer<ec_key_st> key,
-  ffi.Pointer<ec_point_st> pub,
+  ffi.Pointer<EC_KEY> key,
+  ffi.Pointer<EC_POINT> pub,
 );
 
 typedef _dart_EC_KEY_set_public_key = int Function(
-  ffi.Pointer<ec_key_st> key,
-  ffi.Pointer<ec_point_st> pub,
+  ffi.Pointer<EC_KEY> key,
+  ffi.Pointer<EC_POINT> pub,
 );
 
 typedef _c_EC_KEY_get_enc_flags = ffi.Uint32 Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _dart_EC_KEY_get_enc_flags = int Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _c_EC_KEY_set_enc_flags = ffi.Void Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
   ffi.Uint32 flags,
 );
 
 typedef _dart_EC_KEY_set_enc_flags = void Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
   int flags,
 );
 
 typedef _c_EC_KEY_check_key = ffi.Int32 Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _dart_EC_KEY_check_key = int Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _c_EC_KEY_set_public_key_affine_coordinates = ffi.Int32 Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
   ffi.Pointer<BIGNUM> x,
   ffi.Pointer<BIGNUM> y,
 );
 
 typedef _dart_EC_KEY_set_public_key_affine_coordinates = int Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
   ffi.Pointer<BIGNUM> x,
   ffi.Pointer<BIGNUM> y,
 );
 
 typedef _c_EC_KEY_generate_key = ffi.Int32 Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _dart_EC_KEY_generate_key = int Function(
-  ffi.Pointer<ec_key_st> key,
+  ffi.Pointer<EC_KEY> key,
 );
 
 typedef _typedefC_5 = ffi.Pointer<ffi.Void> Function(
@@ -4864,59 +4864,59 @@ typedef _typedefC_5 = ffi.Pointer<ffi.Void> Function(
 typedef _c_ECDH_compute_key = ffi.Int32 Function(
   ffi.Pointer<ffi.Void> out,
   ffi.IntPtr outlen,
-  ffi.Pointer<ec_point_st> pub_key,
-  ffi.Pointer<ec_key_st> priv_key,
+  ffi.Pointer<EC_POINT> pub_key,
+  ffi.Pointer<EC_KEY> priv_key,
   ffi.Pointer<ffi.NativeFunction<_typedefC_5>> kdf,
 );
 
 typedef _dart_ECDH_compute_key = int Function(
   ffi.Pointer<ffi.Void> out,
   int outlen,
-  ffi.Pointer<ec_point_st> pub_key,
-  ffi.Pointer<ec_key_st> priv_key,
+  ffi.Pointer<EC_POINT> pub_key,
+  ffi.Pointer<EC_KEY> priv_key,
   ffi.Pointer<ffi.NativeFunction<_typedefC_5>> kdf,
 );
 
-typedef _c_ECDSA_SIG_new = ffi.Pointer<ecdsa_sig_st> Function();
+typedef _c_ECDSA_SIG_new = ffi.Pointer<ECDSA_SIG> Function();
 
-typedef _dart_ECDSA_SIG_new = ffi.Pointer<ecdsa_sig_st> Function();
+typedef _dart_ECDSA_SIG_new = ffi.Pointer<ECDSA_SIG> Function();
 
 typedef _c_ECDSA_SIG_free = ffi.Void Function(
-  ffi.Pointer<ecdsa_sig_st> sig,
+  ffi.Pointer<ECDSA_SIG> sig,
 );
 
 typedef _dart_ECDSA_SIG_free = void Function(
-  ffi.Pointer<ecdsa_sig_st> sig,
+  ffi.Pointer<ECDSA_SIG> sig,
 );
 
 typedef _c_ECDSA_SIG_get0 = ffi.Void Function(
-  ffi.Pointer<ecdsa_sig_st> sig,
+  ffi.Pointer<ECDSA_SIG> sig,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_r,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_s,
 );
 
 typedef _dart_ECDSA_SIG_get0 = void Function(
-  ffi.Pointer<ecdsa_sig_st> sig,
+  ffi.Pointer<ECDSA_SIG> sig,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_r,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_s,
 );
 
-typedef _c_ECDSA_SIG_parse = ffi.Pointer<ecdsa_sig_st> Function(
+typedef _c_ECDSA_SIG_parse = ffi.Pointer<ECDSA_SIG> Function(
   ffi.Pointer<CBS> cbs,
 );
 
-typedef _dart_ECDSA_SIG_parse = ffi.Pointer<ecdsa_sig_st> Function(
+typedef _dart_ECDSA_SIG_parse = ffi.Pointer<ECDSA_SIG> Function(
   ffi.Pointer<CBS> cbs,
 );
 
 typedef _c_ECDSA_SIG_marshal = ffi.Int32 Function(
   ffi.Pointer<CBB> cbb,
-  ffi.Pointer<ecdsa_sig_st> sig,
+  ffi.Pointer<ECDSA_SIG> sig,
 );
 
 typedef _dart_ECDSA_SIG_marshal = int Function(
   ffi.Pointer<CBB> cbb,
-  ffi.Pointer<ecdsa_sig_st> sig,
+  ffi.Pointer<ECDSA_SIG> sig,
 );
 
 typedef _c_CBS_init = ffi.Void Function(
@@ -4981,126 +4981,126 @@ typedef _dart_CBB_len = int Function(
   ffi.Pointer<CBB> cbb,
 );
 
-typedef _c_RSA_new = ffi.Pointer<rsa_st> Function();
+typedef _c_RSA_new = ffi.Pointer<RSA> Function();
 
-typedef _dart_RSA_new = ffi.Pointer<rsa_st> Function();
+typedef _dart_RSA_new = ffi.Pointer<RSA> Function();
 
 typedef _c_RSA_free = ffi.Void Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
 );
 
 typedef _dart_RSA_free = void Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
 );
 
 typedef _c_RSA_get0_key = ffi.Void Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_n,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_e,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_d,
 );
 
 typedef _dart_RSA_get0_key = void Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_n,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_e,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_d,
 );
 
 typedef _c_RSA_get0_factors = ffi.Void Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_p,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_q,
 );
 
 typedef _dart_RSA_get0_factors = void Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_p,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_q,
 );
 
 typedef _c_RSA_get0_crt_params = ffi.Void Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmp1,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmq1,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_iqmp,
 );
 
 typedef _dart_RSA_get0_crt_params = void Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmp1,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmq1,
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_iqmp,
 );
 
 typedef _c_RSA_set0_key = ffi.Int32 Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<BIGNUM> n,
   ffi.Pointer<BIGNUM> e,
   ffi.Pointer<BIGNUM> d,
 );
 
 typedef _dart_RSA_set0_key = int Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<BIGNUM> n,
   ffi.Pointer<BIGNUM> e,
   ffi.Pointer<BIGNUM> d,
 );
 
 typedef _c_RSA_set0_factors = ffi.Int32 Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<BIGNUM> p,
   ffi.Pointer<BIGNUM> q,
 );
 
 typedef _dart_RSA_set0_factors = int Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<BIGNUM> p,
   ffi.Pointer<BIGNUM> q,
 );
 
 typedef _c_RSA_set0_crt_params = ffi.Int32 Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<BIGNUM> dmp1,
   ffi.Pointer<BIGNUM> dmq1,
   ffi.Pointer<BIGNUM> iqmp,
 );
 
 typedef _dart_RSA_set0_crt_params = int Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Pointer<BIGNUM> dmp1,
   ffi.Pointer<BIGNUM> dmq1,
   ffi.Pointer<BIGNUM> iqmp,
 );
 
 typedef _c_RSA_generate_key_ex = ffi.Int32 Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   ffi.Int32 bits,
   ffi.Pointer<BIGNUM> e,
-  ffi.Pointer<bn_gencb_st> cb,
+  ffi.Pointer<BN_GENCB> cb,
 );
 
 typedef _dart_RSA_generate_key_ex = int Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
   int bits,
   ffi.Pointer<BIGNUM> e,
-  ffi.Pointer<bn_gencb_st> cb,
+  ffi.Pointer<BN_GENCB> cb,
 );
 
-typedef _c_RSAPublicKey_dup = ffi.Pointer<rsa_st> Function(
-  ffi.Pointer<rsa_st> rsa,
+typedef _c_RSAPublicKey_dup = ffi.Pointer<RSA> Function(
+  ffi.Pointer<RSA> rsa,
 );
 
-typedef _dart_RSAPublicKey_dup = ffi.Pointer<rsa_st> Function(
-  ffi.Pointer<rsa_st> rsa,
+typedef _dart_RSAPublicKey_dup = ffi.Pointer<RSA> Function(
+  ffi.Pointer<RSA> rsa,
 );
 
 typedef _c_RSA_check_key = ffi.Int32 Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
 );
 
 typedef _dart_RSA_check_key = int Function(
-  ffi.Pointer<rsa_st> rsa,
+  ffi.Pointer<RSA> rsa,
 );
 
 typedef _c_OPENSSL_malloc = ffi.Pointer<ffi.Void> Function(
@@ -5169,64 +5169,64 @@ typedef _dart_HKDF = int Function(
   int info_len,
 );
 
-typedef _c_HMAC_CTX_new = ffi.Pointer<hmac_ctx_st> Function();
+typedef _c_HMAC_CTX_new = ffi.Pointer<HMAC_CTX> Function();
 
-typedef _dart_HMAC_CTX_new = ffi.Pointer<hmac_ctx_st> Function();
+typedef _dart_HMAC_CTX_new = ffi.Pointer<HMAC_CTX> Function();
 
 typedef _c_HMAC_CTX_free = ffi.Void Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
 );
 
 typedef _dart_HMAC_CTX_free = void Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
 );
 
 typedef _c_HMAC_Init_ex = ffi.Int32 Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
   ffi.Pointer<ffi.Void> key,
   ffi.IntPtr key_len,
   ffi.Pointer<EVP_MD> md,
-  ffi.Pointer<engine_st> impl,
+  ffi.Pointer<ENGINE> impl,
 );
 
 typedef _dart_HMAC_Init_ex = int Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
   ffi.Pointer<ffi.Void> key,
   int key_len,
   ffi.Pointer<EVP_MD> md,
-  ffi.Pointer<engine_st> impl,
+  ffi.Pointer<ENGINE> impl,
 );
 
 typedef _c_HMAC_Update = ffi.Int32 Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
   ffi.Pointer<ffi.Uint8> data,
   ffi.IntPtr data_len,
 );
 
 typedef _dart_HMAC_Update = int Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
   ffi.Pointer<ffi.Uint8> data,
   int data_len,
 );
 
 typedef _c_HMAC_Final = ffi.Int32 Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
   ffi.Pointer<ffi.Uint8> out,
   ffi.Pointer<ffi.Uint32> out_len,
 );
 
 typedef _dart_HMAC_Final = int Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
   ffi.Pointer<ffi.Uint8> out,
   ffi.Pointer<ffi.Uint32> out_len,
 );
 
 typedef _c_HMAC_size = ffi.IntPtr Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
 );
 
 typedef _dart_HMAC_size = int Function(
-  ffi.Pointer<hmac_ctx_st> ctx,
+  ffi.Pointer<HMAC_CTX> ctx,
 );
 
 typedef _c_RAND_bytes = ffi.Int32 Function(
@@ -5431,25 +5431,25 @@ typedef _dart_webcrypto_lookup_symbol = ffi.Pointer<ffi.Void> Function(
 );
 
 typedef _typedefC_1 = ffi.Int32 Function(
-  ffi.Pointer<evp_cipher_ctx_st>,
+  ffi.Pointer<EVP_CIPHER_CTX>,
   ffi.Pointer<ffi.Uint8>,
   ffi.Pointer<ffi.Uint8>,
   ffi.Int32,
 );
 
 typedef _typedefC_2 = ffi.Int32 Function(
-  ffi.Pointer<evp_cipher_ctx_st>,
+  ffi.Pointer<EVP_CIPHER_CTX>,
   ffi.Pointer<ffi.Uint8>,
   ffi.Pointer<ffi.Uint8>,
   ffi.IntPtr,
 );
 
 typedef _typedefC_3 = ffi.Void Function(
-  ffi.Pointer<evp_cipher_ctx_st>,
+  ffi.Pointer<EVP_CIPHER_CTX>,
 );
 
 typedef _typedefC_4 = ffi.Int32 Function(
-  ffi.Pointer<evp_cipher_ctx_st>,
+  ffi.Pointer<EVP_CIPHER_CTX>,
   ffi.Int32,
   ffi.Int32,
   ffi.Pointer<ffi.Void>,
