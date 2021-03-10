@@ -14,9 +14,9 @@
 
 import 'dart:ffi';
 import 'dart:io' show Platform;
-import 'symbols.generated.dart';
-import 'package:webcrypto/src/third_party/boringssl/generated_bindings.dart';
 
+import 'symbols.generated.dart';
+import '../bindings/generated_bindings.dart';
 import 'utils.dart';
 
 /// Dynamically load `webcrypto_lookup_symbol` function.
@@ -26,9 +26,9 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
       : DynamicLibrary.executable();
 
   try {
-    // Try to lookup the 'webcrypto_lookup_symbol' symbol
-    final ssl = BoringSsl(library);
-    final webcrypto_lookup_symbol = ssl.webcrypto_lookup_symbol;
+    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
+    final webcryptoDartDL = WebCryptoDartDL(library);
+    final webcrypto_lookup_symbol = webcryptoDartDL.webcrypto_lookup_symbol;
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
     final lookup = <T extends NativeType>(String s) =>

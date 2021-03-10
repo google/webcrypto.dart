@@ -16,8 +16,9 @@
 
 import 'dart:io' show Platform, Directory, File;
 import 'dart:ffi';
+
 import 'symbols.generated.dart';
-import '../../third_party/boringssl/generated_bindings.dart';
+import '../bindings/generated_bindings.dart';
 
 /// Get platform-dependent library filename for the binary webcrypto library.
 String get libraryFileName {
@@ -54,9 +55,9 @@ Pointer<T> Function<T extends NativeType>(String symbolName)?
   if (libraryFile.existsSync()) {
     final library = DynamicLibrary.open(libraryFile.path);
 
-    // Try to lookup the 'webcrypto_lookup_symbol' symbol
-    final ssl = BoringSsl(library);
-    final webcrypto_lookup_symbol = ssl.webcrypto_lookup_symbol;
+    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
+    final webcryptoDartDL = WebCryptoDartDL(library);
+    final webcrypto_lookup_symbol = webcryptoDartDL.webcrypto_lookup_symbol;
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
     final lookup = <T extends NativeType>(String s) =>
@@ -77,7 +78,7 @@ Pointer<T> Function<T extends NativeType>(String symbolName)?
 void initialize_dart_dl(
     Pointer<T> Function<T extends NativeType>(String) lookup) {
   final webcrypto_dart_dl_initialize =
-      BoringSsl.fromLookup(lookup).webcrypto_dart_dl_initialize;
+      WebCryptoDartDL.fromLookup(lookup).webcrypto_dart_dl_initialize;
 
   if (webcrypto_dart_dl_initialize(NativeApi.initializeApiDLData) != 1) {
     throw UnsupportedError(

@@ -106,7 +106,6 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     // Allocate an input buffer
     final inBuf = scope.allocate<ffi.Uint8>(count: bufSize);
     final inData = inBuf.asTypedList(bufSize);
-    // TODO: Migrate ssl.Bytes to ffi.Pointer<ffi.Uint8> (painful I know)
 
     // Allocate an output buffer, notice that BoringSSL says output cannot be
     // more than input size + blockSize - 1

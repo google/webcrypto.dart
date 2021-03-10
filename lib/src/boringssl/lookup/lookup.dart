@@ -15,6 +15,7 @@
 import 'dart:ffi';
 
 import '../../third_party/boringssl/generated_bindings.dart';
+import '../bindings/generated_bindings.dart';
 
 import 'lookup_symbol_dart.dart'
     if (dart.library.ui) 'lookup_symbol_flutter.dart';
@@ -22,11 +23,13 @@ import 'lookup_symbol_dart.dart'
 export 'symbols.generated.dart' show Sym;
 
 final Pointer<T> Function<T extends NativeType>(String symbolName)
-    boringsslLibrary = lookup;
+    _cachedLookup = lookup;
 
-final BoringSsl ssl = BoringSsl.fromLookup(boringsslLibrary);
+/// Gives access to BoringSSL symbols.
+final BoringSsl ssl = BoringSsl.fromLookup(_cachedLookup);
 
-// TODO(dacoharkes): Move defines somewhere.
+/// Gives access to WebCrypto symbols.
+final WebCryptoDartDL dl = WebCryptoDartDL.fromLookup(_cachedLookup);
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.

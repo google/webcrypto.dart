@@ -26,7 +26,7 @@ part of impl_ffi;
 /// function can be called again. For this reason, users should take extra care
 /// to make sure that all accesses to [key] takes an extra reference.
 void _attachFinalizerEVP_PKEY(ffi.Pointer<EVP_PKEY> key) {
-  final ret = ssl.webcrypto_dart_dl_attach_finalizer(
+  final ret = dl.webcrypto_dart_dl_attach_finalizer(
     key,
     key.cast(),
     ssl.addresses.EVP_PKEY_free.cast(),
