@@ -16,6 +16,7 @@
 library impl_ffi;
 
 import 'dart:async';
+import 'dart:ffi' show Allocator;
 import 'dart:typed_data';
 import 'dart:convert' show utf8, base64Url;
 import 'dart:ffi' as ffi;
