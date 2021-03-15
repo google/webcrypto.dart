@@ -126,7 +126,8 @@ class _HmacSecretKey implements HmacSecretKey {
 
       final size = ssl.HMAC_size(ctx);
       _checkOp(size > 0);
-      return _withAllocation(1, (ffi.Pointer<ffi.Uint32> psize) async {
+      return _withAllocation(_sslAlloc<ffi.Uint32>(),
+          (ffi.Pointer<ffi.Uint32> psize) async {
         psize.value = size;
         return _withOutPointer(size, (ffi.Pointer<ffi.Uint8> p) {
           _checkOp(ssl.HMAC_Final(ctx, p, psize) == 1);

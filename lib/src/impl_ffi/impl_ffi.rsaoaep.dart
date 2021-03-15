@@ -149,7 +149,8 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
     }
 
     return _withDataAsPointer(data, (ffi.Pointer<ffi.Uint8> input) {
-      return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
+      return _withAllocation(_sslAlloc<ffi.IntPtr>(),
+          (ffi.Pointer<ffi.IntPtr> len) {
         len.value = 0;
         _checkOpIsOne(encryptOrDecryptFn(
           ctx,

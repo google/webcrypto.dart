@@ -74,7 +74,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
     );
 
     if (isEncrypt) {
-      final outLen = scope.allocate<ffi.IntPtr>();
+      final outLen = scope<ffi.IntPtr>();
       final maxOut = data.length + ssl.EVP_AEAD_max_overhead(aead);
       return _withOutPointer(maxOut, (ffi.Pointer<ffi.Uint8> out) {
         _checkOpIsOne(ssl.EVP_AEAD_CTX_seal(
@@ -91,7 +91,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
         ));
       }).sublist(0, outLen.value);
     } else {
-      final outLen = scope.allocate<ffi.IntPtr>();
+      final outLen = scope<ffi.IntPtr>();
       return _withOutPointer(data.length, (ffi.Pointer<ffi.Uint8> out) {
         _checkOpIsOne(ssl.EVP_AEAD_CTX_open(
           ctx,

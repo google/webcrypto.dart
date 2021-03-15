@@ -113,32 +113,36 @@ String? _extractError() {
   }
 }
 
-/// Allocate [count] (default 1) size of [T] bytes.
-///
-/// Must be de-allocated with [_free].
-ffi.Pointer<T> _malloc<T extends ffi.NativeType>({int count = 1}) {
-  // TODO: Find out why OPENSSL_malloc doesn't work on Dart on Linux.
-  //       This presumably has to do with dlopen(), WEAK symbols and the fact
-  //       that the `dart` executable that ships in the Dart-SDK for Linux is
-  //       a _release build_, not a _product build_, so more symbols might be
-  //       visible. In anycase using ffi.allocate / ffi.free works fine on
-  //       the `dart` executable with the Dart-SDK for Linux.
-  //       Please note, that this does not work with the Flutter or the `dart`
-  //       binary that ships with the Flutter SDK.
-  // return ffi.allocate<T>(count: count);
-  // TODO(dacoharkes): Migrate this to an SslAllocator implements Allocator.
-  final p = ssl.OPENSSL_malloc(count * ffi.sizeOf<T>());
-  _checkOp(p.address != 0, fallback: 'allocation failure');
-  return p.cast<T>();
+class _SslAllocator implements Allocator {
+  const _SslAllocator();
+
+  /// Allocate [byteCount] bytes.
+  ///
+  /// Must be de-allocated with [free].
+  @override
+  ffi.Pointer<T> allocate<T extends ffi.NativeType>(int byteCount,
+      {int? alignment}) {
+    // TODO: Find out why OPENSSL_malloc doesn't work on Dart on Linux.
+    //       This presumably has to do with dlopen(), WEAK symbols and the fact
+    //       that the `dart` executable that ships in the Dart-SDK for Linux is
+    //       a _release build_, not a _product build_, so more symbols might be
+    //       visible. In anycase using ffi.allocate / ffi.free works fine on
+    //       the `dart` executable with the Dart-SDK for Linux.
+    //       Please note, that this does not work with the Flutter or the `dart`
+    //       binary that ships with the Flutter SDK.
+    final p = ssl.OPENSSL_malloc(byteCount);
+    _checkOp(p.address != 0, fallback: 'allocation failure');
+    return p.cast<T>();
+  }
+
+  /// Release memory allocated with [allocate].
+  @override
+  void free(ffi.Pointer pointer) {
+    ssl.OPENSSL_free(pointer.cast());
+  }
 }
 
-/// Release memory allocated with [_malloc]
-void _free<T extends ffi.NativeType>(ffi.Pointer<T> p) {
-  // If using the ffi.allocate<T>(count: count) hack from [_malloc] we must also
-  // use ffi.free(p) here. See [_malloc] for details.
-  // ffi.free(p);
-  ssl.OPENSSL_free(p.cast());
-}
+const _sslAlloc = _SslAllocator();
 
 class _ScopeEntry {
   final Object? handle;
@@ -148,7 +152,7 @@ class _ScopeEntry {
 }
 
 // Utility for tracking and releasing memory.
-class _Scope {
+class _Scope implements Allocator {
   final List<_ScopeEntry> _deferred = [];
 
   /// Defer [fn] to end of this scope.
@@ -156,18 +160,20 @@ class _Scope {
       _deferred.add(_ScopeEntry(handle, fn));
 
   /// Allocate an [ffi.Pointer<T>] in this scope.
-  ffi.Pointer<T> allocate<T extends ffi.NativeType>({int count = 1}) {
-    final p = _malloc<T>(count: count);
-    defer(() => _free(p), p);
+  @override
+  ffi.Pointer<T> allocate<T extends ffi.NativeType>(int byteCount,
+      {int? alignment}) {
+    final p = _sslAlloc.allocate<T>(byteCount);
+    defer(() => _sslAlloc.free(p), p);
     return p;
   }
 
   /// Allocate and copy [data] to an [ffi.Pointer<T>] in this scope.
   ffi.Pointer<T> dataAsPointer<T extends ffi.NativeType>(List<int> data) {
-    final p = _malloc<ffi.Uint8>(count: data.length);
+    final p = _sslAlloc<ffi.Uint8>(data.length);
     p.asTypedList(data.length).setAll(0, data);
     final result = p.cast<T>();
-    defer(() => _free(p), result);
+    defer(() => _sslAlloc.free(p), result);
     return result;
   }
 
@@ -211,35 +217,38 @@ class _Scope {
       }
     }
   }
-}
 
-/// Invoke [fn] with [ffi.Pointer<T>] of size count and release the pointer
-/// when [fn] returns.
-R _withAllocation<T extends ffi.NativeType, R>(
-  int count,
-  R Function(ffi.Pointer<T>) fn,
-) {
-  assert(R is! Future, 'avoid async blocks');
-  final p = _malloc<T>(count: count);
-  try {
-    return fn(p);
-  } finally {
-    _free(p);
+  @override
+  void free(ffi.Pointer pointer) {
+    // Does nothing, use `release` instead.
+    // Not throwing, so that this can actually be used as an Allocator.
   }
 }
 
-/// Invoke [fn] with [ffi.Pointer<T>] of size count and release the pointer
-/// when future returned by [fn] completes.
+/// Invoke [fn] with [p], and release [p] when [fn] returns.
+R _withAllocation<T extends ffi.NativeType, R>(
+  ffi.Pointer<T> p,
+  R Function(ffi.Pointer<T>) fn,
+) {
+  assert(R is! Future, 'avoid async blocks');
+  try {
+    return fn(p);
+  } finally {
+    _sslAlloc.free(p);
+  }
+}
+
+/// Invoke [fn] with [p],and release [p] when future returned by [fn]
+/// completes.
 Future<R> _withAllocationAsync<T extends ffi.NativeType, R>(
-  int count,
+  ffi.Pointer<T> p,
   FutureOr<R> Function(ffi.Pointer<T>) fn,
 ) async {
   assert(R is! Future, 'avoid nested async blocks');
-  final p = _malloc<T>(count: count);
   try {
     return await fn(p);
   } finally {
-    _free(p);
+    _sslAlloc.free(p);
   }
 }
 
@@ -253,7 +262,8 @@ Uint8List _withOutPointer<T extends ffi.NativeType>(
   int size,
   void Function(ffi.Pointer<T>) fn,
 ) {
-  return _withAllocation(size, (ffi.Pointer<ffi.Uint8> p) {
+  return _withAllocation(_sslAlloc<ffi.Uint8>(size),
+      (ffi.Pointer<ffi.Uint8> p) {
     fn(p.cast<T>());
     return Uint8List.fromList(p.asTypedList(size));
   });
@@ -268,7 +278,8 @@ R _withDataAsPointer<T extends ffi.NativeType, R>(
   List<int> data,
   R Function(ffi.Pointer<T>) fn,
 ) {
-  return _withAllocation(data.length, (ffi.Pointer<ffi.Uint8> p) {
+  return _withAllocation(_sslAlloc<ffi.Uint8>(data.length),
+      (ffi.Pointer<ffi.Uint8> p) {
     p.asTypedList(data.length).setAll(0, data);
     return fn(p.cast<T>());
   });
@@ -293,7 +304,7 @@ Future<R> _withEVP_MD_CTX<R>(
 Future<R> _withPEVP_PKEY_CTX<R>(
   FutureOr<R> Function(ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx) fn,
 ) =>
-    _withAllocationAsync(1, fn);
+    _withAllocationAsync(_sslAlloc<ffi.Pointer<EVP_PKEY_CTX>>(), fn);
 
 /// Stream bytes from [source] to [update] with [ctx], useful for streaming
 /// algorithms. Notice that chunk size from [data] may be altered.
@@ -303,7 +314,7 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
   int Function(T, ffi.Pointer<S>, int) update,
 ) async {
   const maxChunk = 4096;
-  final buffer = _malloc<ffi.Uint8>(count: maxChunk);
+  final buffer = _sslAlloc<ffi.Uint8>(maxChunk);
   try {
     final ptr = buffer.cast<S>();
     final bytes = buffer.asTypedList(maxChunk);
@@ -317,7 +328,7 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
       }
     }
   } finally {
-    _free(buffer);
+    _sslAlloc.free(buffer);
   }
 }
 
@@ -327,7 +338,7 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
 /// when [fn] returns.
 R _withDataAsCBS<R>(List<int> data, R Function(ffi.Pointer<CBS>) fn) {
   return _withDataAsPointer(data, (ffi.Pointer<ffi.Uint8> p) {
-    return _withAllocation(1, (ffi.Pointer<CBS> cbs) {
+    return _withAllocation(_sslAlloc<CBS>(), (ffi.Pointer<CBS> cbs) {
       ssl.CBS_init(cbs, p, data.length);
       return fn(cbs);
     });
@@ -337,7 +348,7 @@ R _withDataAsCBS<R>(List<int> data, R Function(ffi.Pointer<CBS>) fn) {
 /// Call [fn] with an initialized [ffi.Pointer<ssl.CBB>] and return the result
 /// as [Uint8List].
 Uint8List _withOutCBB(void Function(ffi.Pointer<CBB>) fn) {
-  return _withAllocation(1, (ffi.Pointer<CBB> cbb) {
+  return _withAllocation(_sslAlloc<CBB>(), (ffi.Pointer<CBB> cbb) {
     ssl.CBB_zero(cbb);
     try {
       _checkOp(ssl.CBB_init(cbb, 4096) == 1, fallback: 'allocation failure');

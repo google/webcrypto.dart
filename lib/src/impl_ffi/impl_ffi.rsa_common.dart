@@ -194,8 +194,8 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
     }
 
     // Public key parameters
-    final n = scope.allocate<ffi.Pointer<BIGNUM>>();
-    final e = scope.allocate<ffi.Pointer<BIGNUM>>();
+    final n = scope<ffi.Pointer<BIGNUM>>();
+    final e = scope<ffi.Pointer<BIGNUM>>();
     ssl.RSA_get0_key(rsa, n, e, ffi.nullptr);
 
     if (!isPrivateKey) {
@@ -208,19 +208,19 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
       ).toJson();
     }
 
-    final d = scope.allocate<ffi.Pointer<BIGNUM>>();
+    final d = scope<ffi.Pointer<BIGNUM>>();
     ssl.RSA_get0_key(rsa, ffi.nullptr, ffi.nullptr, d);
 
     // p, q, dp, dq, qi is optional in:
     // // https://tools.ietf.org/html/rfc7518#section-6.3.2
     // but explicitly required when exporting in Web Crypto.
-    final p = scope.allocate<ffi.Pointer<BIGNUM>>();
-    final q = scope.allocate<ffi.Pointer<BIGNUM>>();
+    final p = scope<ffi.Pointer<BIGNUM>>();
+    final q = scope<ffi.Pointer<BIGNUM>>();
     ssl.RSA_get0_factors(rsa, p, q);
 
-    final dp = scope.allocate<ffi.Pointer<BIGNUM>>();
-    final dq = scope.allocate<ffi.Pointer<BIGNUM>>();
-    final qi = scope.allocate<ffi.Pointer<BIGNUM>>();
+    final dp = scope<ffi.Pointer<BIGNUM>>();
+    final dq = scope<ffi.Pointer<BIGNUM>>();
+    final qi = scope<ffi.Pointer<BIGNUM>>();
     ssl.RSA_get0_crt_params(rsa, dp, dq, qi);
 
     return JsonWebKey(

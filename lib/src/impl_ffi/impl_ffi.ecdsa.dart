@@ -108,7 +108,8 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
       ec,
     )));
 
-    return _withAllocation(2, (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
+    return _withAllocation(_sslAlloc<ffi.Pointer<BIGNUM>>(2),
+        (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
       // Access R and S from the ecdsa signature
       final R = RS.elementAt(0);
       final S = RS.elementAt(1);
@@ -164,7 +165,8 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
         message: 'internal error formatting signature');
     scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
 
-    return _withAllocation(2, (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
+    return _withAllocation(_sslAlloc<ffi.Pointer<BIGNUM>>(2),
+        (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
       // Access R and S from the ecdsa signature
       final R = RS.elementAt(0);
       final S = RS.elementAt(1);
@@ -214,7 +216,8 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
       );
 
       await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-      return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
+      return _withAllocation(_sslAlloc<ffi.IntPtr>(),
+          (ffi.Pointer<ffi.IntPtr> len) {
         len.value = 0;
         _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
         return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {

@@ -123,7 +123,8 @@ class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
           ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, RSA_PKCS1_PADDING),
         );
         await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-        return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
+        return _withAllocation(_sslAlloc<ffi.IntPtr>(),
+            (ffi.Pointer<ffi.IntPtr> len) {
           len.value = 0;
           _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
           return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {

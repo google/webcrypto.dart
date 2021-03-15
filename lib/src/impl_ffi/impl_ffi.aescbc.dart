@@ -59,16 +59,16 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
     const bufSize = 4096;
 
     // Allocate an input buffer
-    final inBuf = scope.allocate<ffi.Uint8>(count: bufSize);
+    final inBuf = scope<ffi.Uint8>(bufSize);
     final inData = inBuf.asTypedList(bufSize);
 
     // Allocate an output buffer, notice that BoringSSL says output cannot be
     // more than input size + blockSize - 1
-    final outBuf = scope.allocate<ffi.Uint8>(count: bufSize + blockSize);
+    final outBuf = scope<ffi.Uint8>(bufSize + blockSize);
     final outData = outBuf.asTypedList(bufSize + blockSize);
 
     // Allocate and output length integer
-    final outLen = scope.allocate<ffi.Int32>();
+    final outLen = scope<ffi.Int32>();
 
     // Process data from source
     await for (final data in source) {
