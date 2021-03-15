@@ -98,7 +98,7 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
 }
 
 class _RsaPssPrivateKey implements RsaPssPrivateKey {
-  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsaPssPrivateKey(this._key, this._hash);
@@ -129,7 +129,7 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
         );
         _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
           pctx.value,
-          ssl.RSA_PKCS1_PSS_PADDING,
+          RSA_PKCS1_PSS_PADDING,
         ));
         _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(
           pctx.value,
@@ -140,7 +140,7 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
         return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
           len.value = 0;
           _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
-          return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> p) {
+          return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {
             _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
           }).sublist(0, len.value);
         });
@@ -166,7 +166,7 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
 }
 
 class _RsaPssPublicKey implements RsaPssPublicKey {
-  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<EVP_PKEY> _key;
   final _Hash _hash;
 
   _RsaPssPublicKey(this._key, this._hash);
@@ -207,7 +207,7 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
         );
         _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
           pctx.value,
-          ssl.RSA_PKCS1_PSS_PADDING,
+          RSA_PKCS1_PSS_PADDING,
         ));
         _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(
           pctx.value,
@@ -215,7 +215,7 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
         ));
         _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash.MD));
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
-        return _withDataAsPointer(signature, (ffi.Pointer<ssl.Bytes> p) {
+        return _withDataAsPointer(signature, (ffi.Pointer<ffi.Uint8> p) {
           final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
           if (result != 1) {
             // TODO: We should always clear errors, when returning from any

@@ -66,7 +66,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     assert(key.length == 16 || key.length == 32);
     final cipher =
         key.length == 16 ? ssl.EVP_aes_128_ctr() : ssl.EVP_aes_256_ctr();
-    final blockSize = ssl.AES_BLOCK_SIZE;
+    final blockSize = AES_BLOCK_SIZE;
 
     // Find the number of possible counter values, as the counter may not be
     // reused this will limit how much data we can process. If we get more data
@@ -106,14 +106,11 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     // Allocate an input buffer
     final inBuf = scope.allocate<ffi.Uint8>(count: bufSize);
     final inData = inBuf.asTypedList(bufSize);
-    final inBytes = inBuf.cast<ssl.Bytes>();
-    // TODO: Migrate ssl.Bytes to ffi.Pointer<ffi.Uint8> (painful I know)
 
     // Allocate an output buffer, notice that BoringSSL says output cannot be
     // more than input size + blockSize - 1
     final outBuf = scope.allocate<ffi.Uint8>(count: bufSize + blockSize);
     final outData = outBuf.asTypedList(bufSize + blockSize);
-    final outBytes = outBuf.cast<ssl.Bytes>();
 
     // Allocate and output length integer
     final outLen = scope.allocate<ffi.Int32>();
@@ -145,9 +142,9 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
 
           _checkOpIsOne(ssl.EVP_CipherUpdate(
             ctx,
-            outBytes,
+            outBuf,
             outLen,
-            inBytes,
+            inBuf,
             N,
           ));
           if (outLen.value > 0) {
@@ -161,7 +158,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
         // Check if it's time to wrap-around
         if (isBeforeWrapAround && bytes_until_wraparound == BigInt.zero) {
           // Output final block of data before wrap-around
-          _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+          _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBuf, outLen));
           if (outLen.value > 0) {
             yield outData.sublist(0, outLen.value);
           }
@@ -182,7 +179,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
             cipher,
             ffi.nullptr,
             scope.dataAsPointer(key),
-            counterWrappedAround.cast<ssl.Bytes>(),
+            counterWrappedAround,
             encrypt ? 1 : 0,
           ));
 
@@ -193,7 +190,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     }
 
     // Output final block
-    _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBytes, outLen));
+    _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBuf, outLen));
     if (outLen.value > 0) {
       yield outData.sublist(0, outLen.value);
     }

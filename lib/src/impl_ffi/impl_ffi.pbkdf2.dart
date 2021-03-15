@@ -59,7 +59,7 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
 
     final scope = _Scope();
     try {
-      return _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Bytes> out) {
+      return _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Uint8> out) {
         _checkOpIsOne(ssl.PKCS5_PBKDF2_HMAC(
           scope.dataAsPointer(_key),
           _key.length,

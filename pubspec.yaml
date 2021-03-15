@@ -13,13 +13,13 @@
 # limitations under the License.
 
 name: webcrypto
-version: 0.5.0
+version: 0.5.1
 description: Cross-platform implementation of Web Cryptography APIs for Flutter.
 homepage: https://github.com/google/webcrypto.dart
 
 environment:
-  sdk: '>=2.12.0-259.9.beta <3.0.0'
-  flutter: '>=1.24.0-10.2.pre'
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: '>=2.0.0'
 
 dependencies:
   ffi: ^1.0.0
@@ -33,6 +33,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
+  ffigen: ^2.3.0
   test: ^1.16.0
   yaml: ^3.0.0
   pedantic: ^1.9.0

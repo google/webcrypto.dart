@@ -25,11 +25,11 @@ part of impl_ffi;
 /// the VM (optimizer) determines that no code-path passing [key] to an FFI
 /// function can be called again. For this reason, users should take extra care
 /// to make sure that all accesses to [key] takes an extra reference.
-void _attachFinalizerEVP_PKEY(ffi.Pointer<ssl.EVP_PKEY> key) {
+void _attachFinalizerEVP_PKEY(ffi.Pointer<EVP_PKEY> key) {
   final ret = dl.webcrypto_dart_dl_attach_finalizer(
     key,
     key.cast(),
-    ssl.EVP_PKEY_free_.cast(),
+    ssl.addresses.EVP_PKEY_free.cast(),
     // We don't really have an estimate of how much space the EVP_PKEY structure
     // takes up, but if we make it some non-trivial size then hopefully the GC
     // will prioritize freeing them.
@@ -43,7 +43,7 @@ void _attachFinalizerEVP_PKEY(ffi.Pointer<ssl.EVP_PKEY> key) {
 /// Create an [ssl.EVP_PKEY] with finalizer attached.
 ///
 /// See [_attachFinalizerEVP_PKEY] for notes on how the finalizer works.
-ffi.Pointer<ssl.EVP_PKEY> _createEVP_PKEYwithFinalizer() {
+ffi.Pointer<EVP_PKEY> _createEVP_PKEYwithFinalizer() {
   final key = ssl.EVP_PKEY_new();
   _checkOp(key.address != 0, fallback: 'allocation failure');
   _attachFinalizerEVP_PKEY(key);
@@ -102,7 +102,7 @@ String? _extractError() {
       return null;
     }
     const N = 4096; // Max error message size
-    final data = _withOutPointer(N, (ffi.Pointer<ssl.Bytes> p) {
+    final data = _withOutPointer(N, (ffi.Pointer<ffi.Int8> p) {
       ssl.ERR_error_string_n(err, p, N);
     });
     // Take everything until '\0'
@@ -126,6 +126,7 @@ ffi.Pointer<T> _malloc<T extends ffi.NativeType>({int count = 1}) {
   //       Please note, that this does not work with the Flutter or the `dart`
   //       binary that ships with the Flutter SDK.
   // return ffi.allocate<T>(count: count);
+  // TODO(dacoharkes): Migrate this to an SslAllocator implements Allocator.
   final p = ssl.OPENSSL_malloc(count * ffi.sizeOf<T>());
   _checkOp(p.address != 0, fallback: 'allocation failure');
   return p.cast<T>();
@@ -136,7 +137,7 @@ void _free<T extends ffi.NativeType>(ffi.Pointer<T> p) {
   // If using the ffi.allocate<T>(count: count) hack from [_malloc] we must also
   // use ffi.free(p) here. See [_malloc] for details.
   // ffi.free(p);
-  ssl.OPENSSL_free(p.cast<ssl.Data>());
+  ssl.OPENSSL_free(p.cast());
 }
 
 class _ScopeEntry {
@@ -273,10 +274,10 @@ R _withDataAsPointer<T extends ffi.NativeType, R>(
   });
 }
 
-/// Invoke [fn] with an [ffi.Pointer<ssl.EVP_MD_CTX>] that is free'd when
+/// Invoke [fn] with an [ffi.Pointer<EVP_MD_CTX>] that is free'd when
 /// [fn] returns.
 Future<R> _withEVP_MD_CTX<R>(
-  FutureOr<R> Function(ffi.Pointer<ssl.EVP_MD_CTX>) fn,
+  FutureOr<R> Function(ffi.Pointer<EVP_MD_CTX>) fn,
 ) async {
   final ctx = ssl.EVP_MD_CTX_new();
   _checkOp(ctx.address != 0, fallback: 'allocation error');
@@ -290,7 +291,7 @@ Future<R> _withEVP_MD_CTX<R>(
 /// Invoke [fn] with an [ffi.Pointer<ffi.Pointer<ssl.EVP_PKEY_CTX>>] that is
 /// free'd when [fn] returns.
 Future<R> _withPEVP_PKEY_CTX<R>(
-  FutureOr<R> Function(ffi.Pointer<ffi.Pointer<ssl.EVP_PKEY_CTX>> pctx) fn,
+  FutureOr<R> Function(ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx) fn,
 ) =>
     _withAllocationAsync(1, fn);
 
@@ -324,9 +325,9 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
 ///
 /// Both the [ssl.CBS] and the [ssl.Bytes] pointer allocated will be released
 /// when [fn] returns.
-R _withDataAsCBS<R>(List<int> data, R Function(ffi.Pointer<ssl.CBS>) fn) {
-  return _withDataAsPointer(data, (ffi.Pointer<ssl.Bytes> p) {
-    return _withAllocation(1, (ffi.Pointer<ssl.CBS> cbs) {
+R _withDataAsCBS<R>(List<int> data, R Function(ffi.Pointer<CBS>) fn) {
+  return _withDataAsPointer(data, (ffi.Pointer<ffi.Uint8> p) {
+    return _withAllocation(1, (ffi.Pointer<CBS> cbs) {
       ssl.CBS_init(cbs, p, data.length);
       return fn(cbs);
     });
@@ -335,8 +336,8 @@ R _withDataAsCBS<R>(List<int> data, R Function(ffi.Pointer<ssl.CBS>) fn) {
 
 /// Call [fn] with an initialized [ffi.Pointer<ssl.CBB>] and return the result
 /// as [Uint8List].
-Uint8List _withOutCBB(void Function(ffi.Pointer<ssl.CBB>) fn) {
-  return _withAllocation(1, (ffi.Pointer<ssl.CBB> cbb) {
+Uint8List _withOutCBB(void Function(ffi.Pointer<CBB>) fn) {
+  return _withAllocation(1, (ffi.Pointer<CBB> cbb) {
     ssl.CBB_zero(cbb);
     try {
       _checkOp(ssl.CBB_init(cbb, 4096) == 1, fallback: 'allocation failure');
@@ -344,7 +345,7 @@ Uint8List _withOutCBB(void Function(ffi.Pointer<ssl.CBB>) fn) {
       _checkOp(ssl.CBB_flush(cbb) == 1);
       final bytes = ssl.CBB_data(cbb);
       final len = ssl.CBB_len(cbb);
-      return Uint8List.fromList(bytes.cast<ffi.Uint8>().asTypedList(len));
+      return Uint8List.fromList(bytes.asTypedList(len));
     } finally {
       ssl.CBB_cleanup(cbb);
     }

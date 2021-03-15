@@ -19,13 +19,13 @@ int _ecCurveToNID(EllipticCurve curve) {
   ArgumentError.checkNotNull(curve, 'curve');
 
   if (curve == EllipticCurve.p256) {
-    return ssl.NID_X9_62_prime256v1;
+    return NID_X9_62_prime256v1;
   }
   if (curve == EllipticCurve.p384) {
-    return ssl.NID_secp384r1;
+    return NID_secp384r1;
   }
   if (curve == EllipticCurve.p521) {
-    return ssl.NID_secp521r1;
+    return NID_secp521r1;
   }
   // This should never happen!
   throw UnsupportedError('curve "$curve" is not supported');
@@ -33,13 +33,13 @@ int _ecCurveToNID(EllipticCurve curve) {
 
 /// Get [EllipticCurve] from matching BoringSSL `ssl.NID_...`.
 EllipticCurve _ecCurveFromNID(int nid) {
-  if (nid == ssl.NID_X9_62_prime256v1) {
+  if (nid == NID_X9_62_prime256v1) {
     return EllipticCurve.p256;
   }
-  if (nid == ssl.NID_secp384r1) {
+  if (nid == NID_secp384r1) {
     return EllipticCurve.p384;
   }
-  if (nid == ssl.NID_secp521r1) {
+  if (nid == NID_secp521r1) {
     return EllipticCurve.p521;
   }
   // This should never happen!
@@ -64,12 +64,12 @@ String _ecCurveToJwkCrv(EllipticCurve curve) {
 
 /// Perform some post-import validation for EC keys.
 void _validateEllipticCurveKey(
-  ffi.Pointer<ssl.EVP_PKEY> key,
+  ffi.Pointer<EVP_PKEY> key,
   EllipticCurve curve,
 ) {
   final scope = _Scope();
   try {
-    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_EC,
+    _checkData(ssl.EVP_PKEY_id(key) == EVP_PKEY_EC,
         message: 'key is not an EC key');
 
     final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
@@ -82,7 +82,7 @@ void _validateEllipticCurveKey(
     // leave a flag, such that exporting the private key won't include the
     // public key.
     final encFlags = ssl.EC_KEY_get_enc_flags(ec);
-    ssl.EC_KEY_set_enc_flags(ec, encFlags & ~ssl.EC_PKEY_NO_PUBKEY);
+    ssl.EC_KEY_set_enc_flags(ec, encFlags & ~EC_PKEY_NO_PUBKEY);
 
     // Check the curve of the imported key
     final nid = ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(ec));
@@ -93,7 +93,7 @@ void _validateEllipticCurveKey(
   }
 }
 
-ffi.Pointer<ssl.EVP_PKEY> _importPkcs8EcPrivateKey(
+ffi.Pointer<EVP_PKEY> _importPkcs8EcPrivateKey(
   List<int> keyData,
   EllipticCurve curve,
 ) {
@@ -105,7 +105,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importPkcs8EcPrivateKey(
   return key;
 }
 
-ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
+ffi.Pointer<EVP_PKEY> _importSpkiEcPublicKey(
   List<int> keyData,
   EllipticCurve curve,
 ) {
@@ -121,7 +121,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiEcPublicKey(
   return key;
 }
 
-ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
+ffi.Pointer<EVP_PKEY> _importJwkEcPrivateOrPublicKey(
   JsonWebKey jwk,
   EllipticCurve curve, {
   required bool isPrivateKey,
@@ -176,7 +176,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
     ));
 
     // Utility to decode a JWK parameter.
-    ffi.Pointer<ssl.BIGNUM> decodeParam(String val, String prop) {
+    ffi.Pointer<BIGNUM> decodeParam(String val, String prop) {
       final bytes = _jwkDecodeBase64UrlNoPadding(val, prop);
       _checkData(
         bytes.length == paramSize,
@@ -221,7 +221,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkEcPrivateOrPublicKey(
   }
 }
 
-ffi.Pointer<ssl.EVP_PKEY> _importRawEcPublicKey(
+ffi.Pointer<EVP_PKEY> _importRawEcPublicKey(
   List<int> keyData,
   EllipticCurve curve,
 ) {
@@ -237,7 +237,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importRawEcPublicKey(
     _checkOp(pub.address != 0, fallback: 'internal point allocation error');
     try {
       // Read raw public key
-      _withDataAsPointer(keyData, (ffi.Pointer<ssl.Bytes> p) {
+      _withDataAsPointer(keyData, (ffi.Pointer<ffi.Uint8> p) {
         _checkDataIsOne(
           ssl.EC_POINT_oct2point(
               ssl.EC_KEY_get0_group(ec), pub, p, keyData.length, ffi.nullptr),
@@ -261,7 +261,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importRawEcPublicKey(
   }
 }
 
-Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
+Uint8List _exportRawEcPublicKey(ffi.Pointer<EVP_PKEY> key) {
   final scope = _Scope();
   try {
     final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
@@ -274,7 +274,7 @@ Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
             cbb,
             ssl.EC_KEY_get0_group(ec),
             ssl.EC_KEY_get0_public_key(ec),
-            ssl.POINT_CONVERSION_UNCOMPRESSED,
+            point_conversion_form_t.POINT_CONVERSION_UNCOMPRESSED,
             ffi.nullptr,
           ),
           fallback: 'formatting failed');
@@ -285,7 +285,7 @@ Uint8List _exportRawEcPublicKey(ffi.Pointer<ssl.EVP_PKEY> key) {
 }
 
 Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
-  ffi.Pointer<ssl.EVP_PKEY> key, {
+  ffi.Pointer<EVP_PKEY> key, {
   required bool isPrivateKey,
   String? jwkUse,
 }) {
@@ -312,17 +312,17 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
       ffi.nullptr,
     ));
 
-    final xAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ssl.Bytes> p) {
+    final xAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ffi.Uint8> p) {
       _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, x));
     });
-    final yAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ssl.Bytes> p) {
+    final yAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ffi.Uint8> p) {
       _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, y));
     });
 
     Uint8List? dAsBytes;
     if (isPrivateKey) {
       final d = ssl.EC_KEY_get0_private_key(ec);
-      dAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ssl.Bytes> p) {
+      dAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ffi.Uint8> p) {
         _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, d));
       });
     }
@@ -340,8 +340,7 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
   }
 }
 
-KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
-    _generateEcKeyPair(
+KeyPair<ffi.Pointer<EVP_PKEY>, ffi.Pointer<EVP_PKEY>> _generateEcKeyPair(
   EllipticCurve curve,
 ) {
   final scope = _Scope();

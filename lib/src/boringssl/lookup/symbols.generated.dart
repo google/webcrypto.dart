@@ -307,3 +307,5 @@ extension SymName on Sym {
     return _SymName[index];
   }
 }
+
+Sym symFromString(String string) => Sym.values[_SymName.indexOf(string)];

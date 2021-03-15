@@ -1,0 +1,265 @@
+name: BoringSsl
+description: 'Bindings to BoringSSL.'
+output: 'lib/src/third_party/boringssl/generated_bindings.dart'
+headers:
+  entry-points:
+    - 'third_party/boringssl/src/include/openssl/*.h'
+compiler-opts: '-Ithird_party/boringssl/src/include'
+comments:
+  style: any
+  length: full
+sort: true
+typedef-map:
+  # TODO(dacoharkes): https://github.com/dart-lang/sdk/issues/42563 https://github.com/dart-lang/ffigen/issues/7
+  size_t: IntPtr
+macros:
+  include:
+    - AES_BLOCK_SIZE
+    - EC_PKEY_NO_PUBKEY
+    - EVP_PKEY_EC
+    - EVP_PKEY_RSA
+    - HKDF_R_OUTPUT_TOO_LARGE
+    - NID_secp384r1
+    - NID_secp521r1
+    - NID_X9_62_prime256v1
+    - RSA_PKCS1_OAEP_PADDING
+    - RSA_PKCS1_PADDING
+    - RSA_PKCS1_PSS_PADDING
+enums:
+  include:
+    - point_conversion_form_t
+unnamed-enums:
+  include:
+    - ERR_LIB_HKDF
+structs:
+  include:
+    - 'nothing'
+  rename:
+    bignum_ctx: BN_CTX
+    bignum_st: BIGNUM
+    bn_blinding_st: BN_BLINDING
+    bn_gencb_st: BN_GENCB
+    bn_mont_ctx_st: BN_MONT_CTX
+    cbb_st: CBB
+    cbs_st: CBS
+    crypto_ex_data_st: CRYPTO_EX_DATA
+    ecdsa_sig_st: ECDSA_SIG
+    ec_group_st: EC_GROUP
+    ec_key_st: EC_KEY
+    ec_point_st: EC_POINT
+    engine_st: ENGINE
+    env_md_ctx_st: EVP_MD_CTX
+    env_md_st: EVP_MD
+    evp_aead_st: EVP_AEAD
+    evp_cipher_ctx_st: EVP_CIPHER_CTX
+    evp_cipher_st: EVP_CIPHER
+    evp_pkey_asn1_method_st: EVP_PKEY_ASN1_METHOD
+    evp_pkey_ctx_st: EVP_PKEY_CTX
+    evp_pkey_st: EVP_PKEY
+    hmac_ctx_st: HMAC_CTX
+    rsa_meth_st: RSA_METHOD
+    rsa_st: RSA
+  dependency-only: opaque
+functions:
+  include:
+    # Keep consistent with src/symbols.yaml.
+    - BN_bin2bn
+    - BN_bn2bin_padded
+    - BN_free
+    - BN_new
+    - BN_num_bytes
+    - BN_set_word
+    - CBB_cleanup
+    - CBB_data
+    - CBB_flush
+    - CBB_init
+    - CBB_len
+    - CBB_zero
+    - CBS_init
+    - CRYPTO_memcmp
+    - ECDH_compute_key
+    - ECDSA_SIG_free
+    - ECDSA_SIG_get0
+    - ECDSA_SIG_marshal
+    - ECDSA_SIG_new
+    - ECDSA_SIG_parse
+    - EC_GROUP_get0_order
+    - EC_GROUP_get_curve_name
+    - EC_GROUP_get_degree
+    - EC_KEY_check_key
+    - EC_KEY_free
+    - EC_KEY_generate_key
+    - EC_KEY_get0_group
+    - EC_KEY_get0_private_key
+    - EC_KEY_get0_public_key
+    - EC_KEY_get_enc_flags
+    - EC_KEY_new_by_curve_name
+    - EC_KEY_set_enc_flags
+    - EC_KEY_set_private_key
+    - EC_KEY_set_public_key
+    - EC_KEY_set_public_key_affine_coordinates
+    - EC_POINT_free
+    - EC_POINT_get_affine_coordinates_GFp
+    - EC_POINT_new
+    - EC_POINT_oct2point
+    - EC_POINT_point2cbb
+    - ERR_clear_error
+    - ERR_error_string_n
+    - ERR_get_error
+    - ERR_peek_error
+    - EVP_aead_aes_128_gcm
+    - EVP_aead_aes_256_gcm
+    - EVP_AEAD_CTX_free
+    - EVP_AEAD_CTX_new
+    - EVP_AEAD_CTX_open
+    - EVP_AEAD_CTX_seal
+    - EVP_AEAD_max_overhead
+    - EVP_aes_128_cbc
+    - EVP_aes_128_ctr
+    - EVP_aes_256_cbc
+    - EVP_aes_256_ctr
+    - EVP_CIPHER_CTX_free
+    - EVP_CIPHER_CTX_new
+    - EVP_CipherFinal_ex
+    - EVP_CipherInit_ex
+    - EVP_CIPHER_iv_length
+    - EVP_CipherUpdate
+    - EVP_DigestFinal
+    - EVP_DigestInit
+    - EVP_DigestSignFinal
+    - EVP_DigestSignInit
+    - EVP_DigestSignUpdate
+    - EVP_DigestUpdate
+    - EVP_DigestVerifyFinal
+    - EVP_DigestVerifyInit
+    - EVP_DigestVerifyUpdate
+    - EVP_marshal_private_key
+    - EVP_marshal_public_key
+    - EVP_MD_CTX_free
+    - EVP_MD_CTX_new
+    - EVP_MD_CTX_size
+    - EVP_parse_private_key
+    - EVP_parse_public_key
+    - EVP_PKEY_CTX_free
+    - EVP_PKEY_CTX_new
+    - EVP_PKEY_CTX_set0_rsa_oaep_label
+    - EVP_PKEY_CTX_set_rsa_mgf1_md
+    - EVP_PKEY_CTX_set_rsa_oaep_md
+    - EVP_PKEY_CTX_set_rsa_padding
+    - EVP_PKEY_CTX_set_rsa_pss_saltlen
+    - EVP_PKEY_decrypt
+    - EVP_PKEY_decrypt_init
+    - EVP_PKEY_encrypt
+    - EVP_PKEY_encrypt_init
+    - EVP_PKEY_free
+    - EVP_PKEY_get1_EC_KEY
+    - EVP_PKEY_get1_RSA
+    - EVP_PKEY_id
+    - EVP_PKEY_new
+    - EVP_PKEY_set1_EC_KEY
+    - EVP_PKEY_set1_RSA
+    - EVP_sha1
+    - EVP_sha256
+    - EVP_sha384
+    - EVP_sha512
+    - HKDF
+    - HMAC_CTX_free
+    - HMAC_CTX_new
+    - HMAC_Final
+    - HMAC_Init_ex
+    - HMAC_size
+    - HMAC_Update
+    - OPENSSL_malloc
+    - PKCS5_PBKDF2_HMAC
+    - RAND_bytes
+    - RSA_check_key
+    - RSA_free
+    - RSA_generate_key_ex
+    - RSA_get0_crt_params
+    - RSA_get0_factors
+    - RSA_get0_key
+    - RSA_new
+    - RSAPublicKey_dup
+    - RSA_set0_crt_params
+    - RSA_set0_factors
+    - RSA_set0_key
+    # These are referenced, just need to be sorted right.
+    - OPENSSL_free
+    - OPENSSL_memdup
+    - EVP_MD_size
+    # Not used but maybe they should be:
+    - EVP_AEAD_nonce_length
+    - EVP_AEAD_max_tag_len
+    # Not used by nice to have, maybe, or maybe we remove / comment them out
+    - EVP_AEAD_key_length
+    - BN_value_one
+    - BN_add
+    - BN_sub
+    - BN_cmp
+    - BN_lshift
+    - EVP_CIPHER_block_size
+    - EC_GROUP_new_by_curve_name
+    - EC_GROUP_free
+    - EVP_PKEY_set_type
+    # Self testing only..
+    - BORINGSSL_self_test
+  symbol-address:
+    include:
+      - EVP_PKEY_free
+preamble: |
+  /* ====================================================================
+   * Copyright (c) 1998-2001 The OpenSSL Project.  All rights reserved.
+   *
+   * Redistribution and use in source and binary forms, with or without
+   * modification, are permitted provided that the following conditions
+   * are met:
+   *
+   * 1. Redistributions of source code must retain the above copyright
+   *    notice, this list of conditions and the following disclaimer.
+   *
+   * 2. Redistributions in binary form must reproduce the above copyright
+   *    notice, this list of conditions and the following disclaimer in
+   *    the documentation and/or other materials provided with the
+   *    distribution.
+   *
+   * 3. All advertising materials mentioning features or use of this
+   *    software must display the following acknowledgment:
+   *    "This product includes software developed by the OpenSSL Project
+   *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
+   *
+   * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
+   *    endorse or promote products derived from this software without
+   *    prior written permission. For written permission, please contact
+   *    openssl-core@openssl.org.
+   *
+   * 5. Products derived from this software may not be called "OpenSSL"
+   *    nor may "OpenSSL" appear in their names without prior written
+   *    permission of the OpenSSL Project.
+   *
+   * 6. Redistributions of any form whatsoever must retain the following
+   *    acknowledgment:
+   *    "This product includes software developed by the OpenSSL Project
+   *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
+   *
+   * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+   * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+   * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+   * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+   * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+   * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+   * OF THE POSSIBILITY OF SUCH DAMAGE.
+   * ====================================================================
+   *
+   * This product includes cryptographic software written by Eric Young
+   * (eay@cryptsoft.com).  This product includes software written by Tim
+   * Hudson (tjh@cryptsoft.com). */
+  // ignore_for_file: camel_case_types
+  // ignore_for_file: non_constant_identifier_names
+  // ignore_for_file: unused_element
+  // ignore_for_file: unused_field
+

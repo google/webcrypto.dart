@@ -1,3 +1,7 @@
+# 0.5.1
+ * Uses `package:ffigen` to generate the Dart bindings.
+ * Bumped SDK constraint to Dart 2.12.
+
 # 0.5.0
  * Rolled forward all dependencies to Dart 2.12 previews.
  * Migrated breaking changes for [package:ffi](https://pub.dev/packages/ffi) version `1.0.0`.

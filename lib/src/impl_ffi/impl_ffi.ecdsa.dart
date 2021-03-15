@@ -89,7 +89,7 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
 ///
 /// See also: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#69
 Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
-  ffi.Pointer<ssl.EVP_PKEY> key,
+  ffi.Pointer<EVP_PKEY> key,
   Uint8List signature,
 ) {
   final scope = _Scope();
@@ -108,7 +108,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
       ec,
     )));
 
-    return _withAllocation(2, (ffi.Pointer<ffi.Pointer<ssl.BIGNUM>> RS) {
+    return _withAllocation(2, (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
       // Access R and S from the ecdsa signature
       final R = RS.elementAt(0);
       final S = RS.elementAt(1);
@@ -117,11 +117,11 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
       // Dump R and S to return value.
       return _withOutPointer(N * 2, (ffi.Pointer<ffi.Uint8> p) {
         _checkOpIsOne(
-          ssl.BN_bn2bin_padded(p.elementAt(0).cast<ssl.Bytes>(), N, R.value),
+          ssl.BN_bn2bin_padded(p.elementAt(0), N, R.value),
           fallback: 'internal error formatting R in signature',
         );
         _checkOpIsOne(
-          ssl.BN_bn2bin_padded(p.elementAt(N).cast<ssl.Bytes>(), N, S.value),
+          ssl.BN_bn2bin_padded(p.elementAt(N), N, S.value),
           fallback: 'internal error formatting S in signature',
         );
       });
@@ -138,7 +138,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
 ///
 /// See also: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#111
 Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
-  ffi.Pointer<ssl.EVP_PKEY> key,
+  ffi.Pointer<EVP_PKEY> key,
   List<int> signature,
 ) {
   final scope = _Scope();
@@ -164,7 +164,7 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
         message: 'internal error formatting signature');
     scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
 
-    return _withAllocation(2, (ffi.Pointer<ffi.Pointer<ssl.BIGNUM>> RS) {
+    return _withAllocation(2, (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
       // Access R and S from the ecdsa signature
       final R = RS.elementAt(0);
       final S = RS.elementAt(1);
@@ -172,13 +172,11 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
 
       _withDataAsPointer(signature, (ffi.Pointer<ffi.Uint8> p) {
         _checkOp(
-          ssl.BN_bin2bn(p.elementAt(0).cast<ssl.Bytes>(), N, R.value).address !=
-              0,
+          ssl.BN_bin2bn(p.elementAt(0), N, R.value).address != 0,
           fallback: 'allocation failure',
         );
         _checkOp(
-          ssl.BN_bin2bn(p.elementAt(N).cast<ssl.Bytes>(), N, S.value).address !=
-              0,
+          ssl.BN_bin2bn(p.elementAt(N), N, S.value).address != 0,
           fallback: 'allocation failure',
         );
       });
@@ -193,7 +191,7 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
 }
 
 class _EcdsaPrivateKey implements EcdsaPrivateKey {
-  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<EVP_PKEY> _key;
 
   _EcdsaPrivateKey(this._key);
 
@@ -219,7 +217,7 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
       return _withAllocation(1, (ffi.Pointer<ffi.IntPtr> len) {
         len.value = 0;
         _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
-        return _withOutPointer(len.value, (ffi.Pointer<ssl.Bytes> p) {
+        return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {
           _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
         }).sublist(0, len.value);
       });
@@ -240,7 +238,7 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
 }
 
 class _EcdsaPublicKey implements EcdsaPublicKey {
-  final ffi.Pointer<ssl.EVP_PKEY> _key;
+  final ffi.Pointer<EVP_PKEY> _key;
 
   _EcdsaPublicKey(this._key);
 
@@ -276,7 +274,7 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
           ssl.EVP_DigestVerifyInit(ctx, pctx, _hash, ffi.nullptr, _key),
         );
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
-        return _withDataAsPointer(sig, (ffi.Pointer<ssl.Bytes> p) {
+        return _withDataAsPointer(sig, (ffi.Pointer<ffi.Uint8> p) {
           final result = ssl.EVP_DigestVerifyFinal(ctx, p, sig.length);
           if (result != 1) {
             // TODO: We should always clear errors, when returning from any

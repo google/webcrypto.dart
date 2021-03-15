@@ -50,7 +50,7 @@ class _HkdfSecretKey implements HkdfSecretKey {
 
     final scope = _Scope();
     try {
-      return _withOutPointer(lengthInBytes, (ffi.Pointer<ssl.Bytes> out) {
+      return _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Uint8> out) {
         final r = ssl.HKDF(
           out,
           lengthInBytes,
@@ -64,8 +64,8 @@ class _HkdfSecretKey implements HkdfSecretKey {
         );
         if (r != 1) {
           final packed_error = ssl.ERR_peek_error();
-          if (ssl.ERR_GET_LIB(packed_error) == ssl.ERR_LIB_HKDF &&
-              ssl.ERR_GET_REASON(packed_error) == ssl.HKDF_R_OUTPUT_TOO_LARGE) {
+          if (ERR_GET_LIB(packed_error) == ERR_LIB_HKDF &&
+              ERR_GET_REASON(packed_error) == HKDF_R_OUTPUT_TOO_LARGE) {
             ssl.ERR_clear_error();
             throw _OperationError(
               'Length specified for HkdfSecretKey.deriveBits is too long',

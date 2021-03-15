@@ -17,7 +17,7 @@ import 'dart:convert';
 import 'dart:ffi' as ffi;
 
 import 'package:ffi/ffi.dart' as ffi;
-import 'package:webcrypto/src/boringssl/boringssl.dart' as ssl;
+import 'package:webcrypto/src/boringssl/lookup/lookup.dart' show ssl;
 
 import 'utils.dart';
 
@@ -37,7 +37,7 @@ Future<T> checkErrorStack<T>(FutureOr<T> Function() fn) async {
         return ret;
       }
       const N = 4096; // Max error message size
-      final p = ffi.calloc<ssl.Bytes>(N);
+      final p = ffi.calloc<ffi.Int8>(N);
       try {
         ssl.ERR_error_string_n(err, p, N);
         final data = p.cast<ffi.Uint8>().asTypedList(N);

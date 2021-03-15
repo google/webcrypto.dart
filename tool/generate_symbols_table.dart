@@ -103,6 +103,8 @@ Future<void> main() async {
     '  }',
     '}',
     '',
+    'Sym symFromString(String string) => Sym.values[_SymName.indexOf(string)];',
+    '',
   ].join('\n'));
 
   print('Done');

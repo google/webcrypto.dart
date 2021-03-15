@@ -14,14 +14,14 @@
 
 part of impl_ffi;
 
-ffi.Pointer<ssl.EVP_PKEY> _importPkcs8RsaPrivateKey(List<int> keyData) {
+ffi.Pointer<EVP_PKEY> _importPkcs8RsaPrivateKey(List<int> keyData) {
   final scope = _Scope();
   try {
     final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
     _checkData(key.address != 0, fallback: 'unable to parse key');
     _attachFinalizerEVP_PKEY(key);
 
-    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
+    _checkData(ssl.EVP_PKEY_id(key) == EVP_PKEY_RSA,
         message: 'key is not an RSA key');
 
     final rsa = ssl.EVP_PKEY_get1_RSA(key);
@@ -36,14 +36,14 @@ ffi.Pointer<ssl.EVP_PKEY> _importPkcs8RsaPrivateKey(List<int> keyData) {
   }
 }
 
-ffi.Pointer<ssl.EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
+ffi.Pointer<EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
   final scope = _Scope();
   try {
     final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
     _checkData(key.address != 0, fallback: 'unable to parse key');
     _attachFinalizerEVP_PKEY(key);
 
-    _checkData(ssl.EVP_PKEY_id(key) == ssl.EVP_PKEY_RSA,
+    _checkData(ssl.EVP_PKEY_id(key) == EVP_PKEY_RSA,
         message: 'key is not an RSA key');
 
     final rsa = ssl.EVP_PKEY_get1_RSA(key);
@@ -58,7 +58,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importSpkiRsaPublicKey(List<int> keyData) {
   }
 }
 
-ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
+ffi.Pointer<EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
   JsonWebKey jwk, {
   required bool isPrivateKey,
   required String expectedAlg,
@@ -92,7 +92,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
     // TODO: Consider rejecting keys with key_ops inconsistent with isPrivateKey
     //       See also JWK import logic for EC keys
 
-    ffi.Pointer<ssl.BIGNUM> readBN(String value, String prop) {
+    ffi.Pointer<BIGNUM> readBN(String value, String prop) {
       final bin = _jwkDecodeBase64UrlNoPadding(value, prop);
       checkJwk(bin.isNotEmpty, prop, 'must not be empty');
       checkJwk(
@@ -173,7 +173,7 @@ ffi.Pointer<ssl.EVP_PKEY> _importJwkRsaPrivateOrPublicKey(
 }
 
 Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
-  ffi.Pointer<ssl.EVP_PKEY> key, {
+  ffi.Pointer<EVP_PKEY> key, {
   required bool isPrivateKey,
   required String jwkAlg,
   required String jwkUse,
@@ -184,9 +184,9 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
     _checkOp(rsa.address != 0, fallback: 'internal key type error');
     scope.defer(() => ssl.RSA_free(rsa));
 
-    String encodeBN(ffi.Pointer<ssl.BIGNUM> bn) {
+    String encodeBN(ffi.Pointer<BIGNUM> bn) {
       final N = ssl.BN_num_bytes(bn);
-      final result = _withOutPointer(N, (ffi.Pointer<ssl.Bytes> p) {
+      final result = _withOutPointer(N, (ffi.Pointer<ffi.Uint8> p) {
         _checkOpIsOne(ssl.BN_bn2bin_padded(p, N, bn));
       });
       assert(result.length == 1 || result[0] != 0);
@@ -194,8 +194,8 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
     }
 
     // Public key parameters
-    final n = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
-    final e = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    final n = scope.allocate<ffi.Pointer<BIGNUM>>();
+    final e = scope.allocate<ffi.Pointer<BIGNUM>>();
     ssl.RSA_get0_key(rsa, n, e, ffi.nullptr);
 
     if (!isPrivateKey) {
@@ -208,19 +208,19 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
       ).toJson();
     }
 
-    final d = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    final d = scope.allocate<ffi.Pointer<BIGNUM>>();
     ssl.RSA_get0_key(rsa, ffi.nullptr, ffi.nullptr, d);
 
     // p, q, dp, dq, qi is optional in:
     // // https://tools.ietf.org/html/rfc7518#section-6.3.2
     // but explicitly required when exporting in Web Crypto.
-    final p = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
-    final q = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    final p = scope.allocate<ffi.Pointer<BIGNUM>>();
+    final q = scope.allocate<ffi.Pointer<BIGNUM>>();
     ssl.RSA_get0_factors(rsa, p, q);
 
-    final dp = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
-    final dq = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
-    final qi = scope.allocate<ffi.Pointer<ssl.BIGNUM>>();
+    final dp = scope.allocate<ffi.Pointer<BIGNUM>>();
+    final dq = scope.allocate<ffi.Pointer<BIGNUM>>();
+    final qi = scope.allocate<ffi.Pointer<BIGNUM>>();
     ssl.RSA_get0_crt_params(rsa, dp, dq, qi);
 
     return JsonWebKey(
@@ -241,8 +241,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
   }
 }
 
-_KeyPair<ffi.Pointer<ssl.EVP_PKEY>, ffi.Pointer<ssl.EVP_PKEY>>
-    _generateRsaKeyPair(
+_KeyPair<ffi.Pointer<EVP_PKEY>, ffi.Pointer<EVP_PKEY>> _generateRsaKeyPair(
   int modulusLength,
   BigInt publicExponent,
 ) {

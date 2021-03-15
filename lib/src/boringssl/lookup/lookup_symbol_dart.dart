@@ -13,11 +13,10 @@
 // limitations under the License.
 
 import 'dart:ffi';
-import 'symbols.generated.dart';
 import 'utils.dart';
 
 /// Dynamically load `webcrypto_lookup_symbol` function.
-final Pointer<Void> Function(Sym) lookupSymbol = () {
+final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
   final lookup = lookupLibraryInDotDartTool();
   if (lookup != null) {
     return lookup;
