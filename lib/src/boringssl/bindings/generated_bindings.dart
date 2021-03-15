@@ -35,34 +35,13 @@ class WebCryptoDartDL {
           lookup)
       : _lookup = lookup;
 
-  /// // Initialize Dart API with dynamic linking.
-  /// //
-  /// // Must be called with `NativeApi.initializeApiDLData` from `dart:ffi`, before
-  /// // using other functions.
-  /// //
-  /// // Returns 1 on success.
-  int webcrypto_dart_dl_initialize(
-    ffi.Pointer<ffi.Void> initialize_api_dl_data,
-  ) {
-    return _webcrypto_dart_dl_initialize(
-      initialize_api_dl_data,
-    );
-  }
-
-  late final _webcrypto_dart_dl_initialize_ptr =
-      _lookup<ffi.NativeFunction<_c_webcrypto_dart_dl_initialize>>(
-          'webcrypto_dart_dl_initialize');
-  late final _dart_webcrypto_dart_dl_initialize _webcrypto_dart_dl_initialize =
-      _webcrypto_dart_dl_initialize_ptr
-          .asFunction<_dart_webcrypto_dart_dl_initialize>();
-
-  /// // Attach a finalizer for pointer to object, such that `finalizer(pointer)` will
-  /// // be called when `object` is collected by the Dart garbage collector.
-  /// //
-  /// // The external_allocation_size is used by the Dart garbage collector as a hint
-  /// // about the size of the external allocation.
-  /// //
-  /// // Returns 1 on success.
+  /// Attach a finalizer for pointer to object, such that `finalizer(pointer)` will
+  /// be called when `object` is collected by the Dart garbage collector.
+  ///
+  /// The external_allocation_size is used by the Dart garbage collector as a hint
+  /// about the size of the external allocation.
+  ///
+  /// Returns 1 on success.
   int webcrypto_dart_dl_attach_finalizer(
     Object object,
     ffi.Pointer<ffi.Void> pointer,
@@ -85,8 +64,29 @@ class WebCryptoDartDL {
       _webcrypto_dart_dl_attach_finalizer_ptr
           .asFunction<_dart_webcrypto_dart_dl_attach_finalizer>();
 
-  /// // Function to lookup BoringSSL symbols based on index in the Sym enum.
-  /// // See src/symbols.yaml for details.
+  /// Initialize Dart API with dynamic linking.
+  ///
+  /// Must be called with `NativeApi.initializeApiDLData` from `dart:ffi`, before
+  /// using other functions.
+  ///
+  /// Returns 1 on success.
+  int webcrypto_dart_dl_initialize(
+    ffi.Pointer<ffi.Void> initialize_api_dl_data,
+  ) {
+    return _webcrypto_dart_dl_initialize(
+      initialize_api_dl_data,
+    );
+  }
+
+  late final _webcrypto_dart_dl_initialize_ptr =
+      _lookup<ffi.NativeFunction<_c_webcrypto_dart_dl_initialize>>(
+          'webcrypto_dart_dl_initialize');
+  late final _dart_webcrypto_dart_dl_initialize _webcrypto_dart_dl_initialize =
+      _webcrypto_dart_dl_initialize_ptr
+          .asFunction<_dart_webcrypto_dart_dl_initialize>();
+
+  /// Function to lookup BoringSSL symbols based on index in the Sym enum.
+  /// See src/symbols.yaml for details.
   ffi.Pointer<ffi.Void> webcrypto_lookup_symbol(
     int index,
   ) {
@@ -104,14 +104,6 @@ class WebCryptoDartDL {
 
 class _Dart_Handle extends ffi.Opaque {}
 
-typedef _c_webcrypto_dart_dl_initialize = ffi.Int32 Function(
-  ffi.Pointer<ffi.Void> initialize_api_dl_data,
-);
-
-typedef _dart_webcrypto_dart_dl_initialize = int Function(
-  ffi.Pointer<ffi.Void> initialize_api_dl_data,
-);
-
 typedef webcrypto_finalizer_t = ffi.Void Function(
   ffi.Pointer<ffi.Void>,
 );
@@ -128,6 +120,14 @@ typedef _dart_webcrypto_dart_dl_attach_finalizer = int Function(
   ffi.Pointer<ffi.Void> pointer,
   ffi.Pointer<ffi.NativeFunction<webcrypto_finalizer_t>> finalizer,
   int external_allocation_size,
+);
+
+typedef _c_webcrypto_dart_dl_initialize = ffi.Int32 Function(
+  ffi.Pointer<ffi.Void> initialize_api_dl_data,
+);
+
+typedef _dart_webcrypto_dart_dl_initialize = int Function(
+  ffi.Pointer<ffi.Void> initialize_api_dl_data,
 );
 
 typedef _c_webcrypto_lookup_symbol = ffi.Pointer<ffi.Void> Function(

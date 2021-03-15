@@ -42,6 +42,9 @@
 #  - `lib/src/boringssl/lookup/symbols.generated.dart`
 # will be generated using `tool/generate_symbols_table.dart`, using the symbols
 # listed in this file.
+#
+# Keep consistent with lib/src/third_party/boringssl/ffigen.yaml and
+# lib/src/boringssl/bindings/ffigen.yaml.
 - webcrypto_dart_dl_initialize
 - webcrypto_dart_dl_attach_finalizer
 - BN_bin2bn

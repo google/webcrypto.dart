@@ -5,7 +5,7 @@ headers:
   entry-points:
     - src/webcrypto_dart_dl.h
     - src/webcrypto.c
-compiler-opts: '-Ithird_party/dart-sdk/src/runtime/ -Ithird_party/boringssl/src/include -I/Library/Developer/CommandLineTools/usr/lib/clang/12.0.0/include'
+compiler-opts: '-Ithird_party/dart-sdk/src/runtime/ -Ithird_party/boringssl/src/include'
 comments:
   style: any
   length: full
@@ -31,6 +31,7 @@ structs:
   dependency-only: opaque
 functions:
   include:
+    # Keep consistent with src/symbols.yaml.
     - webcrypto_dart_dl_attach_finalizer
     - webcrypto_dart_dl_initialize
     - webcrypto_lookup_symbol

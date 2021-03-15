@@ -32,7 +32,7 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
     final lookup = <T extends NativeType>(String s) =>
-        webcrypto_lookup_symbol(s.symbol.index).cast<T>();
+        webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
 
     // Initialize the dynamic linking with Dart.
     initialize_dart_dl(lookup);

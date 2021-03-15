@@ -22,7 +22,6 @@ void main(List<String> arguments) async {
     'run',
     'ffigen',
     '--config=$root/lib/src/boringssl/bindings/ffigen.yaml',
-    '--verbose fine'
   ]);
 
   final generateBoringSsl = Process.run('dart', [

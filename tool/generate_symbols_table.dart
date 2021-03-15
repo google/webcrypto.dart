@@ -103,12 +103,7 @@ Future<void> main() async {
     '  }',
     '}',
     '',
-    'extension SymName2 on String {',
-    '  /// Get name of symbol in `libcrypto.so` from BoringSSL.',
-    '  Sym get symbol {',
-    '    return Sym.values[_SymName.indexOf(this)];',
-    '  }',
-    '}',
+    'Sym symFromString(String string) => Sym.values[_SymName.indexOf(string)];',
     '',
   ].join('\n'));
 
