@@ -1,3 +1,7 @@
+# 0.5.2
+
+* Migrates `dart:ffi`s generic `sizeOf` uses, which will be removed in Dart 2.13.
+
 # 0.5.1
  * Uses `package:ffigen` to generate the Dart bindings.
  * Bumped SDK constraint to Dart 2.12.
