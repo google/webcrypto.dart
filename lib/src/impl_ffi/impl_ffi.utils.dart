@@ -14,54 +14,34 @@
 
 part of impl_ffi;
 
-/// Attach a finalizer for [key], this means that [ssl.EVP_PKEY_free] will
-/// automatically be called with [key] is garbage collected by Dart.
-///
-/// This takes ownership of [key], and the caller **may not** call
-/// [ssl.EVP_PKEY_free].
-///
-/// Callers should be ware that the Dart GC may collect [key] as soon as it
-/// deems the object to not be in use anymore. This can happy at any point when
-/// the VM (optimizer) determines that no code-path passing [key] to an FFI
-/// function can be called again. For this reason, users should take extra care
-/// to make sure that all accesses to [key] takes an extra reference.
-void _attachFinalizerEVP_PKEY(ffi.Pointer<EVP_PKEY> key) {
-  final ret = dl.webcrypto_dart_dl_attach_finalizer(
-    key,
-    key.cast(),
-    ssl.addresses.EVP_PKEY_free.cast(),
-    // We don't really have an estimate of how much space the EVP_PKEY structure
-    // takes up, but if we make it some non-trivial size then hopefully the GC
-    // will prioritize freeing them.
-    4096,
-  );
-  if (ret != 1) {
-    throw AssertionError('package:webcrypto failed to attached finalizer');
-  }
-}
-
-/// Create an [ssl.EVP_PKEY] with finalizer attached.
-///
-/// See [_attachFinalizerEVP_PKEY] for notes on how the finalizer works.
-ffi.Pointer<EVP_PKEY> _createEVP_PKEYwithFinalizer() {
-  final key = ssl.EVP_PKEY_new();
-  _checkOp(key.address != 0, fallback: 'allocation failure');
-  _attachFinalizerEVP_PKEY(key);
-  return key;
-}
-
+/// Function that can't be inlined to be used for preventing [obj] from being
+/// garbage collected.
 @pragma('vm:never-inline')
-Object _finalizerReachabilityFence(Object obj) => obj;
+Object _finalizerReachabilityFence(Object obj) {
+  return obj;
+}
 
+/// Wrapper around [EVP_PKEY] which attaches finalizer and ensures that the
+/// [_finalizerReachabilityFence] is used after usage.
+///
+/// The [_finalizerReachabilityFence] ensures that the [_EvpPKey] is not garbage
+/// collected while the wrapped key is use. Thus, we can be sure the finalizer
+/// won't be called while the wrapped key is in use.
 class _EvpPKey {
   final ffi.Pointer<EVP_PKEY> _pkey;
 
+  /// Allocate new [EVP_PKEY], attach finalizer and return the wrapped key.
   factory _EvpPKey() {
     final _pkey = ssl.EVP_PKEY_new();
     _checkOp(_pkey.address != 0, fallback: 'allocation failure');
     return _EvpPKey.wrap(_pkey);
   }
 
+  /// Wrap existing [EVP_PKEY], this will attach a finalizer.
+  ///
+  /// After this, the wrapped key may only be used within a callback passed to
+  /// [use]. Otherwise, the garbage collect may be calling the finalizer while
+  /// the key is in use.
   _EvpPKey.wrap(this._pkey) {
     final ret = dl.webcrypto_dart_dl_attach_finalizer(
       this,
@@ -77,6 +57,9 @@ class _EvpPKey {
     }
   }
 
+  /// Use the wrapped [EVP_PKEY] in callback [fn].
+  ///
+  /// Note. [fn] is not allowed to return a [Future].
   T use<T>(T Function(ffi.Pointer<EVP_PKEY> pkey) fn) {
     try {
       return fn(_pkey);
@@ -86,20 +69,32 @@ class _EvpPKey {
   }
 }
 
+/// Extension of native function that takes a [EVP_PKEY], making it easy to call
+/// using a wrapped [_EvpPKey].
 extension<T> on T Function(ffi.Pointer<EVP_PKEY>) {
+  /// Invoke this function with unwrapped [key].
   T invoke(_EvpPKey key) => key.use((pkey) => this(pkey));
 }
 
+/// Extension of native function that takes a [EVP_PKEY], making it easy to call
+/// using a wrapped [_EvpPKey].
 extension<T, A1> on T Function(ffi.Pointer<EVP_PKEY>, A1) {
+  /// Invoke this function with unwrapped [key].
   T invoke(_EvpPKey key, A1 arg1) => key.use((pkey) => this(pkey, arg1));
 }
 
+/// Extension of native function that takes a [EVP_PKEY], making it easy to call
+/// using a wrapped [_EvpPKey].
 extension<T, A1> on T Function(A1, ffi.Pointer<EVP_PKEY>) {
+  /// Invoke this function with unwrapped [key].
   T invoke(A1 arg1, _EvpPKey key) => key.use((pkey) => this(arg1, pkey));
 }
 
+/// Extension of native function that takes a [EVP_PKEY], making it easy to call
+/// using a wrapped [_EvpPKey].
 extension<T, A1, A2, A3, A4> on T Function(
     A1, A2, A3, A4, ffi.Pointer<EVP_PKEY>) {
+  /// Invoke this function with unwrapped [key].
   T invoke(
     A1 arg1,
     A2 arg2,

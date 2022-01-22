@@ -89,7 +89,7 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
 ///
 /// See also: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#69
 Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
-  ffi.Pointer<EVP_PKEY> key,
+  _EvpPKey key,
   Uint8List signature,
 ) {
   final scope = _Scope();
@@ -100,7 +100,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
     scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
 
     // Read EC key and get the number of bytes required to encode R and S.
-    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
+    final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
@@ -139,13 +139,13 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
 ///
 /// See also: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ecdsa.cc#111
 Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
-  ffi.Pointer<EVP_PKEY> key,
+  _EvpPKey key,
   List<int> signature,
 ) {
   final scope = _Scope();
   try {
     // Read EC key and get the number of bytes required to encode R and S.
-    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
+    final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
@@ -193,7 +193,7 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
 }
 
 class _EcdsaPrivateKey implements EcdsaPrivateKey {
-  final ffi.Pointer<EVP_PKEY> _key;
+  final _EvpPKey _key;
 
   _EcdsaPrivateKey(this._key);
 
@@ -211,9 +211,13 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
     final _hash = _Hash.fromHash(hash).MD;
 
     final sig = await _withEVP_MD_CTX((ctx) async {
-      _checkOpIsOne(
-        ssl.EVP_DigestSignInit(ctx, ffi.nullptr, _hash, ffi.nullptr, _key),
-      );
+      _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
+        ctx,
+        ffi.nullptr,
+        _hash,
+        ffi.nullptr,
+        _key,
+      ));
 
       await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
       return _withAllocation(_sslAlloc<ffi.IntPtr>(),
@@ -235,13 +239,13 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   @override
   Future<Uint8List> exportPkcs8Key() async {
     return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_private_key(cbb, _key) == 1);
+      _checkOp(ssl.EVP_marshal_private_key.invoke(cbb, _key) == 1);
     });
   }
 }
 
 class _EcdsaPublicKey implements EcdsaPublicKey {
-  final ffi.Pointer<EVP_PKEY> _key;
+  final _EvpPKey _key;
 
   _EcdsaPublicKey(this._key);
 
@@ -273,9 +277,13 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
 
     return await _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
-        _checkOpIsOne(
-          ssl.EVP_DigestVerifyInit(ctx, pctx, _hash, ffi.nullptr, _key),
-        );
+        _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
+          ctx,
+          pctx,
+          _hash,
+          ffi.nullptr,
+          _key,
+        ));
         await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
         return _withDataAsPointer(sig, (ffi.Pointer<ffi.Uint8> p) {
           final result = ssl.EVP_DigestVerifyFinal(ctx, p, sig.length);
@@ -302,7 +310,7 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
   @override
   Future<Uint8List> exportSpkiKey() async {
     return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_public_key(cbb, _key) == 1);
+      _checkOp(ssl.EVP_marshal_public_key.invoke(cbb, _key) == 1);
     });
   }
 }
