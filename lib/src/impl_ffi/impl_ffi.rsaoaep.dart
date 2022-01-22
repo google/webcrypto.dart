@@ -104,7 +104,7 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
 ///  * [initFn] as [ssl.EVP_PKEY_encrypt_init] or [ssl.EVP_PKEY_decrypt_init] ,
 ///  * [encryptOrDecryptFn] as [ssl.EVP_PKEY_encrypt] or [ssl.EVP_PKEY_decrypt].
 Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
-  ffi.Pointer<EVP_PKEY> key,
+  _EvpPKey key,
   ffi.Pointer<EVP_MD> md,
   // ssl.EVP_PKEY_encrypt_init
   int Function(ffi.Pointer<EVP_PKEY_CTX>) initFn,
@@ -120,7 +120,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   List<int> data, {
   List<int>? label,
 }) async {
-  final ctx = ssl.EVP_PKEY_CTX_new(key, ffi.nullptr);
+  final ctx = ssl.EVP_PKEY_CTX_new.invoke(key, ffi.nullptr);
   _checkOp(ctx.address != 0, fallback: 'allocation error');
   try {
     _checkOpIsOne(initFn(ctx));
@@ -176,7 +176,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
 }
 
 class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
-  final ffi.Pointer<EVP_PKEY> _key;
+  final _EvpPKey _key;
   final _Hash _hash;
 
   _RsaOaepPrivateKey(this._key, this._hash);
@@ -205,13 +205,13 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   @override
   Future<Uint8List> exportPkcs8Key() async {
     return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_private_key(cbb, _key) == 1);
+      _checkOp(ssl.EVP_marshal_private_key.invoke(cbb, _key) == 1);
     });
   }
 }
 
 class _RsaOaepPublicKey implements RsaOaepPublicKey {
-  final ffi.Pointer<EVP_PKEY> _key;
+  final _EvpPKey _key;
   final _Hash _hash;
 
   _RsaOaepPublicKey(this._key, this._hash);
@@ -240,7 +240,7 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
   @override
   Future<Uint8List> exportSpkiKey() async {
     return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_public_key(cbb, _key) == 1);
+      _checkOp(ssl.EVP_marshal_public_key.invoke(cbb, _key) == 1);
     });
   }
 }

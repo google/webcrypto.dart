@@ -50,6 +50,72 @@ ffi.Pointer<EVP_PKEY> _createEVP_PKEYwithFinalizer() {
   return key;
 }
 
+@pragma('vm:never-inline')
+Object _finalizerReachabilityFence(Object obj) => obj;
+
+class _EvpPKey {
+  final ffi.Pointer<EVP_PKEY> _pkey;
+
+  factory _EvpPKey() {
+    final _pkey = ssl.EVP_PKEY_new();
+    _checkOp(_pkey.address != 0, fallback: 'allocation failure');
+    return _EvpPKey.wrap(_pkey);
+  }
+
+  _EvpPKey.wrap(this._pkey) {
+    final ret = dl.webcrypto_dart_dl_attach_finalizer(
+      this,
+      _pkey.cast(),
+      ssl.addresses.EVP_PKEY_free.cast(),
+      // We don't really have an estimate of how much space the EVP_PKEY structure
+      // takes up, but if we make it some non-trivial size then hopefully the GC
+      // will prioritize freeing them.
+      4096,
+    );
+    if (ret != 1) {
+      throw AssertionError('package:webcrypto failed to attached finalizer');
+    }
+  }
+
+  T use<T>(T Function(ffi.Pointer<EVP_PKEY> pkey) fn) {
+    try {
+      return fn(_pkey);
+    } finally {
+      _finalizerReachabilityFence(this);
+    }
+  }
+}
+
+extension<T> on T Function(ffi.Pointer<EVP_PKEY>) {
+  T invoke(_EvpPKey key) => key.use((pkey) => this(pkey));
+}
+
+extension<T, A1> on T Function(ffi.Pointer<EVP_PKEY>, A1) {
+  T invoke(_EvpPKey key, A1 arg1) => key.use((pkey) => this(pkey, arg1));
+}
+
+extension<T, A1> on T Function(A1, ffi.Pointer<EVP_PKEY>) {
+  T invoke(A1 arg1, _EvpPKey key) => key.use((pkey) => this(arg1, pkey));
+}
+
+extension<T, A1, A2, A3, A4> on T Function(
+    A1, A2, A3, A4, ffi.Pointer<EVP_PKEY>) {
+  T invoke(
+    A1 arg1,
+    A2 arg2,
+    A3 arg3,
+    A4 arg4,
+    _EvpPKey key,
+  ) =>
+      key.use((pkey) => this(
+            arg1,
+            arg2,
+            arg3,
+            arg4,
+            pkey,
+          ));
+}
+
 /// Throw [OperationError] if [condition] is `false`.
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
