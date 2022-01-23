@@ -141,13 +141,13 @@ Future<subtle.CryptoKey> _importJsonWebKey(
     // Notice that we also strip 'key_ops' and 'ext' in [_exportJsonWebKey].
     jwkObj.key_ops = null;
     jwkObj.ext = null;
-    final k = await subtle.promiseAsFuture(subtle.importJsonWebKey(
+    final k = await subtle.importJsonWebKey(
       'jwk',
-      subtle.jsonWebKeytoJs(jwkObj),
+      jwkObj,
       algorithm,
       true, // extractable, keys should always be extractable.
       usages,
-    ));
+    );
     if (k.type != expectedType) {
       throw ArgumentError.value(jwk, 'jwk', 'must be a "$expectedType" key');
     }
@@ -165,13 +165,13 @@ Future<subtle.CryptoKey> _importKey(
   bool extractable = true, // most keys should always be extractable
 }) {
   return _handleDomException(() async {
-    final k = await subtle.promiseAsFuture(subtle.importKey(
+    final k = await subtle.importKey(
       format,
       Uint8List.fromList(keyData),
       algorithm,
       extractable,
       usages,
-    ));
+    );
     if (k.type != expectedType) {
       throw ArgumentError.value(
           keyData, 'keyData', 'must be a "$expectedType" key');
@@ -189,11 +189,11 @@ Future<Uint8List> _sign(
   ArgumentError.checkNotNull(data, 'data');
 
   return _handleDomException(() async {
-    final result = await subtle.promiseAsFuture(subtle.sign(
+    final result = await subtle.sign(
       algorithm,
       key,
       Uint8List.fromList(data),
-    ));
+    );
     return result.asUint8List();
   });
 }
@@ -209,12 +209,12 @@ Future<bool> _verify(
   ArgumentError.checkNotNull(data, 'data');
 
   return _handleDomException(() async {
-    return await subtle.promiseAsFuture(subtle.verify(
+    return await subtle.verify(
       algorithm,
       key,
       Uint8List.fromList(signature),
       Uint8List.fromList(data),
-    ));
+    );
   });
 }
 
@@ -227,11 +227,11 @@ Future<Uint8List> _encrypt(
   ArgumentError.checkNotNull(data, 'data');
 
   return _handleDomException(() async {
-    final result = await subtle.promiseAsFuture(subtle.encrypt(
+    final result = await subtle.encrypt(
       algorithm,
       key,
       Uint8List.fromList(data),
-    ));
+    );
     return result.asUint8List();
   });
 }
@@ -245,11 +245,11 @@ Future<Uint8List> _decrypt(
   ArgumentError.checkNotNull(data, 'data');
 
   return _handleDomException(() async {
-    final result = await subtle.promiseAsFuture(subtle.decrypt(
+    final result = await subtle.decrypt(
       algorithm,
       key,
       Uint8List.fromList(data),
-    ));
+    );
     return result.asUint8List();
   });
 }
@@ -264,11 +264,11 @@ Future<Uint8List> _deriveBits(
   ArgumentError.checkNotNull(length, 'length');
 
   return _handleDomException(() async {
-    final result = await subtle.promiseAsFuture(subtle.deriveBits(
+    final result = await subtle.deriveBits(
       algorithm,
       key,
       length,
-    ));
+    );
     return result.asUint8List();
   }, invalidAccessErrorIsArgumentError: invalidAccessErrorIsArgumentError);
 }
@@ -281,7 +281,7 @@ Future<Uint8List> _exportKey(
   ArgumentError.checkNotNull(format, 'format');
 
   return _handleDomException(() async {
-    final result = await subtle.promiseAsFuture(subtle.exportKey(format, key));
+    final result = await subtle.exportKey(format, key);
     return result.asUint8List();
   });
 }
@@ -292,11 +292,10 @@ Future<Map<String, Object>> _exportJsonWebKey(
   // TODO: Add expected 'use' the way we have it in the FFI implementation
 ) {
   return _handleDomException(() async {
-    final result = await subtle.promiseAsFuture(subtle.exportJsonWebKey(
+    final jwk = await subtle.exportJsonWebKey(
       'jwk',
       key,
-    ));
-    final jwk = subtle.jsonWebKeyFromJs(result);
+    );
     // Remove 'key_ops' and 'ext' as this library doesn't allow configuration of
     // _usages_ or _extractable_.
     // Notice, that we also strip these in [_importJsonWebKey].
@@ -313,11 +312,11 @@ Future<subtle.CryptoKey> _generateKey(
   String expectedType,
 ) {
   return _handleDomException(() async {
-    final k = await subtle.promiseAsFuture(subtle.generateKey(
+    final k = await subtle.generateKey(
       algorithm,
       true, // extractable, keys should always be extractable.
       usages,
-    ));
+    );
     assert(k.type == expectedType, 'expected a "$expectedType" key');
     return k;
   });
@@ -329,11 +328,11 @@ Future<subtle.CryptoKeyPair> _generateKeyPair(
   List<String> usages,
 ) {
   return _handleDomException(() async {
-    final pair = await subtle.promiseAsFuture(subtle.generateKeyPair(
+    final pair = await subtle.generateKeyPair(
       algorithm,
       true, // extractable, keys should always be extractable.
       usages,
-    ));
+    );
     // Sanity check the generated keys
     assert(pair.privateKey.type == 'private');
     assert(pair.publicKey.type == 'public');
