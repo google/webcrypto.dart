@@ -1,6 +1,9 @@
 /pubspec.lock
 /.dart_tool/
 /.packages
+/example/pubspec.lock
+/example/.dart_tool/
+/example/.packages
 /doc/api/
 /lib/src/boringssl_ffi/libssl.so
 /lib/src/webcrypto_extension/libwebcrypto_extension.so
