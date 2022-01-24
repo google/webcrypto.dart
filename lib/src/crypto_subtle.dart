@@ -32,6 +32,28 @@ final _crypto = getProperty(window, 'crypto');
 /// The `window.crypto.subtle` object.
 final _subtle = getProperty(_crypto, 'subtle');
 
+/// Call [fn] with property [name] from [jsObj], if present.
+void _getPropertyIfPresent<T>(Object jsObj, String name, void Function(T) fn) {
+  if (hasProperty(jsObj, name)) {
+    fn(getProperty(jsObj, name));
+  }
+}
+
+/// Get property [name] from [jsObj], returns `null` if not present.
+T? _getPropertyOrNull<T>(Object jsObj, String name) {
+  if (hasProperty(jsObj, name)) {
+    return getProperty(jsObj, name);
+  }
+  return null;
+}
+
+/// Set property [name] on [jsObj] if [valie] is not `null`.
+void _setPropertyIfPresent<T>(Object jsObj, String name, T? value) {
+  if (value != null) {
+    setProperty(jsObj, name, value);
+  }
+}
+
 /// Convert [BigInt] to [Uint8List] formatted as [BigInteger][1] following
 /// the Web Cryptography specification.
 ///
@@ -77,12 +99,8 @@ class CryptoKey {
   ///  * `'deriveBits'`,
   ///  * `'wrapKey'`,
   ///  * `'unwrapKey'`.
-  List<String> get usages {
-    final jsArray = getProperty(_jsObj, 'usages');
-    final N = getProperty(jsArray, 'length');
-
-    return List.generate(N, (i) => getProperty(jsArray, i));
-  }
+  List<String> get usages =>
+      _jsArrayToListString(getProperty(_jsObj, 'usages'));
 }
 
 /// Wrapper for the [CryptoKeyPair][1] type.
@@ -131,22 +149,24 @@ Future<T> _wrapDomException<T>(Future<T> Function() fn) async {
 class Algorithm {
   final Object _jsObj;
 
-  String get name => getProperty(_jsObj, 'name');
-  int get modulusLength => getProperty(_jsObj, 'modulusLength');
-  Uint8List get publicExponent => getProperty(_jsObj, 'publicExponent');
-  String get hash => getProperty(_jsObj, 'hash');
-  int get saltLength => getProperty(_jsObj, 'saltLength');
-  TypedData get label => getProperty(_jsObj, 'label');
-  String get namedCurve => getProperty(_jsObj, 'namedCurve');
-  CryptoKey get public => CryptoKey(getProperty(_jsObj, 'public'));
-  TypedData get counter => getProperty(_jsObj, 'counter');
-  int get length => getProperty(_jsObj, 'length');
-  TypedData get iv => getProperty(_jsObj, 'iv');
-  TypedData get additionalData => getProperty(_jsObj, 'additionalData');
-  int get tagLength => getProperty(_jsObj, 'tagLength');
-  TypedData get salt => getProperty(_jsObj, 'salt');
-  TypedData get info => getProperty(_jsObj, 'info');
-  int get iterations => getProperty(_jsObj, 'iterations');
+  String? get name => _getPropertyOrNull(_jsObj, 'name');
+  int? get modulusLength => _getPropertyOrNull(_jsObj, 'modulusLength');
+  Uint8List? get publicExponent => _getPropertyOrNull(_jsObj, 'publicExponent');
+  String? get hash => _getPropertyOrNull(_jsObj, 'hash');
+  int? get saltLength => _getPropertyOrNull(_jsObj, 'saltLength');
+  TypedData? get label => _getPropertyOrNull(_jsObj, 'label');
+  String? get namedCurve => _getPropertyOrNull(_jsObj, 'namedCurve');
+  CryptoKey? get public => hasProperty(_jsObj, 'public')
+      ? CryptoKey(getProperty(_jsObj, 'public'))
+      : null;
+  TypedData? get counter => _getPropertyOrNull(_jsObj, 'counter');
+  int? get length => _getPropertyOrNull(_jsObj, 'length');
+  TypedData? get iv => _getPropertyOrNull(_jsObj, 'iv');
+  TypedData? get additionalData => _getPropertyOrNull(_jsObj, 'additionalData');
+  int? get tagLength => _getPropertyOrNull(_jsObj, 'tagLength');
+  TypedData? get salt => _getPropertyOrNull(_jsObj, 'salt');
+  TypedData? get info => _getPropertyOrNull(_jsObj, 'info');
+  int? get iterations => _getPropertyOrNull(_jsObj, 'iterations');
 
   Algorithm({
     String? name,
@@ -166,122 +186,102 @@ class Algorithm {
     TypedData? info,
     int? iterations,
   }) : _jsObj = newObject() {
-    if (name != null) {
-      setProperty(_jsObj, 'name', name);
-    }
-    if (modulusLength != null) {
-      setProperty(_jsObj, 'modulusLength', modulusLength);
-    }
-    if (publicExponent != null) {
-      setProperty(_jsObj, 'publicExponent', publicExponent);
-    }
-    if (hash != null) {
-      setProperty(_jsObj, 'hash', hash);
-    }
-    if (saltLength != null) {
-      setProperty(_jsObj, 'saltLength', saltLength);
-    }
-    if (label != null) {
-      setProperty(_jsObj, 'label', label);
-    }
-    if (namedCurve != null) {
-      setProperty(_jsObj, 'namedCurve', namedCurve);
-    }
+    _setPropertyIfPresent(_jsObj, 'name', name);
+    _setPropertyIfPresent(_jsObj, 'name', name);
+    _setPropertyIfPresent(_jsObj, 'modulusLength', modulusLength);
+    _setPropertyIfPresent(_jsObj, 'publicExponent', publicExponent);
+    _setPropertyIfPresent(_jsObj, 'hash', hash);
+    _setPropertyIfPresent(_jsObj, 'saltLength', saltLength);
+    _setPropertyIfPresent(_jsObj, 'label', label);
+    _setPropertyIfPresent(_jsObj, 'namedCurve', namedCurve);
     if (public != null) {
       setProperty(_jsObj, 'public', public._jsObj);
     }
-    if (counter != null) {
-      setProperty(_jsObj, 'counter', counter);
-    }
-    if (length != null) {
-      setProperty(_jsObj, 'length', length);
-    }
-    if (iv != null) {
-      setProperty(_jsObj, 'iv', iv);
-    }
-    if (additionalData != null) {
-      setProperty(_jsObj, 'additionalData', additionalData);
-    }
-    if (tagLength != null) {
-      setProperty(_jsObj, 'tagLength', tagLength);
-    }
-    if (salt != null) {
-      setProperty(_jsObj, 'salt', salt);
-    }
-    if (info != null) {
-      setProperty(_jsObj, 'info', info);
-    }
-    if (iterations != null) {
-      setProperty(_jsObj, 'iterations', iterations);
-    }
+    _setPropertyIfPresent(_jsObj, 'counter', counter);
+    _setPropertyIfPresent(_jsObj, 'length', length);
+    _setPropertyIfPresent(_jsObj, 'iv', iv);
+    _setPropertyIfPresent(_jsObj, 'additionalData', additionalData);
+    _setPropertyIfPresent(_jsObj, 'tagLength', tagLength);
+    _setPropertyIfPresent(_jsObj, 'salt', salt);
+    _setPropertyIfPresent(_jsObj, 'info', info);
+    _setPropertyIfPresent(_jsObj, 'iterations', iterations);
   }
+
+  Algorithm update({
+    String? name,
+    int? modulusLength,
+    Uint8List? publicExponent,
+    String? hash,
+    int? saltLength,
+    TypedData? label,
+    String? namedCurve,
+    CryptoKey? public,
+    TypedData? counter,
+    int? length,
+    TypedData? iv,
+    TypedData? additionalData,
+    int? tagLength,
+    TypedData? salt,
+    TypedData? info,
+    int? iterations,
+  }) =>
+      Algorithm(
+        name: this.name ?? name,
+        modulusLength: this.modulusLength ?? modulusLength,
+        publicExponent: this.publicExponent ?? publicExponent,
+        hash: this.hash ?? hash,
+        saltLength: this.saltLength ?? saltLength,
+        label: this.label ?? label,
+        namedCurve: this.namedCurve ?? namedCurve,
+        public: this.public ?? public,
+        counter: this.counter ?? counter,
+        length: this.length ?? length,
+        iv: this.iv ?? iv,
+        additionalData: this.additionalData ?? additionalData,
+        tagLength: this.tagLength ?? tagLength,
+        salt: this.salt ?? salt,
+        info: this.info ?? info,
+        iterations: this.iterations ?? iterations,
+      );
 }
 
 /// Create [JsonWebKey] from [jsObj].
 JsonWebKey _jsonWebKeyFromJsObj(Object jsObj) {
   final jwk = JsonWebKey();
 
-  if (hasProperty(jsObj, 'kty')) {
-    jwk.kty = getProperty(jsObj, 'kty');
-  }
-  if (hasProperty(jsObj, 'use')) {
-    jwk.use = getProperty(jsObj, 'use');
-  }
-  if (hasProperty(jsObj, 'key_ops')) {
-    jwk.key_ops =
-        getProperty<List>(jsObj, 'key_ops').map((s) => s as String).toList();
-  }
-  if (hasProperty(jsObj, 'alg')) {
-    jwk.alg = getProperty(jsObj, 'alg');
-  }
-  if (hasProperty(jsObj, 'ext')) {
-    jwk.ext = getProperty(jsObj, 'ext');
-  }
-  if (hasProperty(jsObj, 'crv')) {
-    jwk.crv = getProperty(jsObj, 'crv');
-  }
-  if (hasProperty(jsObj, 'x')) {
-    jwk.x = getProperty(jsObj, 'x');
-  }
-  if (hasProperty(jsObj, 'y')) {
-    jwk.y = getProperty(jsObj, 'y');
-  }
-  if (hasProperty(jsObj, 'd')) {
-    jwk.d = getProperty(jsObj, 'd');
-  }
-  if (hasProperty(jsObj, 'n')) {
-    jwk.n = getProperty(jsObj, 'n');
-  }
-  if (hasProperty(jsObj, 'e')) {
-    jwk.e = getProperty(jsObj, 'e');
-  }
-  if (hasProperty(jsObj, 'p')) {
-    jwk.p = getProperty(jsObj, 'p');
-  }
-  if (hasProperty(jsObj, 'q')) {
-    jwk.q = getProperty(jsObj, 'q');
-  }
-  if (hasProperty(jsObj, 'dp')) {
-    jwk.dp = getProperty(jsObj, 'dp');
-  }
-  if (hasProperty(jsObj, 'dq')) {
-    jwk.dq = getProperty(jsObj, 'dq');
-  }
-  if (hasProperty(jsObj, 'qi')) {
-    jwk.qi = getProperty(jsObj, 'qi');
-  }
+  _getPropertyIfPresent(jsObj, 'kty', (String v) => jwk.kty = v);
+  _getPropertyIfPresent(jsObj, 'use', (String v) => jwk.use = v);
+  _getPropertyIfPresent(
+    jsObj,
+    'key_ops',
+    (Object v) => jwk.key_ops = _jsArrayToListString(v),
+  );
+  _getPropertyIfPresent(jsObj, 'alg', (String v) => jwk.alg = v);
+  _getPropertyIfPresent(jsObj, 'ext', (bool v) => jwk.ext = v);
+  _getPropertyIfPresent(jsObj, 'crv', (String v) => jwk.crv = v);
+  _getPropertyIfPresent(jsObj, 'x', (String v) => jwk.x = v);
+  _getPropertyIfPresent(jsObj, 'y', (String v) => jwk.y = v);
+  _getPropertyIfPresent(jsObj, 'd', (String v) => jwk.d = v);
+  _getPropertyIfPresent(jsObj, 'n', (String v) => jwk.n = v);
+  _getPropertyIfPresent(jsObj, 'e', (String v) => jwk.e = v);
+  _getPropertyIfPresent(jsObj, 'p', (String v) => jwk.p = v);
+  _getPropertyIfPresent(jsObj, 'q', (String v) => jwk.q = v);
+  _getPropertyIfPresent(jsObj, 'dp', (String v) => jwk.dp = v);
+  _getPropertyIfPresent(jsObj, 'dq', (String v) => jwk.dq = v);
+  _getPropertyIfPresent(jsObj, 'qi', (String v) => jwk.qi = v);
   if (hasProperty(jsObj, 'oth')) {
-    jwk.oth = getProperty<List>(jsObj, 'oth')
-        .map((jsObj) => RsaOtherPrimesInfo(
-              r: getProperty(jsObj, 'r'),
-              d: getProperty(jsObj, 'd'),
-              t: getProperty(jsObj, 't'),
-            ))
-        .toList();
+    final oth = getProperty(jsObj, 'oth');
+    final N = getProperty(oth, 'length');
+    jwk.oth = List.generate(N, (i) {
+      final jsObj = getProperty(oth, i);
+      return RsaOtherPrimesInfo(
+        r: getProperty(jsObj, 'r'),
+        d: getProperty(jsObj, 'd'),
+        t: getProperty(jsObj, 't'),
+      );
+    });
   }
-  if (hasProperty(jsObj, 'k')) {
-    jwk.k = getProperty(jsObj, 'k');
-  }
+  _getPropertyIfPresent(jsObj, 'k', (String v) => jwk.k = v);
 
   return jwk;
 }
@@ -290,54 +290,22 @@ JsonWebKey _jsonWebKeyFromJsObj(Object jsObj) {
 Object _jsonWebKeyToJsObj(JsonWebKey jwk) {
   final jsObj = newObject();
 
-  if (jwk.kty != null) {
-    setProperty(jsObj, 'kty', jwk.kty);
-  }
-  if (jwk.use != null) {
-    setProperty(jsObj, 'use', jwk.use);
-  }
-  if (jwk.key_ops != null) {
-    setProperty(jsObj, 'key_ops', jwk.key_ops);
-  }
-  if (jwk.alg != null) {
-    setProperty(jsObj, 'alg', jwk.alg);
-  }
-  if (jwk.ext != null) {
-    setProperty(jsObj, 'ext', jwk.ext);
-  }
-  if (jwk.crv != null) {
-    setProperty(jsObj, 'crv', jwk.crv);
-  }
-  if (jwk.x != null) {
-    setProperty(jsObj, 'x', jwk.x);
-  }
-  if (jwk.y != null) {
-    setProperty(jsObj, 'y', jwk.y);
-  }
-  if (jwk.d != null) {
-    setProperty(jsObj, 'd', jwk.d);
-  }
-  if (jwk.n != null) {
-    setProperty(jsObj, 'n', jwk.n);
-  }
-  if (jwk.e != null) {
-    setProperty(jsObj, 'e', jwk.e);
-  }
-  if (jwk.p != null) {
-    setProperty(jsObj, 'p', jwk.p);
-  }
-  if (jwk.q != null) {
-    setProperty(jsObj, 'q', jwk.q);
-  }
-  if (jwk.dp != null) {
-    setProperty(jsObj, 'dp', jwk.dp);
-  }
-  if (jwk.dq != null) {
-    setProperty(jsObj, 'dq', jwk.dq);
-  }
-  if (jwk.qi != null) {
-    setProperty(jsObj, 'qi', jwk.qi);
-  }
+  _setPropertyIfPresent(jsObj, 'kty', jwk.kty);
+  _setPropertyIfPresent(jsObj, 'use', jwk.use);
+  _setPropertyIfPresent(jsObj, 'key_ops', jwk.key_ops);
+  _setPropertyIfPresent(jsObj, 'alg', jwk.alg);
+  _setPropertyIfPresent(jsObj, 'ext', jwk.ext);
+  _setPropertyIfPresent(jsObj, 'crv', jwk.crv);
+  _setPropertyIfPresent(jsObj, 'x', jwk.x);
+  _setPropertyIfPresent(jsObj, 'y', jwk.y);
+  _setPropertyIfPresent(jsObj, 'd', jwk.d);
+  _setPropertyIfPresent(jsObj, 'n', jwk.n);
+  _setPropertyIfPresent(jsObj, 'e', jwk.e);
+  _setPropertyIfPresent(jsObj, 'p', jwk.p);
+  _setPropertyIfPresent(jsObj, 'q', jwk.q);
+  _setPropertyIfPresent(jsObj, 'dp', jwk.dp);
+  _setPropertyIfPresent(jsObj, 'dq', jwk.dq);
+  _setPropertyIfPresent(jsObj, 'qi', jwk.qi);
   final oth = jwk.oth;
   if (oth != null) {
     final jsArray = callConstructor(_array, [
@@ -351,9 +319,7 @@ Object _jsonWebKeyToJsObj(JsonWebKey jwk) {
     ]);
     setProperty(jsObj, 'oth', jsArray);
   }
-  if (jwk.k != null) {
-    setProperty(jsObj, 'k', jwk.k);
-  }
+  _setPropertyIfPresent(jsObj, 'k', jwk.k);
 
   return jsObj;
 }
@@ -363,6 +329,12 @@ Object _stringListToJsObj(List<String> list) => callConstructor(
       _array,
       list,
     );
+
+/// Convert [jsArray] to [List<String>].
+List<String> _jsArrayToListString(Object jsArray) {
+  final N = getProperty(jsArray, 'length');
+  return List.generate(N, (i) => getProperty(jsArray, i));
+}
 
 TypedData getRandomValues(TypedData array) =>
     callMethod(_crypto, 'getRandomValues', [array]);
