@@ -23,10 +23,10 @@ class _Hash implements Hash {
     ArgumentError.checkNotNull(data, 'data');
 
     return await _handleDomException(() async {
-      final result = await subtle.promiseAsFuture(subtle.digest(
+      final result = await subtle.digest(
         _algorithm,
         Uint8List.fromList(data),
-      ));
+      );
       return result.asUint8List();
     });
   }

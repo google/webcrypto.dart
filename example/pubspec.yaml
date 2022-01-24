@@ -17,16 +17,16 @@ description: Demonstrates how to use the webcrypto plugin.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
   flutter: '>=2.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  convert: ^2.0.0
+  convert: ^3.0.0
   webcrypto:
     # When depending on this package from a real application you should use:
     #   webcrypto: ^x.y.z
@@ -35,10 +35,7 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
 
-  cupertino_icons: ^0.1.3
-
-dependency_overrides:
-  convert: ^3.0.0
+  cupertino_icons: ^1.0.4
 
 dev_dependencies:
   flutter_test:

@@ -23,10 +23,7 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
   return _RsassaPkcs1V15PrivateKey(await _importKey(
     'pkcs8',
     keyData,
-    subtle.Algorithm(
-      name: _rsassaPkcs1V15Algorithm.name,
-      hash: _getHashAlgorithm(hash),
-    ),
+    _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
     _usagesSign,
     'private',
   ));
@@ -38,10 +35,7 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey(
 ) async {
   return _RsassaPkcs1V15PrivateKey(await _importJsonWebKey(
     jwk,
-    subtle.Algorithm(
-      name: _rsassaPkcs1V15Algorithm.name,
-      hash: _getHashAlgorithm(hash),
-    ),
+    _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
     _usagesSign,
     'private',
   ));
@@ -54,8 +48,7 @@ Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
   Hash hash,
 ) async {
   final pair = await _generateKeyPair(
-    subtle.Algorithm(
-      name: _rsassaPkcs1V15Algorithm.name,
+    _rsassaPkcs1V15Algorithm.update(
       hash: _getHashAlgorithm(hash),
       publicExponent: _publicExponentAsBuffer(publicExponent),
       modulusLength: modulusLength,
@@ -75,10 +68,7 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey(
   return _RsassaPkcs1V15PublicKey(await _importKey(
     'spki',
     keyData,
-    subtle.Algorithm(
-      name: _rsassaPkcs1V15Algorithm.name,
-      hash: _getHashAlgorithm(hash),
-    ),
+    _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
     _usagesVerify,
     'public',
   ));
@@ -90,10 +80,7 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
 ) async {
   return _RsassaPkcs1V15PublicKey(await _importJsonWebKey(
     jwk,
-    subtle.Algorithm(
-      name: _rsassaPkcs1V15Algorithm.name,
-      hash: _getHashAlgorithm(hash),
-    ),
+    _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
     _usagesVerify,
     'public',
   ));

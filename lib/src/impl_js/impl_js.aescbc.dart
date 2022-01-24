@@ -39,10 +39,7 @@ Future<AesCbcSecretKey> aesCbc_importJsonWebKey(
 
 Future<AesCbcSecretKey> aesCbc_generateKey(int length) async {
   return _AesCbcSecretKey(await _generateKey(
-    subtle.Algorithm(
-      name: _aesCbcAlgorithm.name,
-      length: length,
-    ),
+    _aesCbcAlgorithm.update(length: length),
     _usagesEncryptDecrypt,
     'secret',
   ));
@@ -57,10 +54,7 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
     ArgumentError.checkNotNull(data, 'data');
     ArgumentError.checkNotNull(iv, 'iv');
     return await _decrypt(
-      subtle.Algorithm(
-        name: _aesCbcAlgorithm.name,
-        iv: Uint8List.fromList(iv),
-      ),
+      _aesCbcAlgorithm.update(iv: Uint8List.fromList(iv)),
       _key,
       data,
     );
@@ -76,10 +70,7 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
     ArgumentError.checkNotNull(data, 'data');
     ArgumentError.checkNotNull(iv, 'iv');
     return await _encrypt(
-      subtle.Algorithm(
-        name: _aesCbcAlgorithm.name,
-        iv: Uint8List.fromList(iv),
-      ),
+      _aesCbcAlgorithm.update(iv: Uint8List.fromList(iv)),
       _key,
       data,
     );

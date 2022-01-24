@@ -39,10 +39,7 @@ Future<AesCtrSecretKey> aesCtr_importJsonWebKey(
 
 Future<AesCtrSecretKey> aesCtr_generateKey(int length) async {
   return _AesCtrSecretKey(await _generateKey(
-    subtle.Algorithm(
-      name: _aesCtrAlgorithm.name,
-      length: length,
-    ),
+    _aesCtrAlgorithm.update(length: length),
     _usagesEncryptDecrypt,
     'secret',
   ));
@@ -61,8 +58,7 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     ArgumentError.checkNotNull(counter, 'counter');
     ArgumentError.checkNotNull(length, 'length');
     return await _decrypt(
-      subtle.Algorithm(
-        name: _aesCtrAlgorithm.name,
+      _aesCtrAlgorithm.update(
         counter: Uint8List.fromList(counter),
         length: length,
       ),
@@ -89,8 +85,7 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     ArgumentError.checkNotNull(counter, 'counter');
     ArgumentError.checkNotNull(length, 'length');
     return await _encrypt(
-      subtle.Algorithm(
-        name: _aesCtrAlgorithm.name,
+      _aesCtrAlgorithm.update(
         counter: Uint8List.fromList(counter),
         length: length,
       ),

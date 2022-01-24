@@ -39,10 +39,7 @@ Future<AesGcmSecretKey> aesGcm_importJsonWebKey(
 
 Future<AesGcmSecretKey> aesGcm_generateKey(int length) async {
   return _AesGcmSecretKey(await _generateKey(
-    subtle.Algorithm(
-      name: _aesGcmAlgorithm.name,
-      length: length,
-    ),
+    _aesGcmAlgorithm.update(length: length),
     _usagesEncryptDecrypt,
     'secret',
   ));
@@ -62,13 +59,11 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
     tagLength ??= 128;
     return await _decrypt(
       additionalData == null
-          ? subtle.Algorithm(
-              name: _aesGcmAlgorithm.name,
+          ? _aesGcmAlgorithm.update(
               iv: Uint8List.fromList(iv),
               tagLength: tagLength,
             )
-          : subtle.Algorithm(
-              name: _aesGcmAlgorithm.name,
+          : _aesGcmAlgorithm.update(
               iv: Uint8List.fromList(iv),
               additionalData: Uint8List.fromList(additionalData),
               tagLength: tagLength,
@@ -88,13 +83,11 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
     tagLength ??= 128;
     return await _encrypt(
       additionalData == null
-          ? subtle.Algorithm(
-              name: _aesGcmAlgorithm.name,
+          ? _aesGcmAlgorithm.update(
               iv: Uint8List.fromList(iv),
               tagLength: tagLength,
             )
-          : subtle.Algorithm(
-              name: _aesGcmAlgorithm.name,
+          : _aesGcmAlgorithm.update(
               iv: Uint8List.fromList(iv),
               additionalData: Uint8List.fromList(additionalData),
               tagLength: tagLength,
