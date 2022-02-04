@@ -64,15 +64,15 @@ String _ecCurveToJwkCrv(EllipticCurve curve) {
 
 /// Perform some post-import validation for EC keys.
 void _validateEllipticCurveKey(
-  ffi.Pointer<EVP_PKEY> key,
+  _EvpPKey key,
   EllipticCurve curve,
 ) {
   final scope = _Scope();
   try {
-    _checkData(ssl.EVP_PKEY_id(key) == EVP_PKEY_EC,
+    _checkData(ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_EC,
         message: 'key is not an EC key');
 
-    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
+    final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkData(ec.address != 0, fallback: 'key is not an EC key');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
@@ -93,35 +93,35 @@ void _validateEllipticCurveKey(
   }
 }
 
-ffi.Pointer<EVP_PKEY> _importPkcs8EcPrivateKey(
+_EvpPKey _importPkcs8EcPrivateKey(
   List<int> keyData,
   EllipticCurve curve,
 ) {
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-  _attachFinalizerEVP_PKEY(key);
+  final k = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
+  _checkData(k.address != 0, fallback: 'unable to parse key');
+  final key = _EvpPKey.wrap(k);
 
   _validateEllipticCurveKey(key, curve);
   return key;
 }
 
-ffi.Pointer<EVP_PKEY> _importSpkiEcPublicKey(
+_EvpPKey _importSpkiEcPublicKey(
   List<int> keyData,
   EllipticCurve curve,
 ) {
   // TODO: When calling EVP_parse_public_key it might wise to check that CBS_len(cbs) == 0 is true afterwards
   // otherwise it might be that all of the contents of the key was not consumed and we should throw
   // a FormatException. Notice that this the case for private/public keys, and RSA keys.
-  final key = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
-  _checkData(key.address != 0, fallback: 'unable to parse key');
-  _attachFinalizerEVP_PKEY(key);
+  final k = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
+  _checkData(k.address != 0, fallback: 'unable to parse key');
+  final key = _EvpPKey.wrap(k);
 
   _validateEllipticCurveKey(key, curve);
 
   return key;
 }
 
-ffi.Pointer<EVP_PKEY> _importJwkEcPrivateOrPublicKey(
+_EvpPKey _importJwkEcPrivateOrPublicKey(
   JsonWebKey jwk,
   EllipticCurve curve, {
   required bool isPrivateKey,
@@ -212,8 +212,8 @@ ffi.Pointer<EVP_PKEY> _importJwkEcPrivateOrPublicKey(
     _checkDataIsOne(ssl.EC_KEY_check_key(ec), fallback: 'invalid EC key');
 
     // Wrap with an EVP_KEY
-    final key = _createEVP_PKEYwithFinalizer();
-    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
+    final key = _EvpPKey();
+    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(key, ec));
 
     return key;
   } finally {
@@ -221,7 +221,7 @@ ffi.Pointer<EVP_PKEY> _importJwkEcPrivateOrPublicKey(
   }
 }
 
-ffi.Pointer<EVP_PKEY> _importRawEcPublicKey(
+_EvpPKey _importRawEcPublicKey(
   List<int> keyData,
   EllipticCurve curve,
 ) {
@@ -248,8 +248,8 @@ ffi.Pointer<EVP_PKEY> _importRawEcPublicKey(
       _checkDataIsOne(ssl.EC_KEY_set_public_key(ec, pub),
           fallback: 'invalid keyData');
 
-      final key = _createEVP_PKEYwithFinalizer();
-      _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(key, ec));
+      final key = _EvpPKey();
+      _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(key, ec));
       _validateEllipticCurveKey(key, curve);
 
       return key;
@@ -261,10 +261,10 @@ ffi.Pointer<EVP_PKEY> _importRawEcPublicKey(
   }
 }
 
-Uint8List _exportRawEcPublicKey(ffi.Pointer<EVP_PKEY> key) {
+Uint8List _exportRawEcPublicKey(_EvpPKey key) {
   final scope = _Scope();
   try {
-    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
+    final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
@@ -285,13 +285,13 @@ Uint8List _exportRawEcPublicKey(ffi.Pointer<EVP_PKEY> key) {
 }
 
 Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
-  ffi.Pointer<EVP_PKEY> key, {
+  _EvpPKey key, {
   required bool isPrivateKey,
   String? jwkUse,
 }) {
   final scope = _Scope();
   try {
-    final ec = ssl.EVP_PKEY_get1_EC_KEY(key);
+    final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
@@ -340,7 +340,7 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
   }
 }
 
-KeyPair<ffi.Pointer<EVP_PKEY>, ffi.Pointer<EVP_PKEY>> _generateEcKeyPair(
+KeyPair<_EvpPKey, _EvpPKey> _generateEcKeyPair(
   EllipticCurve curve,
 ) {
   final scope = _Scope();
@@ -351,8 +351,8 @@ KeyPair<ffi.Pointer<EVP_PKEY>, ffi.Pointer<EVP_PKEY>> _generateEcKeyPair(
 
     _checkOpIsOne(ssl.EC_KEY_generate_key(ecPriv));
 
-    final privKey = _createEVP_PKEYwithFinalizer();
-    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(privKey, ecPriv));
+    final privKey = _EvpPKey();
+    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(privKey, ecPriv));
 
     final ecPub = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
     _checkOp(ecPub.address != 0);
@@ -362,8 +362,8 @@ KeyPair<ffi.Pointer<EVP_PKEY>, ffi.Pointer<EVP_PKEY>> _generateEcKeyPair(
       ssl.EC_KEY_get0_public_key(ecPriv),
     ));
 
-    final pubKey = _createEVP_PKEYwithFinalizer();
-    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY(pubKey, ecPub));
+    final pubKey = _EvpPKey();
+    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(pubKey, ecPub));
 
     return _KeyPair(
       privateKey: privKey,

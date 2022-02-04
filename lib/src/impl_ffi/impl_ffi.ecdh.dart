@@ -67,7 +67,7 @@ Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
     ));
 
 class _EcdhPrivateKey implements EcdhPrivateKey {
-  final ffi.Pointer<EVP_PKEY> _key;
+  final _EvpPKey _key;
 
   _EcdhPrivateKey(this._key);
 
@@ -88,11 +88,11 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
 
     final scope = _Scope();
     try {
-      final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY(publicKey._key);
+      final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY.invoke(publicKey._key);
       _checkOp(pubEcKey.address != 0, fallback: 'not an ec key');
       scope.defer(() => ssl.EC_KEY_free(pubEcKey));
 
-      final privEcKey = ssl.EVP_PKEY_get1_EC_KEY(_key);
+      final privEcKey = ssl.EVP_PKEY_get1_EC_KEY.invoke(_key);
       _checkOp(privEcKey.address != 0, fallback: 'not an ec key');
       scope.defer(() => ssl.EC_KEY_free(privEcKey));
 
@@ -164,13 +164,13 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
   @override
   Future<Uint8List> exportPkcs8Key() async {
     return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_private_key(cbb, _key) == 1);
+      _checkOp(ssl.EVP_marshal_private_key.invoke(cbb, _key) == 1);
     });
   }
 }
 
 class _EcdhPublicKey implements EcdhPublicKey {
-  final ffi.Pointer<EVP_PKEY> _key;
+  final _EvpPKey _key;
 
   _EcdhPublicKey(this._key);
 
@@ -188,7 +188,7 @@ class _EcdhPublicKey implements EcdhPublicKey {
   @override
   Future<Uint8List> exportSpkiKey() async {
     return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_public_key(cbb, _key) == 1);
+      _checkOp(ssl.EVP_marshal_public_key.invoke(cbb, _key) == 1);
     });
   }
 }
