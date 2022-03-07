@@ -110,7 +110,7 @@ int x509_digest_sign_algorithm(EVP_MD_CTX *ctx, X509_ALGOR *algor) {
   return 1;
 }
 
-int x509_digest_verify_init(EVP_MD_CTX *ctx, X509_ALGOR *sigalg,
+int x509_digest_verify_init(EVP_MD_CTX *ctx, const X509_ALGOR *sigalg,
                             EVP_PKEY *pkey) {
   /* Convert the signature OID into digest and public key OIDs. */
   int sigalg_nid = OBJ_obj2nid(sigalg->algorithm);
@@ -142,10 +142,12 @@ int x509_digest_verify_init(EVP_MD_CTX *ctx, X509_ALGOR *sigalg,
     return 0;
   }
 
-  /* RSA signature algorithms include an explicit NULL parameter but we also
-   * accept omitted values for compatibility. Other algorithms must omit it. */
-  if (sigalg->parameter != NULL && (pkey_nid != EVP_PKEY_RSA ||
-                                    sigalg->parameter->type != V_ASN1_NULL)) {
+  /* The parameter should be an explicit NULL for RSA and omitted for ECDSA. For
+   * compatibility, we allow either for both algorithms. See b/167375496.
+   *
+   * TODO(davidben): Chromium's verifier allows both forms for RSA, but enforces
+   * ECDSA more strictly. Align with Chromium and add a flag for b/167375496. */
+  if (sigalg->parameter != NULL && sigalg->parameter->type != V_ASN1_NULL) {
     OPENSSL_PUT_ERROR(X509, X509_R_INVALID_PARAMETER);
     return 0;
   }
