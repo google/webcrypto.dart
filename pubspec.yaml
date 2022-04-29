@@ -15,7 +15,7 @@
 name: webcrypto
 version: 0.5.2
 description: Cross-platform implementation of Web Cryptography APIs for Flutter.
-homepage: https://github.com/google/webcrypto.dart
+repository: https://github.com/google/webcrypto.dart
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
