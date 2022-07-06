@@ -1,3 +1,7 @@
+#
+# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
+# Run `pod lib lint webcrypto.podspec` to validate before publishing.
+#
 Pod::Spec.new do |s|
   s.name                = 'webcrypto'
   s.version             = '0.1.1'
@@ -9,9 +13,9 @@ Pod::Spec.new do |s|
   s.author              = { 'Jonas Finnemann Jensen' => 'jonasfj@google.com' }
   s.source              = { :path => '.' }
   s.swift_version       = '5.0'
-  s.platform            = :ios, '8.0'
+  s.platform            = :ios, '9.0'
   s.dependency 'Flutter'
-  
+
   s.public_header_files = 'Classes/**/*.h'
   s.source_files        = [
     'Classes/**/*',
