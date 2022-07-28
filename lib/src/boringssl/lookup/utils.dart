@@ -102,7 +102,8 @@ Uri? _findDotDartTool() {
 
   // Find script directory
   Uri root;
-  if (Platform.script.isScheme('data')) {
+  if (Platform.script.isScheme('data') ||
+      Platform.script.toFilePath().startsWith("/tmp")) {
     // If `Platform.script` is a data: [Uri] then we are being called from
     // `package:test`, luckily this means that CWD is project root.
     root = Directory.current.uri;

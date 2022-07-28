@@ -53,7 +53,8 @@ void main() async {
     print('dependency on package:webcrypto is required');
     exit(1);
   }
-  final webcryptoRoot = packageConfigFile.uri.resolve(pkg['rootUri'] ?? '');
+  final webcryptoRoot =
+      packageConfigFile.uri.resolve(pkg['rootUri'] + '/' ?? '');
   print('Using package:webcrypto from ${webcryptoRoot.toFilePath()}');
 
   print('Generating build system with cmake');
