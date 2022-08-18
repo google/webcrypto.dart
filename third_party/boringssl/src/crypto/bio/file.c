@@ -126,13 +126,7 @@ BIO *BIO_new_fp(FILE *stream, int close_flag) {
   return ret;
 }
 
-static int file_new(BIO *bio) { return 1; }
-
 static int file_free(BIO *bio) {
-  if (bio == NULL) {
-    return 0;
-  }
-
   if (!bio->shutdown) {
     return 1;
   }
@@ -279,7 +273,7 @@ static const BIO_METHOD methods_filep = {
     BIO_TYPE_FILE,   "FILE pointer",
     file_write,      file_read,
     NULL /* puts */, file_gets,
-    file_ctrl,       file_new,
+    file_ctrl,       NULL /* create */,
     file_free,       NULL /* callback_ctrl */,
 };
 
@@ -312,6 +306,12 @@ int BIO_append_filename(BIO *bio, const char *filename) {
 int BIO_rw_filename(BIO *bio, const char *filename) {
   return BIO_ctrl(bio, BIO_C_SET_FILENAME,
                   BIO_CLOSE | BIO_FP_READ | BIO_FP_WRITE, (char *)filename);
+}
+
+long BIO_tell(BIO *bio) { return BIO_ctrl(bio, BIO_C_FILE_TELL, 0, NULL); }
+
+long BIO_seek(BIO *bio, long offset) {
+  return BIO_ctrl(bio, BIO_C_FILE_SEEK, offset, NULL);
 }
 
 #endif  // OPENSSL_TRUSTY
