@@ -12,15 +12,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:ffi';
 
 import '../../third_party/boringssl/generated_bindings.dart';
 import '../bindings/generated_bindings.dart';
 
-import 'lookup_symbol_dart.dart'
-    if (dart.library.ui) 'lookup_symbol_flutter.dart';
+import 'dart:io' show Platform;
+
+import 'symbols.generated.dart';
+import 'utils.dart';
 
 export 'symbols.generated.dart' show Sym;
+
+/// Dynamically load `webcrypto_lookup_symbol` function.
+final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
+  try {
+    final library = Platform.isAndroid || Platform.isLinux
+        ? DynamicLibrary.open('libwebcrypto.so')
+        : DynamicLibrary.executable();
+
+    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
+    final webcryptoDartDL = WebCryptoDartDL(library);
+    final webcrypto_lookup_symbol = webcryptoDartDL.webcrypto_lookup_symbol;
+
+    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
+    Pointer<T> lookup<T extends NativeType>(String s) =>
+        webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
+
+    // Initialize the dynamic linking with Dart.
+    initialize_dart_dl(lookup);
+
+    return lookup;
+  } on ArgumentError {
+    final lookup = lookupLibraryInDotDartTool();
+    if (lookup != null) {
+      return lookup;
+    }
+
+    throw UnsupportedError(
+      'package:webcrypto cannot be used from scripts or `flutter test` '
+      'unless `flutter pub run webcrypto:setup` has been run for the current '
+      'root project.',
+    );
+  }
+}();
 
 final Pointer<T> Function<T extends NativeType>(String symbolName)
     _cachedLookup = lookup;
