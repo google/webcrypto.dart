@@ -111,7 +111,7 @@ Uri? _findDotDartTool() {
     }
   } while (root != (root = root.resolve('..')));
 
-  // If travesing from script directory didn't work, we can look starting from
+  // If traversing from script directory didn't work, we can look starting from
   // CWD, this typically happens if running as test.
   root = Directory.current.uri;
 
