@@ -21,7 +21,7 @@ import 'utils.dart';
 
 /// Dynamically load `webcrypto_lookup_symbol` function.
 final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
-  var library = Platform.isAndroid
+  var library = Platform.isAndroid || Platform.isLinux
       ? DynamicLibrary.open('libwebcrypto.so')
       : DynamicLibrary.executable();
 
