@@ -60,7 +60,7 @@ Pointer<T> Function<T extends NativeType>(String symbolName)?
     final webcrypto_lookup_symbol = webcryptoDartDL.webcrypto_lookup_symbol;
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    final lookup = <T extends NativeType>(String s) =>
+    Pointer<T> lookup<T extends NativeType>(String s) =>
         webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
 
     // Initialize library
@@ -101,14 +101,7 @@ Uri? _findDotDartTool() {
   //       `.dart_tool/package_config.json` file.
 
   // Find script directory
-  Uri root;
-  if (Platform.script.isScheme('data')) {
-    // If `Platform.script` is a data: [Uri] then we are being called from
-    // `package:test`, luckily this means that CWD is project root.
-    root = Directory.current.uri;
-  } else {
-    root = Platform.script.resolve('./');
-  }
+  Uri root = Platform.script.resolve('./');
 
   // Traverse up until we see a `.dart_tool/package_config.json` file.
   do {
@@ -117,5 +110,18 @@ Uri? _findDotDartTool() {
       return root.resolve('.dart_tool/');
     }
   } while (root != (root = root.resolve('..')));
+
+  // If travesing from script directory didn't work, we can look starting from
+  // CWD, this typically happens if running as test.
+  root = Directory.current.uri;
+
+  // Traverse up until we see a `.dart_tool/package_config.json` file.
+  do {
+    if (File.fromUri(root.resolve('.dart_tool/package_config.json'))
+        .existsSync()) {
+      return root.resolve('.dart_tool/');
+    }
+  } while (root != (root = root.resolve('..')));
+
   return null;
 }
