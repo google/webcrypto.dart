@@ -92,13 +92,9 @@ void initialize_dart_dl(
 
 /// Find the `.dart_tool/` folder, returns `null` if unable to find it.
 Uri? _findDotDartTool() {
-  // HACK: Because 'dart:isolate' is unavailable in Flutter we have no means
-  //       by which we can find the location of the package_config.json file.
-  //       Which we need, because the binary library created by:
+  // HACK: We have no good mechanism for finding the library created by:
   //         flutter pub run webcrypto:setup
-  //       is located relative to this path. As a workaround we use
-  //       `Platform.script` and traverse level-up until we find a
-  //       `.dart_tool/package_config.json` file.
+  //       So we search relative to the script path and CWD.
 
   // Find script directory
   Uri root = Platform.script.resolve('./');
