@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Copyright 2020 Google LLC
 #
@@ -28,7 +28,7 @@ TOOL_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.dirname(TOOL_PATH)
 
 BORINGSSL_REPOSITORY = 'https://boringssl.googlesource.com/boringssl'
-BORINGSSL_REVISION = '33f8d33af0dcb083610e978baad5a8b6e1cfee82'
+BORINGSSL_REVISION = 'a6d321b11fa80496b7c8ae6405468c212d4f5c87'
 
 
 def cleanup():
@@ -131,6 +131,7 @@ class BoringSSLGenerator(object):
 
         This simply stores the variables, so we easily access them in function.
     """
+
     def WriteFiles(self, file_sets, asm_outputs):
         """
             WriteFiles will be called by generate_build_files.main(..)
@@ -168,17 +169,17 @@ def writeSourcesCmake(g):
         ))
         s += '\n)\n'
         return s
-    
+
     # Define sources for libcrypto
     sources_cmake = ''
     sources_cmake += SOURCES_CMAKE_HEADER
     sources_cmake += define('crypto_sources', g.file_sets['crypto'])
-    
+
     # Define and sources various ASM files used by libcrypto
     for ((osname, arch), asm_files) in g.asm_outputs:
         name = 'crypto_sources_%s_%s' % (osname, arch)
         sources_cmake += define(name, asm_files)
-    
+
     # Write third_party/boringssl/sources.cmake
     p = os.path.join('third_party', 'boringssl', 'sources.cmake')
     writeFile(p, sources_cmake)
@@ -202,7 +203,7 @@ def copySourceFiles(g, boringssl_clone):
         files_to_copy += asm_files
     # Copy static files
     files_to_copy += FILES_TO_RETAIN
-    
+
     for f in sorted(set(files_to_copy)):
         src = os.path.join(boringssl_clone, f)
         dst = os.path.join(ROOT_PATH, 'third_party', 'boringssl', f)
@@ -255,11 +256,12 @@ def generate(boringssl_clone):
     # Add a README.md to the third_party/boringssl/ folder
     readmePath = os.path.join('third_party', 'boringssl', 'README.md')
     writeFile(readmePath, BORINGSSL_FOLDER_README)
-    
+
     # Copy LICENSE file for BoringSSL into third_party/boringssl/LICENSE
     # because all files in this folder are copied or generated from BoringSSL.
     LICENSE_src = os.path.join(boringssl_clone, 'src', 'LICENSE')
-    LICENSE_dst = os.path.join(ROOT_PATH, 'third_party', 'boringssl', 'LICENSE')
+    LICENSE_dst = os.path.join(
+        ROOT_PATH, 'third_party', 'boringssl', 'LICENSE')
     shutil.copy(LICENSE_src, LICENSE_dst)
 
 
