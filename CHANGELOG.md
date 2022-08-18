@@ -1,3 +1,8 @@
+# 0.5.3
+* Migrate to Flutter 3.0
+* Added Linux desktop support.
+* Fixed issues with `dart2js` in release mode.
+
 # 0.5.2
 
 * Migrates `dart:ffi`s generic `sizeOf` uses, which will be removed in Dart 2.13.
