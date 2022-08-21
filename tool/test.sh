@@ -51,7 +51,7 @@ done
 # We can't run integration tests on chrome without using `flutter drive`, see:
 # https://docs.flutter.dev/cookbook/testing/integration/introduction#5b-web
 section 'Running integration tests on chrome'
-"$DIR/with-chromedriver.sh" flutter drive \
+xvfb-run "$DIR/with-chromedriver.sh" flutter drive \
  --driver=test_driver/integration_test.dart \
  --target=integration_test/webcrypto_test.dart \
  -d chrome
