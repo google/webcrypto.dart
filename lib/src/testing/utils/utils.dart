@@ -16,7 +16,6 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:webcrypto/webcrypto.dart';
-import 'package:test/test.dart' as t;
 
 /// Log [value] from tests.
 void log(Object value) => print(value);
@@ -39,7 +38,7 @@ void dump(Map data) {
 /// Check if [condition] hold.
 void check(bool condition, [String message = 'check failed']) {
   if (!condition) {
-    t.fail(message);
+    throw AssertionError(message);
   }
 }
 

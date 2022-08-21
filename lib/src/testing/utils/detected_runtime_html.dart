@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' show window;
 
 /// Detected runtime based on [rendering engine][1], this is one of:
