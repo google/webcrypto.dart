@@ -271,6 +271,15 @@ def mkdirp(path):
 
 
 def main():
+    if shutil.which('go') is None:
+        print('Could not find "go" on $PATH')
+        return 1
+    if shutil.which('git') is None:
+        print('Could not find "git" on $PATH')
+        return 1
+    if shutil.which('perl') is None:
+        print('Could not find "perl" on $PATH')
+        return 1
     try:
         print('Updating third_party/boringssl/')
         tmp = tempfile.mkdtemp(prefix='update-boringssl-')
@@ -278,8 +287,10 @@ def main():
         git_clone(tmp)
         generate(tmp)
         print('Updated to BoringSSL revision: ' + BORINGSSL_REVISION)
+        return 0
     finally:
         shutil.rmtree(tmp)
+        return 1
 
 
 if __name__ == '__main__':
