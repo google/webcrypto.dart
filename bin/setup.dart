@@ -63,7 +63,8 @@ void main() async {
     'cmake',
     [
       '-S',
-      webcryptoRoot.resolve('src').toFilePath(),
+      Directory(webcryptoRoot.toFilePath() + Platform.pathSeparator + 'src')
+          .path,
       '-B',
       root.resolve('.dart_tool/webcrypto').toFilePath(),
     ],
