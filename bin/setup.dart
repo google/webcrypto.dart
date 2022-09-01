@@ -63,7 +63,7 @@ void main() async {
     'cmake',
     [
       '-S',
-      Directory(webcryptoRoot.toFilePath() + Platform.pathSeparator + 'src')
+      Directory(joinPaths(webcryptoRoot.toFilePath(), 'src'))
           .path,
       '-B',
       root.resolve('.dart_tool/webcrypto').toFilePath(),
@@ -98,4 +98,12 @@ void main() async {
   print('Package webcrypto now configured for use in your project.');
   print('This is only necessary for using package:webcrypto in unit tests');
   print('and scripts, not for usage in applications.');
+}
+
+/// Join paths without duplicate path separators.
+String joinPaths(String prefix, String suffix) {
+  if (!prefix.endsWith(Platform.pathSeparator)) {
+    prefix += Platform.pathSeparator;
+  }
+  return prefix + suffix;
 }
