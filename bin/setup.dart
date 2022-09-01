@@ -63,7 +63,7 @@ void main() async {
     'cmake',
     [
       '-S',
-      Directory(joinPaths(webcryptoRoot.toFilePath(), 'src'))
+      Directory(_joinPaths(webcryptoRoot.toFilePath(), 'src'))
           .path,
       '-B',
       root.resolve('.dart_tool/webcrypto').toFilePath(),
@@ -101,7 +101,7 @@ void main() async {
 }
 
 /// Join paths without duplicate path separators.
-String joinPaths(String prefix, String suffix) {
+String _joinPaths(String prefix, String suffix) {
   if (!prefix.endsWith(Platform.pathSeparator)) {
     prefix += Platform.pathSeparator;
   }
