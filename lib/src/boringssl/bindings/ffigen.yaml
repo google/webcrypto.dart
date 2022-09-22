@@ -32,8 +32,6 @@ structs:
 functions:
   include:
     # Keep consistent with src/symbols.yaml.
-    - webcrypto_dart_dl_attach_finalizer
-    - webcrypto_dart_dl_initialize
     - webcrypto_lookup_symbol
 preamble: |
   // Copyright 2021 Google LLC
@@ -51,4 +49,3 @@ preamble: |
   // limitations under the License.
   //
   // ignore_for_file: unused_element
-

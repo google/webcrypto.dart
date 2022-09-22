@@ -41,9 +41,6 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
     Pointer<T> lookup<T extends NativeType>(String s) =>
         webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
 
-    // Initialize the dynamic linking with Dart.
-    initialize_dart_dl(lookup);
-
     return lookup;
   } on ArgumentError {
     final lookup = lookupLibraryInDotDartTool();

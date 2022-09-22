@@ -22,8 +22,6 @@
 #include "symbols.h"
 
 void* _webcrypto_symbol_table[] = {
-    (void*)&webcrypto_dart_dl_initialize,
-    (void*)&webcrypto_dart_dl_attach_finalizer,
     (void*)&BN_bin2bn,
     (void*)&BN_bn2bin_padded,
     (void*)&BN_free,

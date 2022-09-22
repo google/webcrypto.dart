@@ -45,8 +45,6 @@
 #
 # Keep consistent with lib/src/third_party/boringssl/ffigen.yaml and
 # lib/src/boringssl/bindings/ffigen.yaml.
-- webcrypto_dart_dl_initialize
-- webcrypto_dart_dl_attach_finalizer
 - BN_bin2bn
 - BN_bn2bin_padded
 - BN_free

@@ -22,7 +22,6 @@ Pod::Spec.new do |s|
     # Since we can't embed source from ../third_party/, we have created files
     # in ios/third_party/... which simply use #include "../...". This is a hack!
     'third_party/boringssl/**/*.{c,h}',
-    'third_party/dart-sdk/**/*.{c,h}',
   ]
   s.compiler_flags      = [
     '-DOPENSSL_NO_ASM',
@@ -35,7 +34,6 @@ Pod::Spec.new do |s|
     # Enable equivalent of '-Isrc/include' to make '#include <openssl/...>' work
     'HEADER_SEARCH_PATHS' => [
       '$(PODS_TARGET_SRCROOT)/../third_party/boringssl/src/include',
-      '$(PODS_TARGET_SRCROOT)/../third_party/dart-sdk/src/runtime',
     ],
     'DEFINES_MODULE' => 'YES',
     # Flutter.framework does not contain a i386 slice.

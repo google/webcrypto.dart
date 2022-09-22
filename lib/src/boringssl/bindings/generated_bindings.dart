@@ -42,6 +42,10 @@ class WebCryptoDartDL {
   /// about the size of the external allocation.
   ///
   /// Returns 1 on success.
+  @Deprecated(
+    'This method no longer exists, we can regenerate bindings when '
+    'https://github.com/dart-lang/ffigen/issues/453 have been fixed',
+  )
   int webcrypto_dart_dl_attach_finalizer(
     Object object,
     ffi.Pointer<ffi.Void> pointer,
@@ -70,6 +74,10 @@ class WebCryptoDartDL {
   /// using other functions.
   ///
   /// Returns 1 on success.
+  @Deprecated(
+    'This method no longer exists, we can regenerate bindings when '
+    'https://github.com/dart-lang/ffigen/issues/453 have been fixed',
+  )
   int webcrypto_dart_dl_initialize(
     ffi.Pointer<ffi.Void> initialize_api_dl_data,
   ) {
