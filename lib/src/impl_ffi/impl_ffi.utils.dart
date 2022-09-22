@@ -14,27 +14,24 @@
 
 part of impl_ffi;
 
-/// Function that can't be inlined to be used for preventing [obj] from being
-/// garbage collected.
-@pragma('vm:never-inline')
-Object _finalizerReachabilityFence(Object obj) {
-  return obj;
-}
+/// Wrapper around [EVP_PKEY] which attaches finalizer and ensure that the
+/// [ffi.Finalizable] is kept in scope while the [EVP_PKEY] is used.
+class _EvpPKey implements ffi.Finalizable {
+  /// We don't really have an estimate of how much space the EVP_PKEY structure
+  /// takes up, but if we make it some non-trivial size then hopefully the GC
+  /// will prioritize freeing them.
+  static const _externalSizeEstimate = 4096;
 
-/// Wrapper around [EVP_PKEY] which attaches finalizer and ensures that the
-/// [_finalizerReachabilityFence] is used after usage.
-///
-/// The [_finalizerReachabilityFence] ensures that the [_EvpPKey] is not garbage
-/// collected while the wrapped key is use. Thus, we can be sure the finalizer
-/// won't be called while the wrapped key is in use.
-class _EvpPKey {
+  static final _finalizer =
+      ffi.NativeFinalizer(ssl.addresses.EVP_PKEY_free.cast());
+
   final ffi.Pointer<EVP_PKEY> _pkey;
 
   /// Allocate new [EVP_PKEY], attach finalizer and return the wrapped key.
   factory _EvpPKey() {
-    final _pkey = ssl.EVP_PKEY_new();
-    _checkOp(_pkey.address != 0, fallback: 'allocation failure');
-    return _EvpPKey.wrap(_pkey);
+    final pkey = ssl.EVP_PKEY_new();
+    _checkOp(pkey.address != 0, fallback: 'allocation failure');
+    return _EvpPKey.wrap(pkey);
   }
 
   /// Wrap existing [EVP_PKEY], this will attach a finalizer.
@@ -43,30 +40,13 @@ class _EvpPKey {
   /// [use]. Otherwise, the garbage collect may be calling the finalizer while
   /// the key is in use.
   _EvpPKey.wrap(this._pkey) {
-    final ret = dl.webcrypto_dart_dl_attach_finalizer(
-      this,
-      _pkey.cast(),
-      ssl.addresses.EVP_PKEY_free.cast(),
-      // We don't really have an estimate of how much space the EVP_PKEY structure
-      // takes up, but if we make it some non-trivial size then hopefully the GC
-      // will prioritize freeing them.
-      4096,
-    );
-    if (ret != 1) {
-      throw AssertionError('package:webcrypto failed to attached finalizer');
-    }
+    _finalizer.attach(this, _pkey.cast(), externalSize: _externalSizeEstimate);
   }
 
   /// Use the wrapped [EVP_PKEY] in callback [fn].
   ///
   /// Note. [fn] is not allowed to return a [Future].
-  T use<T>(T Function(ffi.Pointer<EVP_PKEY> pkey) fn) {
-    try {
-      return fn(_pkey);
-    } finally {
-      _finalizerReachabilityFence(this);
-    }
-  }
+  T use<T>(T Function(ffi.Pointer<EVP_PKEY> pkey) fn) => fn(_pkey);
 }
 
 /// Extension of native function that takes a [EVP_PKEY], making it easy to call
