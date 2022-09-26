@@ -1,37 +1,26 @@
-name: WebCryptoDartDL
-description: 'Bindings to src/webcrypto_dart_dl.h.'
+name: WebCrypto
+description: 'Bindings to src/webcrypto.h.'
 output: 'lib/src/boringssl/bindings/generated_bindings.dart'
 headers:
   entry-points:
-    - src/webcrypto_dart_dl.h
-    - src/webcrypto.c
-compiler-opts: '-Ithird_party/dart-sdk/src/runtime/ -Ithird_party/boringssl/src/include'
+    - src/webcrypto.h
 comments:
   style: any
   length: full
 sort: true
-typedef-map:
-  # TODO(dacoharkes): https://github.com/dart-lang/sdk/issues/42563 https://github.com/dart-lang/ffigen/issues/7
-  size_t: IntPtr
 macros:
-  include:
-    - nothing
+  include: []
 enums:
-  include:
-    - nothing
+  include: []
 unnamed-enums:
-  include:
-    - nothing
+  include: []
 globals:
-  include:
-    - nothing
+  include: []
 structs:
-  include:
-    - nothing
+  include: []
   dependency-only: opaque
 functions:
   include:
-    # Keep consistent with src/symbols.yaml.
     - webcrypto_lookup_symbol
 preamble: |
   // Copyright 2021 Google LLC
@@ -49,3 +38,4 @@ preamble: |
   // limitations under the License.
   //
   // ignore_for_file: unused_element
+  // ignore_for_file: non_constant_identifier_names

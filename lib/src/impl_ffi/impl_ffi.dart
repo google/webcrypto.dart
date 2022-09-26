@@ -26,8 +26,7 @@ import 'package:webcrypto/src/third_party/boringssl/generated_bindings.dart';
 
 import '../jsonwebkey.dart' show JsonWebKey;
 import '../webcrypto/webcrypto.dart';
-import '../boringssl/lookup/lookup.dart'
-    show ssl, dl, ERR_GET_LIB, ERR_GET_REASON;
+import '../boringssl/lookup/lookup.dart' show ssl, ERR_GET_LIB, ERR_GET_REASON;
 
 part 'impl_ffi.aescbc.dart';
 part 'impl_ffi.aesctr.dart';

@@ -55,8 +55,8 @@ Pointer<T> Function<T extends NativeType>(String symbolName)?
     final library = DynamicLibrary.open(libraryFile.path);
 
     // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcryptoDartDL = WebCryptoDartDL(library);
-    final webcrypto_lookup_symbol = webcryptoDartDL.webcrypto_lookup_symbol;
+    final webcrypto = WebCrypto(library);
+    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
     Pointer<T> lookup<T extends NativeType>(String s) =>

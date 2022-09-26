@@ -34,8 +34,8 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
         : DynamicLibrary.executable();
 
     // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcryptoDartDL = WebCryptoDartDL(library);
-    final webcrypto_lookup_symbol = webcryptoDartDL.webcrypto_lookup_symbol;
+    final webcrypto = WebCrypto(library);
+    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
     Pointer<T> lookup<T extends NativeType>(String s) =>
@@ -61,9 +61,6 @@ final Pointer<T> Function<T extends NativeType>(String symbolName)
 
 /// Gives access to BoringSSL symbols.
 final BoringSsl ssl = BoringSsl.fromLookup(_cachedLookup);
-
-/// Gives access to WebCrypto symbols.
-final WebCryptoDartDL dl = WebCryptoDartDL.fromLookup(_cachedLookup);
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.
