@@ -220,8 +220,8 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
       ));
 
       await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-      return _withAllocation(_sslAlloc<ffi.IntPtr>(),
-          (ffi.Pointer<ffi.IntPtr> len) {
+      return _withAllocation(_sslAlloc<ffi.Size>(),
+          (ffi.Pointer<ffi.Size> len) {
         len.value = 0;
         _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
         return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {

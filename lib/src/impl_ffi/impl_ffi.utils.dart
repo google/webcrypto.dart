@@ -143,7 +143,7 @@ String? _extractError() {
       return null;
     }
     const N = 4096; // Max error message size
-    final data = _withOutPointer(N, (ffi.Pointer<ffi.Int8> p) {
+    final data = _withOutPointer(N, (ffi.Pointer<ffi.Char> p) {
       ssl.ERR_error_string_n(err, p, N);
     });
     // Take everything until '\0'

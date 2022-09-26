@@ -112,7 +112,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   int Function(
     ffi.Pointer<EVP_PKEY_CTX>,
     ffi.Pointer<ffi.Uint8>,
-    ffi.Pointer<ffi.IntPtr>,
+    ffi.Pointer<ffi.Size>,
     ffi.Pointer<ffi.Uint8>,
     int,
   )
@@ -149,8 +149,8 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
     }
 
     return _withDataAsPointer(data, (ffi.Pointer<ffi.Uint8> input) {
-      return _withAllocation(_sslAlloc<ffi.IntPtr>(),
-          (ffi.Pointer<ffi.IntPtr> len) {
+      return _withAllocation(_sslAlloc<ffi.Size>(),
+          (ffi.Pointer<ffi.Size> len) {
         len.value = 0;
         _checkOpIsOne(encryptOrDecryptFn(
           ctx,
