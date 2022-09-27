@@ -42,7 +42,7 @@ DEVICE_IDS=$(flutter devices --machine | grep '"sdk"')
 for DEVICE in linux android; do
   if echo "$DEVICE_IDS" | grep -i "$DEVICE" > /dev/null; then
     section "Running integration tests on $DEVICE"
-    flutter test integration_test/webcrypto_test.dart -d "$DEVICE"
+    xvfb-run flutter test integration_test/webcrypto_test.dart -d "$DEVICE"
   else
     section "Skipping integration tests on $DEVICE (missing device)"
   fi
