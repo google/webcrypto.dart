@@ -94,6 +94,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
 ) {
   final scope = _Scope();
   try {
+    // TODO: Check if cbs is empty after parsing, consider using ECDSA_SIG_from_bytes instead (like chrome does)
     final ecdsa = _withDataAsCBS(signature, ssl.ECDSA_SIG_parse);
     _checkOp(ecdsa.address != 0,
         message: 'internal error formatting signature');
