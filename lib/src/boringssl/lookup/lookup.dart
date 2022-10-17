@@ -29,7 +29,7 @@ export 'symbols.generated.dart' show Sym;
 /// Dynamically load `webcrypto_lookup_symbol` function.
 final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
   try {
-    final library = Platform.isAndroid || Platform.isLinux
+    final library = Platform.isAndroid || Platform.isLinux || Platform.isMacOS
         ? DynamicLibrary.open('libwebcrypto.so')
         : DynamicLibrary.executable();
 
