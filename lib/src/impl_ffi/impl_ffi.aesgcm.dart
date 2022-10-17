@@ -77,36 +77,36 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
     if (isEncrypt) {
       final outLen = scope<ffi.Size>();
       final maxOut = data.length + ssl.EVP_AEAD_max_overhead(aead);
-      return _withOutPointer(maxOut, (ffi.Pointer<ffi.Uint8> out) {
-        _checkOpIsOne(ssl.EVP_AEAD_CTX_seal(
-          ctx,
-          out,
-          outLen,
-          maxOut,
-          scope.dataAsPointer(iv),
-          iv.length,
-          scope.dataAsPointer(data),
-          data.length,
-          scope.dataAsPointer(additionalData_),
-          additionalData_.length,
-        ));
-      }).sublist(0, outLen.value);
+      final out = scope<ffi.Uint8>(maxOut);
+      _checkOpIsOne(ssl.EVP_AEAD_CTX_seal(
+        ctx,
+        out,
+        outLen,
+        maxOut,
+        scope.dataAsPointer(iv),
+        iv.length,
+        scope.dataAsPointer(data),
+        data.length,
+        scope.dataAsPointer(additionalData_),
+        additionalData_.length,
+      ));
+      return out.copy(outLen.value);
     } else {
       final outLen = scope<ffi.Size>();
-      return _withOutPointer(data.length, (ffi.Pointer<ffi.Uint8> out) {
-        _checkOpIsOne(ssl.EVP_AEAD_CTX_open(
-          ctx,
-          out,
-          outLen,
-          data.length,
-          scope.dataAsPointer(iv),
-          iv.length,
-          scope.dataAsPointer(data),
-          data.length,
-          scope.dataAsPointer(additionalData_),
-          additionalData_.length,
-        ));
-      }).sublist(0, outLen.value);
+      final out = scope<ffi.Uint8>(data.length);
+      _checkOpIsOne(ssl.EVP_AEAD_CTX_open(
+        ctx,
+        out,
+        outLen,
+        data.length,
+        scope.dataAsPointer(iv),
+        iv.length,
+        scope.dataAsPointer(data),
+        data.length,
+        scope.dataAsPointer(additionalData_),
+        additionalData_.length,
+      ));
+      return out.copy(outLen.value);
     }
   });
 }

@@ -120,7 +120,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       }
 
       if (length == 0) {
-        return Uint8List.fromList([]);
+        return Uint8List.fromList(const []);
       }
 
       final lengthInBytes = (length / 8).ceil();

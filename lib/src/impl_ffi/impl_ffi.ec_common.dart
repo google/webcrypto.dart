@@ -297,28 +297,28 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
       ffi.nullptr,
     ));
 
-    final xAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ffi.Uint8> p) {
-      _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, x));
-    });
-    final yAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ffi.Uint8> p) {
-      _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, y));
-    });
+    // Create an output buffer
+    final out = scope<ffi.Uint8>(paramSize);
 
-    Uint8List? dAsBytes;
+    _checkOpIsOne(ssl.BN_bn2bin_padded(out, paramSize, x));
+    final xBytes = out.copy(paramSize);
+    _checkOpIsOne(ssl.BN_bn2bin_padded(out, paramSize, y));
+    final yBytes = out.copy(paramSize);
+
+    Uint8List? dBytes;
     if (isPrivateKey) {
       final d = ssl.EC_KEY_get0_private_key(ec);
-      dAsBytes = _withOutPointer(paramSize, (ffi.Pointer<ffi.Uint8> p) {
-        _checkOpIsOne(ssl.BN_bn2bin_padded(p, paramSize, d));
-      });
+      _checkOpIsOne(ssl.BN_bn2bin_padded(out, paramSize, d));
+      dBytes = out.copy(paramSize);
     }
 
     return JsonWebKey(
       kty: 'EC',
       use: jwkUse,
       crv: _ecCurveToJwkCrv(curve),
-      x: _jwkEncodeBase64UrlNoPadding(xAsBytes),
-      y: _jwkEncodeBase64UrlNoPadding(yAsBytes),
-      d: dAsBytes != null ? _jwkEncodeBase64UrlNoPadding(dAsBytes) : null,
+      x: _jwkEncodeBase64UrlNoPadding(xBytes),
+      y: _jwkEncodeBase64UrlNoPadding(yBytes),
+      d: dBytes != null ? _jwkEncodeBase64UrlNoPadding(dBytes) : null,
     ).toJson();
   });
 }

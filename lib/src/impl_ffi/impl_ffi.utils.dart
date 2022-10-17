@@ -332,6 +332,11 @@ Future<R> _withAllocationAsync<T extends ffi.NativeType, R>(
   }
 }
 
+extension on ffi.Pointer<ffi.Uint8> {
+  /// Copy [length] bytes from pointer to [Uint8List] owned by Dart.
+  Uint8List copy(int length) => Uint8List.fromList(asTypedList(length));
+}
+
 /// Allocated a [size] bytes [ffi.Pointer<T>] and call [fn], and copy the data
 /// from the pointer to an [Uint8List] when [fn] returns. Freeing the pointer
 /// when [fn] returns.

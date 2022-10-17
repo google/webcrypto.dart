@@ -43,15 +43,23 @@ abstract class _Hash implements Hash {
       digestStream(Stream.value(data));
 
   @override
-  Future<Uint8List> digestStream(Stream<List<int>> data) async {
-    return await _withEVP_MD_CTX((ctx) async {
+  Future<Uint8List> digestStream(Stream<List<int>> data) {
+    return _Scope.async((scope) async {
+      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+      // Initialize with hash function
       _checkOp(ssl.EVP_DigestInit(ctx, _md) == 1);
+
+      // Stream data
       await _streamToUpdate(data, ctx, ssl.EVP_DigestUpdate);
+
+      // Get size of the output buffer
       final size = ssl.EVP_MD_CTX_size(ctx);
-      _checkOp(size > 0);
-      return _withOutPointer(size, (ffi.Pointer<ffi.Uint8> p) {
-        _checkOp(ssl.EVP_DigestFinal(ctx, p, ffi.nullptr) == 1);
-      });
+      _checkOp(size > 0); // sanity check
+
+      // Allocate output buffer and return output
+      final out = scope<ffi.Uint8>(size);
+      _checkOp(ssl.EVP_DigestFinal(ctx, out, ffi.nullptr) == 1);
+      return out.copy(size);
     });
   }
 }
