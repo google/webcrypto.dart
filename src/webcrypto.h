@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-// **GENERATED FILE DO NOT MODIFY**
-//
-// This file is generated using:
-// `tool/update-dart-sdk.py`
+#include <stdint.h>
 
-#include "../../../../../../third_party/dart-sdk/src/runtime/include/dart_api_dl.c"
+// Macro for annotating all functions to be exported
+#define WEBCRYPTO_EXPORT                                                       \
+  __attribute__((visibility("default"))) __attribute__((used))
+
+// Function to lookup BoringSSL symbols based on index in the Sym enum.
+// See src/symbols.yaml for details.
+WEBCRYPTO_EXPORT void* webcrypto_lookup_symbol(int32_t index);

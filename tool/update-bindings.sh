@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# **GENERATED FILE DO NOT MODIFY**
-#
-# This file is generated using:
-# `tool/update-dart-sdk.py`
+set -e
 
-set(dart_dl_sources
-  ${DARTSDK_ROOT}src/runtime/include/dart_api_dl.c
-)
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+cd "$DIR/.."
+
+flutter pub get
+
+flutter pub run ffigen --config=lib/src/boringssl/bindings/ffigen.yaml
+flutter pub run ffigen --config=lib/src/third_party/boringssl/ffigen.yaml

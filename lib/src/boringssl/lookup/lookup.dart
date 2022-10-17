@@ -29,20 +29,17 @@ export 'symbols.generated.dart' show Sym;
 /// Dynamically load `webcrypto_lookup_symbol` function.
 final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
   try {
-    final library = Platform.isAndroid || Platform.isLinux
+    final library = Platform.isAndroid || Platform.isLinux || Platform.isMacOS
         ? DynamicLibrary.open('libwebcrypto.so')
         : DynamicLibrary.executable();
 
     // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcryptoDartDL = WebCryptoDartDL(library);
-    final webcrypto_lookup_symbol = webcryptoDartDL.webcrypto_lookup_symbol;
+    final webcrypto = WebCrypto(library);
+    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
     Pointer<T> lookup<T extends NativeType>(String s) =>
         webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
-
-    // Initialize the dynamic linking with Dart.
-    initialize_dart_dl(lookup);
 
     return lookup;
   } on ArgumentError {
@@ -64,9 +61,6 @@ final Pointer<T> Function<T extends NativeType>(String symbolName)
 
 /// Gives access to BoringSSL symbols.
 final BoringSsl ssl = BoringSsl.fromLookup(_cachedLookup);
-
-/// Gives access to WebCrypto symbols.
-final WebCryptoDartDL dl = WebCryptoDartDL.fromLookup(_cachedLookup);
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.

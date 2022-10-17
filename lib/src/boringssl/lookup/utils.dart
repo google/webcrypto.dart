@@ -38,8 +38,7 @@ String get libraryFileName {
   );
 }
 
-/// Look for the webcrypto binary library in the `.dart_tool/webcrypto/` folder,
-/// and initialize it with [initialize_dart_dl].
+/// Look for the webcrypto binary library in the `.dart_tool/webcrypto/` folder.
 ///
 /// Returns `null` if it could not be found.
 Pointer<T> Function<T extends NativeType>(String symbolName)?
@@ -56,38 +55,16 @@ Pointer<T> Function<T extends NativeType>(String symbolName)?
     final library = DynamicLibrary.open(libraryFile.path);
 
     // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcryptoDartDL = WebCryptoDartDL(library);
-    final webcrypto_lookup_symbol = webcryptoDartDL.webcrypto_lookup_symbol;
+    final webcrypto = WebCrypto(library);
+    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
 
     // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
     Pointer<T> lookup<T extends NativeType>(String s) =>
         webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
 
-    // Initialize library
-    initialize_dart_dl(lookup);
-
     return lookup;
   }
   return null;
-}
-
-/// Initialize library for use with Dart dynamic linking, by calling
-/// `webcrypto_dart_dl_initialize`.
-///
-/// This must be called before we start using the library.
-void initialize_dart_dl(
-    Pointer<T> Function<T extends NativeType>(String) lookup) {
-  final webcrypto_dart_dl_initialize =
-      WebCryptoDartDL.fromLookup(lookup).webcrypto_dart_dl_initialize;
-
-  if (webcrypto_dart_dl_initialize(NativeApi.initializeApiDLData) != 1) {
-    throw UnsupportedError(
-      'package:webcrypto does not work with this version of the Dart DL API.'
-      'Please update to a newer version of package:webcrypto. And ensure that'
-      'you have rebuilt the current version with '
-      '`flutter pub run webcrypt:setup` if running locally.',
-    );
-  }
 }
 
 /// Find the `.dart_tool/` folder, returns `null` if unable to find it.

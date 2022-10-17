@@ -113,7 +113,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     final outData = outBuf.asTypedList(bufSize + blockSize);
 
     // Allocate and output length integer
-    final outLen = scope<ffi.Int32>();
+    final outLen = scope<ffi.Int>();
 
     // Process data from source
     var isBeforeWrapAround = true;

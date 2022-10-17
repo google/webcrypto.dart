@@ -20,8 +20,6 @@ library symbols.generated;
 
 /// BoringSSL symbols used in `package:webcrypto`.
 enum Sym {
-  webcrypto_dart_dl_initialize,
-  webcrypto_dart_dl_attach_finalizer,
   BN_bin2bn,
   BN_bn2bin_padded,
   BN_free,
@@ -161,8 +159,6 @@ enum Sym {
 }
 
 const _SymName = [
-  'webcrypto_dart_dl_initialize',
-  'webcrypto_dart_dl_attach_finalizer',
   'BN_bin2bn',
   'BN_bn2bin_padded',
   'BN_free',

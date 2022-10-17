@@ -37,7 +37,7 @@ Future<T> checkErrorStack<T>(FutureOr<T> Function() fn) async {
         return ret;
       }
       const N = 4096; // Max error message size
-      final p = ffi.calloc<ffi.Int8>(N);
+      final p = ffi.calloc<ffi.Char>(N);
       try {
         ssl.ERR_error_string_n(err, p, N);
         final data = p.cast<ffi.Uint8>().asTypedList(N);
