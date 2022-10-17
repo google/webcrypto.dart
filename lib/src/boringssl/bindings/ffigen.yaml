@@ -1,9 +1,9 @@
 name: WebCrypto
 description: 'Bindings to src/webcrypto.h.'
-output: 'lib/src/boringssl/bindings/generated_bindings.dart'
+output: generated_bindings.dart
 headers:
   entry-points:
-    - src/webcrypto.h
+    - ../../../../src/webcrypto.h
 comments:
   style: any
   length: full
