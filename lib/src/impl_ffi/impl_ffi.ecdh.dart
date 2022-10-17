@@ -75,8 +75,6 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
 
   @override
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
-    ArgumentError.checkNotNull(length, 'length');
-    ArgumentError.checkNotNull(publicKey, 'publicKey');
     if (publicKey is! _EcdhPublicKey) {
       throw ArgumentError.value(
         publicKey,

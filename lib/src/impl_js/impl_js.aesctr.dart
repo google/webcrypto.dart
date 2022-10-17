@@ -57,8 +57,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) async {
-    ArgumentError.checkNotNull(counter, 'counter');
-    ArgumentError.checkNotNull(length, 'length');
     return await _decrypt(
       _aesCtrAlgorithm.update(
         counter: Uint8List.fromList(counter),
@@ -84,8 +82,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) async {
-    ArgumentError.checkNotNull(counter, 'counter');
-    ArgumentError.checkNotNull(length, 'length');
     return await _encrypt(
       _aesCtrAlgorithm.update(
         counter: Uint8List.fromList(counter),

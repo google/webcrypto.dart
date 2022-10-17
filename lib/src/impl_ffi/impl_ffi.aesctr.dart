@@ -211,8 +211,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) {
-    ArgumentError.checkNotNull(counter, 'counter');
-    ArgumentError.checkNotNull(length, 'length');
     if (counter.length != 16) {
       throw ArgumentError.value(counter, 'counter', 'must be 16 bytes');
     }
@@ -227,7 +225,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) async {
-    ArgumentError.checkNotNull(data, 'data');
     _checkArguments(counter, length);
     return await _bufferStream(decryptStream(
       Stream.value(data),
@@ -242,7 +239,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) {
-    ArgumentError.checkNotNull(data, 'data');
     _checkArguments(counter, length);
     return _aesCtrEncryptOrDecrypt(_key, false, data, counter, length);
   }
@@ -253,7 +249,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) async {
-    ArgumentError.checkNotNull(data, 'data');
     _checkArguments(counter, length);
     return await _bufferStream(encryptStream(
       Stream.value(data),
@@ -268,7 +263,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) {
-    ArgumentError.checkNotNull(data, 'data');
     _checkArguments(counter, length);
     return _aesCtrEncryptOrDecrypt(_key, true, data, counter, length);
   }

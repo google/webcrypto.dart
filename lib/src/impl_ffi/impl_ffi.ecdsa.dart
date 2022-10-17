@@ -18,8 +18,6 @@ part of impl_ffi;
 
 /// Get valid value for `jwk.alg` property given an [EllipticCurve] for ECDSA.
 String _ecdsaCurveToJwkAlg(EllipticCurve curve) {
-  ArgumentError.checkNotNull(curve, 'curve');
-
   if (curve == EllipticCurve.p256) {
     return 'ES256';
   }
@@ -200,16 +198,11 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   _EcdsaPrivateKey(this._key);
 
   @override
-  Future<Uint8List> signBytes(List<int> data, Hash hash) {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(hash, 'hash');
-    return signStream(Stream.value(data), hash);
-  }
+  Future<Uint8List> signBytes(List<int> data, Hash hash) =>
+      signStream(Stream.value(data), hash);
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(hash, 'hash');
     final md = _Hash.fromHash(hash)._md;
 
     final sig = await _withEVP_MD_CTX((ctx) async {
@@ -252,12 +245,8 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
   _EcdsaPublicKey(this._key);
 
   @override
-  Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(hash, 'hash');
-    return verifyStream(signature, Stream.value(data), hash);
-  }
+  Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) =>
+      verifyStream(signature, Stream.value(data), hash);
 
   @override
   Future<bool> verifyStream(
@@ -265,9 +254,6 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
     Stream<List<int>> data,
     Hash hash,
   ) async {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(hash, 'hash');
     final md = _Hash.fromHash(hash)._md;
 
     // Convert to DER signature

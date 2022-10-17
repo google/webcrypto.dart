@@ -16,8 +16,6 @@ part of impl_ffi;
 
 /// Get `ssl.NID_...` from BoringSSL matching the given [curve].
 int _ecCurveToNID(EllipticCurve curve) {
-  ArgumentError.checkNotNull(curve, 'curve');
-
   if (curve == EllipticCurve.p256) {
     return NID_X9_62_prime256v1;
   }
@@ -47,8 +45,6 @@ EllipticCurve _ecCurveFromNID(int nid) {
 }
 
 String _ecCurveToJwkCrv(EllipticCurve curve) {
-  ArgumentError.checkNotNull(curve, 'curve');
-
   if (curve == EllipticCurve.p256) {
     return 'P-256';
   }

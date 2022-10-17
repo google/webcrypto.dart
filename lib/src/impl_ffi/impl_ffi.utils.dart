@@ -429,7 +429,6 @@ Uint8List _withOutCBB(void Function(ffi.Pointer<CBB>) fn) {
 
 /// Convert [Stream<List<int>>] to [Uint8List].
 Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
-  ArgumentError.checkNotNull(data, 'data');
   final b = BytesBuilder();
   await for (final chunk in data) {
     b.add(chunk);

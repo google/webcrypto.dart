@@ -101,32 +101,20 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
   _AesCbcSecretKey(this._key);
 
   @override
-  Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
-    return await _bufferStream(decryptStream(Stream.value(data), iv));
-  }
+  Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async =>
+      await _bufferStream(decryptStream(Stream.value(data), iv));
 
   @override
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
-    return _aesCbcEncryptOrDecrypt(_key, false, data, iv);
-  }
+  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) =>
+      _aesCbcEncryptOrDecrypt(_key, false, data, iv);
 
   @override
-  Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
-    return await _bufferStream(encryptStream(Stream.value(data), iv));
-  }
+  Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async =>
+      await _bufferStream(encryptStream(Stream.value(data), iv));
 
   @override
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
-    return _aesCbcEncryptOrDecrypt(_key, true, data, iv);
-  }
+  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) =>
+      _aesCbcEncryptOrDecrypt(_key, true, data, iv);
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>

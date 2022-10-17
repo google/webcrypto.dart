@@ -25,9 +25,6 @@ abstract class EcdsaPrivateKey {
     List<int> keyData,
     EllipticCurve curve,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(curve, 'curve');
-
     return impl.ecdsaPrivateKey_importPkcs8Key(keyData, curve);
   }
 
@@ -35,17 +32,12 @@ abstract class EcdsaPrivateKey {
     Map<String, dynamic> jwk,
     EllipticCurve curve,
   ) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(curve, 'curve');
-
     return impl.ecdsaPrivateKey_importJsonWebKey(jwk, curve);
   }
 
   static Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> generateKey(
     EllipticCurve curve,
   ) {
-    ArgumentError.checkNotNull(curve, 'curve');
-
     return impl.ecdsaPrivateKey_generateKey(curve);
   }
 
@@ -71,9 +63,6 @@ abstract class EcdsaPublicKey {
     List<int> keyData,
     EllipticCurve curve,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(curve, 'curve');
-
     return impl.ecdsaPublicKey_importRawKey(keyData, curve);
   }
 
@@ -81,9 +70,6 @@ abstract class EcdsaPublicKey {
     List<int> keyData,
     EllipticCurve curve,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(curve, 'curve');
-
     return impl.ecdsaPublicKey_importSpkiKey(keyData, curve);
   }
 
@@ -91,9 +77,6 @@ abstract class EcdsaPublicKey {
     Map<String, dynamic> jwk,
     EllipticCurve curve,
   ) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(curve, 'curve');
-
     return impl.ecdsaPublicKey_importJsonWebKey(jwk, curve);
   }
 

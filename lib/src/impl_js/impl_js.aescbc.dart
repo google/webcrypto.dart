@@ -53,8 +53,6 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
 
   @override
   Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
     return await _decrypt(
       _aesCbcAlgorithm.update(iv: Uint8List.fromList(iv)),
       _key,
@@ -69,8 +67,6 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
 
   @override
   Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
     return await _encrypt(
       _aesCbcAlgorithm.update(iv: Uint8List.fromList(iv)),
       _key,

@@ -15,7 +15,6 @@
 part of impl_ffi;
 
 Uint8List _aesImportRawKey(List<int> keyData) {
-  ArgumentError.checkNotNull(keyData, 'keyData');
   if (keyData.length == 24) {
     // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
     // If not supported in Chrome, there is not reason to support it in Dart.
@@ -31,8 +30,6 @@ Uint8List _aesImportJwkKey(
   Map<String, dynamic> jwk, {
   required String expectedJwkAlgSuffix,
 }) {
-  ArgumentError.checkNotNull(jwk, 'jwk');
-
   final k = JsonWebKey.fromJson(jwk);
 
   void checkJwk(bool condition, String prop, String message) =>
@@ -79,7 +76,6 @@ Map<String, dynamic> _aesExportJwkKey(
 }
 
 Uint8List _aesGenerateKey(int length) {
-  ArgumentError.checkNotNull(length, 'length');
   if (length == 192) {
     // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
     // If not supported in Chrome, there is not reason to support it in Dart.

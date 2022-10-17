@@ -14,7 +14,6 @@
 
 /// Return the N'th fibonacci number.
 int _fibonacci(int n) {
-  ArgumentError.checkNotNull(n, 'n');
   if (n < 0) {
     throw ArgumentError.value(n, 'n', 'must be a non-negative integer');
   }

@@ -52,13 +52,11 @@ bool equalBytes(List<int> a, List<int> b) => base64Encode(a) == base64Encode(b);
 
 /// Convert [Stream<List<int>>] to [Uint8List].
 Future<Uint8List> bufferStream(Stream<List<int>> data) async {
-  ArgumentError.checkNotNull(data, 'data');
-  final result = <int>[];
-  // TODO: Make this allocation stuff smarter
+  final b = BytesBuilder();
   await for (var chunk in data) {
-    result.addAll(chunk);
+    b.add(chunk);
   }
-  return Uint8List.fromList(result);
+  return b.takeBytes();
 }
 
 Hash hashFromJson(dynamic json) {

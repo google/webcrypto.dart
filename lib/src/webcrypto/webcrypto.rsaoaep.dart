@@ -22,9 +22,6 @@ abstract class RsaOaepPrivateKey {
     List<int> keyData,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
   }
 
@@ -32,9 +29,6 @@ abstract class RsaOaepPrivateKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
   }
 
@@ -43,10 +37,6 @@ abstract class RsaOaepPrivateKey {
     BigInt publicExponent,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(modulusLength, 'modulusLength');
-    ArgumentError.checkNotNull(publicExponent, 'publicExponent');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaOaepPrivateKey_generateKey(
       modulusLength,
       publicExponent,
@@ -72,9 +62,6 @@ abstract class RsaOaepPublicKey {
     List<int> keyData,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaOaepPublicKey_importSpkiKey(keyData, hash);
   }
 
@@ -82,9 +69,6 @@ abstract class RsaOaepPublicKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaOaepPublicKey_importJsonWebKey(jwk, hash);
   }
 

@@ -18,8 +18,6 @@ abstract class _Hash implements Hash {
   const _Hash();
 
   factory _Hash.fromHash(Hash hash) {
-    ArgumentError.checkNotNull(hash, 'hash');
-
     if (hash is _Hash) {
       return hash;
     }
@@ -41,16 +39,11 @@ abstract class _Hash implements Hash {
   }
 
   @override
-  Future<Uint8List> digestBytes(List<int> data) {
-    ArgumentError.checkNotNull(data, 'data');
-
-    return digestStream(Stream.value(data));
-  }
+  Future<Uint8List> digestBytes(List<int> data) =>
+      digestStream(Stream.value(data));
 
   @override
   Future<Uint8List> digestStream(Stream<List<int>> data) async {
-    ArgumentError.checkNotNull(data, 'data');
-
     return await _withEVP_MD_CTX((ctx) async {
       _checkOp(ssl.EVP_DigestInit(ctx, _md) == 1);
       await _streamToUpdate(data, ctx, ssl.EVP_DigestUpdate);

@@ -42,9 +42,6 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
     List<int> salt,
     int iterations,
   ) async {
-    ArgumentError.checkNotNull(length, 'length');
-    ArgumentError.checkNotNull(salt, 'salt');
-    ArgumentError.checkNotNull(iterations, 'iterations');
     return await _deriveBits(
       subtle.Algorithm(
         name: _pbkdf2AlgorithmName,

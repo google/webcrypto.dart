@@ -94,7 +94,6 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
 
   @override
   Future<Uint8List> signBytes(List<int> data, int saltLength) async {
-    ArgumentError.checkNotNull(saltLength, 'saltLength');
     if (saltLength < 0) {
       throw ArgumentError.value(
         saltLength,
@@ -136,7 +135,6 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
     List<int> data,
     int saltLength,
   ) async {
-    ArgumentError.checkNotNull(saltLength, 'saltLength');
     if (saltLength < 0) {
       throw ArgumentError.value(
         saltLength,

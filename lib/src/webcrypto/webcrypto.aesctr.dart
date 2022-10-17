@@ -19,20 +19,14 @@ abstract class AesCtrSecretKey {
   AesCtrSecretKey._(); // keep the constructor private.
 
   static Future<AesCtrSecretKey> importRawKey(List<int> keyData) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-
     return impl.aesCtr_importRawKey(keyData);
   }
 
   static Future<AesCtrSecretKey> importJsonWebKey(Map<String, dynamic> jwk) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-
     return impl.aesCtr_importJsonWebKey(jwk);
   }
 
   static Future<AesCtrSecretKey> generateKey(int length) {
-    ArgumentError.checkNotNull(length, 'length');
-
     return impl.aesCtr_generateKey(length);
   }
 

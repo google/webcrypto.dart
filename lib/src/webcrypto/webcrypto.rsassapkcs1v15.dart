@@ -64,9 +64,6 @@ abstract class RsassaPkcs1V15PrivateKey {
     List<int> keyData,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsassaPkcs1V15PrivateKey_importPkcs8Key(keyData, hash);
   }
 
@@ -116,9 +113,6 @@ abstract class RsassaPkcs1V15PrivateKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsassaPkcs1V15PrivateKey_importJsonWebKey(jwk, hash);
   }
 
@@ -195,10 +189,6 @@ abstract class RsassaPkcs1V15PrivateKey {
     BigInt publicExponent,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(modulusLength, 'modulusLength');
-    ArgumentError.checkNotNull(publicExponent, 'publicExponent');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsassaPkcs1V15PrivateKey_generateKey(
       modulusLength,
       publicExponent,
@@ -384,9 +374,6 @@ abstract class RsassaPkcs1V15PublicKey {
     List<int> keyData,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsassaPkcs1V15PublicKey_importSpkiKey(keyData, hash);
   }
 
@@ -436,9 +423,6 @@ abstract class RsassaPkcs1V15PublicKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsassaPkcs1V15PublicKey_importJsonWebKey(jwk, hash);
   }
 
