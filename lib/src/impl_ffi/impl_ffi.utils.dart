@@ -240,7 +240,12 @@ class _Scope implements Allocator {
   }
 
   /// Release all resources held in this scope.
-  void release() {
+  ///
+  /// Instead of calling this directly, prefer to use:
+  ///  * [_Scope.async],
+  ///  * [_Scope.sync], or,
+  ///  * [_Scope.stream].
+  void _release() {
     while (_deferred.isNotEmpty) {
       try {
         _deferred.removeLast().fn();
@@ -271,7 +276,18 @@ class _Scope implements Allocator {
     try {
       return await fn(scope);
     } finally {
-      scope.release();
+      scope._release();
+    }
+  }
+
+  /// Run [fn] with a [_Scope] that is released when the [Stream] returned
+  /// from [fn] is completed.
+  static Stream<T> stream<T>(Stream<T> Function(_Scope scope) fn) async* {
+    final scope = _Scope();
+    try {
+      yield* fn(scope);
+    } finally {
+      scope._release();
     }
   }
 
@@ -284,7 +300,7 @@ class _Scope implements Allocator {
     try {
       return fn(scope);
     } finally {
-      scope.release();
+      scope._release();
     }
   }
 }

@@ -86,8 +86,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }
 
-    final scope = _Scope();
-    try {
+    return _Scope.async((scope) async {
       final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY.invoke(publicKey._key);
       _checkOp(pubEcKey.address != 0, fallback: 'not an ec key');
       scope.defer(() => ssl.EC_KEY_free(pubEcKey));
@@ -148,9 +147,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       }
 
       return derived;
-    } finally {
-      scope.release();
-    }
+    });
   }
 
   @override

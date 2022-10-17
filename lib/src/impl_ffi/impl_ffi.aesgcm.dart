@@ -58,8 +58,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
   //       what chrome does, how firefox passes tests. And check if other
   //       primitives that accept an iv/nonce has size limitations on it.
 
-  final scope = _Scope();
-  try {
+  return _Scope.async((scope) async {
     assert(key.length == 16 || key.length == 32);
     final aead = key.length == 16
         ? ssl.EVP_aead_aes_128_gcm()
@@ -109,9 +108,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
         ));
       }).sublist(0, outLen.value);
     }
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 class _AesGcmSecretKey implements AesGcmSecretKey {

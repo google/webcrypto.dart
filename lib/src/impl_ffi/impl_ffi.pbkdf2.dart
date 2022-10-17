@@ -54,8 +54,7 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
 
     final lengthInBytes = length ~/ 8;
 
-    final scope = _Scope();
-    try {
+    return _Scope.async((scope) async {
       return _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Uint8> out) {
         _checkOpIsOne(ssl.PKCS5_PBKDF2_HMAC(
           scope.dataAsPointer(_key),
@@ -68,8 +67,6 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
           out,
         ));
       });
-    } finally {
-      scope.release();
-    }
+    });
   }
 }

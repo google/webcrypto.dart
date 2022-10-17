@@ -35,9 +35,8 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
   bool encrypt,
   Stream<List<int>> source,
   List<int> iv,
-) async* {
-  final scope = _Scope();
-  try {
+) {
+  return _Scope.stream((scope) async* {
     assert(key.length == 16 || key.length == 32);
     final cipher =
         key.length == 16 ? ssl.EVP_aes_128_cbc() : ssl.EVP_aes_256_cbc();
@@ -91,9 +90,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
     if (outLen.value > 0) {
       yield outData.sublist(0, outLen.value);
     }
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 class _AesCbcSecretKey implements AesCbcSecretKey {

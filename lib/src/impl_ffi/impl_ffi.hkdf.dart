@@ -44,8 +44,7 @@ class _HkdfSecretKey implements HkdfSecretKey {
 
     final lengthInBytes = length ~/ 8;
 
-    final scope = _Scope();
-    try {
+    return _Scope.async((scope) async {
       return _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Uint8> out) {
         final r = ssl.HKDF(
           out,
@@ -70,8 +69,6 @@ class _HkdfSecretKey implements HkdfSecretKey {
           _checkOpIsOne(r, fallback: 'HKDF key derivation failed');
         }
       });
-    } finally {
-      scope.release();
-    }
+    });
   }
 }
