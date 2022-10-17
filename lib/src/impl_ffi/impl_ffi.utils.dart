@@ -430,12 +430,11 @@ Uint8List _withOutCBB(void Function(ffi.Pointer<CBB>) fn) {
 /// Convert [Stream<List<int>>] to [Uint8List].
 Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
   ArgumentError.checkNotNull(data, 'data');
-  final result = <int>[];
-  // TODO: Make this allocation stuff smarter
-  await for (var chunk in data) {
-    result.addAll(chunk);
+  final b = BytesBuilder();
+  await for (final chunk in data) {
+    b.add(chunk);
   }
-  return Uint8List.fromList(result);
+  return b.takeBytes();
 }
 
 /// Get the number of bytes required to hold [numberOfBits].
