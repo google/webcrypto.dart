@@ -18,6 +18,7 @@ import 'dart:convert';
 import 'package:webcrypto/webcrypto.dart';
 
 /// Log [value] from tests.
+// ignore: avoid_print
 void log(Object value) => print(value);
 
 /// True, if data should be dumped, this is mostly generated test case
@@ -29,8 +30,9 @@ const _dumpData = bool.fromEnvironment('webcrypto.dump', defaultValue: false);
 /// This can also be overwritten by manually tweaking the [_dumpData] variable.
 void dump(Map data) {
   if (_dumpData) {
-    final json =
-        JsonEncoder.withIndent('  ').convert(data).replaceAll('\n', '\n| ');
+    final json = const JsonEncoder.withIndent('  ')
+        .convert(data)
+        .replaceAll('\n', '\n| ');
     log('| $json');
   }
 }

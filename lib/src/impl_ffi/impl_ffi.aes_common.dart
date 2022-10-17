@@ -22,7 +22,7 @@ Uint8List _aesImportRawKey(List<int> keyData) {
     throw UnsupportedError('192-bit AES keys are not supported');
   }
   if (keyData.length != 16 && keyData.length != 32) {
-    throw FormatException('keyData for AES must be 128 or 256 bits');
+    throw const FormatException('keyData for AES must be 128 or 256 bits');
   }
   return Uint8List.fromList(keyData);
 }
@@ -86,7 +86,7 @@ Uint8List _aesGenerateKey(int length) {
     throw UnsupportedError('192-bit AES keys are not supported');
   }
   if (length != 128 && length != 256) {
-    throw FormatException('keyData for AES must be 128 or 256 bits');
+    throw const FormatException('keyData for AES must be 128 or 256 bits');
   }
   final keyData = Uint8List(length ~/ 8);
   fillRandomBytes(keyData);

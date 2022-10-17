@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_ffi;
 
 /// Convert [data] to [Uint8List] and zero to [lengthInBits] if given.
@@ -90,7 +92,7 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
 Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash,
     {int? length}) async {
   final h = _Hash.fromHash(hash);
-  length ??= ssl.EVP_MD_size(h.MD) * 8;
+  length ??= ssl.EVP_MD_size(h._md) * 8;
   final keyData = Uint8List((length / 8).ceil());
   fillRandomBytes(keyData);
 
@@ -120,7 +122,7 @@ class _HmacSecretKey implements HmacSecretKey {
     try {
       _withDataAsPointer(_keyData, (ffi.Pointer<ffi.Void> p) {
         final n = _keyData.length;
-        _checkOp(ssl.HMAC_Init_ex(ctx, p, n, _hash.MD, ffi.nullptr) == 1);
+        _checkOp(ssl.HMAC_Init_ex(ctx, p, n, _hash._md, ffi.nullptr) == 1);
       });
       await _streamToUpdate(data, ctx, ssl.HMAC_Update);
 

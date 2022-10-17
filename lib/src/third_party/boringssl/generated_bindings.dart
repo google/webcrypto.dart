@@ -50,6 +50,7 @@
  * (eay@cryptsoft.com).  This product includes software written by Tim
  * Hudson (tjh@cryptsoft.com). */
 // ignore_for_file: camel_case_types
+// ignore_for_file: constant_identifier_names
 // ignore_for_file: non_constant_identifier_names
 // ignore_for_file: unused_element
 // ignore_for_file: unused_field

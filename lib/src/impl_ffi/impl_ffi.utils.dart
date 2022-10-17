@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_ffi;
 
 /// Wrapper around [EVP_PKEY] which attaches finalizer and ensure that the

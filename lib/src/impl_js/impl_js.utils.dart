@@ -56,7 +56,7 @@ Object _translateDomException(
   bool invalidAccessErrorIsArgumentError = false,
 }) {
   var message = e.message;
-  if (message == null || message.isEmpty) {
+  if (message.isEmpty) {
     message = 'browser threw "${e.toString()}"';
   }
   switch (e.name) {
