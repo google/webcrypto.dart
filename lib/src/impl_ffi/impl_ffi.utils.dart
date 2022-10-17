@@ -266,6 +266,31 @@ class _Scope implements Allocator {
     // Does nothing, use `release` instead.
     // Not throwing, so that this can actually be used as an Allocator.
   }
+
+  /// Run [fn] with a [_Scope] that is released when the [Future] returned
+  /// from [fn] is completed.
+  static Future<T> async<T>(FutureOr<T> Function(_Scope scope) fn) async {
+    assert(T is! Future, 'avoid nested async blocks');
+    final scope = _Scope();
+    try {
+      return await fn(scope);
+    } finally {
+      scope.release();
+    }
+  }
+
+  /// Run [fn] with a [_Scope] that is released when [fn] returns.
+  ///
+  /// Use [async] if [fn] is an async function that returns a [Future].
+  static T sync<T>(T Function(_Scope scope) fn) {
+    assert(T is! Future, 'avoid nested async blocks');
+    final scope = _Scope();
+    try {
+      return fn(scope);
+    } finally {
+      scope.release();
+    }
+  }
 }
 
 /// Invoke [fn] with [p], and release [p] when [fn] returns.

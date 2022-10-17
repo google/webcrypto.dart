@@ -67,8 +67,7 @@ void _validateEllipticCurveKey(
   _EvpPKey key,
   EllipticCurve curve,
 ) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     _checkData(ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_EC,
         message: 'key is not an EC key');
 
@@ -88,9 +87,7 @@ void _validateEllipticCurveKey(
     final nid = ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(ec));
     _checkData(_ecCurveToNID(curve) == nid,
         message: 'incorrect elliptic curve');
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 _EvpPKey _importPkcs8EcPrivateKey(
@@ -164,8 +161,7 @@ _EvpPKey _importJwkEcPrivateOrPublicKey(
   // TODO: Reject keys with key_ops in inconsistent with isPrivateKey
   //       Also in the js implementation...
 
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     final ec = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
     _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
     scope.defer(() => ssl.EC_KEY_free(ec));
@@ -216,9 +212,7 @@ _EvpPKey _importJwkEcPrivateOrPublicKey(
     _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(key, ec));
 
     return key;
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 _EvpPKey _importRawEcPublicKey(
@@ -226,44 +220,42 @@ _EvpPKey _importRawEcPublicKey(
   EllipticCurve curve,
 ) {
   // See: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ec.cc#332
+  return _Scope.sync((scope) {
+    // Create EC_KEY for the curve
+    final ec = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
+    _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
+    scope.defer(() => ssl.EC_KEY_free(ec));
 
-  // Create EC_KEY for the curve
-  final ec = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
-  _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
-
-  try {
     // Create EC_POINT to hold public key info
     final pub = ssl.EC_POINT_new(ssl.EC_KEY_get0_group(ec));
     _checkOp(pub.address != 0, fallback: 'internal point allocation error');
-    try {
-      // Read raw public key
-      _withDataAsPointer(keyData, (ffi.Pointer<ffi.Uint8> p) {
-        _checkDataIsOne(
-          ssl.EC_POINT_oct2point(
-              ssl.EC_KEY_get0_group(ec), pub, p, keyData.length, ffi.nullptr),
-          fallback: 'invalid keyData',
-        );
-      });
-      // Copy pub point to ec
-      _checkDataIsOne(ssl.EC_KEY_set_public_key(ec, pub),
-          fallback: 'invalid keyData');
+    scope.defer(() => ssl.EC_POINT_free(pub));
 
-      final key = _EvpPKey();
-      _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(key, ec));
-      _validateEllipticCurveKey(key, curve);
+    // Read raw public key
+    _checkDataIsOne(
+      ssl.EC_POINT_oct2point(
+        ssl.EC_KEY_get0_group(ec),
+        pub,
+        scope.dataAsPointer(keyData),
+        keyData.length,
+        ffi.nullptr,
+      ),
+      fallback: 'invalid keyData',
+    );
+    // Copy pub point to ec
+    _checkDataIsOne(ssl.EC_KEY_set_public_key(ec, pub),
+        fallback: 'invalid keyData');
 
-      return key;
-    } finally {
-      ssl.EC_POINT_free(pub);
-    }
-  } finally {
-    ssl.EC_KEY_free(ec);
-  }
+    final key = _EvpPKey();
+    _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(key, ec));
+    _validateEllipticCurveKey(key, curve);
+
+    return key;
+  });
 }
 
 Uint8List _exportRawEcPublicKey(_EvpPKey key) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
     scope.defer(() => ssl.EC_KEY_free(ec));
@@ -279,9 +271,7 @@ Uint8List _exportRawEcPublicKey(_EvpPKey key) {
           ),
           fallback: 'formatting failed');
     });
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
@@ -289,8 +279,7 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
   required bool isPrivateKey,
   String? jwkUse,
 }) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
     scope.defer(() => ssl.EC_KEY_free(ec));
@@ -335,16 +324,13 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
       y: _jwkEncodeBase64UrlNoPadding(yAsBytes),
       d: dAsBytes != null ? _jwkEncodeBase64UrlNoPadding(dAsBytes) : null,
     ).toJson();
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 KeyPair<_EvpPKey, _EvpPKey> _generateEcKeyPair(
   EllipticCurve curve,
 ) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     final ecPriv = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
     _checkOp(ecPriv.address != 0, fallback: 'internal failure to use curve');
     scope.defer(() => ssl.EC_KEY_free(ecPriv));
@@ -369,7 +355,5 @@ KeyPair<_EvpPKey, _EvpPKey> _generateEcKeyPair(
       privateKey: privKey,
       publicKey: pubKey,
     );
-  } finally {
-    scope.release();
-  }
+  });
 }
