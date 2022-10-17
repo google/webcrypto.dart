@@ -16,12 +16,11 @@ part of impl_js;
 
 /// Convert [Stream<List<int>>] to [Uint8List].
 Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
-  final result = <int>[];
-  // TODO: Make this allocation stuff smarter
+  final b = BytesBuilder();
   await for (var chunk in data) {
-    result.addAll(chunk);
+    b.add(chunk);
   }
-  return Uint8List.fromList(result);
+  return b.takeBytes();
 }
 
 /// Convert [publicExponent] to [Uint8List].
