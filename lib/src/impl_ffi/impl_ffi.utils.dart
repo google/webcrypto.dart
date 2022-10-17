@@ -163,16 +163,10 @@ class _SslAllocator implements Allocator {
   ///
   /// Must be de-allocated with [free].
   @override
-  ffi.Pointer<T> allocate<T extends ffi.NativeType>(int byteCount,
-      {int? alignment}) {
-    // TODO: Find out why OPENSSL_malloc doesn't work on Dart on Linux.
-    //       This presumably has to do with dlopen(), WEAK symbols and the fact
-    //       that the `dart` executable that ships in the Dart-SDK for Linux is
-    //       a _release build_, not a _product build_, so more symbols might be
-    //       visible. In anycase using ffi.allocate / ffi.free works fine on
-    //       the `dart` executable with the Dart-SDK for Linux.
-    //       Please note, that this does not work with the Flutter or the `dart`
-    //       binary that ships with the Flutter SDK.
+  ffi.Pointer<T> allocate<T extends ffi.NativeType>(
+    int byteCount, {
+    int? alignment,
+  }) {
     final p = ssl.OPENSSL_malloc(byteCount);
     _checkOp(p.address != 0, fallback: 'allocation failure');
     return p.cast<T>();
@@ -204,8 +198,10 @@ class _Scope implements Allocator {
 
   /// Allocate an [ffi.Pointer<T>] in this scope.
   @override
-  ffi.Pointer<T> allocate<T extends ffi.NativeType>(int byteCount,
-      {int? alignment}) {
+  ffi.Pointer<T> allocate<T extends ffi.NativeType>(
+    int byteCount, {
+    int? alignment,
+  }) {
     final p = _sslAlloc.allocate<T>(byteCount);
     defer(() => _sslAlloc.free(p), p);
     return p;
