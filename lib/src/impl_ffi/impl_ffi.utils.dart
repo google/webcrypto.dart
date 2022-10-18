@@ -396,6 +396,88 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
   }
 }
 
+/// Sign [data] using [key] and [md], with optional configuration specified
+/// using [config].
+Future<Uint8List> _signStream(
+  _EvpPKey key,
+  ffi.Pointer<EVP_MD> md,
+  Stream<List<int>> data, {
+  void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
+}) {
+  return _Scope.async((scope) async {
+    final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+    final pctx =
+        config != null ? scope<ffi.Pointer<EVP_PKEY_CTX>>() : ffi.nullptr;
+    _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
+      ctx,
+      pctx,
+      md,
+      ffi.nullptr,
+      key,
+    ));
+    if (config != null) {
+      config(pctx.value);
+    }
+
+    // Stream data into the signature context
+    await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+
+    // Get length of the output signature
+    final len = scope<ffi.Size>();
+    len.value = 0;
+    _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
+    // Get the output signature
+    final out = scope<ffi.Uint8>(len.value);
+    _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, out, len));
+    return out.copy(len.value);
+  });
+}
+
+/// Verify [signature] matches [data] given [key] and [md], with optional
+/// configuration specified using [config].
+Future<bool> _verifyStream(
+  _EvpPKey key,
+  ffi.Pointer<EVP_MD> md,
+  List<int> signature,
+  Stream<List<int>> data, {
+  void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
+}) {
+  return _Scope.async((scope) async {
+    // Create and initialize verification context
+    final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+    final pctx =
+        config != null ? scope<ffi.Pointer<EVP_PKEY_CTX>>() : ffi.nullptr;
+    _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
+      ctx,
+      pctx,
+      md,
+      ffi.nullptr,
+      key,
+    ));
+    if (config != null) {
+      config(pctx.value);
+    }
+
+    // Stream data to verification context
+    await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+
+    // Verify signature
+    final result = ssl.EVP_DigestVerifyFinal(
+      ctx,
+      scope.dataAsPointer(signature),
+      signature.length,
+    );
+    if (result != 1) {
+      // TODO: We should always clear errors, when returning from any
+      //       function that uses BoringSSL.
+      // Note: In this case we could probably assert that error is just
+      //       signature related.
+      ssl.ERR_clear_error();
+    }
+    return result == 1;
+  });
+}
+
 /// Invoke [fn] with [data] loaded into a [ffi.Pointer<ssl.CBS>].
 ///
 /// Both the [ssl.CBS] and the [ssl.Bytes] pointer allocated will be released

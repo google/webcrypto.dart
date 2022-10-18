@@ -197,35 +197,10 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
       signStream(Stream.value(data), hash);
 
   @override
-  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) {
-    return _Scope.async((scope) async {
-      // Validate and get hash function
-      final md = _Hash.fromHash(hash)._md;
-
-      // Create and initialize signing context
-      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
-      _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
-        ctx,
-        ffi.nullptr,
-        md,
-        ffi.nullptr,
-        _key,
-      ));
-
-      // Stream data into signing context
-      await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-
-      // Get length of the output signature
-      final len = scope<ffi.Size>();
-      len.value = 0;
-      _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
-      // Get the output signature
-      final out = scope<ffi.Uint8>(len.value);
-      _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, out, len));
-      final sig = out.copy(len.value);
-
-      return _convertEcdsaDerSignatureToWebCryptoSignature(_key, sig);
-    });
+  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
+    final md = _Hash.fromHash(hash)._md;
+    final sig = await _signStream(_key, md, data);
+    return _convertEcdsaDerSignatureToWebCryptoSignature(_key, sig);
   }
 
   @override
@@ -255,48 +230,16 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
     Stream<List<int>> data,
     Hash hash,
   ) async {
-    return _Scope.async((scope) async {
-      // Validate and get hash function
-      final md = _Hash.fromHash(hash)._md;
+    final md = _Hash.fromHash(hash)._md;
 
-      // Convert to DER signature
-      final sig = _convertEcdsaWebCryptoSignatureToDerSignature(
-        _key,
-        signature,
-      );
-      if (sig == null) {
-        // If signature format is invalid we fail verification
-        return false;
-      }
+    // Convert to DER signature
+    final sig = _convertEcdsaWebCryptoSignatureToDerSignature(_key, signature);
+    if (sig == null) {
+      // If signature format is invalid we fail verification
+      return false;
+    }
 
-      // Create context and initialize verification context
-      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
-      _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
-        ctx,
-        ffi.nullptr,
-        md,
-        ffi.nullptr,
-        _key,
-      ));
-
-      // Stream data into verification context
-      await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
-
-      // Verify signature
-      final result = ssl.EVP_DigestVerifyFinal(
-        ctx,
-        scope.dataAsPointer(sig),
-        sig.length,
-      );
-      if (result != 1) {
-        // TODO: We should always clear errors, when returning from any
-        //       function that uses BoringSSL.
-        // Note: In this case we could probably assert that error is just
-        //       signature related.
-        ssl.ERR_clear_error();
-      }
-      return result == 1;
-    });
+    return await _verifyStream(_key, md, sig, data);
   }
 
   @override
