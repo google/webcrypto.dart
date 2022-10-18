@@ -37,7 +37,7 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  // Validate and get hash function
   final h = _Hash.fromHash(hash);
   return _RsaPssPrivateKey(_importPkcs8RsaPrivateKey(keyData), h);
 }
@@ -46,7 +46,7 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  // Validate and get hash function
   final h = _Hash.fromHash(hash);
   return _RsaPssPrivateKey(
     _importJwkRsaPrivateOrPublicKey(
@@ -64,7 +64,7 @@ Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
   BigInt publicExponent,
   Hash hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  // Validate and get hash function
   final h = _Hash.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
   return _KeyPair(
@@ -77,7 +77,7 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  // Validate and get hash function
   final h = _Hash.fromHash(hash);
   return _RsaPssPublicKey(_importSpkiRsaPublicKey(keyData), h);
 }
@@ -86,7 +86,7 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
+  // Validate and get hash function
   final h = _Hash.fromHash(hash);
   return _RsaPssPublicKey(
     _importJwkRsaPrivateOrPublicKey(
