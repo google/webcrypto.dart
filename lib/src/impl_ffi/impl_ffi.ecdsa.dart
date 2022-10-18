@@ -108,25 +108,22 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
       ec,
     )));
 
-    return _withAllocation(_sslAlloc<ffi.Pointer<BIGNUM>>(2),
-        (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
-      // Access R and S from the ecdsa signature
-      final R = RS.elementAt(0);
-      final S = RS.elementAt(1);
-      ssl.ECDSA_SIG_get0(ecdsa, R, S);
+    // Access R and S from the ecdsa signature
+    final R = scope<ffi.Pointer<BIGNUM>>();
+    final S = scope<ffi.Pointer<BIGNUM>>();
+    ssl.ECDSA_SIG_get0(ecdsa, R, S);
 
-      // Dump R and S to return value.
-      return _withOutPointer(N * 2, (ffi.Pointer<ffi.Uint8> p) {
-        _checkOpIsOne(
-          ssl.BN_bn2bin_padded(p.elementAt(0), N, R.value),
-          fallback: 'internal error formatting R in signature',
-        );
-        _checkOpIsOne(
-          ssl.BN_bn2bin_padded(p.elementAt(N), N, S.value),
-          fallback: 'internal error formatting S in signature',
-        );
-      });
-    });
+    // Dump R and S to return value.
+    final out = scope<ffi.Uint8>(N * 2);
+    _checkOpIsOne(
+      ssl.BN_bn2bin_padded(out.elementAt(0), N, R.value),
+      fallback: 'internal error formatting R in signature',
+    );
+    _checkOpIsOne(
+      ssl.BN_bn2bin_padded(out.elementAt(N), N, S.value),
+      fallback: 'internal error formatting S in signature',
+    );
+    return out.copy(N * 2);
   });
 }
 
@@ -157,32 +154,28 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
       return null;
     }
 
-    final ecdsa = ssl.ECDSA_SIG_new();
-    _checkOp(ecdsa.address != 0,
-        message: 'internal error formatting signature');
-    scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
+    final ecdsa = scope.create(ssl.ECDSA_SIG_new, ssl.ECDSA_SIG_free);
 
-    return _withAllocation(_sslAlloc<ffi.Pointer<BIGNUM>>(2),
-        (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
-      // Access R and S from the ecdsa signature
-      final R = RS.elementAt(0);
-      final S = RS.elementAt(1);
-      ssl.ECDSA_SIG_get0(ecdsa, R, S);
+    // Access R and S from the ecdsa signature
+    final R = scope<ffi.Pointer<BIGNUM>>();
+    final S = scope<ffi.Pointer<BIGNUM>>();
+    ssl.ECDSA_SIG_get0(ecdsa, R, S);
 
-      _withDataAsPointer(signature, (ffi.Pointer<ffi.Uint8> p) {
-        _checkOp(
-          ssl.BN_bin2bn(p.elementAt(0), N, R.value).address != 0,
-          fallback: 'allocation failure',
-        );
-        _checkOp(
-          ssl.BN_bin2bn(p.elementAt(N), N, S.value).address != 0,
-          fallback: 'allocation failure',
-        );
-      });
-      return _withOutCBB((cbb) => _checkOpIsOne(
-            ssl.ECDSA_SIG_marshal(cbb, ecdsa),
-            fallback: 'internal error reformatting signature',
-          ));
+    final psig = scope.dataAsPointer<ffi.Uint8>(signature);
+    _checkOp(
+      ssl.BN_bin2bn(psig.elementAt(0), N, R.value).address != 0,
+      fallback: 'allocation failure',
+    );
+    _checkOp(
+      ssl.BN_bin2bn(psig.elementAt(N), N, S.value).address != 0,
+      fallback: 'allocation failure',
+    );
+
+    return _withOutCBB((cbb) {
+      return _checkOpIsOne(
+        ssl.ECDSA_SIG_marshal(cbb, ecdsa),
+        fallback: 'internal error reformatting signature',
+      );
     });
   });
 }
