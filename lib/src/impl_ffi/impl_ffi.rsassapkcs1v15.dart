@@ -111,25 +111,30 @@ class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) {
-    return _withEVP_MD_CTX((ctx) async {
-      return await _withPEVP_PKEY_CTX((pctx) async {
-        _checkOpIsOne(
-          ssl.EVP_DigestSignInit.invoke(
-              ctx, pctx, _hash._md, ffi.nullptr, _key),
-        );
-        _checkOpIsOne(
-          ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, RSA_PKCS1_PADDING),
-        );
-        await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-        return _withAllocation(_sslAlloc<ffi.Size>(),
-            (ffi.Pointer<ffi.Size> len) {
-          len.value = 0;
-          _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
-          return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {
-            _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
-          }).sublist(0, len.value);
-        });
-      });
+    return _Scope.async((scope) async {
+      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+      final pctx = scope<ffi.Pointer<EVP_PKEY_CTX>>();
+      _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
+        ctx,
+        pctx,
+        _hash._md,
+        ffi.nullptr,
+        _key,
+      ));
+      _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
+        pctx.value,
+        RSA_PKCS1_PADDING,
+      ));
+      await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+
+      // Get length of the output signature
+      final len = scope<ffi.Size>();
+      len.value = 0;
+      _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
+      // Get the output signature
+      final out = scope<ffi.Uint8>(len.value);
+      _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, out, len));
+      return out.copy(len.value);
     });
   }
 
@@ -162,31 +167,36 @@ class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
 
   @override
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) {
-    return _withEVP_MD_CTX((ctx) async {
-      return _withPEVP_PKEY_CTX((pctx) async {
-        _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
-          ctx,
-          pctx,
-          _hash._md,
-          ffi.nullptr,
-          _key,
-        ));
-        _checkOpIsOne(
-          ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, RSA_PKCS1_PADDING),
-        );
-        await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
-        return _withDataAsPointer(signature, (ffi.Pointer<ffi.Uint8> p) {
-          final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
-          if (result != 1) {
-            // TODO: We should always clear errors, when returning from any
-            //       function that uses BoringSSL.
-            // Note: In this case we could probably assert that error is just
-            //       signature related.
-            ssl.ERR_clear_error();
-          }
-          return result == 1;
-        });
-      });
+    return _Scope.async((scope) async {
+      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+      final pctx = scope<ffi.Pointer<EVP_PKEY_CTX>>();
+      _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
+        ctx,
+        pctx,
+        _hash._md,
+        ffi.nullptr,
+        _key,
+      ));
+      _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
+        pctx.value,
+        RSA_PKCS1_PADDING,
+      ));
+      await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+
+      // Verify signature
+      final result = ssl.EVP_DigestVerifyFinal(
+        ctx,
+        scope.dataAsPointer(signature),
+        signature.length,
+      );
+      if (result != 1) {
+        // TODO: We should always clear errors, when returning from any
+        //       function that uses BoringSSL.
+        // Note: In this case we could probably assert that error is just
+        //       signature related.
+        ssl.ERR_clear_error();
+      }
+      return result == 1;
     });
   }
 
