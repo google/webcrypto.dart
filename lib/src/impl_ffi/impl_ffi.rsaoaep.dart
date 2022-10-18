@@ -122,59 +122,50 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   List<int> data, {
   List<int>? label,
 }) async {
-  final ctx = ssl.EVP_PKEY_CTX_new.invoke(key, ffi.nullptr);
-  _checkOp(ctx.address != 0, fallback: 'allocation error');
-  try {
-    _checkOpIsOne(initFn(ctx));
-    _checkOpIsOne(
-      ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING),
+  return _Scope.sync((scope) {
+    final ctx = scope.create(
+      () => ssl.EVP_PKEY_CTX_new.invoke(key, ffi.nullptr),
+      ssl.EVP_PKEY_CTX_free,
     );
+    _checkOpIsOne(initFn(ctx));
+    _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
+      ctx,
+      RSA_PKCS1_OAEP_PADDING,
+    ));
     _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_oaep_md(ctx, md));
     _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, md));
 
     // Copy and set label
     if (label != null && label.isNotEmpty) {
-      final plabel = ssl.OPENSSL_malloc(label.length);
-      _checkOp(plabel.address != 0);
-      try {
-        plabel.cast<ffi.Uint8>().asTypedList(label.length).setAll(0, label);
-        _checkOpIsOne(ssl.EVP_PKEY_CTX_set0_rsa_oaep_label(
-          ctx,
-          plabel.cast(),
-          label.length,
-        ));
-      } catch (_) {
-        // Ownership is transferred to ctx by EVP_PKEY_CTX_set0_rsa_oaep_label
-        ssl.OPENSSL_free(plabel);
-        rethrow;
-      }
+      final plabel = scope.dataAsPointer<ffi.Uint8>(label);
+      _checkOpIsOne(ssl.EVP_PKEY_CTX_set0_rsa_oaep_label(
+        ctx,
+        plabel,
+        label.length,
+      ));
+      scope.move(plabel);
     }
 
-    return _withDataAsPointer(data, (ffi.Pointer<ffi.Uint8> input) {
-      return _withAllocation(_sslAlloc<ffi.Size>(),
-          (ffi.Pointer<ffi.Size> len) {
-        len.value = 0;
-        _checkOpIsOne(encryptOrDecryptFn(
-          ctx,
-          ffi.nullptr,
-          len,
-          input,
-          data.length,
-        ));
-        return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> output) {
-          _checkOpIsOne(encryptOrDecryptFn(
-            ctx,
-            output,
-            len,
-            input,
-            data.length,
-          ));
-        }).sublist(0, len.value);
-      });
-    });
-  } finally {
-    ssl.EVP_PKEY_CTX_free(ctx);
-  }
+    final input = scope.dataAsPointer<ffi.Uint8>(data);
+    final plen = scope<ffi.Size>();
+    plen.value = 0;
+    _checkOpIsOne(encryptOrDecryptFn(
+      ctx,
+      ffi.nullptr,
+      plen,
+      input,
+      data.length,
+    ));
+    final out = scope<ffi.Uint8>(plen.value);
+    _checkOpIsOne(encryptOrDecryptFn(
+      ctx,
+      out,
+      plen,
+      input,
+      data.length,
+    ));
+    return out.copy(plen.value);
+  });
 }
 
 class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
