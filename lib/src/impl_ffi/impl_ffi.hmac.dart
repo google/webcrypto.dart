@@ -86,8 +86,10 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   return hmacSecretKey_importRawKey(keyData, hash, length: length);
 }
 
-Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash,
-    {int? length}) async {
+Future<HmacSecretKey> hmacSecretKey_generateKey(
+  Hash hash, {
+  int? length,
+}) async {
   final h = _Hash.fromHash(hash);
   length ??= ssl.EVP_MD_size(h._md) * 8;
   final keyData = Uint8List((length / 8).ceil());
@@ -109,28 +111,27 @@ class _HmacSecretKey implements HmacSecretKey {
   Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override
-  Future<Uint8List> signStream(Stream<List<int>> data) async {
-    final ctx = ssl.HMAC_CTX_new();
-    _checkOp(ctx.address != 0, fallback: 'allocation error');
-    try {
-      _withDataAsPointer(_keyData, (ffi.Pointer<ffi.Void> p) {
-        final n = _keyData.length;
-        _checkOp(ssl.HMAC_Init_ex(ctx, p, n, _hash._md, ffi.nullptr) == 1);
-      });
+  Future<Uint8List> signStream(Stream<List<int>> data) {
+    return _Scope.async((scope) async {
+      final ctx = scope.create(ssl.HMAC_CTX_new, ssl.HMAC_CTX_free);
+      _checkOpIsOne(ssl.HMAC_Init_ex(
+        ctx,
+        scope.dataAsPointer(_keyData),
+        _keyData.length,
+        _hash._md,
+        ffi.nullptr,
+      ));
+
       await _streamToUpdate(data, ctx, ssl.HMAC_Update);
 
       final size = ssl.HMAC_size(ctx);
       _checkOp(size > 0);
-      return _withAllocation(_sslAlloc<ffi.UnsignedInt>(),
-          (ffi.Pointer<ffi.UnsignedInt> psize) async {
-        psize.value = size;
-        return _withOutPointer(size, (ffi.Pointer<ffi.Uint8> p) {
-          _checkOp(ssl.HMAC_Final(ctx, p, psize) == 1);
-        }).sublist(0, psize.value);
-      });
-    } finally {
-      ssl.HMAC_CTX_free(ctx);
-    }
+      final psize = scope<ffi.UnsignedInt>();
+      psize.value = size;
+      final out = scope<ffi.Uint8>(size);
+      _checkOpIsOne(ssl.HMAC_Final(ctx, out, psize));
+      return out.copy(psize.value);
+    });
   }
 
   @override
@@ -143,10 +144,13 @@ class _HmacSecretKey implements HmacSecretKey {
     if (signature.length != other.length) {
       return false;
     }
-    return _withDataAsPointer(signature, (ffi.Pointer<ffi.Void> s) {
-      return _withDataAsPointer(other, (ffi.Pointer<ffi.Void> o) {
-        return ssl.CRYPTO_memcmp(s, o, other.length) == 0;
-      });
+    return _Scope.sync((scope) {
+      final cmp = ssl.CRYPTO_memcmp(
+        scope.dataAsPointer(signature),
+        scope.dataAsPointer(other),
+        other.length,
+      );
+      return cmp == 0;
     });
   }
 
