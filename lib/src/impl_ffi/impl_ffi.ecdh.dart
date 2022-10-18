@@ -75,8 +75,6 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
 
   @override
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
-    ArgumentError.checkNotNull(length, 'length');
-    ArgumentError.checkNotNull(publicKey, 'publicKey');
     if (publicKey is! _EcdhPublicKey) {
       throw ArgumentError.value(
         publicKey,
@@ -88,8 +86,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }
 
-    final scope = _Scope();
-    try {
+    return _Scope.async((scope) async {
       final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY.invoke(publicKey._key);
       _checkOp(pubEcKey.address != 0, fallback: 'not an ec key');
       scope.defer(() => ssl.EC_KEY_free(pubEcKey));
@@ -123,7 +120,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       }
 
       if (length == 0) {
-        return Uint8List.fromList([]);
+        return Uint8List.fromList(const []);
       }
 
       final lengthInBytes = (length / 8).ceil();
@@ -150,9 +147,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       }
 
       return derived;
-    } finally {
-      scope.release();
-    }
+    });
   }
 
   @override

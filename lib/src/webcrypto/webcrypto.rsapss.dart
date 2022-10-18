@@ -22,9 +22,6 @@ abstract class RsaPssPrivateKey {
     List<int> keyData,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaPssPrivateKey_importPkcs8Key(keyData, hash);
   }
 
@@ -32,9 +29,6 @@ abstract class RsaPssPrivateKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaPssPrivateKey_importJsonWebKey(jwk, hash);
   }
 
@@ -43,10 +37,6 @@ abstract class RsaPssPrivateKey {
     BigInt publicExponent,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(modulusLength, 'modulusLength');
-    ArgumentError.checkNotNull(publicExponent, 'publicExponent');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaPssPrivateKey_generateKey(
       modulusLength,
       publicExponent,
@@ -89,9 +79,6 @@ abstract class RsaPssPublicKey {
     List<int> keyData,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaPssPublicKey_importSpkiKey(keyData, hash);
   }
 
@@ -99,9 +86,6 @@ abstract class RsaPssPublicKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(hash, 'hash');
-
     return impl.rsaPssPublicKey_importJsonWebKey(jwk, hash);
   }
 

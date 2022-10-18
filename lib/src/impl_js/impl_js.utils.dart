@@ -16,13 +16,11 @@ part of impl_js;
 
 /// Convert [Stream<List<int>>] to [Uint8List].
 Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
-  ArgumentError.checkNotNull(data, 'data');
-  final result = <int>[];
-  // TODO: Make this allocation stuff smarter
+  final b = BytesBuilder();
   await for (var chunk in data) {
-    result.addAll(chunk);
+    b.add(chunk);
   }
-  return Uint8List.fromList(result);
+  return b.takeBytes();
 }
 
 /// Convert [publicExponent] to [Uint8List].
@@ -186,8 +184,6 @@ Future<Uint8List> _sign(
   subtle.CryptoKey key,
   List<int> data,
 ) {
-  ArgumentError.checkNotNull(data, 'data');
-
   return _handleDomException(() async {
     final result = await subtle.sign(
       algorithm,
@@ -205,9 +201,6 @@ Future<bool> _verify(
   List<int> signature,
   List<int> data,
 ) {
-  ArgumentError.checkNotNull(signature, 'signature');
-  ArgumentError.checkNotNull(data, 'data');
-
   return _handleDomException(() async {
     return await subtle.verify(
       algorithm,
@@ -224,8 +217,6 @@ Future<Uint8List> _encrypt(
   subtle.CryptoKey key,
   List<int> data,
 ) {
-  ArgumentError.checkNotNull(data, 'data');
-
   return _handleDomException(() async {
     final result = await subtle.encrypt(
       algorithm,
@@ -242,8 +233,6 @@ Future<Uint8List> _decrypt(
   subtle.CryptoKey key,
   List<int> data,
 ) {
-  ArgumentError.checkNotNull(data, 'data');
-
   return _handleDomException(() async {
     final result = await subtle.decrypt(
       algorithm,
@@ -261,8 +250,6 @@ Future<Uint8List> _deriveBits(
   int length, {
   bool invalidAccessErrorIsArgumentError = false,
 }) {
-  ArgumentError.checkNotNull(length, 'length');
-
   return _handleDomException(() async {
     final result = await subtle.deriveBits(
       algorithm,
@@ -278,8 +265,6 @@ Future<Uint8List> _exportKey(
   String format,
   subtle.CryptoKey key,
 ) {
-  ArgumentError.checkNotNull(format, 'format');
-
   return _handleDomException(() async {
     final result = await subtle.exportKey(format, key);
     return result.asUint8List();

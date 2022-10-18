@@ -107,15 +107,10 @@ class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
   _RsassaPkcs1V15PrivateKey(this._key, this._hash);
 
   @override
-  Future<Uint8List> signBytes(List<int> data) {
-    ArgumentError.checkNotNull(data, 'data');
-    return signStream(Stream.value(data));
-  }
+  Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) {
-    ArgumentError.checkNotNull(data, 'data');
-
     return _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
@@ -162,17 +157,11 @@ class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
   _RsassaPkcs1V15PublicKey(this._key, this._hash);
 
   @override
-  Future<bool> verifyBytes(List<int> signature, List<int> data) {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-    return verifyStream(signature, Stream.value(data));
-  }
+  Future<bool> verifyBytes(List<int> signature, List<int> data) =>
+      verifyStream(signature, Stream.value(data));
 
   @override
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-
     return _withEVP_MD_CTX((ctx) async {
       return _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(

@@ -17,7 +17,6 @@
 part of impl_ffi;
 
 Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
-  ArgumentError.checkNotNull(keyData, 'keyData');
   return _Pbkdf2SecretKey(Uint8List.fromList(keyData));
 }
 
@@ -33,10 +32,6 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
     List<int> salt,
     int iterations,
   ) async {
-    ArgumentError.checkNotNull(length, 'length');
-    ArgumentError.checkNotNull(hash, 'hash');
-    ArgumentError.checkNotNull(salt, 'salt');
-    ArgumentError.checkNotNull(iterations, 'iterations');
     if (length < 0) {
       throw ArgumentError.value(length, 'length', 'must be positive integer');
     }
@@ -59,8 +54,7 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
 
     final lengthInBytes = length ~/ 8;
 
-    final scope = _Scope();
-    try {
+    return _Scope.async((scope) async {
       return _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Uint8> out) {
         _checkOpIsOne(ssl.PKCS5_PBKDF2_HMAC(
           scope.dataAsPointer(_key),
@@ -73,8 +67,6 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
           out,
         ));
       });
-    } finally {
-      scope.release();
-    }
+    });
   }
 }

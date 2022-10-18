@@ -15,8 +15,7 @@
 part of impl_ffi;
 
 _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     final k = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
     _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
@@ -31,14 +30,11 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
     _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
 
     return key;
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     final k = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
     _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
@@ -53,9 +49,7 @@ _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
     _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
 
     return key;
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 _EvpPKey _importJwkRsaPrivateOrPublicKey(
@@ -64,8 +58,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
   required String expectedAlg,
   required String expectedUse,
 }) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     void checkJwk(
       bool condition,
       String prop, [
@@ -167,9 +160,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
     _checkOpIsOne(ssl.EVP_PKEY_set1_RSA.invoke(key, rsa));
 
     return key;
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
@@ -178,8 +169,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
   required String jwkAlg,
   required String jwkUse,
 }) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     final rsa = ssl.EVP_PKEY_get1_RSA.invoke(key);
     _checkOp(rsa.address != 0, fallback: 'internal key type error');
     scope.defer(() => ssl.RSA_free(rsa));
@@ -236,9 +226,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
       dq: encodeBN(dq.value),
       qi: encodeBN(qi.value),
     ).toJson();
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 _KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
@@ -263,8 +251,7 @@ _KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
     throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
   }
 
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     // Generate private RSA key
     final privRSA = scope.create(ssl.RSA_new, ssl.RSA_free);
 
@@ -295,7 +282,5 @@ _KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
       privateKey: privKey,
       publicKey: pubKey,
     );
-  } finally {
-    scope.release();
-  }
+  });
 }

@@ -163,16 +163,10 @@ class _SslAllocator implements Allocator {
   ///
   /// Must be de-allocated with [free].
   @override
-  ffi.Pointer<T> allocate<T extends ffi.NativeType>(int byteCount,
-      {int? alignment}) {
-    // TODO: Find out why OPENSSL_malloc doesn't work on Dart on Linux.
-    //       This presumably has to do with dlopen(), WEAK symbols and the fact
-    //       that the `dart` executable that ships in the Dart-SDK for Linux is
-    //       a _release build_, not a _product build_, so more symbols might be
-    //       visible. In anycase using ffi.allocate / ffi.free works fine on
-    //       the `dart` executable with the Dart-SDK for Linux.
-    //       Please note, that this does not work with the Flutter or the `dart`
-    //       binary that ships with the Flutter SDK.
+  ffi.Pointer<T> allocate<T extends ffi.NativeType>(
+    int byteCount, {
+    int? alignment,
+  }) {
     final p = ssl.OPENSSL_malloc(byteCount);
     _checkOp(p.address != 0, fallback: 'allocation failure');
     return p.cast<T>();
@@ -204,8 +198,10 @@ class _Scope implements Allocator {
 
   /// Allocate an [ffi.Pointer<T>] in this scope.
   @override
-  ffi.Pointer<T> allocate<T extends ffi.NativeType>(int byteCount,
-      {int? alignment}) {
+  ffi.Pointer<T> allocate<T extends ffi.NativeType>(
+    int byteCount, {
+    int? alignment,
+  }) {
     final p = _sslAlloc.allocate<T>(byteCount);
     defer(() => _sslAlloc.free(p), p);
     return p;
@@ -244,7 +240,12 @@ class _Scope implements Allocator {
   }
 
   /// Release all resources held in this scope.
-  void release() {
+  ///
+  /// Instead of calling this directly, prefer to use:
+  ///  * [_Scope.async],
+  ///  * [_Scope.sync], or,
+  ///  * [_Scope.stream].
+  void _release() {
     while (_deferred.isNotEmpty) {
       try {
         _deferred.removeLast().fn();
@@ -265,6 +266,42 @@ class _Scope implements Allocator {
   void free(ffi.Pointer pointer) {
     // Does nothing, use `release` instead.
     // Not throwing, so that this can actually be used as an Allocator.
+  }
+
+  /// Run [fn] with a [_Scope] that is released when the [Future] returned
+  /// from [fn] is completed.
+  static Future<T> async<T>(FutureOr<T> Function(_Scope scope) fn) async {
+    assert(T is! Future, 'avoid nested async blocks');
+    final scope = _Scope();
+    try {
+      return await fn(scope);
+    } finally {
+      scope._release();
+    }
+  }
+
+  /// Run [fn] with a [_Scope] that is released when the [Stream] returned
+  /// from [fn] is completed.
+  static Stream<T> stream<T>(Stream<T> Function(_Scope scope) fn) async* {
+    final scope = _Scope();
+    try {
+      yield* fn(scope);
+    } finally {
+      scope._release();
+    }
+  }
+
+  /// Run [fn] with a [_Scope] that is released when [fn] returns.
+  ///
+  /// Use [async] if [fn] is an async function that returns a [Future].
+  static T sync<T>(T Function(_Scope scope) fn) {
+    assert(T is! Future, 'avoid nested async blocks');
+    final scope = _Scope();
+    try {
+      return fn(scope);
+    } finally {
+      scope._release();
+    }
   }
 }
 
@@ -293,6 +330,11 @@ Future<R> _withAllocationAsync<T extends ffi.NativeType, R>(
   } finally {
     _sslAlloc.free(p);
   }
+}
+
+extension on ffi.Pointer<ffi.Uint8> {
+  /// Copy [length] bytes from pointer to [Uint8List] owned by Dart.
+  Uint8List copy(int length) => Uint8List.fromList(asTypedList(length));
 }
 
 /// Allocated a [size] bytes [ffi.Pointer<T>] and call [fn], and copy the data
@@ -408,13 +450,11 @@ Uint8List _withOutCBB(void Function(ffi.Pointer<CBB>) fn) {
 
 /// Convert [Stream<List<int>>] to [Uint8List].
 Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
-  ArgumentError.checkNotNull(data, 'data');
-  final result = <int>[];
-  // TODO: Make this allocation stuff smarter
-  await for (var chunk in data) {
-    result.addAll(chunk);
+  final b = BytesBuilder();
+  await for (final chunk in data) {
+    b.add(chunk);
   }
-  return Uint8List.fromList(result);
+  return b.takeBytes();
 }
 
 /// Get the number of bytes required to hold [numberOfBits].

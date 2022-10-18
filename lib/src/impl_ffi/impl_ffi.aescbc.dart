@@ -35,9 +35,8 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
   bool encrypt,
   Stream<List<int>> source,
   List<int> iv,
-) async* {
-  final scope = _Scope();
-  try {
+) {
+  return _Scope.stream((scope) async* {
     assert(key.length == 16 || key.length == 32);
     final cipher =
         key.length == 16 ? ssl.EVP_aes_128_cbc() : ssl.EVP_aes_256_cbc();
@@ -91,9 +90,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
     if (outLen.value > 0) {
       yield outData.sublist(0, outLen.value);
     }
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 class _AesCbcSecretKey implements AesCbcSecretKey {
@@ -101,32 +98,20 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
   _AesCbcSecretKey(this._key);
 
   @override
-  Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
-    return await _bufferStream(decryptStream(Stream.value(data), iv));
-  }
+  Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async =>
+      await _bufferStream(decryptStream(Stream.value(data), iv));
 
   @override
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
-    return _aesCbcEncryptOrDecrypt(_key, false, data, iv);
-  }
+  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) =>
+      _aesCbcEncryptOrDecrypt(_key, false, data, iv);
 
   @override
-  Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
-    return await _bufferStream(encryptStream(Stream.value(data), iv));
-  }
+  Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async =>
+      await _bufferStream(encryptStream(Stream.value(data), iv));
 
   @override
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(iv, 'iv');
-    return _aesCbcEncryptOrDecrypt(_key, true, data, iv);
-  }
+  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) =>
+      _aesCbcEncryptOrDecrypt(_key, true, data, iv);
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>

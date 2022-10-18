@@ -65,9 +65,6 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   Hash hash, {
   int? length,
 }) async {
-  ArgumentError.checkNotNull(jwk, 'jwk');
-  ArgumentError.checkNotNull(hash, 'hash');
-
   final h = _Hash.fromHash(hash);
   final k = JsonWebKey.fromJson(jwk);
 
@@ -109,11 +106,7 @@ class _HmacSecretKey implements HmacSecretKey {
   _HmacSecretKey(this._keyData, this._hash);
 
   @override
-  Future<Uint8List> signBytes(List<int> data) {
-    ArgumentError.checkNotNull(data, 'data');
-
-    return signStream(Stream.value(data));
-  }
+  Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) async {
@@ -141,18 +134,11 @@ class _HmacSecretKey implements HmacSecretKey {
   }
 
   @override
-  Future<bool> verifyBytes(List<int> signature, List<int> data) {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-
-    return verifyStream(signature, Stream.value(data));
-  }
+  Future<bool> verifyBytes(List<int> signature, List<int> data) =>
+      verifyStream(signature, Stream.value(data));
 
   @override
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) async {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-
     final other = await signStream(data);
     if (signature.length != other.length) {
       return false;

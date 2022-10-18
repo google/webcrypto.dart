@@ -61,20 +61,14 @@ abstract class AesCbcSecretKey {
   ///
   /// [1]: https://crbug.com/533699
   static Future<AesCbcSecretKey> importRawKey(List<int> keyData) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-
     return impl.aesCbc_importRawKey(keyData);
   }
 
   static Future<AesCbcSecretKey> importJsonWebKey(Map<String, dynamic> jwk) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-
     return impl.aesCbc_importJsonWebKey(jwk);
   }
 
   static Future<AesCbcSecretKey> generateKey(int length) {
-    ArgumentError.checkNotNull(length, 'length');
-
     return impl.aesCbc_generateKey(length);
   }
 

@@ -42,9 +42,6 @@ class _HkdfSecretKey implements HkdfSecretKey {
     List<int> salt,
     List<int> info,
   ) async {
-    ArgumentError.checkNotNull(length, 'length');
-    ArgumentError.checkNotNull(salt, 'salt');
-    ArgumentError.checkNotNull(info, 'info');
     return await _deriveBits(
       subtle.Algorithm(
         name: _hkdfAlgorithmName,

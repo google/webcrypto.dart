@@ -107,15 +107,11 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
 
   @override
   Future<Uint8List> signBytes(List<int> data, int saltLength) {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(saltLength, 'saltLength');
     return signStream(Stream.value(data), saltLength);
   }
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data, int saltLength) {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(saltLength, 'saltLength');
     if (saltLength < 0) {
       throw ArgumentError.value(
         saltLength,
@@ -181,12 +177,8 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
     List<int> signature,
     List<int> data,
     int saltLength,
-  ) {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(saltLength, 'saltLength');
-    return verifyStream(signature, Stream.value(data), saltLength);
-  }
+  ) =>
+      verifyStream(signature, Stream.value(data), saltLength);
 
   @override
   Future<bool> verifyStream(
@@ -194,9 +186,6 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
     Stream<List<int>> data,
     int saltLength,
   ) {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(saltLength, 'saltLength');
     if (saltLength < 0) {
       throw ArgumentError.value(
         saltLength,

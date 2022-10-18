@@ -18,8 +18,6 @@ part of impl_ffi;
 
 /// Get valid value for `jwk.alg` property given an [EllipticCurve] for ECDSA.
 String _ecdsaCurveToJwkAlg(EllipticCurve curve) {
-  ArgumentError.checkNotNull(curve, 'curve');
-
   if (curve == EllipticCurve.p256) {
     return 'ES256';
   }
@@ -94,8 +92,8 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
   _EvpPKey key,
   Uint8List signature,
 ) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
+    // TODO: Check if cbs is empty after parsing, consider using ECDSA_SIG_from_bytes instead (like chrome does)
     final ecdsa = _withDataAsCBS(signature, ssl.ECDSA_SIG_parse);
     _checkOp(ecdsa.address != 0,
         message: 'internal error formatting signature');
@@ -129,9 +127,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
         );
       });
     });
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 /// Convert ECDSA signature in the raw R + S as specified in webcrypto to DER
@@ -144,8 +140,7 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
   _EvpPKey key,
   List<int> signature,
 ) {
-  final scope = _Scope();
-  try {
+  return _Scope.sync((scope) {
     // Read EC key and get the number of bytes required to encode R and S.
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
@@ -189,9 +184,7 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
             fallback: 'internal error reformatting signature',
           ));
     });
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 class _EcdsaPrivateKey implements EcdsaPrivateKey {
@@ -200,16 +193,11 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   _EcdsaPrivateKey(this._key);
 
   @override
-  Future<Uint8List> signBytes(List<int> data, Hash hash) {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(hash, 'hash');
-    return signStream(Stream.value(data), hash);
-  }
+  Future<Uint8List> signBytes(List<int> data, Hash hash) =>
+      signStream(Stream.value(data), hash);
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(hash, 'hash');
     final md = _Hash.fromHash(hash)._md;
 
     final sig = await _withEVP_MD_CTX((ctx) async {
@@ -252,12 +240,8 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
   _EcdsaPublicKey(this._key);
 
   @override
-  Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(hash, 'hash');
-    return verifyStream(signature, Stream.value(data), hash);
-  }
+  Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) =>
+      verifyStream(signature, Stream.value(data), hash);
 
   @override
   Future<bool> verifyStream(
@@ -265,9 +249,6 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
     Stream<List<int>> data,
     Hash hash,
   ) async {
-    ArgumentError.checkNotNull(signature, 'signature');
-    ArgumentError.checkNotNull(data, 'data');
-    ArgumentError.checkNotNull(hash, 'hash');
     final md = _Hash.fromHash(hash)._md;
 
     // Convert to DER signature

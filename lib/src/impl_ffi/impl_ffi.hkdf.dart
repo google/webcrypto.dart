@@ -16,10 +16,8 @@
 
 part of impl_ffi;
 
-Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
-  ArgumentError.checkNotNull(keyData, 'keyData');
-  return _HkdfSecretKey(Uint8List.fromList(keyData));
-}
+Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async =>
+    _HkdfSecretKey(Uint8List.fromList(keyData));
 
 class _HkdfSecretKey implements HkdfSecretKey {
   final Uint8List _key;
@@ -33,10 +31,6 @@ class _HkdfSecretKey implements HkdfSecretKey {
     List<int> salt,
     List<int> info,
   ) async {
-    ArgumentError.checkNotNull(length, 'length');
-    ArgumentError.checkNotNull(hash, 'hash');
-    ArgumentError.checkNotNull(salt, 'salt');
-    ArgumentError.checkNotNull(info, 'info');
     if (length < 0) {
       throw ArgumentError.value(length, 'length', 'must be positive integer');
     }
@@ -50,8 +44,7 @@ class _HkdfSecretKey implements HkdfSecretKey {
 
     final lengthInBytes = length ~/ 8;
 
-    final scope = _Scope();
-    try {
+    return _Scope.async((scope) async {
       return _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Uint8> out) {
         final r = ssl.HKDF(
           out,
@@ -76,8 +69,6 @@ class _HkdfSecretKey implements HkdfSecretKey {
           _checkOpIsOne(r, fallback: 'HKDF key derivation failed');
         }
       });
-    } finally {
-      scope.release();
-    }
+    });
   }
 }

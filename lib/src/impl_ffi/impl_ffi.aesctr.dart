@@ -58,12 +58,11 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
   Stream<List<int>> source,
   List<int> counter,
   int length,
-) async* {
+) {
   // Heavily inspired by Chromium Web Crypto implementation, see:
   // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/aes_ctr.cc#144
 
-  final scope = _Scope();
-  try {
+  return _Scope.stream((scope) async* {
     assert(counter.length == 16);
     assert(key.length == 16 || key.length == 32);
     final cipher =
@@ -198,9 +197,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     if (outLen.value > 0) {
       yield outData.sublist(0, outLen.value);
     }
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 class _AesCtrSecretKey implements AesCtrSecretKey {
@@ -211,8 +208,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) {
-    ArgumentError.checkNotNull(counter, 'counter');
-    ArgumentError.checkNotNull(length, 'length');
     if (counter.length != 16) {
       throw ArgumentError.value(counter, 'counter', 'must be 16 bytes');
     }
@@ -227,7 +222,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) async {
-    ArgumentError.checkNotNull(data, 'data');
     _checkArguments(counter, length);
     return await _bufferStream(decryptStream(
       Stream.value(data),
@@ -242,7 +236,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) {
-    ArgumentError.checkNotNull(data, 'data');
     _checkArguments(counter, length);
     return _aesCtrEncryptOrDecrypt(_key, false, data, counter, length);
   }
@@ -253,7 +246,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) async {
-    ArgumentError.checkNotNull(data, 'data');
     _checkArguments(counter, length);
     return await _bufferStream(encryptStream(
       Stream.value(data),
@@ -268,7 +260,6 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
     List<int> counter,
     int length,
   ) {
-    ArgumentError.checkNotNull(data, 'data');
     _checkArguments(counter, length);
     return _aesCtrEncryptOrDecrypt(_key, true, data, counter, length);
   }

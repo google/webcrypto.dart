@@ -53,8 +53,6 @@ abstract class HmacSecretKey {
     Hash hash, {
     int? length,
   }) {
-    ArgumentError.checkNotNull(keyData, 'keyData');
-    ArgumentError.checkNotNull(hash, 'hash');
     // These limitations are given in Web Cryptography Spec:
     // https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
     if (length != null && length > keyData.length * 8) {
@@ -89,8 +87,6 @@ abstract class HmacSecretKey {
     Hash hash, {
     int? length,
   }) {
-    ArgumentError.checkNotNull(jwk, 'jwk');
-    ArgumentError.checkNotNull(hash, 'hash');
     /*
     TODO: Validate these in the native implememtation
     // These limitations are given in Web Cryptography Spec:
@@ -125,7 +121,6 @@ abstract class HmacSecretKey {
   /// final key = await HmacSecretKey.generate(Hash.sha256);
   /// ```
   static Future<HmacSecretKey> generateKey(Hash hash, {int? length}) {
-    ArgumentError.checkNotNull(hash, 'hash');
     if (length != null && length <= 0) {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }

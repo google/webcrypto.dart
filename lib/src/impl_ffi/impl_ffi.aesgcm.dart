@@ -58,8 +58,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
   //       what chrome does, how firefox passes tests. And check if other
   //       primitives that accept an iv/nonce has size limitations on it.
 
-  final scope = _Scope();
-  try {
+  return _Scope.async((scope) async {
     assert(key.length == 16 || key.length == 32);
     final aead = key.length == 16
         ? ssl.EVP_aead_aes_128_gcm()
@@ -78,40 +77,38 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
     if (isEncrypt) {
       final outLen = scope<ffi.Size>();
       final maxOut = data.length + ssl.EVP_AEAD_max_overhead(aead);
-      return _withOutPointer(maxOut, (ffi.Pointer<ffi.Uint8> out) {
-        _checkOpIsOne(ssl.EVP_AEAD_CTX_seal(
-          ctx,
-          out,
-          outLen,
-          maxOut,
-          scope.dataAsPointer(iv),
-          iv.length,
-          scope.dataAsPointer(data),
-          data.length,
-          scope.dataAsPointer(additionalData_),
-          additionalData_.length,
-        ));
-      }).sublist(0, outLen.value);
+      final out = scope<ffi.Uint8>(maxOut);
+      _checkOpIsOne(ssl.EVP_AEAD_CTX_seal(
+        ctx,
+        out,
+        outLen,
+        maxOut,
+        scope.dataAsPointer(iv),
+        iv.length,
+        scope.dataAsPointer(data),
+        data.length,
+        scope.dataAsPointer(additionalData_),
+        additionalData_.length,
+      ));
+      return out.copy(outLen.value);
     } else {
       final outLen = scope<ffi.Size>();
-      return _withOutPointer(data.length, (ffi.Pointer<ffi.Uint8> out) {
-        _checkOpIsOne(ssl.EVP_AEAD_CTX_open(
-          ctx,
-          out,
-          outLen,
-          data.length,
-          scope.dataAsPointer(iv),
-          iv.length,
-          scope.dataAsPointer(data),
-          data.length,
-          scope.dataAsPointer(additionalData_),
-          additionalData_.length,
-        ));
-      }).sublist(0, outLen.value);
+      final out = scope<ffi.Uint8>(data.length);
+      _checkOpIsOne(ssl.EVP_AEAD_CTX_open(
+        ctx,
+        out,
+        outLen,
+        data.length,
+        scope.dataAsPointer(iv),
+        iv.length,
+        scope.dataAsPointer(data),
+        data.length,
+        scope.dataAsPointer(additionalData_),
+        additionalData_.length,
+      ));
+      return out.copy(outLen.value);
     }
-  } finally {
-    scope.release();
-  }
+  });
 }
 
 class _AesGcmSecretKey implements AesGcmSecretKey {
