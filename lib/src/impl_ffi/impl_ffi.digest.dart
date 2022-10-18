@@ -34,7 +34,7 @@ abstract class _Hash implements Hash {
   ffi.Pointer<EVP_MD> Function() get _algorithm;
 
   /// Get an instantiated [EVP_MD] for this hash algorithm.
-  ffi.Pointer<EVP_MD> get MD {
+  ffi.Pointer<EVP_MD> get _md {
     final md = _algorithm();
     _checkOp(md.address != 0, fallback: 'failed to instantiate hash algorithm');
     return md;
@@ -52,7 +52,7 @@ abstract class _Hash implements Hash {
     ArgumentError.checkNotNull(data, 'data');
 
     return await _withEVP_MD_CTX((ctx) async {
-      _checkOp(ssl.EVP_DigestInit(ctx, MD) == 1);
+      _checkOp(ssl.EVP_DigestInit(ctx, _md) == 1);
       await _streamToUpdate(data, ctx, ssl.EVP_DigestUpdate);
       final size = ssl.EVP_MD_CTX_size(ctx);
       _checkOp(size > 0);

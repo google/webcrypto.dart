@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_ffi;
 
 /// Get valid value for `jwk.alg` property given an [EllipticCurve] for ECDSA.
@@ -208,13 +210,13 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
     ArgumentError.checkNotNull(data, 'data');
     ArgumentError.checkNotNull(hash, 'hash');
-    final _hash = _Hash.fromHash(hash).MD;
+    final md = _Hash.fromHash(hash)._md;
 
     final sig = await _withEVP_MD_CTX((ctx) async {
       _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
         ctx,
         ffi.nullptr,
-        _hash,
+        md,
         ffi.nullptr,
         _key,
       ));
@@ -266,7 +268,7 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
     ArgumentError.checkNotNull(signature, 'signature');
     ArgumentError.checkNotNull(data, 'data');
     ArgumentError.checkNotNull(hash, 'hash');
-    final _hash = _Hash.fromHash(hash).MD;
+    final md = _Hash.fromHash(hash)._md;
 
     // Convert to DER signature
     final sig = _convertEcdsaWebCryptoSignatureToDerSignature(_key, signature);
@@ -280,7 +282,7 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
         _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
           ctx,
           pctx,
-          _hash,
+          md,
           ffi.nullptr,
           _key,
         ));

@@ -1,29 +1,27 @@
 name: BoringSsl
 description: 'Bindings to BoringSSL.'
 language: c
-output: 'lib/src/third_party/boringssl/generated_bindings.dart'
+output: 'generated_bindings.dart'
 headers:
   entry-points:
-    # bytestring.h MUST be the first header, otherwise structs are just left
-    # as opaque.
-    - 'third_party/boringssl/src/include/openssl/bytestring.h'
-    - 'third_party/boringssl/src/include/openssl/aead.h'
-    - 'third_party/boringssl/src/include/openssl/aes.h'
-    - 'third_party/boringssl/src/include/openssl/bn.h'
-    - 'third_party/boringssl/src/include/openssl/cipher.h'
-    - 'third_party/boringssl/src/include/openssl/crypto.h'
-    - 'third_party/boringssl/src/include/openssl/digest.h'
-    - 'third_party/boringssl/src/include/openssl/ec_key.h'
-    - 'third_party/boringssl/src/include/openssl/ec.h'
-    - 'third_party/boringssl/src/include/openssl/ecdh.h'
-    - 'third_party/boringssl/src/include/openssl/ecdsa.h'
-    - 'third_party/boringssl/src/include/openssl/err.h'
-    - 'third_party/boringssl/src/include/openssl/evp.h'
-    - 'third_party/boringssl/src/include/openssl/hkdf.h'
-    - 'third_party/boringssl/src/include/openssl/hmac.h'
-    - 'third_party/boringssl/src/include/openssl/mem.h'
-    - 'third_party/boringssl/src/include/openssl/rand.h'
-    - 'third_party/boringssl/src/include/openssl/rsa.h'
+    - '../../../../third_party/boringssl/src/include/openssl/aead.h'
+    - '../../../../third_party/boringssl/src/include/openssl/aes.h'
+    - '../../../../third_party/boringssl/src/include/openssl/bn.h'
+    - '../../../../third_party/boringssl/src/include/openssl/bytestring.h'
+    - '../../../../third_party/boringssl/src/include/openssl/cipher.h'
+    - '../../../../third_party/boringssl/src/include/openssl/crypto.h'
+    - '../../../../third_party/boringssl/src/include/openssl/digest.h'
+    - '../../../../third_party/boringssl/src/include/openssl/ec_key.h'
+    - '../../../../third_party/boringssl/src/include/openssl/ec.h'
+    - '../../../../third_party/boringssl/src/include/openssl/ecdh.h'
+    - '../../../../third_party/boringssl/src/include/openssl/ecdsa.h'
+    - '../../../../third_party/boringssl/src/include/openssl/err.h'
+    - '../../../../third_party/boringssl/src/include/openssl/evp.h'
+    - '../../../../third_party/boringssl/src/include/openssl/hkdf.h'
+    - '../../../../third_party/boringssl/src/include/openssl/hmac.h'
+    - '../../../../third_party/boringssl/src/include/openssl/mem.h'
+    - '../../../../third_party/boringssl/src/include/openssl/rand.h'
+    - '../../../../third_party/boringssl/src/include/openssl/rsa.h'
 compiler-opts: '-Ithird_party/boringssl/src/include'
 comments:
   style: any
@@ -49,10 +47,15 @@ unnamed-enums:
   include:
     - ERR_LIB_HKDF
 structs:
-  #include:
-  #  - cbs_st
-  #  - cbb_st
+  include:
+    - cbs_st
+    - cbb_st
   dependency-only: opaque
+unions:
+  include: []
+  dependency-only: opaque
+globals:
+  include: []
 functions:
   include:
     # Keep consistent with src/symbols.yaml.
@@ -252,6 +255,7 @@ preamble: |
    * (eay@cryptsoft.com).  This product includes software written by Tim
    * Hudson (tjh@cryptsoft.com). */
   // ignore_for_file: camel_case_types
+  // ignore_for_file: constant_identifier_names
   // ignore_for_file: non_constant_identifier_names
   // ignore_for_file: unused_element
   // ignore_for_file: unused_field

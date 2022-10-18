@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 import 'package:yaml/yaml.dart';
 
@@ -65,7 +67,7 @@ Future<void> main() async {
 
   // Generate lib/src/boringssl/lookup/symbols.generated.dart
   print(' - Writing lib/src/boringssl/lookup/symbols.generated.dart');
-  final generatedDart = 'lib/src/boringssl/lookup/symbols.generated.dart';
+  const generatedDart = 'lib/src/boringssl/lookup/symbols.generated.dart';
   await File.fromUri(rootUri.resolve(generatedDart)).writeAsString([
     '// Copyright 2020 Google LLC',
     '//',
@@ -80,6 +82,8 @@ Future<void> main() async {
     '// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.',
     '// See the License for the specific language governing permissions and',
     '// limitations under the License.',
+    '',
+    '// ignore_for_file: constant_identifier_names',
     '',
     '/// **GENERATED FILE DO NOT MODIFY**',
     '///',

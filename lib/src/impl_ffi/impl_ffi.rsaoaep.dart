@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_ffi;
 
 String _rsaOaepJwkAlgFromHash(_Hash hash) {
@@ -185,7 +187,7 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) async {
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
-      _hash.MD,
+      _hash._md,
       ssl.EVP_PKEY_decrypt_init,
       ssl.EVP_PKEY_decrypt,
       data,
@@ -220,7 +222,7 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
   Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) async {
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
-      _hash.MD,
+      _hash._md,
       ssl.EVP_PKEY_encrypt_init,
       ssl.EVP_PKEY_encrypt,
       data,

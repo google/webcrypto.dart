@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_js;
 
-final _ecdsaAlgorithmName = 'ECDSA';
+const _ecdsaAlgorithmName = 'ECDSA';
 
 Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
   List<int> keyData,

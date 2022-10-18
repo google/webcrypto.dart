@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_ffi;
 
 Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
@@ -38,7 +40,7 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
     if (length < 0) {
       throw ArgumentError.value(length, 'length', 'must be positive integer');
     }
-    final md = _Hash.fromHash(hash).MD;
+    final md = _Hash.fromHash(hash)._md;
 
     // Mirroring limitations in chromium:
     // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/pbkdf2.cc#75

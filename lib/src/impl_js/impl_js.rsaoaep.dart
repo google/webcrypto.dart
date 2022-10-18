@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_js;
 
-final _rsaOaepAlgorithmName = 'RSA-OAEP';
+const _rsaOaepAlgorithmName = 'RSA-OAEP';
 
 Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
   List<int> keyData,

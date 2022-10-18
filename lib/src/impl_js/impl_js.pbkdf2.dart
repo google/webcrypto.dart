@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_js;
 
-final _pbkdf2AlgorithmName = 'PBKDF2';
+const _pbkdf2AlgorithmName = 'PBKDF2';
 
 Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
   return _Pbkdf2SecretKey(await _importKey(

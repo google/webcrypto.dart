@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_ffi;
 
 String _rsassaPkcs1V15JwkAlgFromHash(_Hash hash) {
@@ -117,7 +119,8 @@ class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
     return _withEVP_MD_CTX((ctx) async {
       return await _withPEVP_PKEY_CTX((pctx) async {
         _checkOpIsOne(
-          ssl.EVP_DigestSignInit.invoke(ctx, pctx, _hash.MD, ffi.nullptr, _key),
+          ssl.EVP_DigestSignInit.invoke(
+              ctx, pctx, _hash._md, ffi.nullptr, _key),
         );
         _checkOpIsOne(
           ssl.EVP_PKEY_CTX_set_rsa_padding(pctx.value, RSA_PKCS1_PADDING),
@@ -175,7 +178,7 @@ class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
         _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
           ctx,
           pctx,
-          _hash.MD,
+          _hash._md,
           ffi.nullptr,
           _key,
         ));

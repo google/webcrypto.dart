@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore_for_file: non_constant_identifier_names
+
 part of impl_js;
 
-final _ecdhAlgorithmName = 'ECDH';
+const _ecdhAlgorithmName = 'ECDH';
 
 Future<EcdhPrivateKey> ecdhPrivateKey_importPkcs8Key(
   List<int> keyData,
@@ -130,7 +132,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
     ArgumentError.checkNotNull(length, 'length');
     ArgumentError.checkNotNull(publicKey, 'publicKey');
-    if (publicKey is! EcdhPublicKey) {
+    if (publicKey is! _EcdhPublicKey) {
       throw ArgumentError.value(
         publicKey,
         'publicKey',
@@ -141,7 +143,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
     final derived = await _deriveBits(
       subtle.Algorithm(
         name: _ecdhAlgorithmName,
-        public: (publicKey as _EcdhPublicKey)._key,
+        public: publicKey._key,
       ),
       _key,
       // Always deriveBits in multiples of 8 as required by Firefox, see:
