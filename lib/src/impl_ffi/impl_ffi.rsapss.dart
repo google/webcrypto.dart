@@ -120,32 +120,40 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
       );
     }
 
-    return _withEVP_MD_CTX((ctx) async {
-      return await _withPEVP_PKEY_CTX((pctx) async {
-        _checkOpIsOne(
-          ssl.EVP_DigestSignInit.invoke(
-              ctx, pctx, _hash._md, ffi.nullptr, _key),
-        );
-        _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
-          pctx.value,
-          RSA_PKCS1_PSS_PADDING,
-        ));
-        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(
-          pctx.value,
-          saltLength,
-        ));
-        _checkDataIsOne(
-            ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash._md));
-        await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-        return _withAllocation(_sslAlloc<ffi.Size>(),
-            (ffi.Pointer<ffi.Size> len) {
-          len.value = 0;
-          _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
-          return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {
-            _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
-          }).sublist(0, len.value);
-        });
-      });
+    return _Scope.async((scope) async {
+      // Create and initialize signing context
+      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+      final pctx = scope<ffi.Pointer<EVP_PKEY_CTX>>();
+      _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
+        ctx,
+        pctx,
+        _hash._md,
+        ffi.nullptr,
+        _key,
+      ));
+      _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
+        pctx.value,
+        RSA_PKCS1_PSS_PADDING,
+      ));
+      _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(
+        pctx.value,
+        saltLength,
+      ));
+      _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash._md));
+
+      // Stream data into signing context
+      // TODO: Streaming data to EVP_DigestSignUpdate and bytes from
+      //       EVP_DigestSignFinal could probably be done with resuable utility method
+      await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+
+      // Get length of the output signature
+      final len = scope<ffi.Size>();
+      len.value = 0;
+      _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
+      // Get the output signature
+      final out = scope<ffi.Uint8>(len.value);
+      _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, out, len));
+      return out.copy(len.value);
     });
   }
 
@@ -194,38 +202,44 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
       );
     }
 
-    return _withEVP_MD_CTX((ctx) async {
-      return _withPEVP_PKEY_CTX((pctx) async {
-        _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
-          ctx,
-          pctx,
-          _hash._md,
-          ffi.nullptr,
-          _key,
-        ));
-        _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
-          pctx.value,
-          RSA_PKCS1_PSS_PADDING,
-        ));
-        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(
-          pctx.value,
-          saltLength,
-        ));
-        _checkDataIsOne(
-            ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash._md));
-        await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
-        return _withDataAsPointer(signature, (ffi.Pointer<ffi.Uint8> p) {
-          final result = ssl.EVP_DigestVerifyFinal(ctx, p, signature.length);
-          if (result != 1) {
-            // TODO: We should always clear errors, when returning from any
-            //       function that uses BoringSSL.
-            // Note: In this case we could probably assert that error is just
-            //       signature related.
-            ssl.ERR_clear_error();
-          }
-          return result == 1;
-        });
-      });
+    return _Scope.async((scope) async {
+      // Create and initialize signing context
+      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+      final pctx = scope<ffi.Pointer<EVP_PKEY_CTX>>();
+      _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
+        ctx,
+        pctx,
+        _hash._md,
+        ffi.nullptr,
+        _key,
+      ));
+      _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
+        pctx.value,
+        RSA_PKCS1_PSS_PADDING,
+      ));
+      _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(
+        pctx.value,
+        saltLength,
+      ));
+      _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(pctx.value, _hash._md));
+
+      // Stream data into verification context
+      await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+
+      // Verify signature
+      final result = ssl.EVP_DigestVerifyFinal(
+        ctx,
+        scope.dataAsPointer(signature),
+        signature.length,
+      );
+      if (result != 1) {
+        // TODO: We should always clear errors, when returning from any
+        //       function that uses BoringSSL.
+        // Note: In this case we could probably assert that error is just
+        //       signature related.
+        ssl.ERR_clear_error();
+      }
+      return result == 1;
     });
   }
 
