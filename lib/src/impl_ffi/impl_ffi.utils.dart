@@ -370,27 +370,6 @@ R _withDataAsPointer<T extends ffi.NativeType, R>(
   });
 }
 
-/// Invoke [fn] with an [ffi.Pointer<EVP_MD_CTX>] that is free'd when
-/// [fn] returns.
-Future<R> _withEVP_MD_CTX<R>(
-  FutureOr<R> Function(ffi.Pointer<EVP_MD_CTX>) fn,
-) async {
-  final ctx = ssl.EVP_MD_CTX_new();
-  _checkOp(ctx.address != 0, fallback: 'allocation error');
-  try {
-    return await fn(ctx);
-  } finally {
-    ssl.EVP_MD_CTX_free(ctx);
-  }
-}
-
-/// Invoke [fn] with an [ffi.Pointer<ffi.Pointer<ssl.EVP_PKEY_CTX>>] that is
-/// free'd when [fn] returns.
-Future<R> _withPEVP_PKEY_CTX<R>(
-  FutureOr<R> Function(ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx) fn,
-) =>
-    _withAllocationAsync(_sslAlloc<ffi.Pointer<EVP_PKEY_CTX>>(), fn);
-
 /// Stream bytes from [source] to [update] with [ctx], useful for streaming
 /// algorithms. Notice that chunk size from [data] may be altered.
 Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
