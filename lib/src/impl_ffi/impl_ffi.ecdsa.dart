@@ -197,10 +197,13 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
       signStream(Stream.value(data), hash);
 
   @override
-  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
-    final md = _Hash.fromHash(hash)._md;
+  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) {
+    return _Scope.async((scope) async {
+      // Validate and get hash function
+      final md = _Hash.fromHash(hash)._md;
 
-    final sig = await _withEVP_MD_CTX((ctx) async {
+      // Create and initialize signing context
+      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
       _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
         ctx,
         ffi.nullptr,
@@ -209,17 +212,20 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
         _key,
       ));
 
+      // Stream data into signing context
       await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-      return _withAllocation(_sslAlloc<ffi.Size>(),
-          (ffi.Pointer<ffi.Size> len) {
-        len.value = 0;
-        _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
-        return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {
-          _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
-        }).sublist(0, len.value);
-      });
+
+      // Get length of the output signature
+      final len = scope<ffi.Size>();
+      len.value = 0;
+      _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
+      // Get the output signature
+      final out = scope<ffi.Uint8>(len.value);
+      _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, out, len));
+      final sig = out.copy(len.value);
+
+      return _convertEcdsaDerSignatureToWebCryptoSignature(_key, sig);
     });
-    return _convertEcdsaDerSignatureToWebCryptoSignature(_key, sig);
   }
 
   @override
@@ -249,37 +255,47 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
     Stream<List<int>> data,
     Hash hash,
   ) async {
-    final md = _Hash.fromHash(hash)._md;
+    return _Scope.async((scope) async {
+      // Validate and get hash function
+      final md = _Hash.fromHash(hash)._md;
 
-    // Convert to DER signature
-    final sig = _convertEcdsaWebCryptoSignatureToDerSignature(_key, signature);
-    if (sig == null) {
-      // If signature format is invalid we fail verification
-      return false;
-    }
+      // Convert to DER signature
+      final sig = _convertEcdsaWebCryptoSignatureToDerSignature(
+        _key,
+        signature,
+      );
+      if (sig == null) {
+        // If signature format is invalid we fail verification
+        return false;
+      }
 
-    return await _withEVP_MD_CTX((ctx) async {
-      return await _withPEVP_PKEY_CTX((pctx) async {
-        _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
-          ctx,
-          pctx,
-          md,
-          ffi.nullptr,
-          _key,
-        ));
-        await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
-        return _withDataAsPointer(sig, (ffi.Pointer<ffi.Uint8> p) {
-          final result = ssl.EVP_DigestVerifyFinal(ctx, p, sig.length);
-          if (result != 1) {
-            // TODO: We should always clear errors, when returning from any
-            //       function that uses BoringSSL.
-            // Note: In this case we could probably assert that error is just
-            //       signature related.
-            ssl.ERR_clear_error();
-          }
-          return result == 1;
-        });
-      });
+      // Create context and initialize verification context
+      final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+      _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
+        ctx,
+        ffi.nullptr,
+        md,
+        ffi.nullptr,
+        _key,
+      ));
+
+      // Stream data into verification context
+      await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+
+      // Verify signature
+      final result = ssl.EVP_DigestVerifyFinal(
+        ctx,
+        scope.dataAsPointer(sig),
+        sig.length,
+      );
+      if (result != 1) {
+        // TODO: We should always clear errors, when returning from any
+        //       function that uses BoringSSL.
+        // Note: In this case we could probably assert that error is just
+        //       signature related.
+        ssl.ERR_clear_error();
+      }
+      return result == 1;
     });
   }
 
