@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// TODO: Document that methods accepting / returning streams are NOT streaming
+///       when running in the browser. This is because the Web Cryptography API
+///       supported by browser do not support streaming. Hence, one should
+///       expect that the contents of these streams is buffered when operating
+///       in the browser.
+///       This could be documented for each method or at library level.
 library webcrypto;
 
 import 'package:meta/meta.dart';
