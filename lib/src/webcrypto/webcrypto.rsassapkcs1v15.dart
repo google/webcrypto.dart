@@ -96,7 +96,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// Import RSASSA-PKCS1-v1_5 private key in [JWK][1] format.
   ///
   /// The [jwk] should be given as [Map], [String], [List] the same way
-  /// [json.decode] from `dart:convert` represents decoded JSON values.
+  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
   /// The hash algorithm to be used is specified by [hash].
   ///
   /// JSON Web Keys imported using [RsassaPkcs1V15PrivateKey.importJsonWebKey]
@@ -119,13 +119,13 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// // Import private key from decoded JSON.
   /// final privateKey = await RsassaPkcs1V15PrivateKey.importJsonWebKey(
-  ///   json.decode(jwk),
+  ///   jsonDecode(jwk),
   ///   Hash.sha256, // Must match the hash used the JWK key "alg"
   /// );
   ///
   /// // Export the key (print it in same format as it was given).
   /// Map<String, dynamic> keyData = await privateKey.exportJsonWebKey();
-  /// print(json.encode(keyData));
+  /// print(jsonEncode(keyData));
   /// ```
   ///
   /// **Warning**, the `"use"` and `"key_ops"` properties from the [jwk],
@@ -163,7 +163,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// for an explanation of [publicExponent] (and RSA in general).
   ///
   /// The hash algorithm to be used is specified by [hash]. Be ware that
-  /// **use of [Hash.sha1] is discouraged**.
+  /// use of [Hash.sha1] is discouraged.
   ///
   /// **Example**
   /// ```dart
@@ -322,7 +322,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// Export RSASSA-PKCS1-v1_5 private key in [JWK][1] format.
   ///
   /// The output will be given as [Map], [String], [List] the same way
-  /// [json.decode] from `dart:convert` represents decoded JSON values.
+  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
   ///
   /// **Example**
   /// ```dart
@@ -340,9 +340,9 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// final jwk = await keypair.privateKey.exportJsonWebKey();
   ///
   /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `json.encode` from `dart:convert`, this will print something like:
+  /// // `jsonEncode` from `dart:convert`, this will print something like:
   /// // {"kty": "RSA", "alg": "RS256", ...}
-  /// print(json.encode(jwk));
+  /// print(jsonEncode(jwk));
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
@@ -432,7 +432,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// Import RSASSA-PKCS1-v1_5 public key in [JWK][1] format.
   ///
   /// The [jwk] should be given as [Map], [String], [List] the same way
-  /// [json.decode] from `dart:convert` represents decoded JSON values.
+  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
   /// The hash algorithm to be used is specified by [hash].
   ///
   /// JSON Web Keys imported using [RsassaPkcs1V15PublicKey.importJsonWebKey]
@@ -455,13 +455,13 @@ abstract class RsassaPkcs1V15PublicKey {
   ///
   /// // Import public key from decoded JSON.
   /// final publicKey = await RsassaPkcs1V15PublicKey.importJsonWebKey(
-  ///   json.decode(jwk),
+  ///   jsonDecode(jwk),
   ///   Hash.sha256, // Must match the hash used the JWK key "alg"
   /// );
   ///
   /// // Export the key (print it in same format as it was given).
   /// Map<String, dynamic> keyData = await publicKey.exportJsonWebKey();
-  /// print(json.encode(keyData));
+  /// print(jsonEncode(keyData));
   /// ```
   ///
   /// **Warning**, the `"use"` and `"key_ops"` properties from the [jwk],
@@ -576,7 +576,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// Export RSASSA-PKCS1-v1_5 public key in [JWK][1] format.
   ///
   /// The output will be given as [Map], [String], [List] the same way
-  /// [json.decode] from `dart:convert` represents decoded JSON values.
+  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
   ///
   /// **Example**
   /// ```dart
@@ -594,9 +594,9 @@ abstract class RsassaPkcs1V15PublicKey {
   /// final jwk = await keypair.publicKey.exportJsonWebKey();
   ///
   /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `json.encode` from `dart:convert`, this will print something like:
+  /// // `jsonEncode` from `dart:convert`, this will print something like:
   /// // {"kty": "RSA", "alg": "RS256", ...}
-  /// print(json.encode(jwk));
+  /// print(jsonEncode(jwk));
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
