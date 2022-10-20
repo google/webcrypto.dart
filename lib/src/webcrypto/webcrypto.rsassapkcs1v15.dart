@@ -24,6 +24,32 @@ part of webcrypto;
 /// [RsassaPkcs1V15PrivateKey.generateKey] which generates a public-private
 /// key-pair.
 ///
+/// **Example**
+/// ```dart
+/// import 'dart:convert' show utf8;
+/// import 'package:webcrypto/webcrypto.dart';
+///
+/// // Generate a key-pair.
+/// final keyPair = await RsassaPkcs1V15PrivateKey.generateKey(
+///   4096,
+///   BigInt.from(65537),
+///   Hash.sha256,
+/// );
+///
+/// // Using privateKey Bob can sign a message for Alice.
+/// final message = 'Hi Alice';
+/// final signature = await keyPair.privateKey.signBytes(utf8.encode(message));
+///
+/// // Given publicKey and signature Alice can verify the message from Bob.
+/// final isValid = await keypair.publicKey.verifyBytes(
+///   signature,
+///   utf8.encode(message),
+/// );
+/// if (isValid) {
+///   print('Authentic message from Bob: $message');
+/// }
+/// ```
+///
 /// [1]: https://tools.ietf.org/html/rfc3447
 @sealed
 abstract class RsassaPkcs1V15PrivateKey {
@@ -334,6 +360,32 @@ abstract class RsassaPkcs1V15PrivateKey {
 /// [RsassaPkcs1V15PrivateKey.generateKey] which generates a public-private
 /// key-pair.
 ///
+/// **Example**
+/// ```dart
+/// import 'dart:convert' show utf8;
+/// import 'package:webcrypto/webcrypto.dart';
+///
+/// // Generate a key-pair.
+/// final keyPair = await RsassaPkcs1V15PrivateKey.generateKey(
+///   4096,
+///   BigInt.from(65537),
+///   Hash.sha256,
+/// );
+///
+/// // Using privateKey Bob can sign a message for Alice.
+/// final message = 'Hi Alice';
+/// final signature = await keyPair.privateKey.signBytes(utf8.encode(message));
+///
+/// // Given publicKey and signature Alice can verify the message from Bob.
+/// final isValid = await keypair.publicKey.verifyBytes(
+///   signature,
+///   utf8.encode(message),
+/// );
+/// if (isValid) {
+///   print('Authentic message from Bob: $message');
+/// }
+/// ```
+///
 /// [1]: https://tools.ietf.org/html/rfc3447
 @sealed
 abstract class RsassaPkcs1V15PublicKey {
@@ -495,8 +547,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// Export this RSASSA-PKCS1-v1_5 private key in SPKI format.
   ///
   /// Returns the DER encoding of the _SubjectPublicKeyInfo structure_ specified
-  /// in [RFC 5280][1] as a list of bytes. This operation is only allowed if the
-  /// key was imported or generated with the [extractable] bit set to `true`.
+  /// in [RFC 5280][1] as a list of bytes.
   ///
   /// **Example**
   /// ```dart
@@ -524,7 +575,29 @@ abstract class RsassaPkcs1V15PublicKey {
 
   /// Export RSASSA-PKCS1-v1_5 public key in [JWK][1] format.
   ///
-  /// TODO: finish documentation.
+  /// The output will be given as [Map], [String], [List] the same way
+  /// [json.decode] from `dart:convert` represents decoded JSON values.
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// import 'dart:convert' show json;
+  ///
+  /// // Generate a key-pair.
+  /// final keyPair = await RsassaPkcs1V15PrivateKey.generateKey(
+  ///   4096,
+  ///   BigInt.from(65537),
+  ///   Hash.sha256,
+  /// );
+  ///
+  /// // Export the public key.
+  /// final jwk = await keypair.publicKey.exportJsonWebKey();
+  ///
+  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  /// // `json.encode` from `dart:convert`, this will print something like:
+  /// // {"kty": "RSA", "alg": "RS256", ...}
+  /// print(json.encode(jwk));
+  /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey();
