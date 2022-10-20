@@ -145,11 +145,15 @@ String? _extractError() {
       return null;
     }
     const N = 4096; // Max error message size
-    final data = _withOutPointer(N, (ffi.Pointer<ffi.Char> p) {
-      ssl.ERR_error_string_n(err, p, N);
-    });
-    // Take everything until '\0'
-    return utf8.decode(data.takeWhile((i) => i != 0).toList());
+    final out = _sslAlloc<ffi.Char>(N);
+    try {
+      ssl.ERR_error_string_n(err, out, N);
+      final data = out.cast<ffi.Uint8>().asTypedList(N);
+      // Take everything until '\0'
+      return utf8.decode(data.takeWhile((i) => i != 0).toList());
+    } finally {
+      _sslAlloc.free(out);
+    }
   } finally {
     // Always clear error queue, so we continue
     ssl.ERR_clear_error();
@@ -305,30 +309,36 @@ class _Scope implements Allocator {
   }
 }
 
-/// Invoke [fn] with [p], and release [p] when [fn] returns.
-R _withAllocation<T extends ffi.NativeType, R>(
-  ffi.Pointer<T> p,
-  R Function(ffi.Pointer<T>) fn,
-) {
-  assert(R is! Future, 'avoid async blocks');
-  try {
-    return fn(p);
-  } finally {
-    _sslAlloc.free(p);
+extension on _Scope {
+  ffi.Pointer<RSA> createRSA() => create(ssl.RSA_new, ssl.RSA_free);
+
+  ffi.Pointer<BIGNUM> createBN() => create(ssl.BN_new, ssl.BN_free);
+
+  ffi.Pointer<EVP_CIPHER_CTX> createEVP_CIPHER_CTX() =>
+      create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
+
+  ffi.Pointer<CBS> createCBS(List<int> data) {
+    final cbs = this<CBS>();
+    ssl.CBS_init(cbs, dataAsPointer(data), data.length);
+    return cbs;
+  }
+
+  ffi.Pointer<CBB> createCBB([int sizeHint = 4096]) {
+    final cbb = this<CBB>();
+    ssl.CBB_zero(cbb);
+    _checkOp(ssl.CBB_init(cbb, sizeHint) == 1, fallback: 'allocation failure');
+    defer(() => ssl.CBB_cleanup(cbb));
+    return cbb;
   }
 }
 
-/// Invoke [fn] with [p],and release [p] when future returned by [fn]
-/// completes.
-Future<R> _withAllocationAsync<T extends ffi.NativeType, R>(
-  ffi.Pointer<T> p,
-  FutureOr<R> Function(ffi.Pointer<T>) fn,
-) async {
-  assert(R is! Future, 'avoid nested async blocks');
-  try {
-    return await fn(p);
-  } finally {
-    _sslAlloc.free(p);
+extension on ffi.Pointer<CBB> {
+  /// Copy contents of this [CBB] to a [Uint8List].
+  Uint8List copy() {
+    _checkOp(ssl.CBB_flush(this) == 1);
+    final bytes = ssl.CBB_data(this);
+    final len = ssl.CBB_len(this);
+    return Uint8List.fromList(bytes.asTypedList(len));
   }
 }
 
@@ -336,60 +346,6 @@ extension on ffi.Pointer<ffi.Uint8> {
   /// Copy [length] bytes from pointer to [Uint8List] owned by Dart.
   Uint8List copy(int length) => Uint8List.fromList(asTypedList(length));
 }
-
-/// Allocated a [size] bytes [ffi.Pointer<T>] and call [fn], and copy the data
-/// from the pointer to an [Uint8List] when [fn] returns. Freeing the pointer
-/// when [fn] returns.
-///
-/// This is an auxiliary function for getting data out of functions that takes
-/// an output buffer.
-Uint8List _withOutPointer<T extends ffi.NativeType>(
-  int size,
-  void Function(ffi.Pointer<T>) fn,
-) {
-  return _withAllocation(_sslAlloc<ffi.Uint8>(size),
-      (ffi.Pointer<ffi.Uint8> p) {
-    fn(p.cast<T>());
-    return Uint8List.fromList(p.asTypedList(size));
-  });
-}
-
-/// Load [data] into a [ffi.Pointer<T>], call [fn], and free the pointer when
-/// [fn] returns.
-///
-/// This is an auxiliary function for getting a [ffi.Pointer] representation of
-/// an [Uint8List] without risk of memory leaks.
-R _withDataAsPointer<T extends ffi.NativeType, R>(
-  List<int> data,
-  R Function(ffi.Pointer<T>) fn,
-) {
-  return _withAllocation(_sslAlloc<ffi.Uint8>(data.length),
-      (ffi.Pointer<ffi.Uint8> p) {
-    p.asTypedList(data.length).setAll(0, data);
-    return fn(p.cast<T>());
-  });
-}
-
-/// Invoke [fn] with an [ffi.Pointer<EVP_MD_CTX>] that is free'd when
-/// [fn] returns.
-Future<R> _withEVP_MD_CTX<R>(
-  FutureOr<R> Function(ffi.Pointer<EVP_MD_CTX>) fn,
-) async {
-  final ctx = ssl.EVP_MD_CTX_new();
-  _checkOp(ctx.address != 0, fallback: 'allocation error');
-  try {
-    return await fn(ctx);
-  } finally {
-    ssl.EVP_MD_CTX_free(ctx);
-  }
-}
-
-/// Invoke [fn] with an [ffi.Pointer<ffi.Pointer<ssl.EVP_PKEY_CTX>>] that is
-/// free'd when [fn] returns.
-Future<R> _withPEVP_PKEY_CTX<R>(
-  FutureOr<R> Function(ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx) fn,
-) =>
-    _withAllocationAsync(_sslAlloc<ffi.Pointer<EVP_PKEY_CTX>>(), fn);
 
 /// Stream bytes from [source] to [update] with [ctx], useful for streaming
 /// algorithms. Notice that chunk size from [data] may be altered.
@@ -417,34 +373,103 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
   }
 }
 
-/// Invoke [fn] with [data] loaded into a [ffi.Pointer<ssl.CBS>].
-///
-/// Both the [ssl.CBS] and the [ssl.Bytes] pointer allocated will be released
-/// when [fn] returns.
-R _withDataAsCBS<R>(List<int> data, R Function(ffi.Pointer<CBS>) fn) {
-  return _withDataAsPointer(data, (ffi.Pointer<ffi.Uint8> p) {
-    return _withAllocation(_sslAlloc<CBS>(), (ffi.Pointer<CBS> cbs) {
-      ssl.CBS_init(cbs, p, data.length);
-      return fn(cbs);
-    });
+/// Sign [data] using [key] and [md], with optional configuration specified
+/// using [config].
+Future<Uint8List> _signStream(
+  _EvpPKey key,
+  ffi.Pointer<EVP_MD> md,
+  Stream<List<int>> data, {
+  void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
+}) {
+  return _Scope.async((scope) async {
+    final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+    final pctx =
+        config != null ? scope<ffi.Pointer<EVP_PKEY_CTX>>() : ffi.nullptr;
+    _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
+      ctx,
+      pctx,
+      md,
+      ffi.nullptr,
+      key,
+    ));
+    if (config != null) {
+      config(pctx.value);
+    }
+
+    // Stream data into the signature context
+    await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
+
+    // Get length of the output signature
+    final len = scope<ffi.Size>();
+    len.value = 0;
+    _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
+    // Get the output signature
+    final out = scope<ffi.Uint8>(len.value);
+    _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, out, len));
+    return out.copy(len.value);
   });
 }
 
-/// Call [fn] with an initialized [ffi.Pointer<ssl.CBB>] and return the result
-/// as [Uint8List].
-Uint8List _withOutCBB(void Function(ffi.Pointer<CBB>) fn) {
-  return _withAllocation(_sslAlloc<CBB>(), (ffi.Pointer<CBB> cbb) {
-    ssl.CBB_zero(cbb);
-    try {
-      _checkOp(ssl.CBB_init(cbb, 4096) == 1, fallback: 'allocation failure');
-      fn(cbb);
-      _checkOp(ssl.CBB_flush(cbb) == 1);
-      final bytes = ssl.CBB_data(cbb);
-      final len = ssl.CBB_len(cbb);
-      return Uint8List.fromList(bytes.asTypedList(len));
-    } finally {
-      ssl.CBB_cleanup(cbb);
+/// Verify [signature] matches [data] given [key] and [md], with optional
+/// configuration specified using [config].
+Future<bool> _verifyStream(
+  _EvpPKey key,
+  ffi.Pointer<EVP_MD> md,
+  List<int> signature,
+  Stream<List<int>> data, {
+  void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
+}) {
+  return _Scope.async((scope) async {
+    // Create and initialize verification context
+    final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
+    final pctx =
+        config != null ? scope<ffi.Pointer<EVP_PKEY_CTX>>() : ffi.nullptr;
+    _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
+      ctx,
+      pctx,
+      md,
+      ffi.nullptr,
+      key,
+    ));
+    if (config != null) {
+      config(pctx.value);
     }
+
+    // Stream data to verification context
+    await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
+
+    // Verify signature
+    final result = ssl.EVP_DigestVerifyFinal(
+      ctx,
+      scope.dataAsPointer(signature),
+      signature.length,
+    );
+    if (result != 1) {
+      // TODO: We should always clear errors, when returning from any
+      //       function that uses BoringSSL.
+      // Note: In this case we could probably assert that error is just
+      //       signature related.
+      ssl.ERR_clear_error();
+    }
+    return result == 1;
+  });
+}
+
+/// Export private [key] as PKCS8.
+Uint8List _exportPkcs8Key(_EvpPKey key) {
+  return _Scope.sync((scope) {
+    final cbb = scope.createCBB();
+    _checkOpIsOne(ssl.EVP_marshal_private_key.invoke(cbb, key));
+    return cbb.copy();
+  });
+}
+
+/// Export public [key] as SPKI.
+Uint8List _exportSpkiKey(_EvpPKey key) {
+  return _Scope.sync((scope) {
+    final cbb = scope.createCBB();
+    _checkOpIsOne(ssl.EVP_marshal_public_key.invoke(cbb, key));
+    return cbb.copy();
   });
 }
 

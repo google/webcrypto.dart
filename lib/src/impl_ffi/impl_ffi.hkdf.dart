@@ -45,30 +45,30 @@ class _HkdfSecretKey implements HkdfSecretKey {
     final lengthInBytes = length ~/ 8;
 
     return _Scope.async((scope) async {
-      return _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Uint8> out) {
-        final r = ssl.HKDF(
-          out,
-          lengthInBytes,
-          md,
-          scope.dataAsPointer(_key),
-          _key.length,
-          scope.dataAsPointer(salt),
-          salt.length,
-          scope.dataAsPointer(info),
-          info.length,
-        );
-        if (r != 1) {
-          final packed_error = ssl.ERR_peek_error();
-          if (ERR_GET_LIB(packed_error) == ERR_LIB_HKDF &&
-              ERR_GET_REASON(packed_error) == HKDF_R_OUTPUT_TOO_LARGE) {
-            ssl.ERR_clear_error();
-            throw _OperationError(
-              'Length specified for HkdfSecretKey.deriveBits is too long',
-            );
-          }
-          _checkOpIsOne(r, fallback: 'HKDF key derivation failed');
+      final out = scope<ffi.Uint8>(lengthInBytes);
+      final r = ssl.HKDF(
+        out,
+        lengthInBytes,
+        md,
+        scope.dataAsPointer(_key),
+        _key.length,
+        scope.dataAsPointer(salt),
+        salt.length,
+        scope.dataAsPointer(info),
+        info.length,
+      );
+      if (r != 1) {
+        final packed_error = ssl.ERR_peek_error();
+        if (ERR_GET_LIB(packed_error) == ERR_LIB_HKDF &&
+            ERR_GET_REASON(packed_error) == HKDF_R_OUTPUT_TOO_LARGE) {
+          ssl.ERR_clear_error();
+          throw _OperationError(
+            'Length specified for HkdfSecretKey.deriveBits is too long',
+          );
         }
-      });
+        _checkOpIsOne(r, fallback: 'HKDF key derivation failed');
+      }
+      return out.copy(lengthInBytes);
     });
   }
 }

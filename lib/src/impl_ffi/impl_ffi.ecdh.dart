@@ -124,20 +124,20 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       }
 
       final lengthInBytes = (length / 8).ceil();
-      final derived = _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Void> p) {
-        final outLen = ssl.ECDH_compute_key(
-          p,
-          lengthInBytes,
-          ssl.EC_KEY_get0_public_key(pubEcKey),
-          privEcKey,
-          ffi.nullptr,
-        );
-        _checkOp(outLen != -1, fallback: 'ECDH key derivation failed');
-        _checkOp(
-          outLen == lengthInBytes,
-          message: 'internal error in ECDH key derivation',
-        );
-      });
+      final out = scope<ffi.Uint8>(lengthInBytes);
+      final outLen = ssl.ECDH_compute_key(
+        out.cast(),
+        lengthInBytes,
+        ssl.EC_KEY_get0_public_key(pubEcKey),
+        privEcKey,
+        ffi.nullptr,
+      );
+      _checkOp(outLen != -1, fallback: 'ECDH key derivation failed');
+      _checkOp(
+        outLen == lengthInBytes,
+        message: 'internal error in ECDH key derivation',
+      );
+      final derived = out.copy(lengthInBytes);
 
       // Only return the first [length] bits from derived.
       final zeroBits = lengthInBytes * 8 - length;
@@ -159,11 +159,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
       _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: true, jwkUse: null);
 
   @override
-  Future<Uint8List> exportPkcs8Key() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_private_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
 }
 
 class _EcdhPublicKey implements EcdhPublicKey {
@@ -183,9 +179,5 @@ class _EcdhPublicKey implements EcdhPublicKey {
   Future<Uint8List> exportRawKey() async => _exportRawEcPublicKey(_key);
 
   @override
-  Future<Uint8List> exportSpkiKey() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_public_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportSpkiKey() async => _exportSpkiKey(_key);
 }

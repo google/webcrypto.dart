@@ -16,7 +16,7 @@ part of impl_ffi;
 
 _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
   return _Scope.sync((scope) {
-    final k = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
+    final k = ssl.EVP_parse_private_key(scope.createCBS(keyData));
     _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
 
@@ -35,7 +35,7 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
 
 _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
   return _Scope.sync((scope) {
-    final k = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
+    final k = ssl.EVP_parse_public_key(scope.createCBS(keyData));
     _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
 
@@ -99,7 +99,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
       );
     }
 
-    final rsa = scope.create(ssl.RSA_new, ssl.RSA_free);
+    final rsa = scope.createRSA();
 
     checkJwk(jwk.n != null, 'n');
     checkJwk(jwk.e != null, 'e');
@@ -176,9 +176,9 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
 
     String encodeBN(ffi.Pointer<BIGNUM> bn) {
       final N = ssl.BN_num_bytes(bn);
-      final result = _withOutPointer(N, (ffi.Pointer<ffi.Uint8> p) {
-        _checkOpIsOne(ssl.BN_bn2bin_padded(p, N, bn));
-      });
+      final out = scope<ffi.Uint8>(N);
+      _checkOpIsOne(ssl.BN_bn2bin_padded(out, N, bn));
+      final result = out.copy(N);
       assert(result.length == 1 || result[0] != 0);
       return _jwkEncodeBase64UrlNoPadding(result);
     }
@@ -253,9 +253,9 @@ _KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
 
   return _Scope.sync((scope) {
     // Generate private RSA key
-    final privRSA = scope.create(ssl.RSA_new, ssl.RSA_free);
+    final privRSA = scope.createRSA();
 
-    final e = scope.create(ssl.BN_new, ssl.BN_free);
+    final e = scope.createBN();
     _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
     _checkOpIsOne(ssl.RSA_generate_key_ex(
       privRSA,

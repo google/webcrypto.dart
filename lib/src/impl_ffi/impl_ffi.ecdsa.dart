@@ -94,7 +94,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
 ) {
   return _Scope.sync((scope) {
     // TODO: Check if cbs is empty after parsing, consider using ECDSA_SIG_from_bytes instead (like chrome does)
-    final ecdsa = _withDataAsCBS(signature, ssl.ECDSA_SIG_parse);
+    final ecdsa = ssl.ECDSA_SIG_parse(scope.createCBS(signature));
     _checkOp(ecdsa.address != 0,
         message: 'internal error formatting signature');
     scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
@@ -108,25 +108,22 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
       ec,
     )));
 
-    return _withAllocation(_sslAlloc<ffi.Pointer<BIGNUM>>(2),
-        (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
-      // Access R and S from the ecdsa signature
-      final R = RS.elementAt(0);
-      final S = RS.elementAt(1);
-      ssl.ECDSA_SIG_get0(ecdsa, R, S);
+    // Access R and S from the ecdsa signature
+    final R = scope<ffi.Pointer<BIGNUM>>();
+    final S = scope<ffi.Pointer<BIGNUM>>();
+    ssl.ECDSA_SIG_get0(ecdsa, R, S);
 
-      // Dump R and S to return value.
-      return _withOutPointer(N * 2, (ffi.Pointer<ffi.Uint8> p) {
-        _checkOpIsOne(
-          ssl.BN_bn2bin_padded(p.elementAt(0), N, R.value),
-          fallback: 'internal error formatting R in signature',
-        );
-        _checkOpIsOne(
-          ssl.BN_bn2bin_padded(p.elementAt(N), N, S.value),
-          fallback: 'internal error formatting S in signature',
-        );
-      });
-    });
+    // Dump R and S to return value.
+    final out = scope<ffi.Uint8>(N * 2);
+    _checkOpIsOne(
+      ssl.BN_bn2bin_padded(out.elementAt(0), N, R.value),
+      fallback: 'internal error formatting R in signature',
+    );
+    _checkOpIsOne(
+      ssl.BN_bn2bin_padded(out.elementAt(N), N, S.value),
+      fallback: 'internal error formatting S in signature',
+    );
+    return out.copy(N * 2);
   });
 }
 
@@ -157,33 +154,29 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
       return null;
     }
 
-    final ecdsa = ssl.ECDSA_SIG_new();
-    _checkOp(ecdsa.address != 0,
-        message: 'internal error formatting signature');
-    scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
+    final ecdsa = scope.create(ssl.ECDSA_SIG_new, ssl.ECDSA_SIG_free);
 
-    return _withAllocation(_sslAlloc<ffi.Pointer<BIGNUM>>(2),
-        (ffi.Pointer<ffi.Pointer<BIGNUM>> RS) {
-      // Access R and S from the ecdsa signature
-      final R = RS.elementAt(0);
-      final S = RS.elementAt(1);
-      ssl.ECDSA_SIG_get0(ecdsa, R, S);
+    // Access R and S from the ecdsa signature
+    final R = scope<ffi.Pointer<BIGNUM>>();
+    final S = scope<ffi.Pointer<BIGNUM>>();
+    ssl.ECDSA_SIG_get0(ecdsa, R, S);
 
-      _withDataAsPointer(signature, (ffi.Pointer<ffi.Uint8> p) {
-        _checkOp(
-          ssl.BN_bin2bn(p.elementAt(0), N, R.value).address != 0,
-          fallback: 'allocation failure',
-        );
-        _checkOp(
-          ssl.BN_bin2bn(p.elementAt(N), N, S.value).address != 0,
-          fallback: 'allocation failure',
-        );
-      });
-      return _withOutCBB((cbb) => _checkOpIsOne(
-            ssl.ECDSA_SIG_marshal(cbb, ecdsa),
-            fallback: 'internal error reformatting signature',
-          ));
-    });
+    final psig = scope.dataAsPointer<ffi.Uint8>(signature);
+    _checkOp(
+      ssl.BN_bin2bn(psig.elementAt(0), N, R.value).address != 0,
+      fallback: 'allocation failure',
+    );
+    _checkOp(
+      ssl.BN_bin2bn(psig.elementAt(N), N, S.value).address != 0,
+      fallback: 'allocation failure',
+    );
+
+    final cbb = scope.createCBB();
+    _checkOpIsOne(
+      ssl.ECDSA_SIG_marshal(cbb, ecdsa),
+      fallback: 'internal error reformatting signature',
+    );
+    return cbb.copy();
   });
 }
 
@@ -199,26 +192,7 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   @override
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
     final md = _Hash.fromHash(hash)._md;
-
-    final sig = await _withEVP_MD_CTX((ctx) async {
-      _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
-        ctx,
-        ffi.nullptr,
-        md,
-        ffi.nullptr,
-        _key,
-      ));
-
-      await _streamToUpdate(data, ctx, ssl.EVP_DigestSignUpdate);
-      return _withAllocation(_sslAlloc<ffi.Size>(),
-          (ffi.Pointer<ffi.Size> len) {
-        len.value = 0;
-        _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, ffi.nullptr, len));
-        return _withOutPointer(len.value, (ffi.Pointer<ffi.Uint8> p) {
-          _checkOpIsOne(ssl.EVP_DigestSignFinal(ctx, p, len));
-        }).sublist(0, len.value);
-      });
-    });
+    final sig = await _signStream(_key, md, data);
     return _convertEcdsaDerSignatureToWebCryptoSignature(_key, sig);
   }
 
@@ -227,11 +201,7 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
       _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: true, jwkUse: 'sig');
 
   @override
-  Future<Uint8List> exportPkcs8Key() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_private_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
 }
 
 class _EcdsaPublicKey implements EcdsaPublicKey {
@@ -258,29 +228,7 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
       return false;
     }
 
-    return await _withEVP_MD_CTX((ctx) async {
-      return await _withPEVP_PKEY_CTX((pctx) async {
-        _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
-          ctx,
-          pctx,
-          md,
-          ffi.nullptr,
-          _key,
-        ));
-        await _streamToUpdate(data, ctx, ssl.EVP_DigestVerifyUpdate);
-        return _withDataAsPointer(sig, (ffi.Pointer<ffi.Uint8> p) {
-          final result = ssl.EVP_DigestVerifyFinal(ctx, p, sig.length);
-          if (result != 1) {
-            // TODO: We should always clear errors, when returning from any
-            //       function that uses BoringSSL.
-            // Note: In this case we could probably assert that error is just
-            //       signature related.
-            ssl.ERR_clear_error();
-          }
-          return result == 1;
-        });
-      });
-    });
+    return await _verifyStream(_key, md, sig, data);
   }
 
   @override
@@ -291,9 +239,5 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
   Future<Uint8List> exportRawKey() async => _exportRawEcPublicKey(_key);
 
   @override
-  Future<Uint8List> exportSpkiKey() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_public_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportSpkiKey() async => _exportSpkiKey(_key);
 }

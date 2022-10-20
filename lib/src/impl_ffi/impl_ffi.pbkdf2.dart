@@ -55,18 +55,18 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
     final lengthInBytes = length ~/ 8;
 
     return _Scope.async((scope) async {
-      return _withOutPointer(lengthInBytes, (ffi.Pointer<ffi.Uint8> out) {
-        _checkOpIsOne(ssl.PKCS5_PBKDF2_HMAC(
-          scope.dataAsPointer(_key),
-          _key.length,
-          scope.dataAsPointer(salt),
-          salt.length,
-          iterations,
-          md,
-          lengthInBytes,
-          out,
-        ));
-      });
+      final out = scope<ffi.Uint8>(lengthInBytes);
+      _checkOpIsOne(ssl.PKCS5_PBKDF2_HMAC(
+        scope.dataAsPointer(_key),
+        _key.length,
+        scope.dataAsPointer(salt),
+        salt.length,
+        iterations,
+        md,
+        lengthInBytes,
+        out,
+      ));
+      return out.copy(lengthInBytes);
     });
   }
 }
