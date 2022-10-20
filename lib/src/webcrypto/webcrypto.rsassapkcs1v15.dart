@@ -24,6 +24,7 @@ part of webcrypto;
 /// [RsassaPkcs1V15PrivateKey.generateKey] which generates a public-private
 /// key-pair.
 ///
+/// {@template RSASSA-PKCS1-v1_5-Example:generate-sign-verify}
 /// **Example**
 /// ```dart
 /// import 'dart:convert' show utf8;
@@ -49,6 +50,7 @@ part of webcrypto;
 ///   print('Authentic message from Bob: $message');
 /// }
 /// ```
+/// {@endtemplate}
 ///
 /// [1]: https://tools.ietf.org/html/rfc3447
 @sealed
@@ -112,7 +114,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
-  /// import 'dart:convert' show json;
+  /// import 'dart:convert' show jsonEncode, jsonDecode;
   ///
   /// // JSON Web Key as a string containing JSON.
   /// final jwk = '{"kty": "RSA", "alg": "RS256", ...}';
@@ -327,7 +329,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
-  /// import 'dart:convert' show json;
+  /// import 'dart:convert' show jsonEncode;
   ///
   /// // Generate a key-pair.
   /// final keyPair = await RsassaPkcs1V15PrivateKey.generateKey(
@@ -360,31 +362,7 @@ abstract class RsassaPkcs1V15PrivateKey {
 /// [RsassaPkcs1V15PrivateKey.generateKey] which generates a public-private
 /// key-pair.
 ///
-/// **Example**
-/// ```dart
-/// import 'dart:convert' show utf8;
-/// import 'package:webcrypto/webcrypto.dart';
-///
-/// // Generate a key-pair.
-/// final keyPair = await RsassaPkcs1V15PrivateKey.generateKey(
-///   4096,
-///   BigInt.from(65537),
-///   Hash.sha256,
-/// );
-///
-/// // Using privateKey Bob can sign a message for Alice.
-/// final message = 'Hi Alice';
-/// final signature = await keyPair.privateKey.signBytes(utf8.encode(message));
-///
-/// // Given publicKey and signature Alice can verify the message from Bob.
-/// final isValid = await keypair.publicKey.verifyBytes(
-///   signature,
-///   utf8.encode(message),
-/// );
-/// if (isValid) {
-///   print('Authentic message from Bob: $message');
-/// }
-/// ```
+/// {@macro RSASSA-PKCS1-v1_5-Example:generate-sign-verify}
 ///
 /// [1]: https://tools.ietf.org/html/rfc3447
 @sealed
@@ -448,7 +426,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
-  /// import 'dart:convert' show json;
+  /// import 'dart:convert' show jsonEncode, jsonDecode;
   ///
   /// // JSON Web Key as a string containing JSON.
   /// final jwk = '{"kty": "RSA", "alg": "RS256", ...}';
@@ -581,7 +559,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
-  /// import 'dart:convert' show json;
+  /// import 'dart:convert' show jsonEncode;
   ///
   /// // Generate a key-pair.
   /// final keyPair = await RsassaPkcs1V15PrivateKey.generateKey(
