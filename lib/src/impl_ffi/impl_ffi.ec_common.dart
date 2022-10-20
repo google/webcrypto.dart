@@ -90,28 +90,31 @@ _EvpPKey _importPkcs8EcPrivateKey(
   List<int> keyData,
   EllipticCurve curve,
 ) {
-  final k = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
-  _checkData(k.address != 0, fallback: 'unable to parse key');
-  final key = _EvpPKey.wrap(k);
-
-  _validateEllipticCurveKey(key, curve);
-  return key;
+  return _Scope.sync((scope) {
+    final k = ssl.EVP_parse_private_key(scope.createCBS(keyData));
+    _checkData(k.address != 0, fallback: 'unable to parse key');
+    final key = _EvpPKey.wrap(k);
+    _validateEllipticCurveKey(key, curve);
+    return key;
+  });
 }
 
 _EvpPKey _importSpkiEcPublicKey(
   List<int> keyData,
   EllipticCurve curve,
 ) {
-  // TODO: When calling EVP_parse_public_key it might wise to check that CBS_len(cbs) == 0 is true afterwards
-  // otherwise it might be that all of the contents of the key was not consumed and we should throw
-  // a FormatException. Notice that this the case for private/public keys, and RSA keys.
-  final k = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
-  _checkData(k.address != 0, fallback: 'unable to parse key');
-  final key = _EvpPKey.wrap(k);
+  return _Scope.sync((scope) {
+    // TODO: When calling EVP_parse_public_key it might wise to check that CBS_len(cbs) == 0 is true afterwards
+    // otherwise it might be that all of the contents of the key was not consumed and we should throw
+    // a FormatException. Notice that this the case for private/public keys, and RSA keys.
+    final k = ssl.EVP_parse_public_key(scope.createCBS(keyData));
+    _checkData(k.address != 0, fallback: 'unable to parse key');
+    final key = _EvpPKey.wrap(k);
 
-  _validateEllipticCurveKey(key, curve);
+    _validateEllipticCurveKey(key, curve);
 
-  return key;
+    return key;
+  });
 }
 
 _EvpPKey _importJwkEcPrivateOrPublicKey(
@@ -256,17 +259,18 @@ Uint8List _exportRawEcPublicKey(_EvpPKey key) {
     _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
-    return _withOutCBB((cbb) {
-      return _checkOpIsOne(
-          ssl.EC_POINT_point2cbb(
-            cbb,
-            ssl.EC_KEY_get0_group(ec),
-            ssl.EC_KEY_get0_public_key(ec),
-            point_conversion_form_t.POINT_CONVERSION_UNCOMPRESSED,
-            ffi.nullptr,
-          ),
-          fallback: 'formatting failed');
-    });
+    final cbb = scope.createCBB();
+    _checkOpIsOne(
+      ssl.EC_POINT_point2cbb(
+        cbb,
+        ssl.EC_KEY_get0_group(ec),
+        ssl.EC_KEY_get0_public_key(ec),
+        point_conversion_form_t.POINT_CONVERSION_UNCOMPRESSED,
+        ffi.nullptr,
+      ),
+      fallback: 'formatting failed',
+    );
+    return cbb.copy();
   });
 }
 

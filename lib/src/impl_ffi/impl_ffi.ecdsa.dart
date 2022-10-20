@@ -94,7 +94,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
 ) {
   return _Scope.sync((scope) {
     // TODO: Check if cbs is empty after parsing, consider using ECDSA_SIG_from_bytes instead (like chrome does)
-    final ecdsa = _withDataAsCBS(signature, ssl.ECDSA_SIG_parse);
+    final ecdsa = ssl.ECDSA_SIG_parse(scope.createCBS(signature));
     _checkOp(ecdsa.address != 0,
         message: 'internal error formatting signature');
     scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
@@ -171,12 +171,12 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
       fallback: 'allocation failure',
     );
 
-    return _withOutCBB((cbb) {
-      return _checkOpIsOne(
-        ssl.ECDSA_SIG_marshal(cbb, ecdsa),
-        fallback: 'internal error reformatting signature',
-      );
-    });
+    final cbb = scope.createCBB();
+    _checkOpIsOne(
+      ssl.ECDSA_SIG_marshal(cbb, ecdsa),
+      fallback: 'internal error reformatting signature',
+    );
+    return cbb.copy();
   });
 }
 
@@ -201,11 +201,7 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
       _exportJwkEcPrivateOrPublicKey(_key, isPrivateKey: true, jwkUse: 'sig');
 
   @override
-  Future<Uint8List> exportPkcs8Key() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_private_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
 }
 
 class _EcdsaPublicKey implements EcdsaPublicKey {
@@ -243,9 +239,5 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
   Future<Uint8List> exportRawKey() async => _exportRawEcPublicKey(_key);
 
   @override
-  Future<Uint8List> exportSpkiKey() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_public_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportSpkiKey() async => _exportSpkiKey(_key);
 }

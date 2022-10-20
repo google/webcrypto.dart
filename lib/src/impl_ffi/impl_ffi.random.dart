@@ -15,13 +15,14 @@
 part of impl_ffi;
 
 void fillRandomBytes(TypedData destination) {
-  final dest = destination.buffer.asUint8List(
-    destination.offsetInBytes,
-    destination.lengthInBytes,
-  );
-  _withAllocation(_sslAlloc<ffi.Uint8>(dest.length),
-      (ffi.Pointer<ffi.Uint8> p) {
-    _checkOp(ssl.RAND_bytes(p, dest.length) == 1);
-    dest.setAll(0, p.asTypedList(dest.length));
+  return _Scope.sync((scope) {
+    final dest = destination.buffer.asUint8List(
+      destination.offsetInBytes,
+      destination.lengthInBytes,
+    );
+
+    final out = scope<ffi.Uint8>(dest.length);
+    _checkOp(ssl.RAND_bytes(out, dest.length) == 1);
+    dest.setAll(0, out.asTypedList(dest.length));
   });
 }

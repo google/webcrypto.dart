@@ -145,11 +145,15 @@ String? _extractError() {
       return null;
     }
     const N = 4096; // Max error message size
-    final data = _withOutPointer(N, (ffi.Pointer<ffi.Char> p) {
-      ssl.ERR_error_string_n(err, p, N);
-    });
-    // Take everything until '\0'
-    return utf8.decode(data.takeWhile((i) => i != 0).toList());
+    final out = _sslAlloc<ffi.Char>(N);
+    try {
+      ssl.ERR_error_string_n(err, out, N);
+      final data = out.cast<ffi.Uint8>().asTypedList(N);
+      // Take everything until '\0'
+      return utf8.decode(data.takeWhile((i) => i != 0).toList());
+    } finally {
+      _sslAlloc.free(out);
+    }
   } finally {
     // Always clear error queue, so we continue
     ssl.ERR_clear_error();
@@ -305,69 +309,35 @@ class _Scope implements Allocator {
   }
 }
 
-/// Invoke [fn] with [p], and release [p] when [fn] returns.
-R _withAllocation<T extends ffi.NativeType, R>(
-  ffi.Pointer<T> p,
-  R Function(ffi.Pointer<T>) fn,
-) {
-  assert(R is! Future, 'avoid async blocks');
-  try {
-    return fn(p);
-  } finally {
-    _sslAlloc.free(p);
+extension on _Scope {
+  ffi.Pointer<CBS> createCBS(List<int> data) {
+    final cbs = this<CBS>();
+    ssl.CBS_init(cbs, dataAsPointer(data), data.length);
+    return cbs;
+  }
+
+  ffi.Pointer<CBB> createCBB([int sizeHint = 4096]) {
+    final cbb = this<CBB>();
+    ssl.CBB_zero(cbb);
+    _checkOp(ssl.CBB_init(cbb, sizeHint) == 1, fallback: 'allocation failure');
+    defer(() => ssl.CBB_cleanup(cbb));
+    return cbb;
   }
 }
 
-/// Invoke [fn] with [p],and release [p] when future returned by [fn]
-/// completes.
-Future<R> _withAllocationAsync<T extends ffi.NativeType, R>(
-  ffi.Pointer<T> p,
-  FutureOr<R> Function(ffi.Pointer<T>) fn,
-) async {
-  assert(R is! Future, 'avoid nested async blocks');
-  try {
-    return await fn(p);
-  } finally {
-    _sslAlloc.free(p);
+extension on ffi.Pointer<CBB> {
+  /// Copy contents of this [CBB] to a [Uint8List].
+  Uint8List copy() {
+    _checkOp(ssl.CBB_flush(this) == 1);
+    final bytes = ssl.CBB_data(this);
+    final len = ssl.CBB_len(this);
+    return Uint8List.fromList(bytes.asTypedList(len));
   }
 }
 
 extension on ffi.Pointer<ffi.Uint8> {
   /// Copy [length] bytes from pointer to [Uint8List] owned by Dart.
   Uint8List copy(int length) => Uint8List.fromList(asTypedList(length));
-}
-
-/// Allocated a [size] bytes [ffi.Pointer<T>] and call [fn], and copy the data
-/// from the pointer to an [Uint8List] when [fn] returns. Freeing the pointer
-/// when [fn] returns.
-///
-/// This is an auxiliary function for getting data out of functions that takes
-/// an output buffer.
-Uint8List _withOutPointer<T extends ffi.NativeType>(
-  int size,
-  void Function(ffi.Pointer<T>) fn,
-) {
-  return _withAllocation(_sslAlloc<ffi.Uint8>(size),
-      (ffi.Pointer<ffi.Uint8> p) {
-    fn(p.cast<T>());
-    return Uint8List.fromList(p.asTypedList(size));
-  });
-}
-
-/// Load [data] into a [ffi.Pointer<T>], call [fn], and free the pointer when
-/// [fn] returns.
-///
-/// This is an auxiliary function for getting a [ffi.Pointer] representation of
-/// an [Uint8List] without risk of memory leaks.
-R _withDataAsPointer<T extends ffi.NativeType, R>(
-  List<int> data,
-  R Function(ffi.Pointer<T>) fn,
-) {
-  return _withAllocation(_sslAlloc<ffi.Uint8>(data.length),
-      (ffi.Pointer<ffi.Uint8> p) {
-    p.asTypedList(data.length).setAll(0, data);
-    return fn(p.cast<T>());
-  });
 }
 
 /// Stream bytes from [source] to [update] with [ctx], useful for streaming
@@ -478,34 +448,21 @@ Future<bool> _verifyStream(
   });
 }
 
-/// Invoke [fn] with [data] loaded into a [ffi.Pointer<ssl.CBS>].
-///
-/// Both the [ssl.CBS] and the [ssl.Bytes] pointer allocated will be released
-/// when [fn] returns.
-R _withDataAsCBS<R>(List<int> data, R Function(ffi.Pointer<CBS>) fn) {
-  return _withDataAsPointer(data, (ffi.Pointer<ffi.Uint8> p) {
-    return _withAllocation(_sslAlloc<CBS>(), (ffi.Pointer<CBS> cbs) {
-      ssl.CBS_init(cbs, p, data.length);
-      return fn(cbs);
-    });
+/// Export private [key] as PKCS8.
+Uint8List _exportPkcs8Key(_EvpPKey key) {
+  return _Scope.sync((scope) {
+    final cbb = scope.createCBB();
+    _checkOpIsOne(ssl.EVP_marshal_private_key.invoke(cbb, key));
+    return cbb.copy();
   });
 }
 
-/// Call [fn] with an initialized [ffi.Pointer<ssl.CBB>] and return the result
-/// as [Uint8List].
-Uint8List _withOutCBB(void Function(ffi.Pointer<CBB>) fn) {
-  return _withAllocation(_sslAlloc<CBB>(), (ffi.Pointer<CBB> cbb) {
-    ssl.CBB_zero(cbb);
-    try {
-      _checkOp(ssl.CBB_init(cbb, 4096) == 1, fallback: 'allocation failure');
-      fn(cbb);
-      _checkOp(ssl.CBB_flush(cbb) == 1);
-      final bytes = ssl.CBB_data(cbb);
-      final len = ssl.CBB_len(cbb);
-      return Uint8List.fromList(bytes.asTypedList(len));
-    } finally {
-      ssl.CBB_cleanup(cbb);
-    }
+/// Export public [key] as SPKI.
+Uint8List _exportSpkiKey(_EvpPKey key) {
+  return _Scope.sync((scope) {
+    final cbb = scope.createCBB();
+    _checkOpIsOne(ssl.EVP_marshal_public_key.invoke(cbb, key));
+    return cbb.copy();
   });
 }
 

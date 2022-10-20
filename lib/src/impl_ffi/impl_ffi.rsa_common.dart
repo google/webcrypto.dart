@@ -16,7 +16,7 @@ part of impl_ffi;
 
 _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
   return _Scope.sync((scope) {
-    final k = _withDataAsCBS(keyData, ssl.EVP_parse_private_key);
+    final k = ssl.EVP_parse_private_key(scope.createCBS(keyData));
     _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
 
@@ -35,7 +35,7 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
 
 _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
   return _Scope.sync((scope) {
-    final k = _withDataAsCBS(keyData, ssl.EVP_parse_public_key);
+    final k = ssl.EVP_parse_public_key(scope.createCBS(keyData));
     _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
 
@@ -176,9 +176,9 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
 
     String encodeBN(ffi.Pointer<BIGNUM> bn) {
       final N = ssl.BN_num_bytes(bn);
-      final result = _withOutPointer(N, (ffi.Pointer<ffi.Uint8> p) {
-        _checkOpIsOne(ssl.BN_bn2bin_padded(p, N, bn));
-      });
+      final out = scope<ffi.Uint8>(N);
+      _checkOpIsOne(ssl.BN_bn2bin_padded(out, N, bn));
+      final result = out.copy(N);
       assert(result.length == 1 || result[0] != 0);
       return _jwkEncodeBase64UrlNoPadding(result);
     }

@@ -196,11 +196,7 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
       );
 
   @override
-  Future<Uint8List> exportPkcs8Key() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_private_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
 }
 
 class _RsaOaepPublicKey implements RsaOaepPublicKey {
@@ -231,9 +227,5 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
       );
 
   @override
-  Future<Uint8List> exportSpkiKey() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_public_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportSpkiKey() async => _exportSpkiKey(_key);
 }

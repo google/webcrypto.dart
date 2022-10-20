@@ -125,11 +125,7 @@ class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
       );
 
   @override
-  Future<Uint8List> exportPkcs8Key() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_private_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
 }
 
 class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
@@ -158,9 +154,5 @@ class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
       );
 
   @override
-  Future<Uint8List> exportSpkiKey() async {
-    return _withOutCBB((cbb) {
-      _checkOp(ssl.EVP_marshal_public_key.invoke(cbb, _key) == 1);
-    });
-  }
+  Future<Uint8List> exportSpkiKey() async => _exportSpkiKey(_key);
 }
