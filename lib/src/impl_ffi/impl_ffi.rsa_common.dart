@@ -99,7 +99,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
       );
     }
 
-    final rsa = scope.create(ssl.RSA_new, ssl.RSA_free);
+    final rsa = scope.createRSA();
 
     checkJwk(jwk.n != null, 'n');
     checkJwk(jwk.e != null, 'e');
@@ -253,9 +253,9 @@ _KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
 
   return _Scope.sync((scope) {
     // Generate private RSA key
-    final privRSA = scope.create(ssl.RSA_new, ssl.RSA_free);
+    final privRSA = scope.createRSA();
 
-    final e = scope.create(ssl.BN_new, ssl.BN_free);
+    final e = scope.createBN();
     _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
     _checkOpIsOne(ssl.RSA_generate_key_ex(
       privRSA,

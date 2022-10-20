@@ -47,7 +47,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
       throw ArgumentError.value(iv, 'iv', 'must be $ivSize bytes');
     }
 
-    final ctx = scope.create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
+    final ctx = scope.createEVP_CIPHER_CTX();
     _checkOpIsOne(ssl.EVP_CipherInit_ex(
       ctx,
       cipher,

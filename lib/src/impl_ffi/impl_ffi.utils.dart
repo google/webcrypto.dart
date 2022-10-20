@@ -310,6 +310,13 @@ class _Scope implements Allocator {
 }
 
 extension on _Scope {
+  ffi.Pointer<RSA> createRSA() => create(ssl.RSA_new, ssl.RSA_free);
+
+  ffi.Pointer<BIGNUM> createBN() => create(ssl.BN_new, ssl.BN_free);
+
+  ffi.Pointer<EVP_CIPHER_CTX> createEVP_CIPHER_CTX() =>
+      create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
+
   ffi.Pointer<CBS> createCBS(List<int> data) {
     final cbs = this<CBS>();
     ssl.CBS_init(cbs, dataAsPointer(data), data.length);

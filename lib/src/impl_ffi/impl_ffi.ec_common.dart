@@ -290,8 +290,8 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
     // Determine byte size used for encoding params
     final paramSize = _numBitsToBytes(ssl.EC_GROUP_get_degree(group));
 
-    final x = scope.create(ssl.BN_new, ssl.BN_free);
-    final y = scope.create(ssl.BN_new, ssl.BN_free);
+    final x = scope.createBN();
+    final y = scope.createBN();
 
     _checkOpIsOne(ssl.EC_POINT_get_affine_coordinates_GFp(
       group,

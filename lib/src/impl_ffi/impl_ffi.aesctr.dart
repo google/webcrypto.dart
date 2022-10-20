@@ -92,7 +92,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     // reuse the same counter value which is not allowed.
     var bytes_after_wraparound = ctr * BigInt.from(blockSize);
 
-    final ctx = scope.create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
+    final ctx = scope.createEVP_CIPHER_CTX();
     _checkOpIsOne(ssl.EVP_CipherInit_ex(
       ctx,
       cipher,
