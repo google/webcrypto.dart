@@ -110,7 +110,7 @@ abstract class RsaPssPrivateKey {
 
   /// Import RSASSA-PSS private key in [JSON Web Key][1] format.
   ///
-  /// {@macro RSA-importJsonWebKey:jwk}
+  /// {@macro importJsonWebKey:jwk}
   ///
   /// JSON Web Keys imported using [RsaPssPrivateKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
@@ -124,7 +124,7 @@ abstract class RsaPssPrivateKey {
   ///  * `"alg": "PS512"` use [Hash.sha512].
   /// {@endtemplate}
   ///
-  /// {@macro RSA-importJsonWebKey:throws-FormatException-if-jwk}
+  /// {@macro importJsonWebKey:throws-FormatException-if-jwk}
   ///
   /// **Example**
   /// ```dart
@@ -463,7 +463,7 @@ abstract class RsaPssPublicKey {
 
   /// Import RSASSA-PSS public key in [JSON Web Key][1] format.
   ///
-  /// {@macro RSA-importJsonWebKey:jwk}
+  /// {@macro importJsonWebKey:jwk}
   ///
   /// JSON Web Keys imported using [RsaPssPublicKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
@@ -471,7 +471,7 @@ abstract class RsaPssPublicKey {
   ///
   /// {@macro RSASSA-PSS-importJsonWebKey:jwk-alg-list}
   ///
-  /// {@macro RSA-importJsonWebKey:throws-FormatException-if-jwk}
+  /// {@macro importJsonWebKey:throws-FormatException-if-jwk}
   ///
   /// **Example**
   /// ```dart

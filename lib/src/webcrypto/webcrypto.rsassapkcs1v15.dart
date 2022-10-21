@@ -106,7 +106,7 @@ abstract class RsassaPkcs1V15PrivateKey {
 
   /// Import RSASSA-PKCS1-v1_5 private key in [JSON Web Key][1] format.
   ///
-  /// {@template RSA-importJsonWebKey:jwk}
+  /// {@template importJsonWebKey:jwk}
   /// The [jwk] should be given as [Map], [String], [List] the same way
   /// [jsonDecode] from `dart:convert` represents decoded JSON values.
   /// The hash algorithm to be used is specified by [hash].
@@ -124,7 +124,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///  * `"alg": "RS512"` use [Hash.sha512].
   /// {@endtemplate}
   ///
-  /// {@template RSA-importJsonWebKey:throws-FormatException-if-jwk}
+  /// {@template importJsonWebKey:throws-FormatException-if-jwk}
   /// Throws [FormatException] if [jwk] is invalid.
   /// {@endtemplate}
   ///
@@ -441,7 +441,7 @@ abstract class RsassaPkcs1V15PublicKey {
 
   /// Import RSASSA-PKCS1-v1_5 public key in [JSON Web Key][1] format.
   ///
-  /// {@macro RSA-importJsonWebKey:jwk}
+  /// {@macro importJsonWebKey:jwk}
   ///
   /// JSON Web Keys imported using [RsassaPkcs1V15PublicKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
@@ -449,7 +449,7 @@ abstract class RsassaPkcs1V15PublicKey {
   ///
   /// {@macro RSASSA-PKCS1-v1_5-importJsonWebKey:jwk-alg-list}
   ///
-  /// {@macro RSA-importJsonWebKey:throws-FormatException-if-jwk}
+  /// {@macro importJsonWebKey:throws-FormatException-if-jwk}
   ///
   /// **Example**
   /// ```dart

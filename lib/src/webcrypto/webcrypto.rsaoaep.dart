@@ -118,7 +118,7 @@ abstract class RsaOaepPrivateKey {
 
   /// Import RSAES-OAEP private key in [JSON Web Key][1] format.
   ///
-  /// {@macro RSA-importJsonWebKey:jwk}
+  /// {@macro importJsonWebKey:jwk}
   ///
   /// JSON Web Keys imported using [RsaOaepPrivateKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
@@ -132,7 +132,7 @@ abstract class RsaOaepPrivateKey {
   ///  * `"alg": "RSA-OAEP-512"` use [Hash.sha512].
   /// {@endtemplate}
   ///
-  /// {@macro RSA-importJsonWebKey:throws-FormatException-if-jwk}
+  /// {@macro importJsonWebKey:throws-FormatException-if-jwk}
   ///
   /// **Example**
   /// ```dart
@@ -388,7 +388,7 @@ abstract class RsaOaepPublicKey {
 
   /// Import RSAES-OAEP public key in [JSON Web Key][1] format.
   ///
-  /// {@macro RSA-importJsonWebKey:jwk}
+  /// {@macro importJsonWebKey:jwk}
   ///
   /// JSON Web Keys imported using [RsaOaepPublicKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
@@ -396,7 +396,7 @@ abstract class RsaOaepPublicKey {
   ///
   /// {@macro RSAES-OAEP-importJsonWebKey:jwk-alg-list}
   ///
-  /// {@macro RSA-importJsonWebKey:throws-FormatException-if-jwk}
+  /// {@macro importJsonWebKey:throws-FormatException-if-jwk}
   ///
   /// **Example**
   /// ```dart
