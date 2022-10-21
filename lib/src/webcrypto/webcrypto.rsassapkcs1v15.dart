@@ -63,6 +63,10 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// encoding of the _PrivateKeyInfo structure_ specified in [RFC 5208][1].
   /// The hash algorithm to be used is specified by [hash].
   ///
+  /// {@template RSA-importKey:throws-FormatException-if-KeyData}
+  /// Throws [FormatException] if [keyData] is invalid.
+  /// {@endtemplate}
+  ///
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
@@ -95,11 +99,13 @@ abstract class RsassaPkcs1V15PrivateKey {
     return impl.rsassaPkcs1V15PrivateKey_importPkcs8Key(keyData, hash);
   }
 
-  /// Import RSASSA-PKCS1-v1_5 private key in [JWK][1] format.
+  /// Import RSASSA-PKCS1-v1_5 private key in [JSON Web Key][1] format.
   ///
+  /// {@template RSA-importJsonWebKey:jwk}
   /// The [jwk] should be given as [Map], [String], [List] the same way
   /// [jsonDecode] from `dart:convert` represents decoded JSON values.
   /// The hash algorithm to be used is specified by [hash].
+  /// {@endtemplate}
   ///
   /// JSON Web Keys imported using [RsassaPkcs1V15PrivateKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
@@ -110,6 +116,10 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///  * `"alg": "RS256"` use [Hash.sha256],
   ///  * `"alg": "RS384"` use [Hash.sha384], and,
   ///  * `"alg": "RS512"` use [Hash.sha512].
+  ///
+  /// {@template RSA-importJsonWebKey:throws-FormatException-if-jwk}
+  /// Throws [FormatException] if [jwk] is invalid.
+  /// {@endtemplate}
   ///
   /// **Example**
   /// ```dart
@@ -130,11 +140,13 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// print(jsonEncode(keyData));
   /// ```
   ///
+  /// {@template RSA-importJsonWebKey:use-key_ops}
   /// **Warning**, the `"use"` and `"key_ops"` properties from the [jwk],
   /// specifying intended usage for public keys and allowed key operations,
   /// are ignored. If these properties are present they will have no effect.
   /// This is also the case when running on the web, as they will be stripped
   /// before the JWK is passed to the browser.
+  /// {@endtemplate}
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<RsassaPkcs1V15PrivateKey> importJsonWebKey(
@@ -146,26 +158,35 @@ abstract class RsassaPkcs1V15PrivateKey {
 
   /// Generate an RSASSA-PKCS1-v1_5 public/private key-pair.
   ///
+  /// {@template RSA-generateKey:modulusLength-publicExponent-hash}
   /// The [modulusLength], given in bits, determines the size of the RSA key.
   /// A larger key size (higher [modulusLength]) is often consider more secure,
   /// but generally associated with decreased performance. This can be
   /// particularly noticible during key-generation on limited devices CPUs.
   ///
   /// Using a [modulusLength] less than `2048` is often discouraged
-  /// (see [NIST SP 800-57 Part 1 Rev 5, section 5.6][3]). Common key size
+  /// (see [NIST SP 800-57 Part 1 Rev 5, section 5.6][nist-sp]). Common key size
   /// include `2048`, `3072` and `4096` for guidance on key-size see
-  /// [NIST SP 800-57 Part 1 Rev 5][3] or [keylength.com][2] for a comparison of
-  /// various recommendations.
+  /// [NIST SP 800-57 Part 1 Rev 5][nist-sp] or [keylength.com][keylength]
+  /// for a comparison of various recommendations.
   ///
   /// The [publicExponent] must be given as [BigInt]. Currently, this package
   /// has opted to only support `3` and `65537` as [publicExponent], these are
-  /// also the only values [supported by Chrome][1]. To generate RSA keys with a
-  /// different [publicExponent] use a different package for key generation.
-  /// It is common to use `65537` as [publicExponent], see [Wikipedia on RSA][4]
-  /// for an explanation of [publicExponent] (and RSA in general).
+  /// also the only values [supported by Chrome][chrome-src]. To generate RSA
+  /// keys with a different [publicExponent] use a different package for key
+  /// generation.
+  /// It is common to use `65537` as [publicExponent],
+  /// see [Wikipedia on RSA][wikipedia-rsa] for an explanation of
+  /// [publicExponent] (and RSA in general).
   ///
   /// The hash algorithm to be used is specified by [hash]. Be ware that
   /// use of [Hash.sha1] is discouraged.
+  ///
+  /// [chrome-src]: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
+  /// [keylength]: https://www.keylength.com/en/
+  /// [nist-sp]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf
+  /// [wikipedia-rsa]: https://en.wikipedia.org/wiki/RSA_(cryptosystem)
+  /// {@endtemplate}
   ///
   /// **Example**
   /// ```dart
@@ -181,8 +202,8 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// );
   ///
   /// // Export public, so Alice can use it later.
-  /// final rawPublicKey = await keyPair.publicKey.exportSpkiKey();
-  /// final pemPublicKey = PemCodec(PemLabel.publicKey).encode(rawPublicKey);
+  /// final spkiPublicKey = await keyPair.publicKey.exportSpkiKey();
+  /// final pemPublicKey = PemCodec(PemLabel.publicKey).encode(spkiPublicKey);
   /// print(pemPublicKey); // print key in PEM format: -----BEGIN PUBLIC KEY....
   ///
   /// // Sign a message for Alice.
@@ -206,11 +227,6 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///   print('Authentic message from Bob: $message');
   /// }
   /// ```
-  ///
-  /// [1]: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
-  /// [2]: https://www.keylength.com/en/
-  /// [3]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf
-  /// [4]: https://en.wikipedia.org/wiki/RSA_(cryptosystem)
   static Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
       generateKey(
     int modulusLength,
@@ -375,6 +391,8 @@ abstract class RsassaPkcs1V15PublicKey {
   /// encoding of the _SubjectPublicKeyInfo structure_ specified in
   /// [RFC 5280][1]. The hash algorithm to be used is specified by [hash].
   ///
+  /// {@macro RSA-importKey:throws-FormatException-if-KeyData}
+  ///
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
@@ -407,11 +425,9 @@ abstract class RsassaPkcs1V15PublicKey {
     return impl.rsassaPkcs1V15PublicKey_importSpkiKey(keyData, hash);
   }
 
-  /// Import RSASSA-PKCS1-v1_5 public key in [JWK][1] format.
+  /// Import RSASSA-PKCS1-v1_5 public key in [JSON Web Key][1] format.
   ///
-  /// The [jwk] should be given as [Map], [String], [List] the same way
-  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
-  /// The hash algorithm to be used is specified by [hash].
+  /// {@macro RSA-importJsonWebKey:jwk}
   ///
   /// JSON Web Keys imported using [RsassaPkcs1V15PublicKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
@@ -422,6 +438,8 @@ abstract class RsassaPkcs1V15PublicKey {
   ///  * `"alg": "RS256"` use [Hash.sha256],
   ///  * `"alg": "RS384"` use [Hash.sha384], and,
   ///  * `"alg": "RS512"` use [Hash.sha512].
+  ///
+  /// {@macro RSA-importJsonWebKey:throws-FormatException-if-jwk}
   ///
   /// **Example**
   /// ```dart
@@ -442,11 +460,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// print(jsonEncode(keyData));
   /// ```
   ///
-  /// **Warning**, the `"use"` and `"key_ops"` properties from the [jwk],
-  /// specifying intended usage for public keys and allowed key operations,
-  /// are ignored. If these properties are present they will have no effect.
-  /// This is also the case when running on the web, as they will be stripped
-  /// before the JWK is passed to the browser.
+  /// {@macro RSA-importJsonWebKey:use-key_ops}
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<RsassaPkcs1V15PublicKey> importJsonWebKey(
