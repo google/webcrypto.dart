@@ -294,10 +294,9 @@ abstract class RsaOaepPrivateKey {
   /// [1]: https://tools.ietf.org/html/rfc5208
   Future<Uint8List> exportPkcs8Key();
 
-  /// Export RSAES-OAEP private key in [JWK][1] format.
+  /// Export RSAES-OAEP private key in [JSON Web Key][1] format.
   ///
-  /// The output will be given as [Map], [String], [List] the same way
-  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
+  /// {@macro exportJsonWebKey:returns}
   ///
   /// **Example**
   /// ```dart
@@ -525,10 +524,9 @@ abstract class RsaOaepPublicKey {
   /// [1]: https://tools.ietf.org/html/rfc5280
   Future<Uint8List> exportSpkiKey();
 
-  /// Export RSAES-OAEP public key in [JWK][1] format.
+  /// Export RSAES-OAEP public key in [JSON Web Key][1] format.
   ///
-  /// The output will be given as [Map], [String], [List] the same way
-  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
+  /// {@macro exportJsonWebKey:returns}
   ///
   /// **Example**
   /// ```dart

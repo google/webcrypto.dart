@@ -369,10 +369,9 @@ abstract class RsaPssPrivateKey {
   /// [1]: https://tools.ietf.org/html/rfc5208
   Future<Uint8List> exportPkcs8Key();
 
-  /// Export RSASSA-PSS private key in [JWK][1] format.
+  /// Export RSASSA-PSS private key in [JSON Web Key][1] format.
   ///
-  /// The output will be given as [Map], [String], [List] the same way
-  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
+  /// {@macro exportJsonWebKey:returns}
   ///
   /// **Example**
   /// ```dart
@@ -598,7 +597,7 @@ abstract class RsaPssPublicKey {
     int saltLength,
   );
 
-  /// Export this RSASSA-PSS private key in SPKI format.
+  /// Export RSASSA-PSS public key in SPKI format.
   ///
   /// Returns the DER encoding of the _SubjectPublicKeyInfo structure_ specified
   /// in [RFC 5280][1] as a list of bytes.
@@ -627,10 +626,9 @@ abstract class RsaPssPublicKey {
   /// [1]: https://tools.ietf.org/html/rfc5280
   Future<Uint8List> exportSpkiKey();
 
-  /// Export RSASSA-PSS public key in [JWK][1] format.
+  /// Export RSASSA-PSS public key in [JSON Web Key][1] format.
   ///
-  /// The output will be given as [Map], [String], [List] the same way
-  /// [jsonDecode] from `dart:convert` represents decoded JSON values.
+  /// {@macro exportJsonWebKey:returns}
   ///
   /// **Example**
   /// ```dart
