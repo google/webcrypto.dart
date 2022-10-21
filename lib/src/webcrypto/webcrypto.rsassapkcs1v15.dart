@@ -19,10 +19,13 @@ part of webcrypto;
 /// An [RsassaPkcs1V15PrivateKey] instance hold a private RSA key for computing
 /// signatures using the RSASSA-PKCS1-v1_5 scheme as specified in [RFC 3447][1].
 ///
-/// Instances of [RsassaPkcs1V15PrivateKey] can be imported using
-/// [RsassaPkcs1V15PrivateKey.importPkcs8Key] or generated using
-/// [RsassaPkcs1V15PrivateKey.generateKey] which generates a public-private
-/// key-pair.
+/// An [RsassaPkcs1V15PrivateKey] can be imported from:
+///  * [PKCS #8][2] format using [RsassaPkcs1V15PrivateKey.importPkcs8Key], and,
+///  * [JWK][3] format using [RsassaPkcs1V15PrivateKey.importJsonWebKey].
+///
+/// A public-private [KeyPair] consisting of a [RsassaPkcs1V15PublicKey] and a
+/// [RsassaPkcs1V15PrivateKey] can be generated using
+/// [RsassaPkcs1V15PrivateKey.generateKey].
 ///
 /// {@template RSASSA-PKCS1-v1_5-Example:generate-sign-verify}
 /// **Example**
@@ -53,6 +56,8 @@ part of webcrypto;
 /// {@endtemplate}
 ///
 /// [1]: https://tools.ietf.org/html/rfc3447
+/// [2]: https://tools.ietf.org/html/rfc5208
+/// [3]: https://tools.ietf.org/html/rfc7517
 @sealed
 abstract class RsassaPkcs1V15PrivateKey {
   RsassaPkcs1V15PrivateKey._(); // keep the constructor private.
@@ -375,14 +380,19 @@ abstract class RsassaPkcs1V15PrivateKey {
 /// of signatures following the RSASSA-PKCS1-v1_5 scheme as specified
 /// in [RFC 3447][1].
 ///
-/// Instances of [RsassaPkcs1V15PublicKey] can be imported using
-/// [RsassaPkcs1V15PublicKey.importSpkiKey] or generated using
-/// [RsassaPkcs1V15PrivateKey.generateKey] which generates a public-private
-/// key-pair.
+/// An [RsassaPkcs1V15PublicKey] can be imported from:
+///  * [SPKI][2] format using [RsassaPkcs1V15PublicKey.importSpkiKey], and,
+///  * [JWK][3] format using [RsassaPkcs1V15PublicKey.importJsonWebKey].
+///
+/// A public-private [KeyPair] consisting of a [RsassaPkcs1V15PublicKey] and a
+/// [RsassaPkcs1V15PrivateKey] can be generated using
+/// [RsassaPkcs1V15PrivateKey.generateKey].
 ///
 /// {@macro RSASSA-PKCS1-v1_5-Example:generate-sign-verify}
 ///
 /// [1]: https://tools.ietf.org/html/rfc3447
+/// [2]: https://tools.ietf.org/html/rfc5280
+/// [3]: https://tools.ietf.org/html/rfc7517
 @sealed
 abstract class RsassaPkcs1V15PublicKey {
   RsassaPkcs1V15PublicKey._(); // keep the constructor private.
