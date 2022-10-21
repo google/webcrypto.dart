@@ -115,12 +115,14 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// JSON Web Keys imported using [RsassaPkcs1V15PrivateKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
   /// algorithm implied by the `"alg"` property of the imported [jwk].
-  /// For importing a JWK with:
   ///
+  /// {@template RSASSA-PKCS1-v1_5-importJsonWebKey:jwk-alg-list}
+  /// For importing a JWK with:
   ///  * `"alg": "RS1"` use [Hash.sha1] (**SHA-1 is weak**),
   ///  * `"alg": "RS256"` use [Hash.sha256],
   ///  * `"alg": "RS384"` use [Hash.sha384], and,
   ///  * `"alg": "RS512"` use [Hash.sha512].
+  /// {@endtemplate}
   ///
   /// {@template RSA-importJsonWebKey:throws-FormatException-if-jwk}
   /// Throws [FormatException] if [jwk] is invalid.
@@ -444,12 +446,8 @@ abstract class RsassaPkcs1V15PublicKey {
   /// JSON Web Keys imported using [RsassaPkcs1V15PublicKey.importJsonWebKey]
   /// must have `"kty": "RSA"`, and the [hash] given must match the hash
   /// algorithm implied by the `"alg"` property of the imported [jwk].
-  /// For importing a JWK with:
   ///
-  ///  * `"alg": "RS1"` use [Hash.sha1] (**SHA-1 is weak**),
-  ///  * `"alg": "RS256"` use [Hash.sha256],
-  ///  * `"alg": "RS384"` use [Hash.sha384], and,
-  ///  * `"alg": "RS512"` use [Hash.sha512].
+  /// {@macro RSASSA-PKCS1-v1_5-importJsonWebKey:jwk-alg-list}
   ///
   /// {@macro RSA-importJsonWebKey:throws-FormatException-if-jwk}
   ///
