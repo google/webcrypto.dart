@@ -21,7 +21,7 @@ part of webcrypto;
 /// [RFC 8018][1] using HMAC as pseudo-random function. The HMAC will used the
 /// [Hash] algorithm given in [deriveBits].
 ///
-/// A [Pbkdf2SecretKey] can be imported from [importRawKey].
+/// A [Pbkdf2SecretKey] can be imported using [importRawKey].
 ///
 /// {@template Pbkdf2SecretKey:example}
 /// **Example**
@@ -38,7 +38,7 @@ part of webcrypto;
 /// final derivedKey = await Pbkdf2SecretKey.deriveBits(
 ///   256, // number of bits to derive.
 ///   Hash.sha256,
-///   utf.decode('unique salt'),
+///   utf8.decode('unique salt'),
 ///   100000,
 /// );
 ///
