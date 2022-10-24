@@ -20,8 +20,11 @@ part of webcrypto;
 /// [Hash], which can be used to create and verify HMAC signatures as
 /// specified in [FIPS PUB 180-4][1].
 ///
-/// Instances of [HmacSecretKey] can be imported using
-/// [HmacSecretKey.importRawKey] or generated using [HmacSecretKey.generateKey].
+/// Instances of [HmacSecretKey] can be imported from:
+///  * Raw bytes using [HmacSecretKey.importRawKey], and,
+///  * [JWK] format using [HmacSecretKey.importJsonWebKey].
+///
+/// A random key can also be generated using [HmacSecretKey.generateKey].
 ///
 /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
 @sealed
@@ -33,7 +36,7 @@ abstract class HmacSecretKey {
   /// Creates an [HmacSecretKey] using [keyData] as secret key, and running
   /// HMAC with given [hash] algorithm.
   ///
-  /// If given [length] specifies the length of the key, this must be not be
+  /// If given, [length] specifies the length of the key, this must be not be
   /// less than number of bits in [keyData] - 7. The [length] only allows
   /// cutting bits of the last byte in [keyData]. In practice this is the same
   /// as zero'ing the last bits in [keyData].
@@ -44,7 +47,7 @@ abstract class HmacSecretKey {
   /// import 'package:webcrypto/webcrypto.dart';
   ///
   /// final key = await HmacSecretKey.importRawKey(
-  ///   utf8.encode('a-secret-key'),  // don't use string in practice
+  ///   base64.decode('WzIxLDg0LDEwMCw5OSwxMCwxMDUsMjIsODAsMTkwLDExNiwyMDMsMjQ5XQ=='),
   ///   Hash.sha256,
   /// );
   /// ```
@@ -71,12 +74,49 @@ abstract class HmacSecretKey {
     return impl.hmacSecretKey_importRawKey(keyData, hash, length: length);
   }
 
-  /// Import [HmacSecretKey] from [JWK][1].
+  /// Import [HmacSecretKey] from [JSON Web Key][1].
   ///
-  /// TODO: finish documentation.
+  /// {@macro importJsonWebKey:jwk}
+  ///
+  /// JSON Web Keys imported using [HmacSecretKey.importJsonWebKey] must
+  /// have `"kty": "oct"`, and the [hash] given must match the hash algorithm
+  /// implied by the `"alg"` property of the imported [jwk].
+  ///
+  /// For importing a JWK with:
+  ///  * `"alg": "HS1"` use [Hash.sha1] (**SHA-1 is weak**),
+  ///  * `"alg": "HS256"` use [Hash.sha256],
+  ///  * `"alg": "HS384"` use [Hash.sha384], and,
+  ///  * `"alg": "HS512"` use [Hash.sha512].
+  ///
+  /// If specified the `"use"` property of the imported [jwk] must be
+  /// `"use": "sig"`.
+  ///
+  /// {@macro importJsonWebKey:throws-FormatException-if-jwk}
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// import 'dart:convert' show jsonEncode, jsonDecode;
+  ///
+  /// // JSON Web Key as a string containing JSON.
+  /// final jwk = '{"kty": "oct", "alg": "HS256", "k": ...}';
+  ///
+  /// // Import private key from decoded JSON.
+  /// final privateKey = await HmacSecretKey.importJsonWebKey(
+  ///   jsonDecode(jwk),
+  ///   Hash.sha256, // Must match the hash used the JWK key "alg"
+  /// );
+  ///
+  /// // Export the key (print it in same format as it was given).
+  /// Map<String, dynamic> keyData = await privateKey.exportJsonWebKey();
+  /// print(jsonEncode(keyData));
+  /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<HmacSecretKey> importJsonWebKey(
+    // TODO: Determine if the "alg" property can be omitted, and update documentation accordingly
+    //       also make tests covering cases where "alg" is omitted.
+    // TODO: Determine if there is any restrictions on "use" and "key_ops".
     Map<String, dynamic> jwk,
     // TODO: Discuss if hash parameter is really necessary, it's in the JWK.
     //       Presumably webcrypto requires as a sanity check. Notice, that this
@@ -150,11 +190,14 @@ abstract class HmacSecretKey {
   /// print(base64.encode(signature));
   /// ```
   ///
-  /// **Warning**, this method should **not** be used for **validating**
-  /// other signatures by generating a new signature and then comparing the two.
-  /// While this technically works, you application might be vulnerable to
-  /// timing attacks. To validate signatures use [verifyBytes()], this method
-  /// computes a signature and does a fixed-time comparison.
+  /// {@template HMAC-sign:do-not-validate-using-sign}
+  /// This method should not be used for **validating** other signatures by
+  /// generating a new signature and then comparing the two signatures.
+  /// While this technically works, your application might be vulnerable to
+  /// timing attacks. To validate signatures use [verifyBytes] or [verifyStream]
+  /// instead, these methods computes a signature and does a
+  /// fixed-time comparison.
+  /// {@template}
   Future<Uint8List> signBytes(List<int> data);
 
   /// Compute an HMAC signature of given [data] stream.
@@ -181,23 +224,22 @@ abstract class HmacSecretKey {
   /// print(base64.encode(signature));
   /// ```
   ///
-  /// **Warning**, this method should **not** be used for **validating**
-  /// other signatures by generating a new signature and then comparing the two.
-  /// While this technically works, you application might be vulnerable to
-  /// timing attacks. To validate signatures use [verifyStream()], this method
-  /// computes a signature and does a fixed-time comparison.
+  /// {@macro HMAC-sign:do-not-validate-using-sign}
   Future<Uint8List> signStream(Stream<List<int>> data);
 
   /// Verify the HMAC [signature] of given [data].
   ///
   /// This computes an HMAC signature of the [data] in the same manner
-  /// as [signBytes()] and conducts a fixed-time comparison against [signature],
+  /// as [signBytes] and conducts a fixed-time comparison against [signature],
   /// returning `true` if the two signatures are equal.
   ///
-  /// Notice that it's possible to compute a signature for [data] using
-  /// [signBytes()] and then simply compare the two signatures. This is strongly
-  /// discouraged as it is easy to introduce side-channels opening your
-  /// application to timing attacks. Use this method to verify signatures.
+  /// {@template HMAC-verify:do-not-validate-using-sign}
+  /// It is possible to compute a signature for [data] using
+  /// [signBytes] or [signStream] and then simply compare the two signatures.
+  /// This is strongly discouraged as it is easy to introduce side-channels
+  /// opening your application to timing attacks.
+  /// Use [verifyBytes] or [verifyStream] to verify signatures.
+  /// {@endtemplate}
   ///
   /// **Example**
   /// ```dart
@@ -224,13 +266,10 @@ abstract class HmacSecretKey {
   /// Verify the HMAC [signature] of given [data] stream.
   ///
   /// This computes an HMAC signature of the [data] stream in the same manner
-  /// as [signBytes()] and conducts a fixed-time comparison against [signature],
+  /// as [signStream] and conducts a fixed-time comparison against [signature],
   /// returning `true` if the two signatures are equal.
   ///
-  /// Notice that it's possible to compute a signature for [data] using
-  /// [signBytes()] and then simply compare the two signatures. This is strongly
-  /// discouraged as it is easy to introduce side-channels opening your
-  /// application to timing attacks. Use this method to verify signatures.
+  /// {@macro HMAC-verify:do-not-validate-using-sign}
   ///
   /// **Example**
   /// ```dart
@@ -278,9 +317,26 @@ abstract class HmacSecretKey {
   /// ```
   Future<Uint8List> exportRawKey();
 
-  /// Export [HmacSecretKey] from [JWK][1].
+  /// Export [HmacSecretKey] from [JSON Web Key][1].
   ///
-  /// TODO: finish documentation.
+  /// {@macro exportJsonWebKey:returns}
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// import 'dart:convert' show jsonEncode;
+  ///
+  /// // Generate a new random HMAC secret key.
+  /// final key = await HmacSecretKey.generate(Hash.sha256);
+  ///
+  /// // Export the private key.
+  /// final jwk = await key.exportJsonWebKey();
+  ///
+  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  /// // `jsonEncode` from `dart:convert`, this will print something like:
+  /// // {"kty": "oct", "alg": "HS256", "k": ...}
+  /// print(jsonEncode(jwk));
+  /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey();
