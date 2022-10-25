@@ -13,6 +13,7 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.6.0)
+project("webcrypto" LANGUAGES C)
 
 enable_language(ASM)
 
@@ -34,6 +35,10 @@ include(
 # Tradeoff performance for smaller binary size, see:
 # https://boringssl.googlesource.com/boringssl/+/HEAD/BUILDING.md#binary-size
 add_definitions(-DOPENSSL_SMALL)
+
+# Enable link time optimization
+set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -flto")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto")
 
 # Android ABIs, see also:
 # https://developer.android.com/ndk/guides/abis
