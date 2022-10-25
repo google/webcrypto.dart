@@ -101,14 +101,14 @@ abstract class HmacSecretKey {
   /// // JSON Web Key as a string containing JSON.
   /// final jwk = '{"kty": "oct", "alg": "HS256", "k": ...}';
   ///
-  /// // Import private key from decoded JSON.
-  /// final privateKey = await HmacSecretKey.importJsonWebKey(
+  /// // Import secret key from decoded JSON.
+  /// final key = await HmacSecretKey.importJsonWebKey(
   ///   jsonDecode(jwk),
   ///   Hash.sha256, // Must match the hash used the JWK key "alg"
   /// );
   ///
   /// // Export the key (print it in same format as it was given).
-  /// Map<String, dynamic> keyData = await privateKey.exportJsonWebKey();
+  /// Map<String, dynamic> keyData = await key.exportJsonWebKey();
   /// print(jsonEncode(keyData));
   /// ```
   ///
@@ -307,7 +307,7 @@ abstract class HmacSecretKey {
   /// final key = await HmacSecretKey.generate(Hash.sha256);
   ///
   /// // Extract the secret key.
-  /// final secretBytes = await key.extractRawKey();
+  /// final secretBytes = await key.exportRawKey();
   ///
   /// // Print the key as base64
   /// print(base64.encode(secretBytes));
@@ -317,7 +317,7 @@ abstract class HmacSecretKey {
   /// ```
   Future<Uint8List> exportRawKey();
 
-  /// Export [HmacSecretKey] from [JSON Web Key][1].
+  /// Export [HmacSecretKey] as [JSON Web Key][1].
   ///
   /// {@macro exportJsonWebKey:returns}
   ///
@@ -329,7 +329,7 @@ abstract class HmacSecretKey {
   /// // Generate a new random HMAC secret key.
   /// final key = await HmacSecretKey.generate(Hash.sha256);
   ///
-  /// // Export the private key.
+  /// // Export the secret key.
   /// final jwk = await key.exportJsonWebKey();
   ///
   /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
