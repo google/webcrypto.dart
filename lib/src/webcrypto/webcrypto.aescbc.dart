@@ -24,7 +24,7 @@ part of webcrypto;
 ///
 /// An [AesCbcSecretKey] can be imported from:
 ///  * Raw bytes using [AesCbcSecretKey.importRawKey], and,
-///  * [JWK] format using [AesCbcSecretKey.importJsonWebKey].
+///  * [JWK][3] format using [AesCbcSecretKey.importJsonWebKey].
 ///
 /// A random [AesCbcSecretKey] can generated using
 /// [AesCbcSecretKey.generateKey].
@@ -124,7 +124,7 @@ abstract class AesCbcSecretKey {
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random HMAC secret key for AES-256.
+  /// // Generate a new random AES-CBC secret key for AES-256.
   /// final key = await AesCbcSecretKey.generate(256);
   /// ```
   static Future<AesCbcSecretKey> generateKey(int length) {
@@ -156,8 +156,8 @@ abstract class AesCbcSecretKey {
   /// import 'dart:typed_data' show Uint8List;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random HMAC secret key for AES-256.
-  /// final key = await AesCbcSecretKey.generate(256);
+  /// // Generate a new random AES-CBC secret key for AES-256.
+  /// final k = await AesCbcSecretKey.generate(256);
   ///
   /// // Use a unique IV for each message.
   /// final iv = Uint8List(16);
@@ -190,8 +190,8 @@ abstract class AesCbcSecretKey {
   /// import 'package:async/async.dart' show collectBytes;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random HMAC secret key for AES-256.
-  /// final key = await AesCbcSecretKey.generate(256);
+  /// // Generate a new random AES-CBC secret key for AES-256.
+  /// final k = await AesCbcSecretKey.generate(256);
   ///
   /// // Use a unique IV for each message.
   /// final iv = Uint8List(16);
@@ -260,7 +260,7 @@ abstract class AesCbcSecretKey {
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random AES-258 secret key.
+  /// // Generate a new random AES-256 secret key.
   /// final key = await AesCbcSecretKey.generate(256);
   ///
   /// // Extract the secret key.
@@ -283,7 +283,7 @@ abstract class AesCbcSecretKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode;
   ///
-  /// // Generate a new random AES-258 secret key.
+  /// // Generate a new random AES-256 secret key.
   /// final key = await AesCbcSecretKey.generate(256);
   ///
   /// // Export the secret key.
