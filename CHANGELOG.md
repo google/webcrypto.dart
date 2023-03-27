@@ -1,3 +1,6 @@
+# 0.5.4
+* Add `topics` to pubspec.
+
 # 0.5.3
 * Migrate to Flutter 3.0
 * Added Linux desktop support.
