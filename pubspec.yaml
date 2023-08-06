@@ -53,6 +53,7 @@ flutter:
         fileName: src/flutter/webcrypto_plugin.dart
       ios:
         pluginClass: WebcryptoPlugin
+        sharedDarwinSource: true
       linux:
         pluginClass: WebcryptoPlugin
 topics:

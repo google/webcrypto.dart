@@ -35,7 +35,7 @@ def cleanup():
     """ Remove boringssl sources and generated files """
     paths = [
         os.path.join(ROOT_PATH, 'third_party', 'boringssl'),
-        os.path.join(ROOT_PATH, 'ios', 'third_party', 'boringssl')
+        os.path.join(ROOT_PATH, 'darwin', 'third_party', 'boringssl')
     ]
     for p in paths:
         if os.path.exists(p):
@@ -102,7 +102,7 @@ SOURCES_CMAKE_HEADER = """# Copyright 2020 Google LLC
 # `tool/update-boringssl.py`
 """
 
-FAKE_IOS_SOURCE_HEADER = """/*
+FAKE_DARWIN_SOURCE_HEADER = """/*
  * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -211,21 +211,21 @@ def copySourceFiles(g, boringssl_clone):
         shutil.copy(src, dst)
 
 
-def writeFakeIosSource(g):
+def writeFakeDarwinSource(g):
     """
         Write fake-source files that each #include "../..." the original source
-        file for ios/
+        file for darwin/
     """
     for f in sorted(set(g.file_sets['crypto'])):
-        target = os.path.join(ROOT_PATH, 'ios', 'third_party', 'boringssl', f)
+        target = os.path.join(ROOT_PATH, 'darwin', 'third_party', 'boringssl', f)
         original = os.path.join(ROOT_PATH, 'third_party', 'boringssl', f)
         rel = os.path.relpath(original, os.path.dirname(target))
         mkdirp(os.path.dirname(target))
         contents = ''
-        contents += FAKE_IOS_SOURCE_HEADER
+        contents += FAKE_DARWIN_SOURCE_HEADER
         contents += '\n'
         contents += '#include "'+rel+'"\n'
-        writeFile(os.path.join('ios', 'third_party', 'boringssl', f), contents)
+        writeFile(os.path.join('darwin', 'third_party', 'boringssl', f), contents)
 
 
 def generate(boringssl_clone):
@@ -247,11 +247,11 @@ def generate(boringssl_clone):
     # Copy source files into third_party/boringssl/
     copySourceFiles(g, boringssl_clone)
 
-    # Write fake-source files for ios/ which use #include "../..." to include
+    # Write fake-source files for darwin/ which use #include "../..." to include
     # the original source file. This is necessary because webcrypto.podspec
-    # cannot reference sources not under the ios/ folder.
+    # cannot reference sources not under the darwin/ folder.
     # But the C-preprocessor can still include them :D
-    writeFakeIosSource(g)
+    writeFakeDarwinSource(g)
 
     # Add a README.md to the third_party/boringssl/ folder
     readmePath = os.path.join('third_party', 'boringssl', 'README.md')
