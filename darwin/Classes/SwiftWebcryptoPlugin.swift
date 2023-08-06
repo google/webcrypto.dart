@@ -14,17 +14,36 @@
  * limitations under the License.
  */
 
+#if os(iOS)
 import Flutter
-import UIKit
+#elseif os(macOS)
+import FlutterMacOS
+#endif
+
+import Foundation
 
 public class SwiftWebcryptoPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "webcrypto", binaryMessenger: registrar.messenger())
+    #if os(iOS)
+      let messenger = registrar.messenger()
+    #else
+      let messenger = registrar.messenger
+    #endif
+
+    let channel = FlutterMethodChannel(name: "webcrypto", binaryMessenger: messenger)
     let instance = SwiftWebcryptoPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS " + UIDevice.current.systemVersion)
+    #if os(iOS)
+      let platform = "iOS "
+    #elseif os(macOS)
+      let platform = "macOS "
+    #else
+      let platform = "unknown "
+    #endif
+
+    result(platform + ProcessInfo.processInfo.operatingSystemVersionString)
   }
 }

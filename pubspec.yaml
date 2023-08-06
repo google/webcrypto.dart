@@ -54,6 +54,9 @@ flutter:
       ios:
         pluginClass: WebcryptoPlugin
         sharedDarwinSource: true
+      macos:
+        pluginClass: WebcryptoPlugin
+        sharedDarwinSource: true
       linux:
         pluginClass: WebcryptoPlugin
 topics:
