@@ -17,8 +17,12 @@
 #include <stdint.h>
 
 // Macro for annotating all functions to be exported
-#define WEBCRYPTO_EXPORT                                                       \
+#ifdef _MSC_VER
+#define WEBCRYPTO_EXPORT __declspec(dllexport)
+#else
+#define WEBCRYPTO_EXPORT                                                        \
   __attribute__((visibility("default"))) __attribute__((used))
+#endif
 
 // Function to lookup BoringSSL symbols based on index in the Sym enum.
 // See src/symbols.yaml for details.
