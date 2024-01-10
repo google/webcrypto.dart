@@ -55,9 +55,8 @@ jobs:
       - run: flutter pub run webcrypto:setup
       - run: flutter test
       - run: flutter test --platform chrome
-      # TODO: Enable macos desktop when supported
-      #- run: flutter test integration_test/webcrypto_test.dart -d macos
-      #  working-directory: ./example
+      - run: flutter test integration_test/webcrypto_test.dart -d macos
+        working-directory: ./example
       - uses: nanasess/setup-chromedriver@v2
       - name: Run integration_test with chromedriver
         working-directory: ./example
