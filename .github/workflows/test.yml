@@ -90,6 +90,7 @@ jobs:
       - uses: nanasess/setup-chromedriver@v2
       - name: Run integration_test with chromedriver
         working-directory: ./example
+        shell: bash
         run: |
           ../tool/with-chromedriver.sh flutter drive \
             --driver=test_driver/integration_test.dart \
