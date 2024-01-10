@@ -29,7 +29,7 @@ jobs:
       - run: flutter test --platform chrome
       - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
         working-directory: ./example
-      - uses: nanasess/setup-chromedriver@v1
+      - uses: nanasess/setup-chromedriver@v2
       - name: Run integration_test with chromedriver
         working-directory: ./example
         run: |
@@ -58,7 +58,7 @@ jobs:
       # TODO: Enable macos desktop when supported
       #- run: flutter test integration_test/webcrypto_test.dart -d macos
       #  working-directory: ./example
-      - uses: nanasess/setup-chromedriver@v1
+      - uses: nanasess/setup-chromedriver@v2
       - name: Run integration_test with chromedriver
         working-directory: ./example
         run: |
