@@ -36,6 +36,19 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
       library = DynamicLibrary.open('webcrypto.dll');
     } else {
       library = DynamicLibrary.executable();
+      // If current executable doesn't provide the symbol, then we're
+      if (!library.providesSymbol('webcrypto_lookup_symbol')) {
+        final lookup = lookupLibraryInDotDartTool();
+        if (lookup != null) {
+          return lookup;
+        }
+        throw UnsupportedError(
+          'package:webcrypto could not find required symbols in executable. '
+          'If you are using package:webcrypto from scripts or `flutter test` '
+          'make sure to run `flutter pub run webcrypto:setup` in the current '
+          'root project.',
+        );
+      }
     }
 
     // Try to lookup the 'webcrypto_lookup_symbol' symbol.
