@@ -39,7 +39,7 @@ jobs:
             -d chrome
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
   macos:
-    name: webcrypto on macOS Chrome / Firefox
+    name: webcrypto on macOS Chrome
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -66,7 +66,7 @@ jobs:
             --driver=test_driver/integration_test.dart \
             --target=integration_test/webcrypto_test.dart \
             -d chrome
-      - run: flutter pub run test -p vm,chrome,firefox
+      - run: flutter pub run test -p vm,chrome # TODO: Enable firefox if it works
   ios:
     name: webcrypto on iOS emulator (iPhone)
     runs-on: macos-latest
