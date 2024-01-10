@@ -12,9 +12,7 @@ browser, this package features a native implementation embedding
 web browser this package wraps the [`window.crypto`][window-crypto] APIs and
 providing the same Dart API as the native implementation.
 
-This way, `package:webcrypto` provides the same crypto API on multiple
-platforms. Initially targeting Flutter for **Android**, **iOS** and **Web**,
-with other platforms following as soon as the build system allows.
+This way, `package:webcrypto` provides the same crypto API on **Android**, **iOS**, **Web**, **Windows**, **Linux** and **Mac**.
 
 **Example**
 ```dart
