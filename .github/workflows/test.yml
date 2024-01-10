@@ -71,6 +71,7 @@ jobs:
     name: webcrypto on Windows Chrome / Firefox
     runs-on: windows-latest
     steps:
+      - uses: ilammy/setup-nasm@v1
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
