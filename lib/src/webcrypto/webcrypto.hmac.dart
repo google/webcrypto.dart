@@ -197,7 +197,7 @@ abstract class HmacSecretKey {
   /// timing attacks. To validate signatures use [verifyBytes] or [verifyStream]
   /// instead, these methods computes a signature and does a
   /// fixed-time comparison.
-  /// {@template}
+  /// {@endtemplate}
   Future<Uint8List> signBytes(List<int> data);
 
   /// Compute an HMAC signature of given [data] stream.
