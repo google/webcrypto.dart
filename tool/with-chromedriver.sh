@@ -32,6 +32,12 @@ else
       PLATFORM='linux64'
     elif [[ "$OSTYPE" == "darwin"* ]]; then
       PLATFORM='mac64'
+    elif [[ "$OSTYPE" == "cygwin" ]]; then
+      PLATFORM='win32'
+    elif [[ "$OSTYPE" == "msys" ]]; then
+      PLATFORM='win32'
+    elif [[ "$OSTYPE" == "win32" ]]; then
+      PLATFORM='win32'
     else
       echo "Unsupported OSTYPE: $OSTYPE"
       exit 1

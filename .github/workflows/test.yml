@@ -91,7 +91,7 @@ jobs:
       - name: Run integration_test with chromedriver
         working-directory: ./example
         run: |
-          xvfb-run ../tool/with-chromedriver.sh flutter drive \
+          ../tool/with-chromedriver.sh flutter drive \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/webcrypto_test.dart \
             -d chrome
