@@ -111,6 +111,10 @@ if(MSVC)
                             ${MSVC_DISABLED_WARNINGS_LIST})
   set(CMAKE_C_FLAGS   "-utf-8 -W4 -WX ${MSVC_DISABLED_WARNINGS_STR}")
   set(CMAKE_CXX_FLAGS "-utf-8 -W4 -WX ${MSVC_DISABLED_WARNINGS_STR}")
+
+  # Hack because Windows compilers will put .dll files in
+  # $CMAKE_BINARY_DIR/Debug/ folder.
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}>)
 endif()
 if(WIN32)
   # Windows/MSVC option from CMakeLists.txt in BoringSSL
