@@ -1,5 +1,8 @@
 # 0.5.4
-* Add `topics` to pubspec.
+* Added MacOS desktop support.
+* Added Windows desktop support.
+* Additional API documentation.
+* Add `topics` to `pubspec.yaml`.
 
 # 0.5.3
 * Migrate to Flutter 3.0
