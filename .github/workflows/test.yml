@@ -39,7 +39,7 @@ jobs:
             -d chrome
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
   macos:
-    name: webcrypto on macOS Chrome
+    name: webcrypto on macOS desktop / Chrome
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -67,7 +67,7 @@ jobs:
             -d chrome
       - run: flutter pub run test -p vm,chrome # TODO: Enable firefox if it works
   windows:
-    name: webcrypto on Windows Chrome / Firefox
+    name: webcrypto on Windows desktop / Chrome / Firefox
     runs-on: windows-latest
     steps:
       - uses: ilammy/setup-nasm@v1
