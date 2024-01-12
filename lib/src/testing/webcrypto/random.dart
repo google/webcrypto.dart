@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:typed_data';
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 
@@ -25,56 +24,64 @@ void isNotAllZero(TypedData data) {
   check(data.buffer.asUint8List().any((b) => b != 0));
 }
 
-void main() => runTests();
+void main() => tests().runTests();
 
-/// Run all tests, exported for use in `../run_all_tests.dart`.
-void runTests({TestFn test = test}) {
-  test('fillRandomBytes: Uint8List', () {
+/// Tests, exported for use in `../run_all_tests.dart`.
+List<({String name, Future<void> Function() test})> tests() {
+  final tests = <({String name, Future<void> Function() test})>[];
+  void test(String name, Future<void> Function() test) => tests.add((
+        name: name,
+        test: test,
+      ));
+
+  test('fillRandomBytes: Uint8List', () async {
     final data = Uint8List(16 * 1024);
     isAllZero(data);
     fillRandomBytes(data);
     isNotAllZero(data);
   });
 
-  test('fillRandomBytes: Uint16List', () {
+  test('fillRandomBytes: Uint16List', () async {
     final data = Uint16List(4 * 1024);
     isAllZero(data);
     fillRandomBytes(data);
     isNotAllZero(data);
   });
 
-  test('fillRandomBytes: Uint32List', () {
+  test('fillRandomBytes: Uint32List', () async {
     final data = Uint32List(2 * 1024);
     isAllZero(data);
     fillRandomBytes(data);
     isNotAllZero(data);
   });
 
-  test('fillRandomBytes: Int8List', () {
+  test('fillRandomBytes: Int8List', () async {
     final data = Int8List(16 * 1024);
     isAllZero(data);
     fillRandomBytes(data);
     isNotAllZero(data);
   });
 
-  test('fillRandomBytes: Int16List', () {
+  test('fillRandomBytes: Int16List', () async {
     final data = Int16List(4 * 1024);
     isAllZero(data);
     fillRandomBytes(data);
     isNotAllZero(data);
   });
 
-  test('fillRandomBytes: Int32List', () {
+  test('fillRandomBytes: Int32List', () async {
     final data = Int32List(2 * 1024);
     isAllZero(data);
     fillRandomBytes(data);
     isNotAllZero(data);
   });
 
-  test('fillRandomBytes: Maximum buffer', () {
+  test('fillRandomBytes: Maximum buffer', () async {
     final data = Uint8List(64 * 1024);
     isAllZero(data);
     fillRandomBytes(data);
     isNotAllZero(data);
   });
+
+  return tests;
 }

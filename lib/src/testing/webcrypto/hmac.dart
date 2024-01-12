@@ -15,7 +15,6 @@
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
-import 'package:test/test.dart';
 
 final runner = TestRunner.symmetric<HmacSecretKey>(
   algorithm: 'HMAC',
@@ -41,17 +40,17 @@ final runner = TestRunner.symmetric<HmacSecretKey>(
   testData: _testData,
 );
 
-void main() {
-  test('generate HMAC test case', () async {
-    await runner.generate(
-      generateKeyParams: {'hash': hashToJson(Hash.sha384), 'length': 512},
-      importKeyParams: {'hash': hashToJson(Hash.sha384), 'length': 512},
-      signVerifyParams: {},
-      maxPlaintext: 80,
-    );
-  });
+void main() async {
+  log('generate HMAC test case');
+  await runner.generate(
+    generateKeyParams: {'hash': hashToJson(Hash.sha384), 'length': 512},
+    importKeyParams: {'hash': hashToJson(Hash.sha384), 'length': 512},
+    signVerifyParams: {},
+    maxPlaintext: 80,
+  );
+  log('--------------------');
 
-  runner.runTests();
+  await runner.tests().runTests();
 }
 
 // Allow single quotes for hardcoded testData written as JSON:

@@ -44,8 +44,31 @@ void check(bool condition, [String message = 'check failed']) {
   }
 }
 
-/// Test function compatible with `package:test/test.dart`.
-typedef TestFn = void Function(String name, FutureOr<void> Function() fn);
+extension RunTests on List<({String name, Future<void> Function() test})> {
+  /// Run tests, print to stdout and throw if tests fail.
+  Future<void> runTests() async {
+    var failed = false;
+    for (final (:name, :test) in this) {
+      log('TEST: $name');
+      var pass = true;
+      try {
+        await test();
+      } catch (e, st) {
+        log('FAILED: $name\n$e\n$st\n--------------------------------------');
+        pass = false;
+        failed = false;
+      }
+      if (pass) {
+        log('PASS: $name');
+      }
+    }
+    if (failed) {
+      throw AssertionError('Some tests failed');
+    } else {
+      log('ALL TEST PASSED');
+    }
+  }
+}
 
 /// Compare if two byte arrays are equal.
 bool equalBytes(List<int> a, List<int> b) => base64Encode(a) == base64Encode(b);

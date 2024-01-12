@@ -3,6 +3,7 @@
 * Added Windows desktop support.
 * Additional API documentation.
 * Add `topics` to `pubspec.yaml`.
+* Bumped lower bound SDK constraint to require Dart `>= 3.0.0`.
 
 # 0.5.3
 * Migrate to Flutter 3.0

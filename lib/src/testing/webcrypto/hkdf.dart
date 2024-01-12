@@ -14,7 +14,6 @@
 
 import 'dart:typed_data';
 
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
@@ -58,22 +57,22 @@ final runner = TestRunner.symmetric<_ExportableHkdfSecretKey>(
   testData: _testData,
 );
 
-void main() {
-  test('generate HkdfSecretKey test case', () async {
-    await runner.generate(
-      generateKeyParams: {'length': 17},
-      importKeyParams: {},
-      deriveParams: {
-        'hash': hashToJson(Hash.sha512),
-        'salt': bytesToJson(List.generate(32, (i) => (i + i) % 256)),
-        'info': bytesToJson(List.generate(12, (i) => (i + i) % 256)),
-      },
-      minDeriveLength: 512,
-      maxDeriveLength: 512,
-    );
-  });
+void main() async {
+  log('generate HkdfSecretKey test case');
+  await runner.generate(
+    generateKeyParams: {'length': 17},
+    importKeyParams: {},
+    deriveParams: {
+      'hash': hashToJson(Hash.sha512),
+      'salt': bytesToJson(List.generate(32, (i) => (i + i) % 256)),
+      'info': bytesToJson(List.generate(12, (i) => (i + i) % 256)),
+    },
+    minDeriveLength: 512,
+    maxDeriveLength: 512,
+  );
+  log('--------------------');
 
-  runner.runTests();
+  await runner.tests().runTests();
 }
 
 // Allow single quotes for hardcoded testData written as JSON:

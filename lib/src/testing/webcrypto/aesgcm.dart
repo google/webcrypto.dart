@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
@@ -47,22 +46,23 @@ final runner = TestRunner.symmetric<AesGcmSecretKey>(
   testData: _testData,
 );
 
-void main() {
-  test('generate AES-GCM test case', () async {
-    await runner.generate(
-      generateKeyParams: {'length': 256},
-      importKeyParams: {},
-      encryptDecryptParams: {
-        'iv': bytesToJson(List.generate(16, (i) => i * i)),
-        'additionalData': bytesToJson(List.generate(32, (i) => i + 1)),
-        'tagLength': 32,
-      },
-      maxPlaintext: 80,
-      // TODO: Support test cases with invalid encryptDecryptParams for giving wrong additionalData
-    );
-  });
+void main() async {
+  log('generate AES-GCM test case');
+  await runner.generate(
+    generateKeyParams: {'length': 256},
+    importKeyParams: {},
+    encryptDecryptParams: {
+      'iv': bytesToJson(List.generate(16, (i) => i * i)),
+      'additionalData': bytesToJson(List.generate(32, (i) => i + 1)),
+      'tagLength': 32,
+    },
+    maxPlaintext: 80,
+    // TODO: Support test cases with invalid encryptDecryptParams for giving wrong additionalData
+  );
 
-  runner.runTests();
+  log('--------------------');
+
+  await runner.tests().runTests();
 }
 
 // Allow single quotes for hardcoded testData written as JSON:

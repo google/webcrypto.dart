@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:convert';
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/lipsum.dart';
@@ -23,12 +22,18 @@ Stream<List<int>> _utf8Stream(String data) {
   return Stream.value(utf8.encode(data));
 }
 
-void main() => runTests();
+void main() => tests().runTests();
 
-/// Run all tests, exported for use in `../run_all_tests.dart`.
-void runTests({TestFn test = test}) {
+/// Tests, exported for use in `../run_all_tests.dart`.
+List<({String name, Future<void> Function() test})> tests() {
   // Test hash algorithms against correct value for 'hello-world', obtained with
   // echo -n 'hello-world' | sha1sum - | cut -d ' ' -f 1 | xxd -r -p | base64
+
+  final tests = <({String name, Future<void> Function() test})>[];
+  void test(String name, Future<void> Function() test) => tests.add((
+        name: name,
+        test: test,
+      ));
 
   test('SHA-1: "hello-world"', () async {
     final bytes = await Hash.sha1.digestStream(_utf8Stream('hello-world'));
@@ -57,8 +62,8 @@ void runTests({TestFn test = test}) {
             '9IGyhceEqx/jQNf/TQ==');
   });
 
-  test(': libsumSHA-1', () async {
-    final h = Hash.sha1;
+  test('SHA-1: libsum', () async {
+    const h = Hash.sha1;
     final bytes = await h.digestStream(_utf8Stream(libsum));
     final hash = base64Encode(bytes);
     check(hash == 'nBxI1wju5YS4yWgFXBL6K/AUZmk=');
@@ -69,7 +74,7 @@ void runTests({TestFn test = test}) {
   });
 
   test('SHA-256: libsum', () async {
-    final h = Hash.sha256;
+    const h = Hash.sha256;
     final bytes = await h.digestStream(_utf8Stream(libsum));
     final hash = base64Encode(bytes);
     check(hash == 'GbcmmlUnvPkRtNYTM4dKmqsrSXQSURg5IRJcFaL2pDI=');
@@ -80,7 +85,7 @@ void runTests({TestFn test = test}) {
   });
 
   test('SHA-384: libsum', () async {
-    final h = Hash.sha384;
+    const h = Hash.sha384;
     final bytes = await h.digestStream(_utf8Stream(libsum));
     final hash = base64Encode(bytes);
     check(hash ==
@@ -92,7 +97,7 @@ void runTests({TestFn test = test}) {
   });
 
   test('SHA-512: libsum', () async {
-    final h = Hash.sha512;
+    const h = Hash.sha512;
     final bytes = await h.digestStream(_utf8Stream(libsum));
     final hash = base64Encode(bytes);
     check(hash ==
@@ -103,4 +108,6 @@ void runTests({TestFn test = test}) {
           await h.digestStream(fibonacciChunkedStream(utf8.encode(libsum))),
         ));
   });
+
+  return tests;
 }

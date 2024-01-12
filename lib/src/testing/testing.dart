@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'utils/utils.dart';
 import 'utils/testrunner.dart' show TestRunner;
 
 // TestRunner implementations
@@ -48,15 +47,20 @@ final _testRunners = <TestRunner>[
   rsassapkcs1v15.runner,
 ];
 
-/// Utility function that runs all tests using [test].
+/// Utility function that runs all tests using [testFn].
 ///
 /// This makes it easy to run tests from `flutter drive`, when testing on a
 /// device.
-void runAllTests(TestFn test) {
-  for (final r in _testRunners) {
-    r.runTests(test: test);
+void runAllTests(
+  void Function(String name, Future<void> Function() test) testFn,
+) {
+  final allTests = [
+    for (final r in _testRunners) ...r.tests(),
+    ...random.tests(),
+    ...digest.tests(),
+  ];
+
+  for (final (:name, :test) in allTests) {
+    testFn(name, test);
   }
-  // We don't use [TestRunner] for all tests, so we just add them manually.
-  random.runTests(test: test);
-  digest.runTests(test: test);
 }

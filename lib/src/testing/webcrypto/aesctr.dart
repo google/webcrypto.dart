@@ -14,7 +14,6 @@
 
 library aesctr_test;
 
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
@@ -56,20 +55,20 @@ final runner = TestRunner.symmetric<AesCtrSecretKey>(
   testData: _testData,
 );
 
-void main() {
-  test('generate AES-CTR test case', () async {
-    await runner.generate(
-      generateKeyParams: {'length': 256},
-      importKeyParams: {},
-      encryptDecryptParams: {
-        'counter': bytesToJson(List.generate(16, (i) => 0xfe)),
-        'length': 9,
-      },
-      maxPlaintext: 80,
-    );
-  });
+void main() async {
+  log('generate AES-CTR test case');
+  await runner.generate(
+    generateKeyParams: {'length': 256},
+    importKeyParams: {},
+    encryptDecryptParams: {
+      'counter': bytesToJson(List.generate(16, (i) => 0xfe)),
+      'length': 9,
+    },
+    maxPlaintext: 80,
+  );
+  log('--------------------');
 
-  runner.runTests();
+  await runner.tests().runTests();
 }
 
 // Allow single quotes for hardcoded testData written as JSON:

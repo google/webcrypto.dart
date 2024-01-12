@@ -14,7 +14,6 @@
 
 import 'dart:typed_data';
 
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
@@ -58,22 +57,22 @@ final runner = TestRunner.symmetric<_ExportablePbkdf2SecretKey>(
   testData: _testData,
 );
 
-void main() {
-  test('generate Pbkdf2SecretKey test case', () async {
-    await runner.generate(
-      generateKeyParams: {'length': 91},
-      importKeyParams: {},
-      deriveParams: {
-        'hash': hashToJson(Hash.sha256),
-        'salt': bytesToJson(List.generate(42, (i) => (i + i) % 256)),
-        'iterations': 2000
-      },
-      minDeriveLength: 256,
-      maxDeriveLength: 256,
-    );
-  });
+void main() async {
+  log('generate Pbkdf2SecretKey test case');
+  await runner.generate(
+    generateKeyParams: {'length': 91},
+    importKeyParams: {},
+    deriveParams: {
+      'hash': hashToJson(Hash.sha256),
+      'salt': bytesToJson(List.generate(42, (i) => (i + i) % 256)),
+      'iterations': 2000
+    },
+    minDeriveLength: 256,
+    maxDeriveLength: 256,
+  );
+  log('--------------------');
 
-  runner.runTests();
+  await runner.tests().runTests();
 }
 
 // TODO: Augments tests with test vectors from: https://datatracker.ietf.org/doc/html/rfc6070
