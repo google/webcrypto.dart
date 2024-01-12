@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'package:webcrypto/webcrypto.dart';
+import '../utils/utils.dart';
 import '../utils/testrunner.dart';
 
 final runner =
@@ -53,7 +54,7 @@ final runner =
   testData: _testData,
 );
 
-void main() => runner.runTests();
+void main() => runner.tests().runTests();
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes

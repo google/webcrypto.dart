@@ -52,7 +52,7 @@ final runner = TestRunner.asymmetric<RsaOaepPrivateKey, RsaOaepPublicKey>(
   testData: _testData,
 );
 
-void main() => runner.runTests();
+void main() => runner.tests().runTests();
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes

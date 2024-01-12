@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
@@ -60,18 +59,18 @@ final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
       }),
 );
 
-void main() {
-  test('generate ECDSA test case', () async {
-    await runner.generate(
-      generateKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
-      importKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
-      signVerifyParams: {'hash': hashToJson(Hash.sha256)},
-      maxPlaintext: 80,
-    );
-  });
+void main() async {
+  log('generate ECDSA test case');
+  await runner.generate(
+    generateKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
+    importKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
+    signVerifyParams: {'hash': hashToJson(Hash.sha256)},
+    maxPlaintext: 80,
+  );
+  log('--------------------');
 
   // TODO: Test more curves and hashes
-  runner.runTests();
+  await runner.tests().runTests();
 }
 
 // Allow single quotes for hardcoded testData written as JSON:

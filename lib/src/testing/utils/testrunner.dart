@@ -16,7 +16,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 
-import 'package:test/test.dart' show test;
 import 'package:meta/meta.dart';
 import 'package:webcrypto/webcrypto.dart';
 import 'detected_runtime.dart';
@@ -606,28 +605,32 @@ class TestRunner<PrivateKey, PublicKey> {
     return c.toJson();
   }
 
-  /// Run tests for [testData] using the given [test] function.
+  /// Get test cases from [testData].
   ///
   /// If no [testData] is given the `testData` given when the [TestRunner] was
   /// created will be used.
   ///
-  /// The [test] function must be compatible with `package:test/test.dart`.
-  void runTests({
-    TestFn test = test,
+  /// Returns a list of tuples with test name and test function.
+  List<({String name, Future<void> Function() test})> tests({
     Iterable<Map<dynamic, dynamic>>? testData,
   }) {
+    final tests = <({String name, Future<void> Function() test})>[];
     testData ??= _testData;
     for (final data in testData) {
       final c = _TestCase.fromJson(data);
 
       _runTests(this, c, (String name, FutureOr<void> Function() fn) {
-        // Prefix test names
-        test('$algorithm: ${c.name} -- $name', () async {
-          // Check BoringSSL error stack if running with dart:ffi
-          await checkErrorStack(fn);
-        });
+        tests.add((
+          // Prefix test names
+          name: '$algorithm: ${c.name} -- $name',
+          test: () async {
+            // Check BoringSSL error stack if running with dart:ffi
+            await checkErrorStack(fn);
+          }
+        ));
       });
     }
+    return tests;
   }
 }
 
