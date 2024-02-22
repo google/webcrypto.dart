@@ -1,3 +1,6 @@
+# 0.5.5
+* Adds a namespace in `build.gradle` for compatibility with AGP 8.0.
+
 # 0.5.4
 * Added MacOS desktop support.
 * Added Windows desktop support.
