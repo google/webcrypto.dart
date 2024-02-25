@@ -22,7 +22,7 @@ Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
   return _Pbkdf2SecretKey(await _importKey(
     'raw',
     keyData,
-    subtle.Algorithm(name: _pbkdf2AlgorithmName),
+    const subtle.Algorithm(name: _pbkdf2AlgorithmName),
     _usagesDeriveBits,
     'secret',
     // Unlike all other key types it makes no sense to HkdfSecretKey to be

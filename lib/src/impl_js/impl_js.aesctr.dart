@@ -16,7 +16,7 @@
 
 part of impl_js;
 
-final _aesCtrAlgorithm = subtle.Algorithm(name: 'AES-CTR');
+const _aesCtrAlgorithm = subtle.Algorithm(name: 'AES-CTR');
 
 Future<AesCtrSecretKey> aesCtr_importRawKey(List<int> keyData) async {
   return _AesCtrSecretKey(await _importKey(

@@ -109,7 +109,7 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) async {
     return _decrypt(
       label == null
-          ? subtle.Algorithm(name: _rsaOaepAlgorithmName)
+          ? const subtle.Algorithm(name: _rsaOaepAlgorithmName)
           : subtle.Algorithm(
               name: _rsaOaepAlgorithmName,
               label: Uint8List.fromList(label),
@@ -138,7 +138,7 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
   Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) async {
     return _encrypt(
       label == null
-          ? subtle.Algorithm(name: _rsaOaepAlgorithmName)
+          ? const subtle.Algorithm(name: _rsaOaepAlgorithmName)
           : subtle.Algorithm(
               name: _rsaOaepAlgorithmName,
               label: Uint8List.fromList(label),

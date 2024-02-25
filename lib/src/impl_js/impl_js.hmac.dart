@@ -16,7 +16,7 @@
 
 part of impl_js;
 
-final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
+const _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 
 Future<HmacSecretKey> hmacSecretKey_importRawKey(
   List<int> keyData,

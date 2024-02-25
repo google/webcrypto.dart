@@ -16,7 +16,7 @@
 
 part of impl_js;
 
-final _aesCbcAlgorithm = subtle.Algorithm(name: 'AES-CBC');
+const _aesCbcAlgorithm = subtle.Algorithm(name: 'AES-CBC');
 
 Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) async {
   return _AesCbcSecretKey(await _importKey(
