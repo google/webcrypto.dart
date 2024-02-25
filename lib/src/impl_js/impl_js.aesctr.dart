@@ -48,7 +48,7 @@ Future<AesCtrSecretKey> aesCtr_generateKey(int length) async {
 }
 
 class _AesCtrSecretKey implements AesCtrSecretKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _AesCtrSecretKey(this._key);
 
   @override

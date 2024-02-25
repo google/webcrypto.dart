@@ -125,7 +125,7 @@ Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
 }
 
 class _EcdhPrivateKey implements EcdhPrivateKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _EcdhPrivateKey(this._key);
 
   @override
@@ -172,7 +172,7 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
 }
 
 class _EcdhPublicKey implements EcdhPublicKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _EcdhPublicKey(this._key);
 
   @override

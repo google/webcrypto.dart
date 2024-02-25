@@ -82,7 +82,7 @@ Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash,
 }
 
 class _HmacSecretKey implements HmacSecretKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _HmacSecretKey(this._key);
 
   @override

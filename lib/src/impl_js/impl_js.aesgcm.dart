@@ -48,7 +48,7 @@ Future<AesGcmSecretKey> aesGcm_generateKey(int length) async {
 }
 
 class _AesGcmSecretKey implements AesGcmSecretKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _AesGcmSecretKey(this._key);
 
   @override

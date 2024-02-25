@@ -32,7 +32,7 @@ Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
 }
 
 class _HkdfSecretKey implements HkdfSecretKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _HkdfSecretKey(this._key);
 
   @override
