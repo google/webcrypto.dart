@@ -171,11 +171,12 @@ extension type JSCryptoKey(JSObject _) implements JSObject {
   ///  * `'private'`
   ///  * `'public'`
   ///  * `'secret'`
+  ///
   /// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey/type
   external String get type;
 
   /// True, if this key can be extracted.
-
+  ///
   /// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey/extractable
   external bool get extractable;
 
@@ -188,6 +189,7 @@ extension type JSCryptoKey(JSObject _) implements JSObject {
   ///  * `'deriveBits'`,
   ///  * `'wrapKey'`,
   ///  * `'unwrapKey'`.
+  ///
   /// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey/usages
   external JSArray<JSString> get usages;
 }
