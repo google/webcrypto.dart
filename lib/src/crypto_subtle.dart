@@ -332,23 +332,23 @@ extension type JSRsaOtherPrimesInfo(JSObject _) implements JSObject {
 
 TypedData getRandomValues(TypedData array) {
   if (array is Uint8List) {
-    final result = window.crypto.getRandomValues(array.toJS) as JSUint8Array;
-    return result.toDart;
+    window.crypto.getRandomValues(array.toJS);
+    return array;
   } else if (array is Uint16List) {
-    final result = window.crypto.getRandomValues(array.toJS) as JSUint16Array;
-    return result.toDart;
+    window.crypto.getRandomValues(array.toJS);
+    return array;
   } else if (array is Uint32List) {
-    final result = window.crypto.getRandomValues(array.toJS) as JSUint32Array;
-    return result.toDart;
+    window.crypto.getRandomValues(array.toJS);
+    return array;
   } else if (array is Int8List) {
-    final result = window.crypto.getRandomValues(array.toJS) as JSInt8Array;
-    return result.toDart;
+    window.crypto.getRandomValues(array.toJS);
+    return array;
   } else if (array is Int16List) {
-    final result = window.crypto.getRandomValues(array.toJS) as JSInt16Array;
-    return result.toDart;
+    window.crypto.getRandomValues(array.toJS);
+    return array;
   } else if (array is Int32List) {
-    final result = window.crypto.getRandomValues(array.toJS) as JSInt32Array;
-    return result.toDart;
+    window.crypto.getRandomValues(array.toJS);
+    return array;
   } else {
     throw ArgumentError.value(
       array,
