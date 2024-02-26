@@ -113,7 +113,7 @@ extension type JSSubtleCrypto(JSObject _) implements JSObject {
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
   @JS('generateKey')
-  external JSPromise<JSCryptoKey> generateCreptoKey(
+  external JSPromise<JSCryptoKey> generateCryptoKey(
     JSAny algorithm,
     bool extractable,
     JSArray<JSString> keyUsages,
@@ -121,7 +121,7 @@ extension type JSSubtleCrypto(JSObject _) implements JSObject {
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
   @JS('generateKey')
-  external JSPromise<JSCryptoKeyPair> generateCreptoKeyPair(
+  external JSPromise<JSCryptoKeyPair> generateCryptoKeyPair(
     JSAny algorithm,
     bool extractable,
     JSArray<JSString> keyUsages,
@@ -422,7 +422,7 @@ Future<JSCryptoKey> generateKey(
   List<String> usages,
 ) async {
   final value = await window.crypto.subtle
-      .generateCreptoKey(
+      .generateCryptoKey(
         algorithm.toJS,
         extractable,
         usages.toJS,
@@ -438,7 +438,7 @@ Future<JSCryptoKeyPair> generateKeyPair(
   List<String> usages,
 ) async {
   final value = await window.crypto.subtle
-      .generateCreptoKeyPair(
+      .generateCryptoKeyPair(
         algorithm.toJS,
         extractable,
         usages.toJS,
