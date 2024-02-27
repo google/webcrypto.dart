@@ -81,7 +81,7 @@ void main() {
                 (e) => e.message,
                 'message',
                 contains(
-                  '''Failed to execute 'getRandomValues' on 'Crypto': The ArrayBufferView's byte length (1000000) exceeds the number of bytes of entropy available via this API (65536).''',
+                  '''Crypto.getRandomValues: getRandomValues can only generate maximum 65536 bytes''',
                 ),
               ),
         ),
@@ -102,7 +102,7 @@ void main() {
                 (e) => e.message,
                 'message',
                 contains(
-                  '''Failed to execute 'getRandomValues' on 'Crypto': The provided ArrayBufferView is of type 'Float32', which is not an integer array type.''',
+                  '''The type of an object is incompatible with the expected type of the parameter associated to the object''',
                 ),
               ),
         ),
