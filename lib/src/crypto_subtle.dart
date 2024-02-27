@@ -19,6 +19,8 @@ library common;
 import 'dart:js_interop';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
+
 import 'jsonwebkey.dart' show JsonWebKey, RsaOtherPrimesInfo;
 
 export 'jsonwebkey.dart' show JsonWebKey;
@@ -554,15 +556,17 @@ Future<ByteBuffer> deriveBits(
   return value.toDart;
 }
 
-extension on List<String> {
+extension ListExtension on List<String> {
+  @visibleForTesting
   JSArray<JSString> get toJS => <JSString>[
         for (final value in this) value.toJS,
       ].toJS;
 }
 
-extension on Algorithm {
+extension AlgorithmExtension on Algorithm {
   /// Create JSON from [Algorithm].
   /// To avoid null properties for keys, eliminate keys whose value is null.
+  @visibleForTesting
   JSAny get toJS {
     final json = <String, Object>{};
     final name_ = name;
