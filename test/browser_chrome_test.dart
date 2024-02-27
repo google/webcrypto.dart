@@ -59,6 +59,57 @@ void main() {
     });
   });
 
+  group('crypto', () {
+    test('getRandomValues: success', () {
+      final data = Uint8List(16 * 1024);
+      isAllZero(data);
+      window.crypto.getRandomValues(data.toJS);
+      isNotAllZero(data);
+    });
+
+    test('getRandomValues: too long', () {
+      expect(
+        () => window.crypto.getRandomValues(Uint8List(1000000).toJS),
+        throwsA(
+          isA<JSDomException>()
+              .having(
+                (e) => e.name,
+                'name',
+                'QuotaExceededError',
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                contains(
+                  '''Failed to execute 'getRandomValues' on 'Crypto': The ArrayBufferView's byte length (1000000) exceeds the number of bytes of entropy available via this API (65536).''',
+                ),
+              ),
+        ),
+      );
+    });
+
+    test('getRandomValues: not supported type', () {
+      expect(
+        () => window.crypto.getRandomValues(Float32List(32).toJS),
+        throwsA(
+          isA<JSDomException>()
+              .having(
+                (e) => e.name,
+                'name',
+                'TypeMismatchError',
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                contains(
+                  '''Failed to execute 'getRandomValues' on 'Crypto': The provided ArrayBufferView is of type 'Float32', which is not an integer array type.''',
+                ),
+              ),
+        ),
+      );
+    });
+  });
+
   group('crypto.subtle', () {
     test('generateCryptoKey: success', () async {
       final key = await window.crypto.subtle
