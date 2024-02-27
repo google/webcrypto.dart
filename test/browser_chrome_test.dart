@@ -75,7 +75,7 @@ void main() {
       expect(key, isA<JSCryptoKey>());
     });
 
-    test('generateCryptoKey: SyntaxError', () async {
+    test('generateCryptoKey: invalid keyUsages: SyntaxError', () async {
       expect(
         () async => await window.crypto.subtle
             .generateCryptoKey(
@@ -105,7 +105,7 @@ void main() {
       );
     });
 
-    test('generateCryptoKey: TypeError', () async {
+    test('generateCryptoKey: invalid algorithm: TypeError', () async {
       expect(
         () async => await window.crypto.subtle
             .generateCryptoKey(
