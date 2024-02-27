@@ -60,6 +60,8 @@ Object _translateDomException(
   switch (e.name) {
     case 'SyntaxError':
       return ArgumentError(message);
+    case 'TypeError':
+      return ArgumentError(message);
     case 'QuotaExceededError':
       return ArgumentError(message);
     case 'NotSupportedError':
