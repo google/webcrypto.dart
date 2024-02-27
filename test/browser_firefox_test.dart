@@ -1,4 +1,4 @@
-@TestOn('browser')
+@TestOn('firefox')
 // Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ void main() {
           (e) => e.message,
           'message',
           contains(
-            '''Failed to execute 'getRandomValues' on 'Crypto': The ArrayBufferView's byte length (1000000) exceeds the number of bytes of entropy available via this API (65536).''',
+            '''Crypto.getRandomValues: getRandomValues can only generate maximum 65536 bytes''',
           ),
         )),
       );
@@ -98,7 +98,7 @@ void main() {
                 (e) => e.message,
                 'message',
                 contains(
-                  '''Usages cannot be empty when creating a key''',
+                  '''An invalid or illegal string was specified''',
                 ),
               ),
         ),
@@ -125,7 +125,7 @@ void main() {
                 (e) => e.message,
                 'message',
                 contains(
-                  '''Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: name: Missing or not a string''',
+                  '''An invalid or illegal string was specified''',
                 ),
               ),
         ),
