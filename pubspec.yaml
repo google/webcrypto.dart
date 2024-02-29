@@ -23,7 +23,6 @@ environment:
 
 dependencies:
   ffi: ^2.0.0
-  js: ^0.6.3
   meta: ^1.3.0
   # Needed for `lib/src/flutter/webcrypto_plugin.dart` which allows boiler-plate
   # in `flutter.plugin.platforms.web` added below.

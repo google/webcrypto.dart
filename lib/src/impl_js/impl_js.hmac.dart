@@ -16,7 +16,7 @@
 
 part of impl_js;
 
-final _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
+const _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 
 Future<HmacSecretKey> hmacSecretKey_importRawKey(
   List<int> keyData,
@@ -82,7 +82,7 @@ Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash,
 }
 
 class _HmacSecretKey implements HmacSecretKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _HmacSecretKey(this._key);
 
   @override

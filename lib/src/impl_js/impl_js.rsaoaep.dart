@@ -102,14 +102,14 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
 }
 
 class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _RsaOaepPrivateKey(this._key);
 
   @override
   Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) async {
     return _decrypt(
       label == null
-          ? subtle.Algorithm(name: _rsaOaepAlgorithmName)
+          ? const subtle.Algorithm(name: _rsaOaepAlgorithmName)
           : subtle.Algorithm(
               name: _rsaOaepAlgorithmName,
               label: Uint8List.fromList(label),
@@ -131,14 +131,14 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
 }
 
 class _RsaOaepPublicKey implements RsaOaepPublicKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _RsaOaepPublicKey(this._key);
 
   @override
   Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) async {
     return _encrypt(
       label == null
-          ? subtle.Algorithm(name: _rsaOaepAlgorithmName)
+          ? const subtle.Algorithm(name: _rsaOaepAlgorithmName)
           : subtle.Algorithm(
               name: _rsaOaepAlgorithmName,
               label: Uint8List.fromList(label),

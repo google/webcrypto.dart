@@ -16,43 +16,14 @@
 /// browsers `window.crypto.subtle` APIs.
 library common;
 
-import 'dart:async';
-import 'package:js/js_util.dart';
+import 'dart:js_interop';
 import 'dart:typed_data';
-import 'dart:html' show window;
+
+import 'package:meta/meta.dart';
+
 import 'jsonwebkey.dart' show JsonWebKey, RsaOtherPrimesInfo;
+
 export 'jsonwebkey.dart' show JsonWebKey;
-
-/// Constructor for a Javascript `Array`.
-final _array = getProperty(window, 'Array');
-
-/// The `window.crypto` object.
-final _crypto = getProperty(window, 'crypto');
-
-/// The `window.crypto.subtle` object.
-final _subtle = getProperty(_crypto, 'subtle');
-
-/// Call [fn] with property [name] from [jsObj], if present.
-void _getPropertyIfPresent<T>(Object jsObj, String name, void Function(T) fn) {
-  if (hasProperty(jsObj, name)) {
-    fn(getProperty(jsObj, name));
-  }
-}
-
-/// Get property [name] from [jsObj], returns `null` if not present.
-T? _getPropertyOrNull<T>(Object jsObj, String name) {
-  if (hasProperty(jsObj, name)) {
-    return getProperty(jsObj, name);
-  }
-  return null;
-}
-
-/// Set property [name] on [jsObj] if [valie] is not `null`.
-void _setPropertyIfPresent<T>(Object jsObj, String name, T? value) {
-  if (value != null) {
-    setProperty(jsObj, name, value);
-  }
-}
 
 /// Convert [BigInt] to [Uint8List] formatted as [BigInteger][1] following
 /// the Web Cryptography specification.
@@ -73,22 +44,143 @@ Uint8List bigIntToUint8ListBigInteger(BigInt integer) {
   throw UnimplementedError('Only supports 65537 and 3 for now');
 }
 
+/// The `window` object.
+@JS()
+external JSWindow get window;
+
+/// https://developer.mozilla.org/en-US/docs/Web/API/Window
+extension type JSWindow(JSObject _) implements JSObject {
+  /// https://developer.mozilla.org/en-US/docs/Web/API/crypto_property
+  external JSCrypto get crypto;
+}
+
+/// The `window.crypto` object.
+///
+/// https://www.w3.org/TR/WebCryptoAPI/#crypto-interface
+/// https://developer.mozilla.org/en-US/docs/Web/API/Crypto
+extension type JSCrypto(JSObject _) implements JSObject {
+  /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/subtle
+  external JSSubtleCrypto get subtle;
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+  external JSTypedArray getRandomValues(JSTypedArray array);
+}
+
+/// The `window.crypto.subtle` object.
+///
+/// https://www.w3.org/TR/WebCryptoAPI/#subtlecrypto-interface
+/// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto
+extension type JSSubtleCrypto(JSObject _) implements JSObject {
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt
+  external JSPromise<JSArrayBuffer> encrypt(
+    JSAny algorithm,
+    JSCryptoKey key,
+    JSTypedArray data,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/decrypt
+  external JSPromise<JSArrayBuffer> decrypt(
+    JSAny algorithm,
+    JSAny key,
+    JSTypedArray data,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/sign
+  external JSPromise<JSArrayBuffer> sign(
+    JSAny algorithm,
+    JSCryptoKey key,
+    JSTypedArray data,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/verify
+  external JSPromise<JSBoolean> verify(
+    JSAny algorithm,
+    JSCryptoKey key,
+    JSTypedArray signature,
+    JSTypedArray data,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+  external JSPromise<JSArrayBuffer> digest(
+    String algorithm,
+    JSTypedArray data,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveBits
+  external JSPromise<JSArrayBuffer> deriveBits(
+    JSAny algorithm,
+    JSCryptoKey baseKey,
+    int length,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
+  @JS('generateKey')
+  external JSPromise<JSCryptoKey> generateCryptoKey(
+    JSAny algorithm,
+    bool extractable,
+    JSArray<JSString> keyUsages,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
+  @JS('generateKey')
+  external JSPromise<JSCryptoKeyPair> generateCryptoKeyPair(
+    JSAny algorithm,
+    bool extractable,
+    JSArray<JSString> keyUsages,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey
+  @JS('importKey')
+  external JSPromise<JSCryptoKey> importKey(
+    String format,
+    JSTypedArray keyData,
+    JSAny algorithm,
+    bool extractable,
+    JSArray<JSString> keyUsages,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey
+  @JS('importKey')
+  external JSPromise<JSCryptoKey> importJsonWebKey(
+    String format,
+    JSAny keyData,
+    JSAny algorithm,
+    bool extractable,
+    JSArray<JSString> keyUsages,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey
+  @JS('exportKey')
+  external JSPromise<JSArrayBuffer> exportKey(
+    String format,
+    JSCryptoKey key,
+  );
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey
+  @JS('exportKey')
+  external JSPromise<JSJsonWebKey> exportJsonWebKey(
+    String format,
+    JSCryptoKey key,
+  );
+}
+
 /// Wrapper for the [CryptoKey][1] type.
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#cryptokey-interface
-class CryptoKey {
-  final Object _jsObj;
-
-  CryptoKey(this._jsObj);
-
+/// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey
+extension type JSCryptoKey(JSObject _) implements JSObject {
   /// Returns the _type_ of this key, as one of:
   ///  * `'private'`
   ///  * `'public'`
   ///  * `'secret'`
-  String get type => getProperty(_jsObj, 'type');
+  ///
+  /// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey/type
+  external String get type;
 
   /// True, if this key can be extracted.
-  bool get extractable => getProperty(_jsObj, 'extractable');
+  ///
+  /// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey/extractable
+  external bool get extractable;
 
   /// Ways in which this key can be used, list of one or more of:
   ///  * `'encrypt'`,
@@ -99,39 +191,30 @@ class CryptoKey {
   ///  * `'deriveBits'`,
   ///  * `'wrapKey'`,
   ///  * `'unwrapKey'`.
-  List<String> get usages =>
-      _jsArrayToListString(getProperty(_jsObj, 'usages'));
+  ///
+  /// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKey/usages
+  external JSArray<JSString> get usages;
 }
 
 /// Wrapper for the [CryptoKeyPair][1] type.
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#keypair
-class CryptoKeyPair {
-  final Object _jsObj;
-  CryptoKeyPair(this._jsObj);
+/// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKeyPair
+extension type JSCryptoKeyPair(JSObject _) implements JSObject {
+  /// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKeyPair#cryptokeypair.privatekey
+  external JSCryptoKey get privateKey;
 
-  CryptoKey get privateKey => CryptoKey(getProperty(_jsObj, 'privateKey'));
-  CryptoKey get publicKey => CryptoKey(getProperty(_jsObj, 'publicKey'));
+  /// https://developer.mozilla.org/en-US/docs/Web/API/CryptoKeyPair#cryptokeypair.publickey
+  external JSCryptoKey get publicKey;
 }
 
 /// Wrapper for the [DOMException][1] type.
 ///
 /// [1]: https://webidl.spec.whatwg.org/#idl-DOMException
-class DomException implements Exception {
-  final Object _jsObj;
-  DomException.wrap(this._jsObj);
-
-  String get name => getProperty(_jsObj, 'name');
-  String get message => getProperty(_jsObj, 'message');
-}
-
-/// Wrap any error thrown in [fn] as [DomException].
-Future<T> _wrapDomException<T>(Future<T> Function() fn) async {
-  try {
-    return await fn();
-  } catch (e) {
-    throw DomException.wrap(e);
-  }
+@JS('DOMException')
+extension type JSDomException(JSObject _) implements JSObject {
+  external String get name;
+  external String get message;
 }
 
 /// Anonymous object to be used for constructing the `algorithm` parameter in
@@ -147,65 +230,41 @@ Future<T> _wrapDomException<T>(Future<T> Function() fn) async {
 ///
 /// [1]: https://www.w3.org/TR/WebIDL-1/#es-dictionary
 class Algorithm {
-  final Object _jsObj;
+  const Algorithm({
+    this.name,
+    this.modulusLength,
+    this.publicExponent,
+    this.hash,
+    this.saltLength,
+    this.label,
+    this.namedCurve,
+    this.public,
+    this.counter,
+    this.length,
+    this.iv,
+    this.additionalData,
+    this.tagLength,
+    this.salt,
+    this.info,
+    this.iterations,
+  });
 
-  String? get name => _getPropertyOrNull(_jsObj, 'name');
-  int? get modulusLength => _getPropertyOrNull(_jsObj, 'modulusLength');
-  Uint8List? get publicExponent => _getPropertyOrNull(_jsObj, 'publicExponent');
-  String? get hash => _getPropertyOrNull(_jsObj, 'hash');
-  int? get saltLength => _getPropertyOrNull(_jsObj, 'saltLength');
-  TypedData? get label => _getPropertyOrNull(_jsObj, 'label');
-  String? get namedCurve => _getPropertyOrNull(_jsObj, 'namedCurve');
-  CryptoKey? get public => hasProperty(_jsObj, 'public')
-      ? CryptoKey(getProperty(_jsObj, 'public'))
-      : null;
-  TypedData? get counter => _getPropertyOrNull(_jsObj, 'counter');
-  int? get length => _getPropertyOrNull(_jsObj, 'length');
-  TypedData? get iv => _getPropertyOrNull(_jsObj, 'iv');
-  TypedData? get additionalData => _getPropertyOrNull(_jsObj, 'additionalData');
-  int? get tagLength => _getPropertyOrNull(_jsObj, 'tagLength');
-  TypedData? get salt => _getPropertyOrNull(_jsObj, 'salt');
-  TypedData? get info => _getPropertyOrNull(_jsObj, 'info');
-  int? get iterations => _getPropertyOrNull(_jsObj, 'iterations');
-
-  Algorithm({
-    String? name,
-    int? modulusLength,
-    Uint8List? publicExponent,
-    String? hash,
-    int? saltLength,
-    TypedData? label,
-    String? namedCurve,
-    CryptoKey? public,
-    TypedData? counter,
-    int? length,
-    TypedData? iv,
-    TypedData? additionalData,
-    int? tagLength,
-    TypedData? salt,
-    TypedData? info,
-    int? iterations,
-  }) : _jsObj = newObject() {
-    _setPropertyIfPresent(_jsObj, 'name', name);
-    _setPropertyIfPresent(_jsObj, 'name', name);
-    _setPropertyIfPresent(_jsObj, 'modulusLength', modulusLength);
-    _setPropertyIfPresent(_jsObj, 'publicExponent', publicExponent);
-    _setPropertyIfPresent(_jsObj, 'hash', hash);
-    _setPropertyIfPresent(_jsObj, 'saltLength', saltLength);
-    _setPropertyIfPresent(_jsObj, 'label', label);
-    _setPropertyIfPresent(_jsObj, 'namedCurve', namedCurve);
-    if (public != null) {
-      setProperty(_jsObj, 'public', public._jsObj);
-    }
-    _setPropertyIfPresent(_jsObj, 'counter', counter);
-    _setPropertyIfPresent(_jsObj, 'length', length);
-    _setPropertyIfPresent(_jsObj, 'iv', iv);
-    _setPropertyIfPresent(_jsObj, 'additionalData', additionalData);
-    _setPropertyIfPresent(_jsObj, 'tagLength', tagLength);
-    _setPropertyIfPresent(_jsObj, 'salt', salt);
-    _setPropertyIfPresent(_jsObj, 'info', info);
-    _setPropertyIfPresent(_jsObj, 'iterations', iterations);
-  }
+  final String? name;
+  final int? modulusLength;
+  final Uint8List? publicExponent;
+  final String? hash;
+  final int? saltLength;
+  final TypedData? label;
+  final String? namedCurve;
+  final JSCryptoKey? public;
+  final TypedData? counter;
+  final int? length;
+  final TypedData? iv;
+  final TypedData? additionalData;
+  final int? tagLength;
+  final TypedData? salt;
+  final TypedData? info;
+  final int? iterations;
 
   Algorithm update({
     String? name,
@@ -215,7 +274,7 @@ class Algorithm {
     int? saltLength,
     TypedData? label,
     String? namedCurve,
-    CryptoKey? public,
+    JSCryptoKey? public,
     TypedData? counter,
     int? length,
     TypedData? iv,
@@ -245,242 +304,377 @@ class Algorithm {
       );
 }
 
-/// Create [JsonWebKey] from [jsObj].
-JsonWebKey _jsonWebKeyFromJsObj(Object jsObj) {
-  final jwk = JsonWebKey();
-
-  _getPropertyIfPresent(jsObj, 'kty', (String v) => jwk.kty = v);
-  _getPropertyIfPresent(jsObj, 'use', (String v) => jwk.use = v);
-  _getPropertyIfPresent(
-    jsObj,
-    'key_ops',
-    (Object v) => jwk.key_ops = _jsArrayToListString(v),
-  );
-  _getPropertyIfPresent(jsObj, 'alg', (String v) => jwk.alg = v);
-  _getPropertyIfPresent(jsObj, 'ext', (bool v) => jwk.ext = v);
-  _getPropertyIfPresent(jsObj, 'crv', (String v) => jwk.crv = v);
-  _getPropertyIfPresent(jsObj, 'x', (String v) => jwk.x = v);
-  _getPropertyIfPresent(jsObj, 'y', (String v) => jwk.y = v);
-  _getPropertyIfPresent(jsObj, 'd', (String v) => jwk.d = v);
-  _getPropertyIfPresent(jsObj, 'n', (String v) => jwk.n = v);
-  _getPropertyIfPresent(jsObj, 'e', (String v) => jwk.e = v);
-  _getPropertyIfPresent(jsObj, 'p', (String v) => jwk.p = v);
-  _getPropertyIfPresent(jsObj, 'q', (String v) => jwk.q = v);
-  _getPropertyIfPresent(jsObj, 'dp', (String v) => jwk.dp = v);
-  _getPropertyIfPresent(jsObj, 'dq', (String v) => jwk.dq = v);
-  _getPropertyIfPresent(jsObj, 'qi', (String v) => jwk.qi = v);
-  if (hasProperty(jsObj, 'oth')) {
-    final oth = getProperty(jsObj, 'oth');
-    final N = getProperty(oth, 'length');
-    jwk.oth = List.generate(N, (i) {
-      final jsObj = getProperty(oth, i);
-      return RsaOtherPrimesInfo(
-        r: getProperty(jsObj, 'r'),
-        d: getProperty(jsObj, 'd'),
-        t: getProperty(jsObj, 't'),
-      );
-    });
-  }
-  _getPropertyIfPresent(jsObj, 'k', (String v) => jwk.k = v);
-
-  return jwk;
+extension type JSJsonWebKey(JSObject _) implements JSObject {
+  external String? get kty;
+  external String? get use;
+  @JS('key_ops')
+  external JSArray<JSString>? get keyOps;
+  external String? get alg;
+  external bool? get ext;
+  external String? get crv;
+  external String? get x;
+  external String? get y;
+  external String? get d;
+  external String? get n;
+  external String? get e;
+  external String? get p;
+  external String? get q;
+  external String? get dp;
+  external String? get dq;
+  external String? get qi;
+  external JSArray<JSRsaOtherPrimesInfo>? get oth;
+  external String? get k;
 }
 
-/// Convert [JsonWebKey] to a javascript object.
-Object _jsonWebKeyToJsObj(JsonWebKey jwk) {
-  final jsObj = newObject();
-
-  _setPropertyIfPresent(jsObj, 'kty', jwk.kty);
-  _setPropertyIfPresent(jsObj, 'use', jwk.use);
-  _setPropertyIfPresent(jsObj, 'key_ops', jwk.key_ops);
-  _setPropertyIfPresent(jsObj, 'alg', jwk.alg);
-  _setPropertyIfPresent(jsObj, 'ext', jwk.ext);
-  _setPropertyIfPresent(jsObj, 'crv', jwk.crv);
-  _setPropertyIfPresent(jsObj, 'x', jwk.x);
-  _setPropertyIfPresent(jsObj, 'y', jwk.y);
-  _setPropertyIfPresent(jsObj, 'd', jwk.d);
-  _setPropertyIfPresent(jsObj, 'n', jwk.n);
-  _setPropertyIfPresent(jsObj, 'e', jwk.e);
-  _setPropertyIfPresent(jsObj, 'p', jwk.p);
-  _setPropertyIfPresent(jsObj, 'q', jwk.q);
-  _setPropertyIfPresent(jsObj, 'dp', jwk.dp);
-  _setPropertyIfPresent(jsObj, 'dq', jwk.dq);
-  _setPropertyIfPresent(jsObj, 'qi', jwk.qi);
-  final oth = jwk.oth;
-  if (oth != null) {
-    final jsArray = callConstructor(_array, [
-      oth.map((info) {
-        final jsObj = newObject();
-        setProperty(jsObj, 'r', info.r);
-        setProperty(jsObj, 'd', info.d);
-        setProperty(jsObj, 't', info.t);
-        return jsObj;
-      }).toList(),
-    ]);
-    setProperty(jsObj, 'oth', jsArray);
-  }
-  _setPropertyIfPresent(jsObj, 'k', jwk.k);
-
-  return jsObj;
+extension type JSRsaOtherPrimesInfo(JSObject _) implements JSObject {
+  external String get r;
+  external String get d;
+  external String get t;
 }
 
-/// Convert a [list] a Javascript object.
-Object _stringListToJsObj(List<String> list) => callConstructor(
-      _array,
-      list,
+TypedData getRandomValues(TypedData array) {
+  if (array is Uint8List) {
+    window.crypto.getRandomValues(array.toJS);
+    return array;
+  } else if (array is Uint16List) {
+    window.crypto.getRandomValues(array.toJS);
+    return array;
+  } else if (array is Uint32List) {
+    window.crypto.getRandomValues(array.toJS);
+    return array;
+  } else if (array is Int8List) {
+    window.crypto.getRandomValues(array.toJS);
+    return array;
+  } else if (array is Int16List) {
+    window.crypto.getRandomValues(array.toJS);
+    return array;
+  } else if (array is Int32List) {
+    window.crypto.getRandomValues(array.toJS);
+    return array;
+  } else {
+    throw ArgumentError.value(
+      array,
+      'array',
+      'Unsupported TypedData type',
     );
-
-/// Convert [jsArray] to [List<String>].
-List<String> _jsArrayToListString(Object jsArray) {
-  final N = getProperty(jsArray, 'length');
-  return List.generate(N, (i) => getProperty(jsArray, i));
+  }
 }
-
-TypedData getRandomValues(TypedData array) =>
-    callMethod(_crypto, 'getRandomValues', [array]);
 
 Future<ByteBuffer> decrypt(
   Algorithm algorithm,
-  CryptoKey key,
-  TypedData data,
-) =>
-    _wrapDomException(() => promiseToFuture(callMethod(_subtle, 'decrypt', [
-          algorithm._jsObj,
-          key._jsObj,
-          data,
-        ])));
+  JSCryptoKey key,
+  Uint8List data,
+) async {
+  final value = await window.crypto.subtle
+      .decrypt(
+        algorithm.toJS,
+        key,
+        data.toJS,
+      )
+      .toDart;
+
+  return value.toDart;
+}
 
 Future<ByteBuffer> encrypt(
   Algorithm algorithm,
-  CryptoKey key,
-  TypedData data,
-) =>
-    _wrapDomException(() => promiseToFuture(callMethod(_subtle, 'encrypt', [
-          algorithm._jsObj,
-          key._jsObj,
-          data,
-        ])));
+  JSCryptoKey key,
+  Uint8List data,
+) async {
+  final value = await window.crypto.subtle
+      .encrypt(
+        algorithm.toJS,
+        key,
+        data.toJS,
+      )
+      .toDart;
+
+  return value.toDart;
+}
 
 Future<ByteBuffer> exportKey(
   String format,
-  CryptoKey key,
-) =>
-    _wrapDomException(() => promiseToFuture(callMethod(_subtle, 'exportKey', [
-          format,
-          key._jsObj,
-        ])));
+  JSCryptoKey key,
+) async {
+  final value = await window.crypto.subtle
+      .exportKey(
+        format,
+        key,
+      )
+      .toDart;
+
+  return value.toDart;
+}
 
 Future<JsonWebKey> exportJsonWebKey(
   String format,
-  CryptoKey key,
-) async =>
-    _jsonWebKeyFromJsObj(await _wrapDomException(
-      () => promiseToFuture(callMethod(_subtle, 'exportKey', [
+  JSCryptoKey key,
+) async {
+  final value = await window.crypto.subtle
+      .exportJsonWebKey(
         format,
-        key._jsObj,
-      ])),
-    ));
+        key,
+      )
+      .toDart;
 
-Future<CryptoKey> generateKey(
+  return value.toDart;
+}
+
+Future<JSCryptoKey> generateKey(
   Algorithm algorithm,
   bool extractable,
   List<String> usages,
-) async =>
-    CryptoKey(await _wrapDomException(
-      () => promiseToFuture(callMethod(_subtle, 'generateKey', [
-        algorithm._jsObj,
+) async {
+  final value = await window.crypto.subtle
+      .generateCryptoKey(
+        algorithm.toJS,
         extractable,
-        _stringListToJsObj(usages),
-      ])),
-    ));
+        usages.toJS,
+      )
+      .toDart;
 
-Future<CryptoKeyPair> generateKeyPair(
+  return value;
+}
+
+Future<JSCryptoKeyPair> generateKeyPair(
   Algorithm algorithm,
   bool extractable,
   List<String> usages,
-) async =>
-    CryptoKeyPair(await _wrapDomException(
-      () => promiseToFuture(callMethod(_subtle, 'generateKey', [
-        algorithm._jsObj,
+) async {
+  final value = await window.crypto.subtle
+      .generateCryptoKeyPair(
+        algorithm.toJS,
         extractable,
-        _stringListToJsObj(usages),
-      ])),
-    ));
+        usages.toJS,
+      )
+      .toDart;
 
-Future<ByteBuffer> digest(String algorithm, TypedData data) =>
-    _wrapDomException(() => promiseToFuture(callMethod(_subtle, 'digest', [
-          algorithm,
-          data,
-        ])));
+  return value;
+}
 
-Future<CryptoKey> importKey(
+Future<ByteBuffer> digest(
+  String algorithm,
+  Uint8List data,
+) async {
+  final value = await window.crypto.subtle
+      .digest(
+        algorithm,
+        data.toJS,
+      )
+      .toDart;
+
+  return value.toDart;
+}
+
+Future<JSCryptoKey> importKey(
   String format,
-  TypedData keyData,
+  Uint8List keyData,
   Algorithm algorithm,
   bool extractable,
   List<String> usages,
-) async =>
-    CryptoKey(await _wrapDomException(
-      () => promiseToFuture(callMethod(_subtle, 'importKey', [
+) async {
+  final value = await window.crypto.subtle
+      .importKey(
         format,
-        keyData,
-        algorithm._jsObj,
+        keyData.toJS,
+        algorithm.toJS,
         extractable,
-        _stringListToJsObj(usages),
-      ])),
-    ));
+        usages.toJS,
+      )
+      .toDart;
 
-Future<CryptoKey> importJsonWebKey(
+  return value;
+}
+
+Future<JSCryptoKey> importJsonWebKey(
   String format,
   JsonWebKey jwk,
   Algorithm algorithm,
   bool extractable,
   List<String> usages,
-) async =>
-    CryptoKey(await _wrapDomException(
-      () => promiseToFuture(callMethod(_subtle, 'importKey', [
+) async {
+  final value = await window.crypto.subtle
+      .importJsonWebKey(
         format,
-        _jsonWebKeyToJsObj(jwk),
-        algorithm._jsObj,
+        jwk.toJS,
+        algorithm.toJS,
         extractable,
-        _stringListToJsObj(usages),
-      ])),
-    ));
+        usages.toJS,
+      )
+      .toDart;
+
+  return value;
+}
 
 Future<ByteBuffer> sign(
   Algorithm algorithm,
-  CryptoKey key,
-  TypedData data,
-) =>
-    _wrapDomException(() => promiseToFuture(callMethod(_subtle, 'sign', [
-          algorithm._jsObj,
-          key._jsObj,
-          data,
-        ])));
+  JSCryptoKey key,
+  Uint8List data,
+) async {
+  final value = await window.crypto.subtle
+      .sign(
+        algorithm.toJS,
+        key,
+        data.toJS,
+      )
+      .toDart;
+
+  return value.toDart;
+}
 
 Future<bool> verify(
   Algorithm algorithm,
-  CryptoKey key,
-  TypedData signature,
-  TypedData data,
-) =>
-    _wrapDomException(() => promiseToFuture(callMethod(_subtle, 'verify', [
-          algorithm._jsObj,
-          key._jsObj,
-          signature,
-          data,
-        ])));
+  JSCryptoKey key,
+  Uint8List signature,
+  Uint8List data,
+) async {
+  final value = await window.crypto.subtle
+      .verify(
+        algorithm.toJS,
+        key,
+        signature.toJS,
+        data.toJS,
+      )
+      .toDart;
+
+  return value.toDart;
+}
 
 Future<ByteBuffer> deriveBits(
   Algorithm algorithm,
-  CryptoKey key,
+  JSCryptoKey key,
   int length,
-) =>
-    _wrapDomException(() => promiseToFuture(callMethod(_subtle, 'deriveBits', [
-          algorithm._jsObj,
-          key._jsObj,
-          length,
-        ])));
+) async {
+  final value = await window.crypto.subtle
+      .deriveBits(
+        algorithm.toJS,
+        key,
+        length,
+      )
+      .toDart;
+
+  return value.toDart;
+}
+
+extension ListExtension on List<String> {
+  @visibleForTesting
+  JSArray<JSString> get toJS => <JSString>[
+        for (final value in this) value.toJS,
+      ].toJS;
+}
+
+extension AlgorithmExtension on Algorithm {
+  /// Create JSON from [Algorithm].
+  /// To avoid null properties for keys, eliminate keys whose value is null.
+  @visibleForTesting
+  JSAny get toJS {
+    final json = <String, Object>{};
+    final name_ = name;
+    if (name_ != null) {
+      json['name'] = name_;
+    }
+    final modulusLength_ = modulusLength;
+    if (modulusLength_ != null) {
+      json['modulusLength'] = modulusLength_;
+    }
+    final publicExponent_ = publicExponent;
+    if (publicExponent_ != null) {
+      json['publicExponent'] = publicExponent_;
+    }
+    final hash_ = hash;
+    if (hash_ != null) {
+      json['hash'] = hash_;
+    }
+    final saltLength_ = saltLength;
+    if (saltLength_ != null) {
+      json['saltLength'] = saltLength_;
+    }
+    final label_ = label;
+    if (label_ != null) {
+      json['label'] = label_.buffer;
+    }
+    final namedCurve_ = namedCurve;
+    if (namedCurve_ != null) {
+      json['namedCurve'] = namedCurve_;
+    }
+    final public_ = public;
+    if (public_ != null) {
+      json['public'] = public_;
+    }
+    final counter_ = counter;
+    if (counter_ != null) {
+      json['counter'] = counter_;
+    }
+    final length_ = length;
+    if (length_ != null) {
+      json['length'] = length_;
+    }
+    final iv_ = iv;
+    if (iv_ != null) {
+      json['iv'] = iv_.buffer;
+    }
+    final additionalData_ = additionalData;
+    if (additionalData_ != null) {
+      json['additionalData'] = additionalData_.buffer;
+    }
+    final tagLength_ = tagLength;
+    if (tagLength_ != null) {
+      json['tagLength'] = tagLength_;
+    }
+    final salt_ = salt;
+    if (salt_ != null) {
+      json['salt'] = salt_.buffer;
+    }
+    final info_ = info;
+    if (info_ != null) {
+      json['info'] = info_.buffer;
+    }
+    final iterations_ = iterations;
+    if (iterations_ != null) {
+      json['iterations'] = iterations_;
+    }
+
+    return json.jsify()!;
+  }
+}
+
+extension on JsonWebKey {
+  /// Create JSON from [JsonWebKey].
+  /// Convert the map created by JsonWebKey.toJson(),
+  /// to avoid null properties for keys.
+  JSAny get toJS => toJson().jsify()!;
+}
+
+extension on JSJsonWebKey {
+  JsonWebKey get toDart => JsonWebKey(
+        kty: kty,
+        use: use,
+        key_ops: keyOps?.toDart.map((e) => e.toDart).toList(),
+        alg: alg,
+        ext: ext,
+        crv: crv,
+        x: x,
+        y: y,
+        d: d,
+        n: n,
+        e: e,
+        p: p,
+        q: q,
+        dp: dp,
+        dq: dq,
+        qi: qi,
+        oth: oth?.toDart
+            .map(
+              (e) => RsaOtherPrimesInfo(
+                r: e.r,
+                d: e.d,
+                t: e.t,
+              ),
+            )
+            .toList(),
+        k: k,
+      );
+}
 
 // TODO: crypto.subtle.unwrapKey
 // TODO: crypto.subtle.wrapKey

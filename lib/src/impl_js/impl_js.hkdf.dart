@@ -22,7 +22,7 @@ Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
   return _HkdfSecretKey(await _importKey(
     'raw',
     keyData,
-    subtle.Algorithm(name: _hkdfAlgorithmName),
+    const subtle.Algorithm(name: _hkdfAlgorithmName),
     _usagesDeriveBits,
     'secret',
     // Unlike all other key types it makes no sense to HkdfSecretKey to be
@@ -32,7 +32,7 @@ Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
 }
 
 class _HkdfSecretKey implements HkdfSecretKey {
-  final subtle.CryptoKey _key;
+  final subtle.JSCryptoKey _key;
   _HkdfSecretKey(this._key);
 
   @override
