@@ -61,6 +61,19 @@ void main() {
       );
     });
 
+    test(testOn: 'safari', 'Uint8List: too long', () {
+      expect(
+        () => fillRandomBytes(Uint8List(1000000)),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'The quota has been exceeded.',
+          ),
+        ),
+      );
+    });
+
     test('Uint64List: not supported type', () {
       expect(
         () => fillRandomBytes(Uint64List(32)),
@@ -127,6 +140,25 @@ void main() {
       );
     });
 
+    test(testOn: 'safari', 'getRandomValues: too long', () {
+      expect(
+        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
+        throwsA(
+          isA<subtle.JSDomException>()
+              .having(
+                (e) => e.name,
+                'name',
+                'QuotaExceededError',
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                'The quota has been exceeded.',
+              ),
+        ),
+      );
+    });
+
     test(testOn: 'chrome', 'getRandomValues: not supported type', () {
       expect(
         () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
@@ -160,6 +192,25 @@ void main() {
                 (e) => e.message,
                 'message',
                 'The type of an object is incompatible with the expected type of the parameter associated to the object',
+              ),
+        ),
+      );
+    });
+
+    test(testOn: 'safari', 'getRandomValues: not supported type', () {
+      expect(
+        () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
+        throwsA(
+          isA<subtle.JSDomException>()
+              .having(
+                (e) => e.name,
+                'name',
+                'TypeMismatchError',
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                'The type of an object was incompatible with the expected type of the parameter associated to the object.',
               ),
         ),
       );
@@ -254,6 +305,34 @@ void main() {
       );
     });
 
+    test(testOn: 'safari', 'generateCryptoKey: invalid keyUsages', () {
+      expect(
+        () async => await subtle.window.crypto.subtle
+            .generateCryptoKey(
+              const subtle.Algorithm(
+                name: 'AES-GCM',
+                length: 256,
+              ).toJS,
+              false,
+              <String>[].toJS,
+            )
+            .toDart,
+        throwsA(
+          isA<subtle.JSDomException>()
+              .having(
+                (e) => e.name,
+                'name',
+                'SyntaxError',
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                'A required parameter was missing or out-of-range',
+              ),
+        ),
+      );
+    });
+
     test(testOn: 'chrome', 'generateCryptoKey: invalid algorithm', () {
       expect(
         () async => await subtle.window.crypto.subtle
@@ -299,6 +378,157 @@ void main() {
                 (e) => e.message,
                 'message',
                 'An invalid or illegal string was specified',
+              ),
+        ),
+      );
+    });
+
+    test(testOn: 'safari', 'generateCryptoKey: invalid algorithm', () {
+      expect(
+        () async => await subtle.window.crypto.subtle
+            .generateCryptoKey(
+              const subtle.Algorithm().toJS,
+              false,
+              ['encrypt', 'decrypt'].toJS,
+            )
+            .toDart,
+        throwsA(
+          isA<subtle.JSDomException>()
+              .having(
+                (e) => e.name,
+                'name',
+                'TypeError',
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                'Member CryptoAlgorithmParameters.name is required and must be an instance of DOMString',
+              ),
+        ),
+      );
+    });
+
+    test('generateKeyPair: e65537', () async {
+      expect(
+        await subtle.window.crypto.subtle
+            .generateCryptoKeyPair(
+              subtle.Algorithm(
+                name: 'RSA-OAEP',
+                modulusLength: 4096,
+                publicExponent: Uint8List.fromList([0x01, 0x00, 0x01]),
+                hash: 'SHA-256',
+              ).toJS,
+              false,
+              ['encrypt', 'decrypt'].toJS,
+            )
+            .toDart,
+        isA<subtle.JSCryptoKeyPair>()
+            .having(
+              (key) => key.publicKey.type,
+              'publicKey.type',
+              'public',
+            )
+            .having(
+              (key) => key.publicKey.extractable,
+              'publicKey.extractable',
+              true,
+            )
+            .having(
+              (key) => key.publicKey.usages,
+              'publicKey.usages',
+              ['encrypt'],
+            )
+            .having(
+              (key) => key.privateKey.type,
+              'privateKey.type',
+              'private',
+            )
+            .having(
+              (key) => key.privateKey.extractable,
+              'privateKey.extractable',
+              false,
+            )
+            .having(
+              (key) => key.privateKey.usages,
+              'privateKey.usages',
+              ['decrypt'],
+            ),
+      );
+    });
+
+    test(testOn: 'chrome || firefox', 'generateKeyPair: e3', () async {
+      expect(
+        await subtle.window.crypto.subtle
+            .generateCryptoKeyPair(
+              subtle.Algorithm(
+                name: 'RSA-OAEP',
+                modulusLength: 4096,
+                publicExponent: Uint8List.fromList([0x03]),
+                hash: 'SHA-256',
+              ).toJS,
+              false,
+              ['encrypt', 'decrypt'].toJS,
+            )
+            .toDart,
+        isA<subtle.JSCryptoKeyPair>()
+            .having(
+              (key) => key.publicKey.type,
+              'publicKey.type',
+              'public',
+            )
+            .having(
+              (key) => key.publicKey.extractable,
+              'publicKey.extractable',
+              true,
+            )
+            .having(
+              (key) => key.publicKey.usages,
+              'publicKey.usages',
+              ['encrypt'],
+            )
+            .having(
+              (key) => key.privateKey.type,
+              'privateKey.type',
+              'private',
+            )
+            .having(
+              (key) => key.privateKey.extractable,
+              'privateKey.extractable',
+              false,
+            )
+            .having(
+              (key) => key.privateKey.usages,
+              'privateKey.usages',
+              ['decrypt'],
+            ),
+      );
+    });
+
+    test(testOn: 'safari', 'generateKeyPair: e3', () {
+      expect(
+        () async => await subtle.window.crypto.subtle
+            .generateCryptoKeyPair(
+              subtle.Algorithm(
+                name: 'RSA-OAEP',
+                modulusLength: 4096,
+                publicExponent: Uint8List.fromList([0x03]),
+                hash: 'SHA-256',
+              ).toJS,
+              false,
+              ['encrypt', 'decrypt'].toJS,
+            )
+            .toDart,
+        throwsA(
+          isA<subtle.JSDomException>()
+              .having(
+                (e) => e.name,
+                'name',
+                'OperationError',
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                'The operation failed for an operation-specific reason',
               ),
         ),
       );
