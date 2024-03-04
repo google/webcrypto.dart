@@ -149,7 +149,8 @@ void main() {
       );
     });
 
-    test('generateCryptoKey: invalid algorithm', () {
+    test(testOn: 'chrome || safari', 'generateCryptoKey: invalid algorithm',
+        () {
       expect(
         () async => await subtle.window.crypto.subtle
             .generateCryptoKey(
@@ -163,6 +164,25 @@ void main() {
             (e) => e.name,
             'name',
             'TypeError',
+          ),
+        ),
+      );
+    });
+
+    test(testOn: 'firefox', 'generateCryptoKey: invalid algorithm', () {
+      expect(
+        () async => await subtle.window.crypto.subtle
+            .generateCryptoKey(
+              const subtle.Algorithm().toJS,
+              false,
+              ['encrypt', 'decrypt'].toJS,
+            )
+            .toDart,
+        throwsA(
+          isA<subtle.JSDomException>().having(
+            (e) => e.name,
+            'name',
+            'SyntaxError',
           ),
         ),
       );
