@@ -56,7 +56,7 @@ extension RunTests on List<({String name, Future<void> Function() test})> {
       } catch (e, st) {
         log('FAILED: $name\n$e\n$st\n--------------------------------------');
         pass = false;
-        failed = false;
+        failed = true;
       }
       if (pass) {
         log('PASS: $name');
