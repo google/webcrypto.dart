@@ -163,7 +163,9 @@ void main() {
           isA<subtle.JSDomException>().having(
             (e) => e.name,
             'name',
-            'TypeError',
+            // Chrome / Safari throw TypeError
+            // Firefox throws SyntaxError
+            anyOf('TypeError', 'SyntaxError'),
           ),
         ),
       );
