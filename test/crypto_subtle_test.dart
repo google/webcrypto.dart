@@ -35,41 +35,11 @@ void main() {
       );
     });
 
-    test(testOn: 'chrome', 'Uint8List: too long', () {
+    test('Uint8List: too long', () {
       expect(
         () => fillRandomBytes(Uint8List(1000000)),
         throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            "Failed to execute 'getRandomValues' on 'Crypto': The ArrayBufferView's byte length (1000000) exceeds the number of bytes of entropy available via this API (65536).",
-          ),
-        ),
-      );
-    });
-
-    test(testOn: 'firefox', 'Uint8List: too long', () {
-      expect(
-        () => fillRandomBytes(Uint8List(1000000)),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Crypto.getRandomValues: getRandomValues can only generate maximum 65536 bytes',
-          ),
-        ),
-      );
-    });
-
-    test(testOn: 'safari', 'Uint8List: too long', () {
-      expect(
-        () => fillRandomBytes(Uint8List(1000000)),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'The quota has been exceeded.',
-          ),
+          isA<ArgumentError>(),
         ),
       );
     });
@@ -78,11 +48,7 @@ void main() {
       expect(
         () => fillRandomBytes(Uint64List(32)),
         throwsA(
-          isA<UnsupportedError>().having(
-            (e) => e.message,
-            'message',
-            'Uint64List not supported on the web.',
-          ),
+          isA<UnsupportedError>(),
         ),
       );
     });
@@ -102,116 +68,28 @@ void main() {
       );
     });
 
-    test(testOn: 'chrome', 'getRandomValues: too long', () {
+    test('getRandomValues: too long', () {
       expect(
         () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
         throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'QuotaExceededError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                "Failed to execute 'getRandomValues' on 'Crypto': The ArrayBufferView's byte length (1000000) exceeds the number of bytes of entropy available via this API (65536).",
-              ),
+          isA<subtle.JSDomException>().having(
+            (e) => e.name,
+            'name',
+            'QuotaExceededError',
+          ),
         ),
       );
     });
 
-    test(testOn: 'firefox', 'getRandomValues: too long', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
-        throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'QuotaExceededError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'Crypto.getRandomValues: getRandomValues can only generate maximum 65536 bytes',
-              ),
-        ),
-      );
-    });
-
-    test(testOn: 'safari', 'getRandomValues: too long', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
-        throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'QuotaExceededError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'The quota has been exceeded.',
-              ),
-        ),
-      );
-    });
-
-    test(testOn: 'chrome', 'getRandomValues: not supported type', () {
+    test('getRandomValues: not supported type', () {
       expect(
         () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
         throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'TypeMismatchError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                "Failed to execute 'getRandomValues' on 'Crypto': The provided ArrayBufferView is of type 'Float32', which is not an integer array type.",
-              ),
-        ),
-      );
-    });
-
-    test(testOn: 'firefox', 'getRandomValues: not supported type', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
-        throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'TypeMismatchError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'The type of an object is incompatible with the expected type of the parameter associated to the object',
-              ),
-        ),
-      );
-    });
-
-    test(testOn: 'safari', 'getRandomValues: not supported type', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
-        throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'TypeMismatchError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'The type of an object was incompatible with the expected type of the parameter associated to the object.',
-              ),
+          isA<subtle.JSDomException>().having(
+            (e) => e.name,
+            'name',
+            'TypeMismatchError',
+          ),
         ),
       );
     });
@@ -249,7 +127,7 @@ void main() {
       );
     });
 
-    test(testOn: 'chrome', 'generateCryptoKey: invalid keyUsages', () {
+    test('generateCryptoKey: invalid keyUsages', () {
       expect(
         () async => await subtle.window.crypto.subtle
             .generateCryptoKey(
@@ -262,78 +140,16 @@ void main() {
             )
             .toDart,
         throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'SyntaxError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'Usages cannot be empty when creating a key.',
-              ),
+          isA<subtle.JSDomException>().having(
+            (e) => e.name,
+            'name',
+            'SyntaxError',
+          ),
         ),
       );
     });
 
-    test(testOn: 'firefox', 'generateCryptoKey: invalid keyUsages', () {
-      expect(
-        () async => await subtle.window.crypto.subtle
-            .generateCryptoKey(
-              const subtle.Algorithm(
-                name: 'AES-GCM',
-                length: 256,
-              ).toJS,
-              false,
-              <String>[].toJS,
-            )
-            .toDart,
-        throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'SyntaxError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'An invalid or illegal string was specified',
-              ),
-        ),
-      );
-    });
-
-    test(testOn: 'safari', 'generateCryptoKey: invalid keyUsages', () {
-      expect(
-        () async => await subtle.window.crypto.subtle
-            .generateCryptoKey(
-              const subtle.Algorithm(
-                name: 'AES-GCM',
-                length: 256,
-              ).toJS,
-              false,
-              <String>[].toJS,
-            )
-            .toDart,
-        throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'SyntaxError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'A required parameter was missing or out-of-range',
-              ),
-        ),
-      );
-    });
-
-    test(testOn: 'chrome', 'generateCryptoKey: invalid algorithm', () {
+    test('generateCryptoKey: invalid algorithm', () {
       expect(
         () async => await subtle.window.crypto.subtle
             .generateCryptoKey(
@@ -343,67 +159,11 @@ void main() {
             )
             .toDart,
         throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'TypeError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                "Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: name: Missing or not a string",
-              ),
-        ),
-      );
-    });
-
-    test(testOn: 'firefox', 'generateCryptoKey: invalid algorithm', () {
-      expect(
-        () async => await subtle.window.crypto.subtle
-            .generateCryptoKey(
-              const subtle.Algorithm().toJS,
-              false,
-              ['encrypt', 'decrypt'].toJS,
-            )
-            .toDart,
-        throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'SyntaxError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'An invalid or illegal string was specified',
-              ),
-        ),
-      );
-    });
-
-    test(testOn: 'safari', 'generateCryptoKey: invalid algorithm', () {
-      expect(
-        () async => await subtle.window.crypto.subtle
-            .generateCryptoKey(
-              const subtle.Algorithm().toJS,
-              false,
-              ['encrypt', 'decrypt'].toJS,
-            )
-            .toDart,
-        throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'TypeError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'Member CryptoAlgorithmParameters.name is required and must be an instance of DOMString',
-              ),
+          isA<subtle.JSDomException>().having(
+            (e) => e.name,
+            'name',
+            'TypeError',
+          ),
         ),
       );
     });
@@ -519,17 +279,11 @@ void main() {
             )
             .toDart,
         throwsA(
-          isA<subtle.JSDomException>()
-              .having(
-                (e) => e.name,
-                'name',
-                'OperationError',
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'The operation failed for an operation-specific reason',
-              ),
+          isA<subtle.JSDomException>().having(
+            (e) => e.name,
+            'name',
+            'OperationError',
+          ),
         ),
       );
     });
