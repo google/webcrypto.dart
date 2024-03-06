@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-part of impl_ffi;
+part of 'impl_ffi.dart';
 
 /// Wrapper around [EVP_PKEY] which attaches finalizer and ensure that the
 /// [ffi.Finalizable] is kept in scope while the [EVP_PKEY] is used.

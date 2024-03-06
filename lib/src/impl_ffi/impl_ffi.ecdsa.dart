@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-part of impl_ffi;
+part of 'impl_ffi.dart';
 
 /// Get valid value for `jwk.alg` property given an [EllipticCurve] for ECDSA.
 String _ecdsaCurveToJwkAlg(EllipticCurve curve) {
@@ -116,11 +116,11 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
     // Dump R and S to return value.
     final out = scope<ffi.Uint8>(N * 2);
     _checkOpIsOne(
-      ssl.BN_bn2bin_padded(out.elementAt(0), N, R.value),
+      ssl.BN_bn2bin_padded(out + 0, N, R.value),
       fallback: 'internal error formatting R in signature',
     );
     _checkOpIsOne(
-      ssl.BN_bn2bin_padded(out.elementAt(N), N, S.value),
+      ssl.BN_bn2bin_padded(out + N, N, S.value),
       fallback: 'internal error formatting S in signature',
     );
     return out.copy(N * 2);
@@ -163,11 +163,11 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
 
     final psig = scope.dataAsPointer<ffi.Uint8>(signature);
     _checkOp(
-      ssl.BN_bin2bn(psig.elementAt(0), N, R.value).address != 0,
+      ssl.BN_bin2bn(psig + 0, N, R.value).address != 0,
       fallback: 'allocation failure',
     );
     _checkOp(
-      ssl.BN_bin2bn(psig.elementAt(N), N, S.value).address != 0,
+      ssl.BN_bin2bn(psig + N, N, S.value).address != 0,
       fallback: 'allocation failure',
     );
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of webcrypto;
+part of 'webcrypto.dart';
 
 /// A cryptographic hash algorithm implementation.
 ///

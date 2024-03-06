@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-part of impl_ffi;
+part of 'impl_ffi.dart';
 
 /// Convert [data] to [Uint8List] and zero to [lengthInBits] if given.
 Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int? lengthInBits]) {

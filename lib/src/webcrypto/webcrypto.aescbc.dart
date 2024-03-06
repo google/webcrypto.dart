@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of webcrypto;
+part of 'webcrypto.dart';
 
 /// AES secret key for symmetric encryption and decryption using AES in
 /// _Cipher Block Chaining mode_ (CBC-mode), as described in

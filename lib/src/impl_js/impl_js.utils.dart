@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of impl_js;
+part of 'impl_js.dart';
 
 /// Convert [Stream<List<int>>] to [Uint8List].
 Future<Uint8List> _bufferStream(Stream<List<int>> data) async {

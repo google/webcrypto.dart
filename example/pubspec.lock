@@ -490,7 +490,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.5.4"
+    version: "0.5.5"
   webdriver:
     dependency: transitive
     description:
