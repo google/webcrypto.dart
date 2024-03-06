@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of impl_ffi;
+part of 'impl_ffi.dart';
 
 _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
   return _Scope.sync((scope) {

@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-part of impl_ffi;
+part of 'impl_ffi.dart';
 
 Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async =>
     _HkdfSecretKey(Uint8List.fromList(keyData));

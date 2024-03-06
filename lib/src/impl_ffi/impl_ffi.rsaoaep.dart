@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-part of impl_ffi;
+part of 'impl_ffi.dart';
 
 String _rsaOaepJwkAlgFromHash(_Hash hash) {
   if (hash == Hash.sha1) {
@@ -117,8 +117,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
     ffi.Pointer<ffi.Size>,
     ffi.Pointer<ffi.Uint8>,
     int,
-  )
-      encryptOrDecryptFn,
+  ) encryptOrDecryptFn,
   List<int> data, {
   List<int>? label,
 }) async {

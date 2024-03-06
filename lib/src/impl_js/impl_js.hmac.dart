@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-part of impl_js;
+part of 'impl_js.dart';
 
 const _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 

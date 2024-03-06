@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-part of impl_js;
+part of 'impl_js.dart';
 
 const _aesCtrAlgorithm = subtle.Algorithm(name: 'AES-CTR');
 

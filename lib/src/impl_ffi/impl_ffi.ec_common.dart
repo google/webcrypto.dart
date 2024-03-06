@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of impl_ffi;
+part of 'impl_ffi.dart';
 
 /// Get `ssl.NID_...` from BoringSSL matching the given [curve].
 int _ecCurveToNID(EllipticCurve curve) {

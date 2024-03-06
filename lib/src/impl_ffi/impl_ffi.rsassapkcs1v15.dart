@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-part of impl_ffi;
+part of 'impl_ffi.dart';
 
 String _rsassaPkcs1V15JwkAlgFromHash(_Hash hash) {
   if (hash == Hash.sha1) {
