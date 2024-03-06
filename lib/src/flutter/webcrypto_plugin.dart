@@ -38,7 +38,7 @@ class WebcryptoPlugin {
     final channel = MethodChannel(
       'plugins.flutter.io/webcrypto',
       const StandardMethodCodec(),
-      registrar.messenger,
+      registrar,
     );
     final instance = WebcryptoPlugin();
     channel.setMethodCallHandler(instance.handleMethodCall);
