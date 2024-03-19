@@ -40,7 +40,7 @@ jobs:
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
   macos:
     name: webcrypto on macOS desktop / Chrome
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -96,7 +96,7 @@ jobs:
       - run: flutter pub run test -p vm,chrome,firefox
   ios:
     name: webcrypto on iOS emulator (iPhone)
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -108,19 +108,15 @@ jobs:
           flutter config --no-analytics
       - uses: futureware-tech/simulator-action@v3
         with:
-          model: 'iPhone 12'
+          model: 'iPhone 15'
       - run: flutter pub get
       - run: flutter test integration_test/webcrypto_test.dart -d iphone
         working-directory: ./example
   android:
     name: webcrypto on Android emulator
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '11'
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
@@ -129,6 +125,11 @@ jobs:
         run: |
           flutter config --no-analytics
       - run: flutter pub get
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
       - name: Run flutter test integration_test/webcrypto_test.dart -d android
         uses: reactivecircus/android-emulator-runner@v2
         with:
