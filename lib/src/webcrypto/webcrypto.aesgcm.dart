@@ -106,7 +106,7 @@ abstract class AesGcmSecretKey {
     return impl.aesGcm_importJsonWebKey(jwk);
   }
 
-  /// Generate random [AesGcmSecretKey].
+  /// Generate a random [AesGcmSecretKey].
   ///
   /// The [length] is given in bits, and implies the AES variant to be used.
   /// The [length] can be either:
@@ -131,7 +131,7 @@ abstract class AesGcmSecretKey {
   ///
   /// This operation requires an _initalization vector_ [iv]. The [iv]
   /// needs not be secret, but it must unique for each invocation.
-  /// In particular the same (key, [iv]) pair must be used more than once.
+  /// In particular the same (key, [iv]) pair must **not** be used more than once.
   /// For detailed discussion of the initialization vector requirements for
   /// AES-GCM, see [Appendix A of NIST SP 800-38D][1].
   ///
@@ -221,6 +221,7 @@ abstract class AesGcmSecretKey {
 
   // TODO: Document this method, notice that [data] must be concatenation of
   //       ciphertext and authentication tag.
+  // TODO: Document what happens if the authenticity validation fails? Some Exception? 
   Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> iv, {
