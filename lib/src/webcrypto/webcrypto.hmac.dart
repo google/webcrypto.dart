@@ -25,7 +25,44 @@ part of 'webcrypto.dart';
 ///  * [JWK] format using [HmacSecretKey.importJsonWebKey].
 ///
 /// A random key can also be generated using [HmacSecretKey.generateKey].
-///
+/// 
+/// **Example**
+/// ```dart
+/// import 'package:webcrypto/webcrypto.dart';
+/// import 'dart:convert';
+/// 
+/// Future<void> main() async {
+///   // Generate a new key using SHA-256 and an optional length parameter.
+///   final key = await HmacSecretKey.generateKey(Hash.sha256, length: 256);
+///   
+///   // Sign the message.
+///   final signature = await key.signBytes(utf8.encode('Hello World!'));
+/// 
+///   // Verify the signature.
+///   final verified = await key.verifyBytes(signature, utf8.encode('Hello World!'));
+///   assert(verified == true, 'Signature should be valid');
+/// 
+///   // Sign a stream of data.
+///   final signatureStream = await key.signStream(Stream.fromIterable([
+///     utf8.encode('Hello '),
+///     utf8.encode('World!'),
+///   ]));
+/// 
+///   // Verify the signature.
+///   final verifiedStream = await key.verifyStream(signatureStream, Stream.fromIterable([
+///     utf8.encode('Hello '),
+///     utf8.encode('World!'),
+///   ]));
+///   assert(verifiedStream == true, 'Signature should be valid');
+/// 
+///   // Export the key as raw bytes.
+///   final rawKey = await key.exportRawKey();
+/// 
+///  // Export the key as a JSON Web Key.
+///  final jwk = await key.exportJsonWebKey();
+/// }
+/// ```
+/// 
 /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
 @sealed
 abstract class HmacSecretKey {
