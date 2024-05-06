@@ -28,7 +28,7 @@ TOOL_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.dirname(TOOL_PATH)
 
 BORINGSSL_REPOSITORY = 'https://boringssl.googlesource.com/boringssl'
-BORINGSSL_REVISION = 'a6d321b11fa80496b7c8ae6405468c212d4f5c87'
+BORINGSSL_REVISION = '3e89a7e8db8139db356b892ca9993172346c80cf'
 
 
 def cleanup():
