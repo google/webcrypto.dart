@@ -324,9 +324,8 @@ class BoringSsl {
   }
 
   late final _CBB_dataPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<CBB>)>>(
-      'CBB_data');
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<CBB>)>>('CBB_data');
   late final _CBB_data = _CBB_dataPtr.asFunction<
       ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<CBB>)>();
 
@@ -2706,9 +2705,8 @@ class BoringSsl {
   }
 
   late final _RAND_bytesPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Uint8>, ffi.Size)>>(
-      'RAND_bytes');
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<ffi.Uint8>, ffi.Size)>>('RAND_bytes');
   late final _RAND_bytes =
       _RAND_bytesPtr.asFunction<int Function(ffi.Pointer<ffi.Uint8>, int)>();
 
@@ -2993,6 +2991,7 @@ typedef BIGNUM = bignum_st;
 typedef BN_CTX = bignum_ctx;
 typedef BN_GENCB = bn_gencb_st;
 typedef BN_ULONG = ffi.Uint64;
+typedef DartBN_ULONG = int;
 typedef CBB = cbb_st;
 typedef CBS = cbs_st;
 
@@ -3004,6 +3003,7 @@ typedef CBS = cbs_st;
 /// do that. Instead we statically assert that the size and native alignment of
 /// a plain uint32_t and an _Atomic uint32_t are equal in refcount_c11.c.
 typedef CRYPTO_refcount_t = ffi.Uint32;
+typedef DartCRYPTO_refcount_t = int;
 typedef DH = dh_st;
 typedef DSA = dsa_st;
 typedef ECDSA_SIG = ecdsa_sig_st;
