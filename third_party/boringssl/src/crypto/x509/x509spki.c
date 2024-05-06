@@ -68,7 +68,7 @@ int NETSCAPE_SPKI_set_pubkey(NETSCAPE_SPKI *x, EVP_PKEY *pkey) {
   return (X509_PUBKEY_set(&(x->spkac->pubkey), pkey));
 }
 
-EVP_PKEY *NETSCAPE_SPKI_get_pubkey(NETSCAPE_SPKI *x) {
+EVP_PKEY *NETSCAPE_SPKI_get_pubkey(const NETSCAPE_SPKI *x) {
   if ((x == NULL) || (x->spkac == NULL)) {
     return NULL;
   }
@@ -77,7 +77,7 @@ EVP_PKEY *NETSCAPE_SPKI_get_pubkey(NETSCAPE_SPKI *x) {
 
 // Load a Netscape SPKI from a base64 encoded string
 
-NETSCAPE_SPKI *NETSCAPE_SPKI_b64_decode(const char *str, int len) {
+NETSCAPE_SPKI *NETSCAPE_SPKI_b64_decode(const char *str, ossl_ssize_t len) {
   unsigned char *spki_der;
   const unsigned char *p;
   size_t spki_len;
@@ -90,7 +90,6 @@ NETSCAPE_SPKI *NETSCAPE_SPKI_b64_decode(const char *str, int len) {
     return NULL;
   }
   if (!(spki_der = OPENSSL_malloc(spki_len))) {
-    OPENSSL_PUT_ERROR(X509, ERR_R_MALLOC_FAILURE);
     return NULL;
   }
   if (!EVP_DecodeBase64(spki_der, &spki_len, spki_len, (const uint8_t *)str,
@@ -119,13 +118,11 @@ char *NETSCAPE_SPKI_b64_encode(NETSCAPE_SPKI *spki) {
   }
   der_spki = OPENSSL_malloc(der_len);
   if (der_spki == NULL) {
-    OPENSSL_PUT_ERROR(X509, ERR_R_MALLOC_FAILURE);
     return NULL;
   }
   b64_str = OPENSSL_malloc(b64_len);
   if (b64_str == NULL) {
     OPENSSL_free(der_spki);
-    OPENSSL_PUT_ERROR(X509, ERR_R_MALLOC_FAILURE);
     return NULL;
   }
   p = der_spki;

@@ -1,4 +1,3 @@
-/* crypto/x509/x509_ext.c */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -60,7 +59,6 @@
 #include <openssl/obj.h>
 #include <openssl/stack.h>
 #include <openssl/x509.h>
-#include <openssl/x509v3.h>
 
 #include "internal.h"
 

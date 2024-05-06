@@ -47,6 +47,7 @@
  * ==================================================================== */
 
 #include <assert.h>
+#include <limits.h>
 #include <string.h>
 
 #include <openssl/aead.h>
@@ -289,8 +290,10 @@ static int aes_ofb_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in,
 ctr128_f aes_ctr_set_key(AES_KEY *aes_key, GCM128_KEY *gcm_key,
                          block128_f *out_block, const uint8_t *key,
                          size_t key_bytes) {
+  // This function assumes the key length was previously validated.
+  assert(key_bytes == 128 / 8 || key_bytes == 192 / 8 || key_bytes == 256 / 8);
   if (hwaes_capable()) {
-    aes_hw_set_encrypt_key(key, key_bytes * 8, aes_key);
+    aes_hw_set_encrypt_key(key, (int)key_bytes * 8, aes_key);
     if (gcm_key != NULL) {
       CRYPTO_gcm128_init_key(gcm_key, aes_key, aes_hw_encrypt, 1);
     }
@@ -301,7 +304,7 @@ ctr128_f aes_ctr_set_key(AES_KEY *aes_key, GCM128_KEY *gcm_key,
   }
 
   if (vpaes_capable()) {
-    vpaes_set_encrypt_key(key, key_bytes * 8, aes_key);
+    vpaes_set_encrypt_key(key, (int)key_bytes * 8, aes_key);
     if (out_block) {
       *out_block = vpaes_encrypt;
     }
@@ -318,7 +321,7 @@ ctr128_f aes_ctr_set_key(AES_KEY *aes_key, GCM128_KEY *gcm_key,
 #endif
   }
 
-  aes_nohw_set_encrypt_key(key, key_bytes * 8, aes_key);
+  aes_nohw_set_encrypt_key(key, (int)key_bytes * 8, aes_key);
   if (gcm_key != NULL) {
     CRYPTO_gcm128_init_key(gcm_key, aes_key, aes_nohw_encrypt, 0);
   }
@@ -405,22 +408,6 @@ static void aes_gcm_cleanup(EVP_CIPHER_CTX *c) {
   }
 }
 
-// increment counter (64-bit int) by 1
-static void ctr64_inc(uint8_t *counter) {
-  int n = 8;
-  uint8_t c;
-
-  do {
-    --n;
-    c = counter[n];
-    ++c;
-    counter[n] = c;
-    if (c) {
-      return;
-    }
-  } while (n);
-}
-
 static int aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr) {
   EVP_AES_GCM_CTX *gctx = aes_gcm_from_cipher_ctx(c);
   switch (type) {
@@ -451,6 +438,10 @@ static int aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr) {
       gctx->ivlen = arg;
       return 1;
 
+    case EVP_CTRL_GET_IVLEN:
+      *(int *)ptr = gctx->ivlen;
+      return 1;
+
     case EVP_CTRL_AEAD_SET_TAG:
       if (arg <= 0 || arg > 16 || c->encrypt) {
         return 0;
@@ -478,9 +469,7 @@ static int aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr) {
       if (arg < 4 || (gctx->ivlen - arg) < 8) {
         return 0;
       }
-      if (arg) {
-        OPENSSL_memcpy(gctx->iv, ptr, arg);
-      }
+      OPENSSL_memcpy(gctx->iv, ptr, arg);
       if (c->encrypt) {
         // |RAND_bytes| calls within the fipsmodule should be wrapped with state
         // lock functions to avoid updating the service indicator with the DRBG
@@ -492,7 +481,7 @@ static int aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr) {
       gctx->iv_gen = 1;
       return 1;
 
-    case EVP_CTRL_GCM_IV_GEN:
+    case EVP_CTRL_GCM_IV_GEN: {
       if (gctx->iv_gen == 0 || gctx->key_set == 0) {
         return 0;
       }
@@ -501,12 +490,13 @@ static int aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr) {
         arg = gctx->ivlen;
       }
       OPENSSL_memcpy(ptr, gctx->iv + gctx->ivlen - arg, arg);
-      // Invocation field will be at least 8 bytes in size and
-      // so no need to check wrap around or increment more than
-      // last 8 bytes.
-      ctr64_inc(gctx->iv + gctx->ivlen - 8);
+      // Invocation field will be at least 8 bytes in size, so no need to check
+      // wrap around or increment more than last 8 bytes.
+      uint8_t *ctr = gctx->iv + gctx->ivlen - 8;
+      CRYPTO_store_u64_be(ctr, CRYPTO_load_u64_be(ctr) + 1);
       gctx->iv_set = 1;
       return 1;
+    }
 
     case EVP_CTRL_GCM_SET_IV_INV:
       if (gctx->iv_gen == 0 || gctx->key_set == 0 || c->encrypt) {
@@ -526,11 +516,10 @@ static int aes_gcm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr) {
       if (gctx->iv == c->iv) {
         gctx_out->iv = out->iv;
       } else {
-        gctx_out->iv = OPENSSL_malloc(gctx->ivlen);
+        gctx_out->iv = OPENSSL_memdup(gctx->iv, gctx->ivlen);
         if (!gctx_out->iv) {
           return 0;
         }
-        OPENSSL_memcpy(gctx_out->iv, gctx->iv, gctx->ivlen);
       }
       return 1;
     }
@@ -549,6 +538,14 @@ static int aes_gcm_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in,
     return -1;
   }
   if (!gctx->iv_set) {
+    return -1;
+  }
+
+  if (len > INT_MAX) {
+    // This function signature can only express up to |INT_MAX| bytes encrypted.
+    //
+    // TODO(https://crbug.com/boringssl/494): Make the internal |EVP_CIPHER|
+    // calling convention |size_t|-clean.
     return -1;
   }
 
@@ -580,7 +577,7 @@ static int aes_gcm_cipher(EVP_CIPHER_CTX *ctx, uint8_t *out, const uint8_t *in,
         }
       }
     }
-    return len;
+    return (int)len;
   } else {
     if (!ctx->encrypt) {
       if (gctx->taglen < 0 ||
@@ -1458,8 +1455,6 @@ int EVP_has_aes_hardware(void) {
   return hwaes_capable() && crypto_gcm_clmul_enabled();
 #elif defined(OPENSSL_ARM) || defined(OPENSSL_AARCH64)
   return hwaes_capable() && CRYPTO_is_ARMv8_PMULL_capable();
-#elif defined(OPENSSL_PPC64LE)
-  return CRYPTO_is_PPC64LE_vcrypto_capable();
 #else
   return 0;
 #endif

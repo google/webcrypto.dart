@@ -17,6 +17,24 @@
 
 #include <openssl/base.h>
 
+#if defined(OPENSSL_LINUX)
+// On linux we use MADVISE instead of pthread_atfork(), due
+// to concerns about clone() being used for address space
+// duplication.
+#define OPENSSL_FORK_DETECTION
+#define OPENSSL_FORK_DETECTION_MADVISE
+#elif defined(OPENSSL_MACOS) || defined(OPENSSL_IOS) || \
+    defined(OPENSSL_OPENBSD) || defined(OPENSSL_FREEBSD)
+// These platforms may detect address space duplication with pthread_atfork.
+// iOS doesn't normally allow fork in apps, but it's there.
+#define OPENSSL_FORK_DETECTION
+#define OPENSSL_FORK_DETECTION_PTHREAD_ATFORK
+#elif defined(OPENSSL_WINDOWS) || defined(OPENSSL_TRUSTY) || \
+    defined(__ZEPHYR__) || defined(CROS_EC)
+// These platforms do not fork.
+#define OPENSSL_DOES_NOT_FORK
+#endif
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -38,9 +56,10 @@ extern "C" {
 // should only be used as a hardening measure.
 OPENSSL_EXPORT uint64_t CRYPTO_get_fork_generation(void);
 
-// CRYPTO_fork_detect_ignore_madv_wipeonfork_for_testing is an internal detail
+// CRYPTO_fork_detect_force_madv_wipeonfork_for_testing is an internal detail
 // used for testing purposes.
-OPENSSL_EXPORT void CRYPTO_fork_detect_ignore_madv_wipeonfork_for_testing(void);
+OPENSSL_EXPORT void CRYPTO_fork_detect_force_madv_wipeonfork_for_testing(
+    int on);
 
 #if defined(__cplusplus)
 }  // extern C

@@ -75,10 +75,6 @@ OPENSSL_EXPORT void CRYPTO_pre_sandbox_init(void);
 
 #if defined(OPENSSL_ARM) && defined(OPENSSL_LINUX) && \
     !defined(OPENSSL_STATIC_ARMCAP)
-// CRYPTO_has_broken_NEON returns one if the current CPU is known to have a
-// broken NEON unit. See https://crbug.com/341598.
-OPENSSL_EXPORT int CRYPTO_has_broken_NEON(void);
-
 // CRYPTO_needs_hwcap2_workaround returns one if the ARMv8 AArch32 AT_HWCAP2
 // workaround was needed. See https://crbug.com/boringssl/46.
 OPENSSL_EXPORT int CRYPTO_needs_hwcap2_workaround(void);
@@ -166,6 +162,7 @@ OPENSSL_EXPORT void OPENSSL_load_builtin_modules(void);
 #define OPENSSL_INIT_NO_ADD_ALL_DIGESTS 0
 #define OPENSSL_INIT_LOAD_CONFIG 0
 #define OPENSSL_INIT_NO_LOAD_CONFIG 0
+#define OPENSSL_INIT_NO_ATEXIT 0
 
 // OPENSSL_init_crypto calls |CRYPTO_library_init| and returns one.
 OPENSSL_EXPORT int OPENSSL_init_crypto(uint64_t opts,
@@ -192,6 +189,12 @@ OPENSSL_EXPORT uint32_t FIPS_version(void);
 // FIPS_query_algorithm_status returns one if |algorithm| is FIPS validated in
 // the current BoringSSL and zero otherwise.
 OPENSSL_EXPORT int FIPS_query_algorithm_status(const char *algorithm);
+
+#if defined(OPENSSL_ARM) && defined(OPENSSL_LINUX) && \
+    !defined(OPENSSL_STATIC_ARMCAP)
+// CRYPTO_has_broken_NEON returns zero.
+OPENSSL_EXPORT int CRYPTO_has_broken_NEON(void);
+#endif
 
 
 #if defined(__cplusplus)

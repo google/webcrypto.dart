@@ -28,7 +28,7 @@ TOOL_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.dirname(TOOL_PATH)
 
 BORINGSSL_REPOSITORY = 'https://boringssl.googlesource.com/boringssl'
-BORINGSSL_REVISION = 'a6d321b11fa80496b7c8ae6405468c212d4f5c87'
+BORINGSSL_REVISION = '3e89a7e8db8139db356b892ca9993172346c80cf'
 
 
 def cleanup():
@@ -132,7 +132,7 @@ class BoringSSLGenerator(object):
         This simply stores the variables, so we easily access them in function.
     """
 
-    def WriteFiles(self, file_sets, asm_outputs):
+    def WriteFiles(self, file_sets):
         """
             WriteFiles will be called by generate_build_files.main(..)
 
@@ -148,7 +148,6 @@ class BoringSSLGenerator(object):
             All file paths are relative to root the BoringSSL repository.
         """
         self.file_sets = file_sets
-        self.asm_outputs = asm_outputs
 
 
 def writeFile(path_relative_root, contents):
@@ -175,11 +174,6 @@ def writeSourcesCmake(g):
     sources_cmake += SOURCES_CMAKE_HEADER
     sources_cmake += define('crypto_sources', g.file_sets['crypto'])
 
-    # Define and sources various ASM files used by libcrypto
-    for ((osname, arch), asm_files) in g.asm_outputs:
-        name = 'crypto_sources_%s_%s' % (osname, arch)
-        sources_cmake += define(name, asm_files)
-
     # Write third_party/boringssl/sources.cmake
     p = os.path.join('third_party', 'boringssl', 'sources.cmake')
     writeFile(p, sources_cmake)
@@ -198,9 +192,6 @@ def copySourceFiles(g, boringssl_clone):
     files_to_copy += g.file_sets['crypto_internal_headers']
     # Copy fips_fragments (otherwise, we can't build)
     files_to_copy += g.file_sets['fips_fragments']
-    # Copy various ASM files used by libcrypto
-    for ((osname, arch), asm_files) in g.asm_outputs:
-        files_to_copy += asm_files
     # Copy static files
     files_to_copy += FILES_TO_RETAIN
 

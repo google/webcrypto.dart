@@ -122,14 +122,17 @@ int i2c_ASN1_INTEGER(const ASN1_INTEGER *in, unsigned char **outp) {
   // |ASN1_INTEGER|s should be represented minimally, but it is possible to
   // construct invalid ones. Skip leading zeros so this does not produce an
   // invalid encoding or break invariants.
-  int start = 0;
-  while (start < in->length && in->data[start] == 0) {
-    start++;
+  CBS cbs;
+  CBS_init(&cbs, in->data, in->length);
+  while (CBS_len(&cbs) > 0 && CBS_data(&cbs)[0] == 0) {
+    CBS_skip(&cbs, 1);
   }
 
   int is_negative = (in->type & V_ASN1_NEG) != 0;
-  int pad;
-  if (start >= in->length) {
+  size_t pad;
+  CBS copy = cbs;
+  uint8_t msb;
+  if (!CBS_get_u8(&copy, &msb)) {
     // Zero is represented as a single byte.
     is_negative = 0;
     pad = 1;
@@ -138,20 +141,19 @@ int i2c_ASN1_INTEGER(const ASN1_INTEGER *in, unsigned char **outp) {
     // through 0x00...01 and need an extra byte to be negative.
     // 0x01...00 through 0x80...00 have a two's complement of 0xfe...ff
     // through 0x80...00 and can be negated as-is.
-    pad = in->data[start] > 0x80 ||
-          (in->data[start] == 0x80 &&
-           !is_all_zeros(in->data + start + 1, in->length - start - 1));
+    pad = msb > 0x80 ||
+          (msb == 0x80 && !is_all_zeros(CBS_data(&copy), CBS_len(&copy)));
   } else {
     // If the high bit is set, the signed representation needs an extra
     // byte to be positive.
-    pad = (in->data[start] & 0x80) != 0;
+    pad = (msb & 0x80) != 0;
   }
 
-  if (in->length - start > INT_MAX - pad) {
+  if (CBS_len(&cbs) > INT_MAX - pad) {
     OPENSSL_PUT_ERROR(ASN1, ERR_R_OVERFLOW);
     return 0;
   }
-  int len = pad + in->length - start;
+  int len = (int)(pad + CBS_len(&cbs));
   assert(len > 0);
   if (outp == NULL) {
     return len;
@@ -160,7 +162,7 @@ int i2c_ASN1_INTEGER(const ASN1_INTEGER *in, unsigned char **outp) {
   if (pad) {
     (*outp)[0] = 0;
   }
-  OPENSSL_memcpy(*outp + pad, in->data + start, in->length - start);
+  OPENSSL_memcpy(*outp + pad, CBS_data(&cbs), CBS_len(&cbs));
   if (is_negative) {
     negate_twos_complement(*outp, len);
     assert((*outp)[0] >= 0x80);
@@ -246,7 +248,7 @@ err:
   return NULL;
 }
 
-int ASN1_INTEGER_set(ASN1_INTEGER *a, long v) {
+int ASN1_INTEGER_set_int64(ASN1_INTEGER *a, int64_t v) {
   if (v >= 0) {
     return ASN1_INTEGER_set_uint64(a, (uint64_t)v);
   }
@@ -259,7 +261,7 @@ int ASN1_INTEGER_set(ASN1_INTEGER *a, long v) {
   return 1;
 }
 
-int ASN1_ENUMERATED_set(ASN1_ENUMERATED *a, long v) {
+int ASN1_ENUMERATED_set_int64(ASN1_ENUMERATED *a, int64_t v) {
   if (v >= 0) {
     return ASN1_ENUMERATED_set_uint64(a, (uint64_t)v);
   }
@@ -270,6 +272,16 @@ int ASN1_ENUMERATED_set(ASN1_ENUMERATED *a, long v) {
 
   a->type = V_ASN1_NEG_ENUMERATED;
   return 1;
+}
+
+int ASN1_INTEGER_set(ASN1_INTEGER *a, long v) {
+  static_assert(sizeof(long) <= sizeof(int64_t), "long fits in int64_t");
+  return ASN1_INTEGER_set_int64(a, v);
+}
+
+int ASN1_ENUMERATED_set(ASN1_ENUMERATED *a, long v) {
+  static_assert(sizeof(long) <= sizeof(int64_t), "long fits in int64_t");
+  return ASN1_ENUMERATED_set_int64(a, v);
 }
 
 static int asn1_string_set_uint64(ASN1_STRING *out, uint64_t v, int type) {
@@ -333,16 +345,11 @@ int ASN1_ENUMERATED_get_uint64(uint64_t *out, const ASN1_ENUMERATED *a) {
   return asn1_string_get_uint64(out, a, V_ASN1_ENUMERATED);
 }
 
-static long asn1_string_get_long(const ASN1_STRING *a, int type) {
-  if (a == NULL) {
-    return 0;
-  }
-
+static int asn1_string_get_int64(int64_t *out, const ASN1_STRING *a, int type) {
   uint64_t v;
   if (!asn1_string_get_abs_uint64(&v, a, type)) {
-    goto err;
+    return 0;
   }
-
   int64_t i64;
   int fits_in_i64;
   // Check |v != 0| to handle manually-constructed negative zeros.
@@ -353,16 +360,36 @@ static long asn1_string_get_long(const ASN1_STRING *a, int type) {
     i64 = (int64_t)v;
     fits_in_i64 = i64 >= 0;
   }
-  static_assert(sizeof(long) <= sizeof(int64_t), "long is too big");
+  if (!fits_in_i64) {
+    OPENSSL_PUT_ERROR(ASN1, ASN1_R_INVALID_INTEGER);
+    return 0;
+  }
+  *out = i64;
+  return 1;
+}
 
-  if (fits_in_i64 && LONG_MIN <= i64 && i64 <= LONG_MAX) {
-    return (long)i64;
+int ASN1_INTEGER_get_int64(int64_t *out, const ASN1_INTEGER *a) {
+  return asn1_string_get_int64(out, a, V_ASN1_INTEGER);
+}
+
+int ASN1_ENUMERATED_get_int64(int64_t *out, const ASN1_ENUMERATED *a) {
+  return asn1_string_get_int64(out, a, V_ASN1_ENUMERATED);
+}
+
+static long asn1_string_get_long(const ASN1_STRING *a, int type) {
+  if (a == NULL) {
+    return 0;
   }
 
-err:
-  // This function's return value does not distinguish overflow from -1.
-  ERR_clear_error();
-  return -1;
+  int64_t v;
+  if (!asn1_string_get_int64(&v, a, type) ||  //
+      v < LONG_MIN || v > LONG_MAX) {
+    // This function's return value does not distinguish overflow from -1.
+    ERR_clear_error();
+    return -1;
+  }
+
+  return (long)v;
 }
 
 long ASN1_INTEGER_get(const ASN1_INTEGER *a) {

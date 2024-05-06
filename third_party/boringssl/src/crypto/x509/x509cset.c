@@ -59,6 +59,7 @@
 #include <openssl/obj.h>
 #include <openssl/x509.h>
 
+#include "../asn1/internal.h"
 #include "../internal.h"
 #include "internal.h"
 
@@ -85,7 +86,7 @@ int X509_CRL_set_version(X509_CRL *x, long version) {
       return 0;
     }
   }
-  return ASN1_INTEGER_set(x->crl->version, version);
+  return ASN1_INTEGER_set_int64(x->crl->version, version);
 }
 
 int X509_CRL_set_issuer_name(X509_CRL *x, X509_NAME *name) {
@@ -132,7 +133,7 @@ int X509_CRL_set1_nextUpdate(X509_CRL *x, const ASN1_TIME *tm) {
 int X509_CRL_sort(X509_CRL *c) {
   // Sort the data so it will be written in serial number order.
   sk_X509_REVOKED_sort(c->crl->revoked);
-  c->crl->enc.modified = 1;
+  asn1_encoding_clear(&c->crl->enc);
   return 1;
 }
 
@@ -216,6 +217,11 @@ int X509_REVOKED_set_serialNumber(X509_REVOKED *revoked,
                                   const ASN1_INTEGER *serial) {
   ASN1_INTEGER *in;
 
+  if (serial->type != V_ASN1_INTEGER && serial->type != V_ASN1_NEG_INTEGER) {
+    OPENSSL_PUT_ERROR(ASN1, ASN1_R_WRONG_TYPE);
+    return 0;
+  }
+
   if (revoked == NULL) {
     return 0;
   }
@@ -236,7 +242,7 @@ const STACK_OF(X509_EXTENSION) *X509_REVOKED_get0_extensions(
 }
 
 int i2d_re_X509_CRL_tbs(X509_CRL *crl, unsigned char **outp) {
-  crl->crl->enc.modified = 1;
+  asn1_encoding_clear(&crl->crl->enc);
   return i2d_X509_CRL_INFO(crl->crl, outp);
 }
 

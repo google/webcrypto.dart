@@ -114,8 +114,8 @@ uint8_t *SHA256(const uint8_t *data, size_t len,
   return out;
 }
 
-#ifndef SHA256_ASM
-static void sha256_block_data_order(uint32_t *state, const uint8_t *in,
+#if !defined(SHA256_ASM)
+static void sha256_block_data_order(uint32_t state[8], const uint8_t *in,
                                     size_t num);
 #endif
 
@@ -133,7 +133,7 @@ int SHA224_Update(SHA256_CTX *ctx, const void *data, size_t len) {
   return SHA256_Update(ctx, data, len);
 }
 
-static int sha256_final_impl(uint8_t *out, SHA256_CTX *c) {
+static int sha256_final_impl(uint8_t *out, size_t md_len, SHA256_CTX *c) {
   crypto_md32_final(&sha256_block_data_order, c->h, c->data, SHA256_CBLOCK,
                     &c->num, c->Nh, c->Nl, /*is_big_endian=*/1);
 
@@ -141,12 +141,12 @@ static int sha256_final_impl(uint8_t *out, SHA256_CTX *c) {
   // 'final' function can fail. SHA-512 does not have a corresponding check.
   // These functions already misbehave if the caller arbitrarily mutates |c|, so
   // can we assume one of |SHA256_Init| or |SHA224_Init| was used?
-  if (c->md_len > SHA256_DIGEST_LENGTH) {
+  if (md_len > SHA256_DIGEST_LENGTH) {
     return 0;
   }
 
-  assert(c->md_len % 4 == 0);
-  const size_t out_words = c->md_len / 4;
+  assert(md_len % 4 == 0);
+  const size_t out_words = md_len / 4;
   for (size_t i = 0; i < out_words; i++) {
     CRYPTO_store_u32_be(out, c->h[i]);
     out += 4;
@@ -162,17 +162,19 @@ int SHA256_Final(uint8_t out[SHA256_DIGEST_LENGTH], SHA256_CTX *c) {
   // |SHA256_Final| and expects |sha->md_len| to carry the size over.
   //
   // TODO(davidben): Add an assert and fix code to match them up.
-  return sha256_final_impl(out, c);
+  return sha256_final_impl(out, c->md_len, c);
 }
 
 int SHA224_Final(uint8_t out[SHA224_DIGEST_LENGTH], SHA256_CTX *ctx) {
-  // SHA224_Init sets |ctx->md_len| to |SHA224_DIGEST_LENGTH|, so this has a
-  // smaller output.
+  // This function must be paired with |SHA224_Init|, which sets |ctx->md_len|
+  // to |SHA224_DIGEST_LENGTH|.
   assert(ctx->md_len == SHA224_DIGEST_LENGTH);
-  return sha256_final_impl(out, ctx);
+  return sha256_final_impl(out, SHA224_DIGEST_LENGTH, ctx);
 }
 
-#ifndef SHA256_ASM
+#if !defined(SHA256_ASM)
+
+#if !defined(SHA256_ASM_NOHW)
 static const uint32_t K256[64] = {
     0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL, 0x3956c25bUL,
     0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL, 0xd807aa98UL, 0x12835b01UL,
@@ -221,8 +223,8 @@ static const uint32_t K256[64] = {
     ROUND_00_15(i, a, b, c, d, e, f, g, h);            \
   } while (0)
 
-static void sha256_block_data_order(uint32_t *state, const uint8_t *data,
-                                    size_t num) {
+static void sha256_block_data_order_nohw(uint32_t state[8], const uint8_t *data,
+                                         size_t num) {
   uint32_t a, b, c, d, e, f, g, h, s0, s1, T1;
   uint32_t X[16];
   int i;
@@ -308,7 +310,39 @@ static void sha256_block_data_order(uint32_t *state, const uint8_t *data,
   }
 }
 
-#endif  // !SHA256_ASM
+#endif  // !defined(SHA256_ASM_NOHW)
+
+static void sha256_block_data_order(uint32_t state[8], const uint8_t *data,
+                                    size_t num) {
+#if defined(SHA256_ASM_HW)
+  if (sha256_hw_capable()) {
+    sha256_block_data_order_hw(state, data, num);
+    return;
+  }
+#endif
+#if defined(SHA256_ASM_AVX)
+  if (sha256_avx_capable()) {
+    sha256_block_data_order_avx(state, data, num);
+    return;
+  }
+#endif
+#if defined(SHA256_ASM_SSSE3)
+  if (sha256_ssse3_capable()) {
+    sha256_block_data_order_ssse3(state, data, num);
+    return;
+  }
+#endif
+#if defined(SHA256_ASM_NEON)
+  if (CRYPTO_is_NEON_capable()) {
+    sha256_block_data_order_neon(state, data, num);
+    return;
+  }
+#endif
+  sha256_block_data_order_nohw(state, data, num);
+}
+
+#endif  // !defined(SHA256_ASM)
+
 
 void SHA256_TransformBlocks(uint32_t state[8], const uint8_t *data,
                             size_t num_blocks) {

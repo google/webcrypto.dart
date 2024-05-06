@@ -104,17 +104,20 @@ int EVP_CIPHER_CTX_copy(EVP_CIPHER_CTX *out, const EVP_CIPHER_CTX *in) {
     return 0;
   }
 
+  if (in->poisoned) {
+    OPENSSL_PUT_ERROR(CIPHER, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+    return 0;
+  }
+
   EVP_CIPHER_CTX_cleanup(out);
   OPENSSL_memcpy(out, in, sizeof(EVP_CIPHER_CTX));
 
   if (in->cipher_data && in->cipher->ctx_size) {
-    out->cipher_data = OPENSSL_malloc(in->cipher->ctx_size);
+    out->cipher_data = OPENSSL_memdup(in->cipher_data, in->cipher->ctx_size);
     if (!out->cipher_data) {
       out->cipher = NULL;
-      OPENSSL_PUT_ERROR(CIPHER, ERR_R_MALLOC_FAILURE);
       return 0;
     }
-    OPENSSL_memcpy(out->cipher_data, in->cipher_data, in->cipher->ctx_size);
   }
 
   if (in->cipher->flags & EVP_CIPH_CUSTOM_COPY) {
@@ -160,7 +163,6 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
       ctx->cipher_data = OPENSSL_malloc(ctx->cipher->ctx_size);
       if (!ctx->cipher_data) {
         ctx->cipher = NULL;
-        OPENSSL_PUT_ERROR(CIPHER, ERR_R_MALLOC_FAILURE);
         return 0;
       }
     } else {
@@ -226,6 +228,9 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
 
   ctx->buf_len = 0;
   ctx->final_used = 0;
+  // Clear the poisoned flag to permit re-use of a CTX that previously had a
+  // failed operation.
+  ctx->poisoned = 0;
   return 1;
 }
 
@@ -250,6 +255,15 @@ static int block_remainder(const EVP_CIPHER_CTX *ctx, int len) {
 
 int EVP_EncryptUpdate(EVP_CIPHER_CTX *ctx, uint8_t *out, int *out_len,
                       const uint8_t *in, int in_len) {
+  if (ctx->poisoned) {
+    OPENSSL_PUT_ERROR(CIPHER, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+    return 0;
+  }
+  // If the first call to |cipher| succeeds and the second fails, |ctx| may be
+  // left in an indeterminate state. We set a poison flag on failure to ensure
+  // callers do not continue to use the object in that case.
+  ctx->poisoned = 1;
+
   // Ciphers that use blocks may write up to |bl| extra bytes. Ensure the output
   // does not overflow |*out_len|.
   int bl = ctx->cipher->block_size;
@@ -265,17 +279,23 @@ int EVP_EncryptUpdate(EVP_CIPHER_CTX *ctx, uint8_t *out, int *out_len,
     } else {
       *out_len = ret;
     }
+    ctx->poisoned = 0;
     return 1;
   }
 
   if (in_len <= 0) {
     *out_len = 0;
-    return in_len == 0;
+    if (in_len == 0) {
+      ctx->poisoned = 0;
+      return 1;
+    }
+    return 0;
   }
 
   if (ctx->buf_len == 0 && block_remainder(ctx, in_len) == 0) {
     if (ctx->cipher->cipher(ctx, out, in, in_len)) {
       *out_len = in_len;
+      ctx->poisoned = 0;
       return 1;
     } else {
       *out_len = 0;
@@ -290,6 +310,7 @@ int EVP_EncryptUpdate(EVP_CIPHER_CTX *ctx, uint8_t *out, int *out_len,
       OPENSSL_memcpy(&ctx->buf[i], in, in_len);
       ctx->buf_len += in_len;
       *out_len = 0;
+      ctx->poisoned = 0;
       return 1;
     } else {
       int j = bl - i;
@@ -319,12 +340,18 @@ int EVP_EncryptUpdate(EVP_CIPHER_CTX *ctx, uint8_t *out, int *out_len,
     OPENSSL_memcpy(ctx->buf, &in[in_len], i);
   }
   ctx->buf_len = i;
+  ctx->poisoned = 0;
   return 1;
 }
 
 int EVP_EncryptFinal_ex(EVP_CIPHER_CTX *ctx, uint8_t *out, int *out_len) {
   int n;
   unsigned int i, b, bl;
+
+  if (ctx->poisoned) {
+    OPENSSL_PUT_ERROR(CIPHER, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+    return 0;
+  }
 
   if (ctx->cipher->flags & EVP_CIPH_FLAG_CUSTOM_CIPHER) {
     // When EVP_CIPH_FLAG_CUSTOM_CIPHER is set, the return value of |cipher| is
@@ -371,6 +398,11 @@ out:
 
 int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, uint8_t *out, int *out_len,
                       const uint8_t *in, int in_len) {
+  if (ctx->poisoned) {
+    OPENSSL_PUT_ERROR(CIPHER, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+    return 0;
+  }
+
   // Ciphers that use blocks may write up to |bl| extra bytes. Ensure the output
   // does not overflow |*out_len|.
   unsigned int b = ctx->cipher->block_size;
@@ -432,6 +464,11 @@ int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *out_len) {
   int i, n;
   unsigned int b;
   *out_len = 0;
+
+  if (ctx->poisoned) {
+    OPENSSL_PUT_ERROR(CIPHER, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+    return 0;
+  }
 
   if (ctx->cipher->flags & EVP_CIPH_FLAG_CUSTOM_CIPHER) {
     i = ctx->cipher->cipher(ctx, out, NULL, 0);
@@ -548,6 +585,16 @@ unsigned EVP_CIPHER_CTX_key_length(const EVP_CIPHER_CTX *ctx) {
 }
 
 unsigned EVP_CIPHER_CTX_iv_length(const EVP_CIPHER_CTX *ctx) {
+  if (EVP_CIPHER_mode(ctx->cipher) == EVP_CIPH_GCM_MODE) {
+    int length;
+    int res = EVP_CIPHER_CTX_ctrl((EVP_CIPHER_CTX *)ctx, EVP_CTRL_GET_IVLEN, 0,
+                                  &length);
+    // EVP_CIPHER_CTX_ctrl returning an error should be impossible under this
+    // circumstance. If it somehow did, fallback to the static cipher iv_len.
+    if (res == 1) {
+      return length;
+    }
+  }
   return ctx->cipher->iv_len;
 }
 

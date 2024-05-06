@@ -58,7 +58,9 @@
 #include <openssl/bytestring.h>
 #include <openssl/err.h>
 #include <openssl/mem.h>
+#include <openssl/posix_time.h>
 
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -82,32 +84,33 @@ int ASN1_UTCTIME_check(const ASN1_UTCTIME *d) {
 }
 
 int ASN1_UTCTIME_set_string(ASN1_UTCTIME *s, const char *str) {
-  ASN1_UTCTIME t;
-
-  t.type = V_ASN1_UTCTIME;
-  t.length = strlen(str);
-  t.data = (unsigned char *)str;
-  if (ASN1_UTCTIME_check(&t)) {
-    if (s != NULL) {
-      if (!ASN1_STRING_set((ASN1_STRING *)s, (unsigned char *)str, t.length)) {
-        return 0;
-      }
-      s->type = V_ASN1_UTCTIME;
-    }
-    return 1;
-  } else {
+  // Although elsewhere we allow timezone offsets with UTCTime, to be compatible
+  // with some existing misissued certificates, this function is used to
+  // construct new certificates and can be stricter.
+  size_t len = strlen(str);
+  CBS cbs;
+  CBS_init(&cbs, (const uint8_t *)str, len);
+  if (!CBS_parse_utc_time(&cbs, /*out_tm=*/NULL,
+                          /*allow_timezone_offset=*/0)) {
     return 0;
   }
+  if (s != NULL) {
+    if (!ASN1_STRING_set(s, str, len)) {
+      return 0;
+    }
+    s->type = V_ASN1_UTCTIME;
+  }
+  return 1;
 }
 
-ASN1_UTCTIME *ASN1_UTCTIME_set(ASN1_UTCTIME *s, time_t t) {
-  return ASN1_UTCTIME_adj(s, t, 0, 0);
+ASN1_UTCTIME *ASN1_UTCTIME_set(ASN1_UTCTIME *s, int64_t posix_time) {
+  return ASN1_UTCTIME_adj(s, posix_time, 0, 0);
 }
 
-ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t, int offset_day,
+ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, int64_t posix_time, int offset_day,
                                long offset_sec) {
   struct tm data;
-  if (!OPENSSL_gmtime(&t, &data)) {
+  if (!OPENSSL_posix_to_tm(posix_time, &data)) {
     return NULL;
   }
 
@@ -122,9 +125,12 @@ ASN1_UTCTIME *ASN1_UTCTIME_adj(ASN1_UTCTIME *s, time_t t, int offset_day,
   }
 
   char buf[14];
-  BIO_snprintf(buf, sizeof(buf), "%02d%02d%02d%02d%02d%02dZ",
-               data.tm_year % 100, data.tm_mon + 1, data.tm_mday, data.tm_hour,
-               data.tm_min, data.tm_sec);
+  int ret = snprintf(buf, sizeof(buf), "%02d%02d%02d%02d%02d%02dZ",
+                     data.tm_year % 100, data.tm_mon + 1, data.tm_mday,
+                     data.tm_hour, data.tm_min, data.tm_sec);
+  if (ret != (int)(sizeof(buf) - 1)) {
+    abort();  // |snprintf| should neither truncate nor write fewer bytes.
+  }
 
   int free_s = 0;
   if (s == NULL) {
@@ -153,7 +159,7 @@ int ASN1_UTCTIME_cmp_time_t(const ASN1_UTCTIME *s, time_t t) {
     return -2;
   }
 
-  if (!OPENSSL_gmtime(&t, &ttm)) {
+  if (!OPENSSL_posix_to_tm(t, &ttm)) {
     return -2;
   }
 
