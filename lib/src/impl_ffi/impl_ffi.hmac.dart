@@ -108,6 +108,11 @@ class _HmacSecretKey implements HmacSecretKey {
   _HmacSecretKey(this._keyData, this._hash);
 
   @override
+  String toString() {
+    return 'Instance of \'HmacSecretKey\'';
+  }
+
+  @override
   Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override

@@ -86,6 +86,11 @@ class _HmacSecretKey implements HmacSecretKey {
   _HmacSecretKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'HmacSecretKey\'';
+  }
+
+  @override
   Future<Uint8List> signBytes(List<int> data) async {
     return await _sign(_hmacAlgorithm, _key, data);
   }
