@@ -39,6 +39,8 @@ part of 'webcrypto.dart';
 /// 
 ///   // Export the private key as a JSON Web Key.
 ///   final exportedPrivateKey = await keyPair.privateKey.exportJsonWebKey();
+/// }
+/// ```
 @sealed
 abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
