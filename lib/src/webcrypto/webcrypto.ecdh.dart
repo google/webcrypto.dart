@@ -28,24 +28,31 @@ part of 'webcrypto.dart';
 /// 
 /// **Example**
 /// ```dart
+/// import 'dart:convert';
 /// import 'package:webcrypto/webcrypto.dart';
 /// 
 /// Future<void> main() async {
-///   // Generate a new key pair using the P-256 curve.
-///   final keyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+///   // Alice generates a key-pair
+///   final kpA = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
 ///   
-///   // Derive 256 bits from the private key using the public key.
-///   final derivedBits = await keyPair.privateKey.deriveBits(256, keyPair.publicKey);
+///   // Bob generates a key-pair
+///   final kpB = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
 /// 
-///   // Export the private key as a JSON Web Key.
-///   final exportedPrivateKey = await keyPair.privateKey.exportJsonWebKey();
+///   // Shared secret for Alice. Generated using Bob's public key
+///   final sharedSecretA = await kpA.privateKey.deriveBits(256, kpB.publicKey);
+/// 
+///   // Shared secret for Bob. Generated using Alice's public key
+///   final sharedSecretB = await kpB.privateKey.deriveBits(256, kpA.publicKey);
+/// 
+///   // Alice and Bob should have the same shared secret
+///   assert(base64.encode(sharedSecretA) == base64.encode(sharedSecretB));
 /// }
 /// ```
 @sealed
 abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
 
-  /// Import [EcdhPrivateKey] using the PKCS8 format[1].
+  /// Import [EcdhPrivateKey] in the PKCS8 format[1].
   /// The [keyData] parameter is an octet string whose 
   /// contents are the value of the private key.
   /// The [curve] parameter specifies the curve to use 
@@ -76,6 +83,7 @@ abstract class EcdhPrivateKey {
   }
 
   /// Import ECDH private key in [JSON Web Key][1] format.
+  /// {@macro importJsonWebKey:jwk}
   /// 
   /// JSON Web Keys imported using [EcdhPrivateKey.importJsonWebKey] must 
   /// have `"kty": "EC"` and MUST have the following parameters:
@@ -208,8 +216,8 @@ abstract class EcdhPrivateKey {
   /// }
   /// ```
   /// 
+  // Note. unsupported on Firefox
   Future<Uint8List> exportPkcs8Key();
-  // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
 
   /// Export the [EcdhPrivateKey] and [EcPublicKey] as a [JSON Web Key][1].
   /// 
