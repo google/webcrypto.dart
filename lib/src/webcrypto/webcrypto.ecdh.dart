@@ -24,7 +24,7 @@ part of 'webcrypto.dart';
 /// * PKCS8 Key using [EcdhPrivateKey.importPkcs8Key], and,
 /// * JSON Web Key using [EcdhPrivateKey.importJsonWebKey].
 /// 
-/// A random key pair can also be generated using [EcdhPrivateKey.generateKey].
+/// A random key pair can be generated using [EcdhPrivateKey.generateKey].
 /// 
 /// **Example**
 /// ```dart
