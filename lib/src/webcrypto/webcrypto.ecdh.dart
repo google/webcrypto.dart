@@ -82,7 +82,7 @@ abstract class EcdhPrivateKey {
   /// * `"crv"`: The curve used with the key. This MUST match the curve
   ///  parameter.
   /// * `"x"`: The x coordinate for the Elliptic Curve point represented
-  /// as a base64url encoded string. The length of this octet string MUST
+  /// as a [base64Url] encoded string. The length of this octet string MUST
   /// be the full size of a coordinate for the curve specified in the `"crv"`
   /// parameter.
   /// * `"y"`: The y coordinate for the Elliptic Curve point represented
