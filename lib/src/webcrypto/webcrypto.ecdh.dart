@@ -95,9 +95,9 @@ abstract class EcdhPrivateKey {
   /// 66 bytes for `"crv": "P-521"`.
   /// 
   /// For importing a JWK with:
-  /// * `"crv": "P-256"`, use [EllipticCurve.p256]
-  /// * `"crv": "P-384"`, use [EllipticCurve.p384]
-  /// * `"crv": "P-521"`, use [EllipticCurve.p521]
+  /// * `"crv": "P-256"`, use [EllipticCurve.p256],
+  /// * `"crv": "P-384"`, use [EllipticCurve.p384], and,
+  /// * `"crv": "P-521"`, use [EllipticCurve.p521].
   /// 
   /// **Example**
   /// ```dart
