@@ -75,7 +75,7 @@ abstract class EcdhPrivateKey {
     return impl.ecdhPrivateKey_importPkcs8Key(keyData, curve);
   }
 
-  /// Import [EcdhPrivateKey] from a [JSON Web Key][1].
+  /// Import ECDH private key in [JSON Web Key][1] format.
   /// 
   /// JSON Web Keys imported using [EcdhPrivateKey.importJsonWebKey] must 
   /// have `"kty": "EC"` and MUST have the following parameters:
