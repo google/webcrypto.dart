@@ -15,19 +15,14 @@
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
-import '../utils/detected_runtime.dart';
 
 final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
   algorithm: 'ECDSA',
   importPrivateRawKey: null, // not supported
   exportPrivateRawKey: null,
-  // HACK: PKCS8 is not support for ECDH / ECDSA on firefox:
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=1133698
-  //
-  // So filter away PKCS8 test data and functions when running on gecko.
-  importPrivatePkcs8Key: nullOnFirefox((keyData, keyImportParams) =>
-      EcdsaPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams))),
-  exportPrivatePkcs8Key: nullOnFirefox((key) => key.exportPkcs8Key()),
+  importPrivatePkcs8Key: (keyData, keyImportParams) =>
+      EcdsaPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams)),
+  exportPrivatePkcs8Key: (key) => key.exportPkcs8Key(),
   importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdsaPrivateKey.importJsonWebKey(
           jsonWebKeyData, curveFromJson(keyImportParams)),
@@ -53,10 +48,7 @@ final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
       key.verifyBytes(signature, data, hashFromJson(verifyParams)),
   verifyStream: (key, signature, data, verifyParams) =>
       key.verifyStream(signature, data, hashFromJson(verifyParams)),
-  testData: _testData.map((c) => {
-        ...c,
-        'privatePkcs8KeyData': nullOnFirefox(c['privatePkcs8KeyData']),
-      }),
+  testData: _testData,
 );
 
 void main() async {

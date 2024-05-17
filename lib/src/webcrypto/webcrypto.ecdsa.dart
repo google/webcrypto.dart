@@ -18,9 +18,6 @@ part of 'webcrypto.dart';
 abstract class EcdsaPrivateKey {
   EcdsaPrivateKey._(); // keep the constructor private.
 
-  // TODO: document or workaround pkcs8 being unsupported on Firefox:
-  //       https://bugzilla.mozilla.org/show_bug.cgi?id=1133698
-  // See: https://github.com/callstats-io/pem-to-jwk/blob/master/index.js#L126
   static Future<EcdsaPrivateKey> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
@@ -48,7 +45,6 @@ abstract class EcdsaPrivateKey {
   Future<Uint8List> signBytes(List<int> data, Hash hash);
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash);
 
-  // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
   Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, dynamic>> exportJsonWebKey();

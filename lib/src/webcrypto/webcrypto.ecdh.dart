@@ -18,7 +18,6 @@ part of 'webcrypto.dart';
 abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
 
-  // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
   static Future<EcdhPrivateKey> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
@@ -48,7 +47,6 @@ abstract class EcdhPrivateKey {
   // https://tools.ietf.org/html/rfc6090#appendix-B
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey);
 
-  // Note. unsupported on Firefox, see EcdsaPrivateKey.importPkcs8Key
   Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, dynamic>> exportJsonWebKey();
