@@ -52,7 +52,7 @@ part of 'webcrypto.dart';
 abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
 
-  /// Import [EcdhPrivateKey] in the PKCS8 format[1].
+  /// Import [EcdhPrivateKey] in the [PKCS #8][1] format.
   ///
   /// The [keyData] parameter is an octet string whose 
   /// contents are the value of the private key.
