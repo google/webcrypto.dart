@@ -188,6 +188,7 @@ abstract class EcdhPrivateKey {
   }
 
   /// Derive an array of bits from the [EcdhPrivateKey].
+  ///
   /// The [length] parameter specifies the number of bits to derive and 
   /// should be multiples of 8.
   /// The [publicKey] parameter is the [EcdhPublicKey].
