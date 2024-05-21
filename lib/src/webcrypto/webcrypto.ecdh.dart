@@ -38,10 +38,10 @@ part of 'webcrypto.dart';
 ///   // Bob generates a key-pair
 ///   final kpB = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
 /// 
-///   // Shared secret for Alice. Generated using Bob's public key
+///   // Alice can make a shared secret using Bob's public key
 ///   final sharedSecretA = await kpA.privateKey.deriveBits(256, kpB.publicKey);
 /// 
-///   // Shared secret for Bob. Generated using Alice's public key
+///   // Bob can make the same shared secret using Alice public key
 ///   final sharedSecretB = await kpB.privateKey.deriveBits(256, kpA.publicKey);
 /// 
 ///   // Alice and Bob should have the same shared secret
