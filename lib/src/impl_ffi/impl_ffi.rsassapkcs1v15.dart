@@ -107,6 +107,11 @@ class _RsassaPkcs1V15PrivateKey implements RsassaPkcs1V15PrivateKey {
   _RsassaPkcs1V15PrivateKey(this._key, this._hash);
 
   @override
+  String toString() {
+    return 'Instance of \'RsassaPkcs1V15PrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override

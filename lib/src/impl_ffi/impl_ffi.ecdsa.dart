@@ -186,6 +186,11 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   _EcdsaPrivateKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'EcdsaPrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> signBytes(List<int> data, Hash hash) =>
       signStream(Stream.value(data), hash);
 
@@ -208,6 +213,11 @@ class _EcdsaPublicKey implements EcdsaPublicKey {
   final _EvpPKey _key;
 
   _EcdsaPublicKey(this._key);
+
+  @override
+  String toString() {
+    return 'Instance of \'EcdsaPublicKey\'';
+  }
 
   @override
   Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) =>

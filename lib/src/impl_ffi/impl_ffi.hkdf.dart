@@ -25,6 +25,11 @@ class _HkdfSecretKey implements HkdfSecretKey {
   _HkdfSecretKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'HkdfSecretKey\'';
+  }
+
+  @override
   Future<Uint8List> deriveBits(
     int length,
     Hash hash,

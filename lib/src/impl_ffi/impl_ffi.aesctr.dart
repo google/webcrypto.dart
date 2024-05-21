@@ -204,6 +204,11 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
   final Uint8List _key;
   _AesCtrSecretKey(this._key);
 
+  @override
+  String toString() {
+    return 'Instance of \'AesCtrSecretKey\'';
+  }
+
   void _checkArguments(
     List<int> counter,
     int length,

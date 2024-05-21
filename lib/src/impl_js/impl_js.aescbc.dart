@@ -52,6 +52,11 @@ class _AesCbcSecretKey implements AesCbcSecretKey {
   _AesCbcSecretKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'AesCbcSecretKey\'';
+  }
+
+  @override
   Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async {
     return await _decrypt(
       _aesCbcAlgorithm.update(iv: Uint8List.fromList(iv)),

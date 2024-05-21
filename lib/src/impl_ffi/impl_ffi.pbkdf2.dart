@@ -26,6 +26,11 @@ class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
   _Pbkdf2SecretKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'Pbkdf2SecretKey\'';
+  }
+
+  @override
   Future<Uint8List> deriveBits(
     int length,
     Hash hash,

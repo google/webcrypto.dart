@@ -106,6 +106,11 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   _RsaOaepPrivateKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'RsaOaepPrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) async {
     return _decrypt(
       label == null
@@ -133,6 +138,11 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
 class _RsaOaepPublicKey implements RsaOaepPublicKey {
   final subtle.JSCryptoKey _key;
   _RsaOaepPublicKey(this._key);
+
+  @override
+  String toString() {
+    return 'Instance of \'RsaOaepPublicKey\'';
+  }
 
   @override
   Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) async {

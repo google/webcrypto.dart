@@ -174,6 +174,11 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   _RsaOaepPrivateKey(this._key, this._hash);
 
   @override
+  String toString() {
+    return 'Instance of \'RsaOaepPrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) async {
     return _rsaOaepeEncryptOrDecryptBytes(
       _key,
@@ -203,6 +208,11 @@ class _RsaOaepPublicKey implements RsaOaepPublicKey {
   final _Hash _hash;
 
   _RsaOaepPublicKey(this._key, this._hash);
+
+  @override
+  String toString() {
+    return 'Instance of \'RsaOaepPublicKey\'';
+  }
 
   @override
   Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) async {

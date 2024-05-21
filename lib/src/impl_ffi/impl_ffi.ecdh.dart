@@ -74,6 +74,11 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
   _EcdhPrivateKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'EcdhPrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
     if (publicKey is! _EcdhPublicKey) {
       throw ArgumentError.value(
@@ -166,6 +171,11 @@ class _EcdhPublicKey implements EcdhPublicKey {
   final _EvpPKey _key;
 
   _EcdhPublicKey(this._key);
+
+  @override
+  String toString() {
+    return 'Instance of \'EcdhPublicKey\'';
+  }
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>

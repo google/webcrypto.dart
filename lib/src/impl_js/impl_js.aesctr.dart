@@ -52,6 +52,11 @@ class _AesCtrSecretKey implements AesCtrSecretKey {
   _AesCtrSecretKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'AesCtrSecretKey\'';
+  }
+
+  @override
   Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> counter,
