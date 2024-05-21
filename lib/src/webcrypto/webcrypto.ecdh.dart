@@ -60,16 +60,28 @@ abstract class EcdhPrivateKey {
   /// 
   /// **Example**
   /// ```dart
+  /// import 'package:pem/pem.dart';
   /// import 'package:webcrypto/webcrypto.dart';
   /// 
-  /// final pkcs8Key = [ /* ... */ ];
+  /// // Read key data from a PEM encoded block. This will remove the
+  /// // the padding, decode base64 and return the encoded bytes.
+  /// List<int> keyData = PemCodec(PemLabel.privateKey).decode('''
+  ///   -----BEGIN PRIVATE KEY----- 
+  ///   MIGHAgEAMBMGByqGSM4.....
+  ///   -----END PRIVATE KEY-----
+  ///   ''');
+  /// 
   /// 
   /// Future<void> main() async {
-  ///   // Import the private key from PKCS8 format.
+  ///   // Import the Private Key from a Binary PEM decoded data.
   ///   final privateKey = await EcdhPrivateKey.importPkcs8Key(
-  ///     pkcs8Key,
+  ///     keyData,
   ///     EllipticCurve.p256,
   ///   );
+  /// 
+  ///  // Export the private key (print it in same format as it was given).
+  ///  final exportedPkcs8Key = await privateKey.exportPkcs8Key();
+  ///  print(PemCodec(PemLabel.privateKey).encode(exportedPkcs8Key));
   /// }
   /// ```
   /// 
@@ -144,9 +156,9 @@ abstract class EcdhPrivateKey {
   /// Generate a new [EcdhPrivateKey] and [EcdhPublicKey] pair.
   /// The [curve] parameter specifies the curve to use for the key pair.
   /// 
-  /// To generate a key pair using the P-256 curve, use [EllipticCurve.p256].
-  /// To generate a key pair using the P-384 curve, use [EllipticCurve.p384].
-  /// To generate a key pair using the P-521 curve, use [EllipticCurve.p521].
+  /// Use [EllipticCurve.p256] for the P-256 curve.
+  /// Use [EllipticCurve.p384] for the P-384 curve.
+  /// Use [EllipticCurve.p521] for the P-521 curve.
   /// 
   /// **Example**
   /// ```dart
@@ -220,6 +232,8 @@ abstract class EcdhPrivateKey {
   Future<Uint8List> exportPkcs8Key();
 
   /// Export the [EcdhPrivateKey] and [EcPublicKey] as a [JSON Web Key][1].
+  /// 
+  /// {@macro exportJsonWebKey:returns}
   /// 
   /// **Example**
   /// ```dart
