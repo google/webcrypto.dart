@@ -156,6 +156,7 @@ abstract class EcdhPrivateKey {
   }
 
   /// Generate a new [EcdhPrivateKey] and [EcdhPublicKey] pair.
+  ///
   /// The [curve] parameter specifies the curve to use for the key pair.
   /// 
   /// Use [EllipticCurve.p256] for the P-256 curve.
