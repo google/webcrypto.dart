@@ -53,6 +53,7 @@ abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
 
   /// Import [EcdhPrivateKey] in the PKCS8 format[1].
+  ///
   /// The [keyData] parameter is an octet string whose 
   /// contents are the value of the private key.
   /// The [curve] parameter specifies the curve to use 
