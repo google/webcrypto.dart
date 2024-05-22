@@ -31,13 +31,9 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   algorithm: 'ECDH',
   importPrivateRawKey: null, // not supported
   exportPrivateRawKey: null,
-  // HACK: PKCS8 is not support for ECDH / ECDSA on firefox:
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=1133698
-  //
-  // So filter away PKCS8 test data and functions when running on gecko.
-  importPrivatePkcs8Key: nullOnFirefox((keyData, keyImportParams) =>
-      EcdhPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams))),
-  exportPrivatePkcs8Key: nullOnFirefox((key) => key.exportPkcs8Key()),
+  importPrivatePkcs8Key: (keyData, keyImportParams) =>
+      EcdhPrivateKey.importPkcs8Key(keyData, curveFromJson(keyImportParams)),
+  exportPrivatePkcs8Key: (key) => key.exportPkcs8Key(),
   importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdhPrivateKey.importJsonWebKey(
           jsonWebKeyData, curveFromJson(keyImportParams)),
@@ -70,10 +66,7 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
     length,
     keys.publicKey,
   ),
-  testData: _testData.map((c) => {
-        ...c,
-        'privatePkcs8KeyData': nullOnFirefox(c['privatePkcs8KeyData']),
-      }),
+  testData: _testData,
 );
 
 void main() async {
