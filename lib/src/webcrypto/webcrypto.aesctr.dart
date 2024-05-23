@@ -168,11 +168,11 @@ abstract class AesCtrSecretKey {
   /// {@endtemplate}
   ///
   /// {@template AesCtrSecretKey-compatibility-notes}
-  /// **Remark** Firefox does not implement counter rollover for AES-CTR
-  /// correctly. Picking a sufficiently large [length] and using a [counter]
-  /// that isn't filled with `0xff` will likely avoid counter rollovers.
-  /// See [bug 1803105](https://bugzilla.mozilla.org/show_bug.cgi?id=1803105)
-  /// for details.
+  /// > [!NOTE]
+  /// > Firefox does not implement counter rollover for AES-CTR correctly. 
+  /// Picking a sufficiently large `length` and using a `counter` that isn't 
+  /// filled with 0xff will likely avoid counter rollovers. 
+  /// See [bug 1803105](https://bugzilla.mozilla.org/show_bug.cgi?id=1803105) for details.
   /// {@endtemplate}
   ///
   /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final

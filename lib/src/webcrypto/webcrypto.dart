@@ -62,7 +62,8 @@ abstract class KeyPair<S, T> {
 
 /// Elliptic curves supported by ECDSA and ECDH.
 ///
-/// **Remark**, additional values may be added to this enum in the future.
+/// > [!NOTE]
+/// > Additional values may be added to this enum in the future.
 enum EllipticCurve {
   p256,
   p384,

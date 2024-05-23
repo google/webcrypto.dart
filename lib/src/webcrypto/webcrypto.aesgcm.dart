@@ -202,7 +202,8 @@ abstract class AesGcmSecretKey {
   /// {@endtemplate}
   ///
   /// {@template AesGcmSecretKey-remark:no-stream-api}
-  /// **Remark** this package does not offer a streaming API for
+  /// > [!NOTE]
+  /// > This package does not offer a streaming API for
   /// encryption / decryption using AES-GCM, because reading deciphered
   /// plaintext prior to complete verification of the tag breaks the
   /// authenticity assurances. Specifically, until the entire message is
@@ -221,7 +222,7 @@ abstract class AesGcmSecretKey {
 
   // TODO: Document this method, notice that [data] must be concatenation of
   //       ciphertext and authentication tag.
-  // TODO: Document what happens if the authenticity validation fails? Some Exception? 
+  // TODO: Document what happens if the authenticity validation fails? Some Exception?
   Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> iv, {
