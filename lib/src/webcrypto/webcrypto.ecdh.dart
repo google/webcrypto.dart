@@ -25,6 +25,59 @@ abstract class EcdhPrivateKey {
     return impl.ecdhPrivateKey_importPkcs8Key(keyData, curve);
   }
 
+  /// Import ECDH private key in [JSON Web Key][1] format.
+  ///
+  /// {@macro importJsonWebKey:jwk}
+  /// 
+  /// JSON Web Keys imported using [EcdhPrivateKey.importJsonWebKey] must 
+  /// have `"kty": "EC"` and MUST have the following parameters:
+  /// * `"crv"`: The curve used with the key. This MUST match the curve
+  ///  parameter.
+  /// * `"x"`: The x coordinate for the Elliptic Curve point represented
+  /// as a [base64Url] encoded string. The length of this octet string MUST
+  /// be the full size of a coordinate for the curve specified in the `"crv"`
+  /// parameter.
+  /// * `"y"`: The y coordinate for the Elliptic Curve point represented
+  /// as a base64url encoded string. The length of this octet string MUST
+  /// be the full size of a coordinate for the curve specified in the `"crv"`
+  /// parameter.
+  /// * `"d"`: The private key for the Elliptic Curve point represented as a
+  /// base64url encoded string. The length of this octet string MUST be
+  /// 32 bytes for `"crv": "P-256"`, 48 bytes for `"crv": "P-384"`, and
+  /// 66 bytes for `"crv": "P-521"`.
+  /// 
+  /// For importing a JWK with:
+  /// * `"crv": "P-256"`, use [EllipticCurve.p256],
+  /// * `"crv": "P-384"`, use [EllipticCurve.p384], and,
+  /// * `"crv": "P-521"`, use [EllipticCurve.p521].
+  /// 
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// 
+  /// // JSON Web Key as a string containing JSON.
+  /// final jwk = {
+  ///   'kty': 'EC',
+  ///   'crv': 'P-256',
+  ///   'x': 'kgR_PqO07L8sZOBbw6rvv7O_f7clqDeiE3WnMkb5EoI',
+  ///   'y': 'djI-XqCqSyO9GFk_QT_stROMCAROIvU8KOORBgQUemE',
+  ///   'd': '5aPFSt0UFVXYGu-ZKyC9FQIUOAMmnjzdIwkxCMe3Iok',
+  /// };
+  /// 
+  /// Future<void> main() async {
+  ///   // Import secret key from decoded JSON.
+  ///   final jsonWebKey = await EcdhPrivateKey.importJsonWebKey(
+  ///     jwk,
+  ///     EllipticCurve.p256,
+  ///   );
+  /// 
+  ///   // Export the key (print it in same format as it was given).
+  ///   final exportedJsonWebKey = await jsonWebKey.exportJsonWebKey();
+  ///   print(exportedJsonWebKey);
+  /// }
+  /// ```
+  /// 
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
   static Future<EcdhPrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
