@@ -18,6 +18,41 @@ part of 'webcrypto.dart';
 abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
 
+  /// Import [EcdhPrivateKey] in the [PKCS #8][1] format.
+  ///
+  /// The [keyData] parameter is an octet string whose 
+  /// contents are the value of the private key.
+  /// The [curve] parameter specifies the curve to use 
+  /// for the key pair.
+  /// 
+  /// **Example**
+  /// ```dart
+  /// import 'package:pem/pem.dart';
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// 
+  /// // Read key data from a PEM encoded block. This will remove the
+  /// // the padding, decode base64 and return the encoded bytes.
+  /// List<int> keyData = PemCodec(PemLabel.privateKey).decode('''
+  ///   -----BEGIN PRIVATE KEY----- 
+  ///   MIGHAgEAMBMGByqGSM4.....
+  ///   -----END PRIVATE KEY-----
+  ///   ''');
+  /// 
+  /// 
+  /// Future<void> main() async {
+  ///   // Import the Private Key from a Binary PEM decoded data.
+  ///   final privateKey = await EcdhPrivateKey.importPkcs8Key(
+  ///     keyData,
+  ///     EllipticCurve.p256,
+  ///   );
+  /// 
+  ///  // Export the private key (print it in same format as it was given).
+  ///  final exportedPkcs8Key = await privateKey.exportPkcs8Key();
+  ///  print(PemCodec(PemLabel.privateKey).encode(exportedPkcs8Key));
+  /// }
+  /// ```
+  /// 
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc5208
   static Future<EcdhPrivateKey> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
