@@ -52,6 +52,11 @@ class _AesGcmSecretKey implements AesGcmSecretKey {
   _AesGcmSecretKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'AesGcmSecretKey\'';
+  }
+
+  @override
   Future<Uint8List> decryptBytes(
     List<int> data,
     List<int> iv, {

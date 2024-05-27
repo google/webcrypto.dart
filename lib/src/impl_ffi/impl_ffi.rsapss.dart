@@ -106,6 +106,11 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
   _RsaPssPrivateKey(this._key, this._hash);
 
   @override
+  String toString() {
+    return 'Instance of \'RsaPssPrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> signBytes(List<int> data, int saltLength) {
     return signStream(Stream.value(data), saltLength);
   }
@@ -148,6 +153,11 @@ class _RsaPssPublicKey implements RsaPssPublicKey {
   final _Hash _hash;
 
   _RsaPssPublicKey(this._key, this._hash);
+
+  @override
+  String toString() {
+    return 'Instance of \'RsaPssPublicKey\'';
+  }
 
   @override
   Future<bool> verifyBytes(

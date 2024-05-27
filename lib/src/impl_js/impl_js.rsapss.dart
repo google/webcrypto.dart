@@ -93,6 +93,11 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
   _RsaPssPrivateKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'RsaPssPrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> signBytes(List<int> data, int saltLength) async {
     if (saltLength < 0) {
       throw ArgumentError.value(
@@ -128,6 +133,11 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
 class _RsaPssPublicKey implements RsaPssPublicKey {
   final subtle.JSCryptoKey _key;
   _RsaPssPublicKey(this._key);
+
+  @override
+  String toString() {
+    return 'Instance of \'RsaPssPublicKey\'';
+  }
 
   @override
   Future<bool> verifyBytes(

@@ -129,6 +129,11 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
   _EcdhPrivateKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'EcdhPrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
     if (publicKey is! _EcdhPublicKey) {
       throw ArgumentError.value(
@@ -174,6 +179,11 @@ class _EcdhPrivateKey implements EcdhPrivateKey {
 class _EcdhPublicKey implements EcdhPublicKey {
   final subtle.JSCryptoKey _key;
   _EcdhPublicKey(this._key);
+
+  @override
+  String toString() {
+    return 'Instance of \'EcdhPublicKey\'';
+  }
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {

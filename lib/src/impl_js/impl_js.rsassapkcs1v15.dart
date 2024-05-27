@@ -118,6 +118,11 @@ class _RsassaPkcs1V15PublicKey implements RsassaPkcs1V15PublicKey {
   _RsassaPkcs1V15PublicKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'RsassaPkcs1V15PublicKey\'';
+  }
+
+  @override
   Future<bool> verifyBytes(List<int> signature, List<int> data) async {
     return await _verify(_rsassaPkcs1V15Algorithm, _key, signature, data);
   }

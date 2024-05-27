@@ -117,6 +117,11 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   _EcdsaPrivateKey(this._key);
 
   @override
+  String toString() {
+    return 'Instance of \'EcdsaPrivateKey\'';
+  }
+
+  @override
   Future<Uint8List> signBytes(List<int> data, Hash hash) async {
     return await _sign(
       subtle.Algorithm(
@@ -147,6 +152,11 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
 class _EcdsaPublicKey implements EcdsaPublicKey {
   final subtle.JSCryptoKey _key;
   _EcdsaPublicKey(this._key);
+
+  @override
+  String toString() {
+    return 'Instance of \'EcdsaPublicKey\'';
+  }
 
   @override
   Future<bool> verifyBytes(
