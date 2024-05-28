@@ -14,6 +14,42 @@
 
 part of 'webcrypto.dart';
 
+/// Elliptic Curve Diffie-Hellman (ECDH) is a key agreement protocol that allows
+/// two parties to establish a shared secret over an insecure channel.
+/// 
+/// An [EcdhPrivateKey] instance represents a private key that can be used to
+/// derive a shared secret with a public key.
+/// 
+/// Instances of [EcdhPrivateKey] can be imported from:
+/// * PKCS8 Key using [EcdhPrivateKey.importPkcs8Key], and,
+/// * JSON Web Key using [EcdhPrivateKey.importJsonWebKey].
+/// 
+/// A random key pair can be generated using [EcdhPrivateKey.generateKey].
+/// 
+/// {@template EcdhPrivateKey:example}
+/// **Example**
+/// ```dart
+/// import 'dart:convert';
+/// import 'package:webcrypto/webcrypto.dart';
+/// 
+/// Future<void> main() async {
+///   // Alice generates a key-pair
+///   final kpA = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+///   
+///   // Bob generates a key-pair
+///   final kpB = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+/// 
+///   // Alice can make a shared secret using Bob's public key
+///   final sharedSecretA = await kpA.privateKey.deriveBits(256, kpB.publicKey);
+/// 
+///   // Bob can make the same shared secret using Alice public key
+///   final sharedSecretB = await kpB.privateKey.deriveBits(256, kpA.publicKey);
+/// 
+///   // Alice and Bob should have the same shared secret
+///   assert(base64.encode(sharedSecretA) == base64.encode(sharedSecretB));
+/// }
+/// ```
+/// {@endtemplate}
 @sealed
 abstract class EcdhPrivateKey {
   EcdhPrivateKey._(); // keep the constructor private.
