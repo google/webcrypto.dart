@@ -36,10 +36,6 @@ abstract class EcdhPrivateKey {
   ///
   /// The [curve] parameter specifies the curve to use for the key pair.
   /// 
-  /// Use [EllipticCurve.p256] for the P-256 curve.
-  /// Use [EllipticCurve.p384] for the P-384 curve.
-  /// Use [EllipticCurve.p521] for the P-521 curve.
-  /// 
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
