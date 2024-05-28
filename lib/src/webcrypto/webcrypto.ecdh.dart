@@ -20,10 +20,8 @@ abstract class EcdhPrivateKey {
 
   /// Import [EcdhPrivateKey] in the [PKCS #8][1] format.
   ///
-  /// The [keyData] parameter is an octet string whose 
-  /// contents are the value of the private key.
-  /// The [curve] parameter specifies the curve to use 
-  /// for the key pair.
+  /// [keyData] is the DER encoding of the PrivateKeyInfo structure specified in [RFC 5208](https://datatracker.ietf.org/doc/html/rfc5208).
+  /// The [curve] specified must match the curved used in [keyData].
   /// 
   /// **Example**
   /// ```dart
