@@ -42,9 +42,7 @@ abstract class EcdhPrivateKey {
   /// be the full size of a coordinate for the curve specified in the `"crv"`
   /// parameter.
   /// * `"d"`: The private key for the Elliptic Curve point represented as a
-  /// base64url encoded string. The length of this octet string MUST be
-  /// 32 bytes for `"crv": "P-256"`, 48 bytes for `"crv": "P-384"`, and
-  /// 66 bytes for `"crv": "P-521"`.
+  /// base64url encoded string.
   /// 
   /// For importing a JWK with:
   /// * `"crv": "P-256"`, use [EllipticCurve.p256],
