@@ -30,7 +30,8 @@ abstract class EcdhPrivateKey {
   /// {@macro importJsonWebKey:jwk}
   /// 
   /// JSON Web Keys imported using [EcdhPrivateKey.importJsonWebKey] must 
-  /// have `"kty": "EC"` and MUST have the following parameters:
+  /// have the following parameters:
+  /// * `"kty"`: The key type must be `"EC"`.
   /// * `"crv"`: The curve used with the key. This MUST match the curve
   ///  parameter.
   /// * `"x"`: The x coordinate for the Elliptic Curve point represented
