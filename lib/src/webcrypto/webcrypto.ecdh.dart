@@ -55,7 +55,7 @@ abstract class EcdhPrivateKey {
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
   /// 
-  /// // JSON Web Key as a string containing JSON.
+  /// // JSON Web Key as map representing the decoded JSON.
   /// final jwk = {
   ///   'kty': 'EC',
   ///   'crv': 'P-256',
