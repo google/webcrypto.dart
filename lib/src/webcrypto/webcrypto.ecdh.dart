@@ -32,6 +32,28 @@ abstract class EcdhPrivateKey {
     return impl.ecdhPrivateKey_importJsonWebKey(jwk, curve);
   }
 
+  /// Generate a new [EcdhPrivateKey] and [EcdhPublicKey] pair.
+  ///
+  /// The [curve] parameter specifies the curve to use for the key pair.
+  /// 
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// 
+  /// Future<void> main() async {
+  ///   // Generate a new key pair using the P-256 curve.
+  ///   final keyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+  /// 
+  ///   // Export the private key.
+  ///   final exportedPrivateKey = await keyPair.privateKey.exportJsonWebKey();
+  ///   print(exportedPrivateKey);
+  /// 
+  ///   // Export the public key.
+  ///   final exportedPublicKey = await keyPair.publicKey.exportJsonWebKey();
+  ///   print(exportedPublicKey);
+  /// }
+  /// ```
+  /// 
   static Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> generateKey(
     EllipticCurve curve,
   ) {
