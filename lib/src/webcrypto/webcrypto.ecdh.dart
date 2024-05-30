@@ -19,7 +19,7 @@ part of 'webcrypto.dart';
 /// Elliptic Curve Diffie-Hellman (ECDH) is a key agreement protocol that allows
 /// two parties to establish a shared secret over an insecure channel.
 /// An [EcdhPrivateKey] holds a private key that can be used to derive a
-/// shared secret giving the public key from a different key pair.
+/// shared secret given the public key from a different key pair.
 /// 
 /// Instances of [EcdhPrivateKey] can be imported from:
 /// * PKCS8 Key using [EcdhPrivateKey.importPkcs8Key], and,
