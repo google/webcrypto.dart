@@ -182,6 +182,19 @@ abstract class EcdhPrivateKey {
     return impl.ecdhPrivateKey_generateKey(curve);
   }
 
+  /// Derive a shared secret from two ECDH key pairs using the private key from one pair 
+  /// and the public key from another.
+  /// 
+  /// The shared secret is identical whether using A's private key and B's public key, 
+  /// or B's private key and A's public key, enabling secure key exchange between the 
+  /// two parties.
+  ///
+  /// [length] specifies the length of the derived secret in bits.
+  /// [publicKey] is [EcdhPublicKey] from the other party's ECDH key pair.
+  /// 
+  /// Returns a [Uint8List] containing the derived shared secret.
+  /// 
+  /// {@macro EcdhPrivateKey:example}
   // Note some webcrypto implementations (chrome, not firefox) supports passing
   // null for length (in this primitive). However, you can always know the right
   // length from the curve. Note p512 can provide up to: 528 bits!!!
