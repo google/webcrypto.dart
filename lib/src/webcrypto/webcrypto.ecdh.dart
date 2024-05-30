@@ -20,7 +20,7 @@ abstract class EcdhPrivateKey {
 
   /// Import [EcdhPrivateKey] in the [PKCS #8][1] format.
   ///
-  /// [keyData] is the DER encoding of the PrivateKeyInfo structure specified in [RFC 5208](https://datatracker.ietf.org/doc/html/rfc5208).
+  /// Creates an [EcdhPrivateKey] from [keyData] given as the DER encodeding _PrivateKeyInfo structure_ specified in [RFC 5208][1].
   /// The [curve] specified must match the curved used in [keyData].
   /// 
   /// **Example**
