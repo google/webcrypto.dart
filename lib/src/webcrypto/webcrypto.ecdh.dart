@@ -38,7 +38,7 @@ abstract class EcdhPrivateKey {
     return impl.ecdhPrivateKey_generateKey(curve);
   }
 
-  /// Derives a shared secret from two ECDH key pairs using the private key from one pair 
+  /// Derive a shared secret from two ECDH key pairs using the private key from one pair 
   /// and the public key from another.
   /// 
   /// The shared secret is identical whether using A's private key and B's public key, 
