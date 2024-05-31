@@ -204,6 +204,25 @@ abstract class EcdhPrivateKey {
   // https://tools.ietf.org/html/rfc6090#appendix-B
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey);
 
+  /// Export the [EcdhPrivateKey] as a [PKCS #8][1] key.
+  ///
+  /// Returns private key as a list of bytes.
+  /// 
+  /// **Example**
+  /// ```dart
+  /// import 'package:pem/pem.dart';
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// 
+  /// Future<void> main() async {
+  ///   // Alice generates a key-pair
+  ///   final kpA = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+  /// 
+  ///   // Export the private key (print it in same format as it was given).
+  ///   final exportedPkcs8Key = await kpA.privateKey.exportPkcs8Key();
+  ///   print(PemCodec(PemLabel.privateKey).encode(exportedPkcs8Key));
+  /// }
+  /// ```
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc5208
   Future<Uint8List> exportPkcs8Key();
 
   Future<Map<String, dynamic>> exportJsonWebKey();
