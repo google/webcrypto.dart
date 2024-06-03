@@ -214,11 +214,15 @@ abstract class EcdhPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// 
   /// Future<void> main() async {
-  ///   // Alice generates a key-pair
-  ///   final kpA = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+  ///   // Generate a key-pair
+  ///   final kp = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
   /// 
-  ///   // Export the private key (print it in same format as it was given).
-  ///   final exportedPkcs8Key = await kpA.privateKey.exportPkcs8Key();
+  ///   // Export the private key.
+  ///   final exportedPkcs8Key = await kp.privateKey.exportPkcs8Key();
+  ///
+  ///   // Private keys are often encoded as PEM.
+  ///   // This encodes the key in base64 and wraps it with:
+  ///   // '-----BEGIN PRIVATE KEY----'...
   ///   print(PemCodec(PemLabel.privateKey).encode(exportedPkcs8Key));
   /// }
   /// ```
