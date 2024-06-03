@@ -206,7 +206,7 @@ abstract class EcdhPrivateKey {
 
   /// Export the [EcdhPrivateKey] as a [PKCS #8][1] key.
   ///
-  /// Returns private key as a list of bytes.
+  /// Returns the DER encoding of the _PrivateKeyInfo_ structure specified in [RFC 5208][1] as a list of bytes.
   /// 
   /// **Example**
   /// ```dart
