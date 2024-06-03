@@ -136,3 +136,14 @@ jobs:
           api-level: 28
           working-directory: ./example
           script: flutter test integration_test/webcrypto_test.dart -d android
+
+  report-coverage:
+    needs: [linux, macos, windows, ios, android]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
+          
