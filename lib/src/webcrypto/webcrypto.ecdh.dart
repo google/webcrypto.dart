@@ -206,6 +206,28 @@ abstract class EcdhPrivateKey {
 
   Future<Uint8List> exportPkcs8Key();
 
+  /// Export the [EcdhPrivateKey] as a [JSON Web Key][1].
+  /// 
+  /// {@macro exportJsonWebKey:returns}
+  /// 
+  /// **Example**
+  /// ```dart
+  /// import 'dart:convert';
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// 
+  /// Future<void> main() async {
+  ///   // Alice generates a key-pair
+  ///   final kpA = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+  ///   
+  ///   // Export the private key as a JSON Web Key.
+  ///   final exportedPrivateKey = await kpA.privateKey.exportJsonWebKey();
+  /// 
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`.
+  ///   print(jsonEncode(exportedPrivateKey));
+  /// }
+  /// ```
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
 
