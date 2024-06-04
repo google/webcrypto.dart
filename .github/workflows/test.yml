@@ -110,6 +110,10 @@ jobs:
         with:
           model: 'iPhone 15'
       - run: flutter pub get
+      - run: flutter pub get
+        working-directory: ./example
+      - run: flutter build ios --simulator --target=integration_test/webcrypto_test.dart
+        working-directory: ./example
       - run: flutter test integration_test/webcrypto_test.dart -d iphone
         working-directory: ./example
   android:
