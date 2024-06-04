@@ -204,6 +204,29 @@ abstract class EcdhPrivateKey {
   // https://tools.ietf.org/html/rfc6090#appendix-B
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey);
 
+  /// Export the [EcdhPrivateKey] as a [PKCS #8][1] key.
+  ///
+  /// Returns the DER encoding of the _PrivateKeyInfo_ structure specified in [RFC 5208][1] as a list of bytes.
+  /// 
+  /// **Example**
+  /// ```dart
+  /// import 'package:pem/pem.dart';
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// 
+  /// Future<void> main() async {
+  ///   // Generate a key-pair
+  ///   final kp = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+  /// 
+  ///   // Export the private key.
+  ///   final exportedPkcs8Key = await kp.privateKey.exportPkcs8Key();
+  ///
+  ///   // Private keys are often encoded as PEM.
+  ///   // This encodes the key in base64 and wraps it with:
+  ///   // '-----BEGIN PRIVATE KEY----'...
+  ///   print(PemCodec(PemLabel.privateKey).encode(exportedPkcs8Key));
+  /// }
+  /// ```
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc5208
   Future<Uint8List> exportPkcs8Key();
 
   /// Export the [EcdhPrivateKey] as a [JSON Web Key][1].
