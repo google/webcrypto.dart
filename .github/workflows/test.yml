@@ -39,10 +39,10 @@ jobs:
             --driver=test_driver/integration_test.dart \
             --target=integration_test/webcrypto_test.dart \
             -d chrome
-      - run: xvfb-run flutter pub run test -p vm,chrome,firefox --coverage
+      - run: xvfb-run flutter pub run test -p vm,chrome,firefox
       - name: Convert coverage to lcov
         run: |
-          dart run coverage:format_coverage -i coverage -o coverage/lcov.info --lcov --report-on lib/
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -76,10 +76,10 @@ jobs:
             --driver=test_driver/integration_test.dart \
             --target=integration_test/webcrypto_test.dart \
             -d chrome
-      - run: flutter pub run test -p vm,chrome --coverage # TODO: Enable firefox if it works
+      - run: flutter pub run test -p vm,chrome # TODO: Enable firefox if it works
       - name: Convert coverage to lcov
         run: |
-          dart run coverage:format_coverage -i coverage -o coverage/lcov.info --lcov --report-on lib/
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -114,10 +114,10 @@ jobs:
             --driver=test_driver/integration_test.dart \
             --target=integration_test/webcrypto_test.dart \
             -d chrome
-      - run: flutter pub run test -p vm,chrome,firefox --coverage
+      - run: flutter pub run test -p vm,chrome,firefox
       - name: Convert coverage to lcov
         run: |
-          dart run coverage:format_coverage -i coverage -o coverage/lcov.info --lcov --report-on lib/
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -145,7 +145,7 @@ jobs:
         working-directory: ./example
       - name: Convert coverage to lcov
         run: |
-          dart run coverage:format_coverage -i coverage -o coverage/lcov.info --lcov --report-on lib/
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -177,7 +177,7 @@ jobs:
           script: flutter test integration_test/webcrypto_test.dart -d android --coverage
       - name: Convert coverage to lcov
         run: |
-          dart run coverage:format_coverage -i coverage -o coverage/lcov.info --lcov --report-on lib/
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
