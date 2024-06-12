@@ -121,6 +121,10 @@ jobs:
         with:
           channel: 'stable'
           cache: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
       - name: Configure Flutter
         run: |
           flutter config --no-analytics
