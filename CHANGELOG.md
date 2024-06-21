@@ -1,3 +1,7 @@
+# 0.5.7
+* Added compatibility for AGP 8.4.
+* Improved API documentation for ECDH.
+
 # 0.5.6
 * Disable LTO on Android to fix [#80](https://github.com/google/webcrypto.dart/issues/80).
 * Migrate to `dart:js_interop` to ensure [wasm compatibility](https://dart.dev/interop/js-interop/package-web#package-web-vs-dart-html).
