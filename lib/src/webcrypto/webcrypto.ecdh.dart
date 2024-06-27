@@ -301,5 +301,35 @@ abstract class EcdhPublicKey {
   /// See compatibility section in [EcdhPublicKey.importSpkiKey].
   Future<Uint8List> exportSpkiKey();
 
+  /// Export the [EcdhPublicKey] as a [JSON Web Key][1].
+  /// 
+  /// {@macro exportJsonWebKey:returns}
+  /// 
+  /// **Example**
+  /// ```dart
+  /// import 'dart:convert';
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// 
+  /// // Public JSON Web Key data.
+  /// final jwk = {
+  ///   'kty': 'EC',
+  ///   'crv': 'P-256',
+  ///   'x': 'kgR_PqO07L8sZOBbw6rvv7O_f7clqDeiE3WnMkb5EoI',
+  ///   'y': 'djI-XqCqSyO9GFk_QT_stROMCAROIvU8KOORBgQUemE'
+  /// };
+  /// 
+  /// Future<void> main() async {
+  ///   // Alice generates a key-pair
+  ///   final kpA = await EcdhPublicKey.importJsonWebKey(jwk, EllipticCurve.p256);
+  ///   
+  ///   // Export the public key as a JSON Web Key.
+  ///   final exportedPublicKey = await kpA.exportJsonWebKey();
+  /// 
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`.
+  ///   print(jsonEncode(exportedPublicKey));
+  /// }
+  /// ```
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
