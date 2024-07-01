@@ -112,6 +112,36 @@ final _testData = [
     "deriveParams": {}
   },
   {
+    "name": "generated on boringssl/linux (import key exception) at 2020-01-22T23:24:34",
+    "privatePkcs8KeyData":
+        "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg3aTiZ7odKAODYk4BpZlzulBCB/BptmxjtvrzyXI71UyhRANCAATl0GVa8O1sXXf2NV5qGJ/9/Vq8PVWCZuezADa1F0Vr2TaB8BseZIW+rhmEmLC2FfCdxj9NmLp00SilRTm40Hxm",
+    "privateJsonWebKeyData": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "5dBlWvDtbF139jVeahif_f1avD1VgmbnswA2tRdFa9k",
+      "y": "NoHwGx5khb6uGYSYsLYV8J3GP02YunTRKKVFObjQfGY",
+      "d": "3aTiZ7odKAODYk4BpZlzulBCB_BptmxjtvrzyXI71Uw"
+    },
+    "publicRawKeyData":
+        "BHiIXxrwhM92v4ueDrj3x1JJY4uS+II/IJPjqMvaKj/QfoOllnEkrnaOW1owBYRBMnP0pPouPkqbVfPACMUsfKs=",
+    "publicSpkiKeyData":
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEeIhfGvCEz3a/i54OuPfHUklji5L4gj8gk+Ooy9oqP9B+g6WWcSSudo5bWjAFhEEyc/Sk+i4+SptV88AIxSx8qw==",
+    "publicJsonWebKeyData": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "eIhfGvCEz3a_i54OuPfHUklji5L4gj8gk-Ooy9oqP9A",
+      "y": "foOllnEkrnaOW1owBYRBMnP0pPouPkqbVfPACMUsfKs"
+    },
+    "derivedBits": "WA==",
+    "derivedLength": 7,
+    "importKeyParams": {"curve": "p-256"},
+    "importKeyException": {
+      "pkcs8Exception": "FormatException: incorrect elliptic curve",
+      "jwkException": "JWK property \"crv\" is not"
+    },
+    "deriveParams": {}
+  },
+  {
     "name": "generated on chrome/linux at 2020-01-22T23:24:39",
     "privatePkcs8KeyData":
         "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg5AWOpgxJFPrYFT35Cd9NzjY/42GMqXHjN2u7nr4vTxmhRANCAAQ6JX8rvqAWaBf62fiBWeRSQ4VmSFtbXiBeMPlW7kvdm+CYn5qysrOmwWQF7ozYqksgU2rq/VxiOIDEA/0jwKih",

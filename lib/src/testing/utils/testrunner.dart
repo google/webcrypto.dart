@@ -63,6 +63,9 @@ class _TestCase {
   // Parameters for key import (always required)
   final Map<String, dynamic>? importKeyParams;
 
+  // Parameters for import key exception (optional, if there is an exception)
+  final Map<String, dynamic>? importKeyException;
+
   // Parameters for sign/verify (required, if there is a signature)
   final Map<String, dynamic>? signVerifyParams;
 
@@ -71,6 +74,20 @@ class _TestCase {
 
   // Parameters for deriveBits (required, if there is a derivedBits)
   final Map<String, dynamic>? deriveParams;
+
+  String? get pkcs8ImportKeyException {
+    if (importKeyException != null) {
+      return importKeyException?['pkcs8Exception'];
+    }
+    return null;
+  }
+
+  String? get jwkImportKeyException {
+    if (importKeyException != null) {
+      return importKeyException?['jwkException'];
+    }
+    return null;
+  }
 
   _TestCase(
     this.name, {
@@ -90,6 +107,7 @@ class _TestCase {
     this.signVerifyParams,
     this.encryptDecryptParams,
     this.deriveParams,
+    this.importKeyException,
   });
 
   factory _TestCase.fromJson(Map json) {
@@ -110,6 +128,7 @@ class _TestCase {
       derivedBits: _optionalBase64Decode(json['derivedBits']),
       derivedLength: json['derivedLength'] as int?,
       importKeyParams: _optionalStringMapDecode(json['importKeyParams']),
+      importKeyException: _optionalStringMapDecode(json['importKeyException']),
       signVerifyParams: _optionalStringMapDecode(json['signVerifyParams']),
       encryptDecryptParams:
           _optionalStringMapDecode(json['encryptDecryptParams']),
@@ -746,6 +765,23 @@ void _runTests<PrivateKey, PublicKey>(
       publicKey = pair.publicKey;
       privateKey = pair.privateKey;
     });
+  } else if (c.importKeyException != null) {
+    test('pkcs8 import exception', () async {
+      try {
+      await r._importPrivatePkcs8Key!(c.privatePkcs8KeyData!, {'curve': 'p-521'});
+      check(false, 'Expected an exception for P-512 import');
+    } catch (e) {
+      check(e.toString().contains(c.pkcs8ImportKeyException!));
+    }
+    });
+    test('jwk import exception', () async {
+      try {
+      await r._importPrivateJsonWebKey!(c.privateJsonWebKeyData!, {'curve': 'p-521'});
+      check(false, 'Expected an exception for P-512 import');
+    } catch (e) {
+      check(e.toString().contains(c.jwkImportKeyException!));
+    }
+    });
   } else {
     test('import key-pair', () async {
       // Get a privateKey
@@ -876,7 +912,8 @@ void _runTests<PrivateKey, PublicKey>(
       });
     }
 
-    test('validated derivedBits', () async {
+    if (c.pkcs8ImportKeyException == null){
+      test('validated derivedBits', () async {
       final derived = await r._deriveBits(
         _KeyPair(
             privateKey: privateKey as PrivateKey,
@@ -889,6 +926,7 @@ void _runTests<PrivateKey, PublicKey>(
         'failed to derivedBits are not consistent',
       );
     });
+    }
   }
 
   //------------------------------ Utilities for testing
@@ -1021,7 +1059,7 @@ void _runTests<PrivateKey, PublicKey>(
 
   //------------------------------ Test import public key
 
-  if (c.publicRawKeyData != null) {
+  if (c.publicRawKeyData != null && c.pkcs8ImportKeyException == null) {
     assert(!r._isSymmetric && r._importPublicRawKey != null);
 
     test('importPublicRawKey()', () async {
@@ -1033,7 +1071,7 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
-  if (c.publicSpkiKeyData != null) {
+  if (c.publicSpkiKeyData != null  && c.pkcs8ImportKeyException == null) {
     assert(!r._isSymmetric && r._importPublicSpkiKey != null);
 
     test('importPublicSpkiKey()', () async {
@@ -1045,7 +1083,7 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
-  if (c.publicJsonWebKeyData != null) {
+  if (c.publicJsonWebKeyData != null  && c.jwkImportKeyException == null) {
     assert(!r._isSymmetric && r._importPublicJsonWebKey != null);
 
     test('importPublicJsonWebKey()', () async {
@@ -1069,7 +1107,7 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
-  if (c.privatePkcs8KeyData != null) {
+  if (c.privatePkcs8KeyData != null  && c.pkcs8ImportKeyException == null) {
     test('importPrivatePkcs8Key()', () async {
       final key = await r._importPrivatePkcs8Key!(
         c.privatePkcs8KeyData!,
@@ -1079,7 +1117,7 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
-  if (c.privateJsonWebKeyData != null) {
+  if (c.privateJsonWebKeyData != null  && c.jwkImportKeyException == null) {
     test('importPrivateJsonWebKey()', () async {
       final key = await r._importPrivateJsonWebKey!(
         c.privateJsonWebKeyData!,
@@ -1360,7 +1398,7 @@ void _runTests<PrivateKey, PublicKey>(
   }
 
   //------------------------------ Test derivedBits
-  if (r._deriveBits != null) {
+  if (r._deriveBits != null  && (c.pkcs8ImportKeyException == null || c.jwkImportKeyException == null)) {
     test('deriveBits', () async {
       final derived = await r._deriveBits(
         _KeyPair(
@@ -1374,7 +1412,7 @@ void _runTests<PrivateKey, PublicKey>(
   }
 
   //------------------------------ export/import private key
-  if (r._exportPrivateRawKey != null) {
+  if (r._exportPrivateRawKey != null  && (c.pkcs8ImportKeyException == null || c.jwkImportKeyException == null)) {
     test('export/import raw private key', () async {
       final keyData = await r._exportPrivateRawKey(privateKey as PrivateKey);
       check(keyData.isNotEmpty, 'exported key is empty');
@@ -1384,7 +1422,7 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
-  if (r._exportPrivatePkcs8Key != null) {
+  if (r._exportPrivatePkcs8Key != null && c.pkcs8ImportKeyException == null) {
     test('export/import pkcs8 private key', () async {
       final keyData = await r._exportPrivatePkcs8Key(privateKey as PrivateKey);
       check(keyData.isNotEmpty, 'exported key is empty');
@@ -1394,7 +1432,7 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
-  if (r._exportPrivateJsonWebKey != null) {
+  if (r._exportPrivateJsonWebKey != null && c.jwkImportKeyException == null) {
     test('export/import jwk private key', () async {
       final jwk = await r._exportPrivateJsonWebKey(privateKey as PrivateKey);
       check(jwk.isNotEmpty, 'exported key is empty');
@@ -1406,7 +1444,7 @@ void _runTests<PrivateKey, PublicKey>(
 
   //------------------------------ export/import public key
 
-  if (r._exportPublicRawKey != null) {
+  if (r._exportPublicRawKey != null && (c.pkcs8ImportKeyException == null || c.jwkImportKeyException == null)) {
     assert(!r._isSymmetric && r._importPublicRawKey != null);
 
     test('export/import raw public key', () async {
@@ -1418,7 +1456,7 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
-  if (r._exportPublicSpkiKey != null) {
+  if (r._exportPublicSpkiKey != null && c.pkcs8ImportKeyException == null) {
     assert(!r._isSymmetric && r._importPublicSpkiKey != null);
 
     test('export/import pkcs8 public key', () async {
@@ -1430,7 +1468,7 @@ void _runTests<PrivateKey, PublicKey>(
     });
   }
 
-  if (r._exportPublicJsonWebKey != null) {
+  if (r._exportPublicJsonWebKey != null && c.jwkImportKeyException == null) {
     assert(!r._isSymmetric && r._importPublicJsonWebKey != null);
 
     test('export/import jwk public key', () async {
