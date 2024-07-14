@@ -324,7 +324,7 @@ abstract class EcdhPublicKey {
   /// };
   /// 
   /// Future<void> main() async{
-  ///   // Import secret key from decoded JSON.
+  ///   // Import public key from decoded JSON.
   ///   final jsonWebKey = await EcdhPublicKey.importJsonWebKey(
   ///     jwk,
   ///     EllipticCurve.p256,
