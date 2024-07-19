@@ -181,7 +181,7 @@ jobs:
           parallel: true
 
   report-coverage:
-    needs: linux
+    needs: [linux, macos, windows, ios, android]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
