@@ -287,6 +287,57 @@ abstract class EcdhPublicKey {
     return impl.ecdhPublicKey_importSpkiKey(keyData, curve);
   }
 
+  /// Import ECDH public key in [JSON Web Key][1] format.
+  ///
+  /// {@macro importJsonWebKey:jwk}
+  /// 
+  /// JSON Web Keys imported using [EcdhPublicKey.importJsonWebKey] must 
+  /// have the following parameters:
+  /// * `"kty"`: The key type must be `"EC"`.
+  /// * `"crv"`: The curve used with the key. This MUST match the curve
+  ///  parameter.
+  /// * `"x"`: The x coordinate for the Elliptic Curve point represented
+  /// as a [base64Url] encoded string. The length of this octet string MUST
+  /// be the full size of a coordinate for the curve specified in the `"crv"`
+  /// parameter.
+  /// * `"y"`: The y coordinate for the Elliptic Curve point represented
+  /// as a [base64url] encoded string. The length of this octet string MUST
+  /// be the full size of a coordinate for the curve specified in the `"crv"`
+  /// parameter.
+  /// 
+  /// For importing a JWK with:
+  /// * `"crv": "P-256"`, use [EllipticCurve.p256],
+  /// * `"crv": "P-384"`, use [EllipticCurve.p384], and,
+  /// * `"crv": "P-521"`, use [EllipticCurve.p521].
+  /// 
+  /// **Example**
+  /// ```dart
+  /// import 'dart:convert';
+  /// import 'package:webcrypto/webcrypto.dart';
+  /// 
+  /// // JSON Web Key as map representing the decoded JSON.
+  /// final jwk = {
+  ///   'kty': 'EC',
+  ///   'crv': 'P-256',
+  ///   'x': 'kgR_PqO07L8sZOBbw6rvv7O_f7clqDeiE3WnMkb5EoI',
+  ///   'y': 'djI-XqCqSyO9GFk_QT_stROMCAROIvU8KOORBgQUemE'
+  /// };
+  /// 
+  /// Future<void> main() async{
+  ///   // Import public key from decoded JSON.
+  ///   final jsonWebKey = await EcdhPublicKey.importJsonWebKey(
+  ///     jwk,
+  ///     EllipticCurve.p256,
+  ///   );
+  /// 
+  ///   // Export the key (print it in same format as it was given).
+  ///   final exportedJsonWebKey = await jsonWebKey.exportJsonWebKey();
+  /// 
+  ///   print(jsonEncode(exportedJsonWebKey));
+  /// }
+  /// ```
+  /// 
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
   static Future<EcdhPublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
