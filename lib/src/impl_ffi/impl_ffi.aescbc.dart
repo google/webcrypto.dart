@@ -16,10 +16,10 @@
 
 part of 'impl_ffi.dart';
 
-Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) async =>
+Future<AesCbcSecretKeyImpl> aesCbc_importRawKey(List<int> keyData) async =>
     _AesCbcSecretKey(_aesImportRawKey(keyData));
 
-Future<AesCbcSecretKey> aesCbc_importJsonWebKey(
+Future<AesCbcSecretKeyImpl> aesCbc_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async =>
     _AesCbcSecretKey(_aesImportJwkKey(
@@ -27,7 +27,7 @@ Future<AesCbcSecretKey> aesCbc_importJsonWebKey(
       expectedJwkAlgSuffix: 'CBC',
     ));
 
-Future<AesCbcSecretKey> aesCbc_generateKey(int length) async =>
+Future<AesCbcSecretKeyImpl> aesCbc_generateKey(int length) async =>
     _AesCbcSecretKey(_aesGenerateKey(length));
 
 Stream<Uint8List> _aesCbcEncryptOrDecrypt(
@@ -93,7 +93,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
   });
 }
 
-class _AesCbcSecretKey implements AesCbcSecretKey {
+class _AesCbcSecretKey extends AesCbcSecretKeyImpl {
   final Uint8List _key;
   _AesCbcSecretKey(this._key);
 

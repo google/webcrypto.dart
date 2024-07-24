@@ -27,6 +27,7 @@ import 'dart:typed_data';
 import '../impl_stub.dart'
     if (dart.library.ffi) '../impl_ffi/impl_ffi.dart'
     if (dart.library.js) '../impl_js/impl_js.dart' as impl;
+import '../impl_stub/impl_stub.dart';
 
 part 'webcrypto.aescbc.dart';
 part 'webcrypto.aesctr.dart';

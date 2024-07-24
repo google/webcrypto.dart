@@ -17,6 +17,8 @@ library impl_js;
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:webcrypto/src/impl_stub/impl_stub.dart';
+
 import '../webcrypto/webcrypto.dart';
 import '../crypto_subtle.dart' as subtle;
 

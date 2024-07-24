@@ -18,7 +18,7 @@ part of 'impl_js.dart';
 
 const _aesCbcAlgorithm = subtle.Algorithm(name: 'AES-CBC');
 
-Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) async {
+Future<AesCbcSecretKeyImpl> aesCbc_importRawKey(List<int> keyData) async {
   return _AesCbcSecretKey(await _importKey(
     'raw',
     keyData,
@@ -28,7 +28,7 @@ Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) async {
   ));
 }
 
-Future<AesCbcSecretKey> aesCbc_importJsonWebKey(
+Future<AesCbcSecretKeyImpl> aesCbc_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async {
   return _AesCbcSecretKey(await _importJsonWebKey(
@@ -39,7 +39,7 @@ Future<AesCbcSecretKey> aesCbc_importJsonWebKey(
   ));
 }
 
-Future<AesCbcSecretKey> aesCbc_generateKey(int length) async {
+Future<AesCbcSecretKeyImpl> aesCbc_generateKey(int length) async {
   return _AesCbcSecretKey(await _generateKey(
     _aesCbcAlgorithm.update(length: length),
     _usagesEncryptDecrypt,
@@ -47,7 +47,7 @@ Future<AesCbcSecretKey> aesCbc_generateKey(int length) async {
   ));
 }
 
-class _AesCbcSecretKey implements AesCbcSecretKey {
+class _AesCbcSecretKey implements AesCbcSecretKeyImpl {
   final subtle.JSCryptoKey _key;
   _AesCbcSecretKey(this._key);
 

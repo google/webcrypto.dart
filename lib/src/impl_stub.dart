@@ -17,6 +17,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:webcrypto/src/impl_stub/impl_stub.dart';
+
 import 'webcrypto/webcrypto.dart';
 
 final _notImplemented = throw UnimplementedError('Not implemented');
@@ -213,13 +215,13 @@ Future<AesCtrSecretKey> aesCtr_generateKey(int length) => throw _notImplemented;
 
 //---------------------- AES-CBC
 
-Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) =>
+Future<AesCbcSecretKeyImpl> aesCbc_importRawKey(List<int> keyData) =>
     throw _notImplemented;
 
-Future<AesCbcSecretKey> aesCbc_importJsonWebKey(Map<String, dynamic> jwk) =>
+Future<AesCbcSecretKeyImpl> aesCbc_importJsonWebKey(Map<String, dynamic> jwk) =>
     throw _notImplemented;
 
-Future<AesCbcSecretKey> aesCbc_generateKey(int length) => throw _notImplemented;
+Future<AesCbcSecretKeyImpl> aesCbc_generateKey(int length) => throw _notImplemented;
 
 //---------------------- AES-GCM
 
