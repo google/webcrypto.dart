@@ -1,11 +1,14 @@
-library impl_stub;
+library webcrypto.impl_stub;
 
-import 'dart:typed_data';
-import 'dart:async';
-
-import '../impl_stub.dart'
-    if (dart.library.ffi) '../impl_ffi/impl_ffi.dart'
-    if (dart.library.js) '../impl_js/impl_js.dart' as impl;
-    
+import 'package:webcrypto/src/impl_interface/impl_interface.dart';
 
 part 'impl_stub.aescbc.dart';
+
+const webCryptImpl = _WebCryptoImpl();
+
+final class _WebCryptoImpl implements WebCryptoImpl {
+  const _WebCryptoImpl();
+
+  @override
+  final aesCbcSecretKey = const _StaticAesCbcSecretKeyImpl();
+}

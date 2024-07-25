@@ -17,7 +17,7 @@ library impl_js;
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:webcrypto/src/impl_stub/impl_stub.dart';
+import 'package:webcrypto/src/impl_interface/impl_interface.dart';
 
 import '../webcrypto/webcrypto.dart';
 import '../crypto_subtle.dart' as subtle;
@@ -54,4 +54,13 @@ class _KeyPair<S, T> implements KeyPair<S, T> {
   final T publicKey;
 
   _KeyPair({required this.privateKey, required this.publicKey});
+}
+
+const webCryptImpl = _WebCryptoImpl();
+
+final class _WebCryptoImpl implements WebCryptoImpl {
+  const _WebCryptoImpl();
+
+  @override
+  final aesCbcSecretKey = const _StaticAesCbcSecretKeyImpl();
 }

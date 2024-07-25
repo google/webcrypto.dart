@@ -71,7 +71,7 @@ final class AesCbcSecretKey {
   /// print(utf8.decode(await k.decryptBytes(c, iv))); // hello world
   /// ```
   static Future<AesCbcSecretKey> importRawKey(List<int> keyData) async {
-    final impl = await AesCbcSecretKeyImpl.importRawKey(keyData);
+    final impl = await webCryptImpl.aesCbcSecretKey.importRawKey(keyData);
     return AesCbcSecretKey._(impl);
   }
 
@@ -110,7 +110,7 @@ final class AesCbcSecretKey {
   // TODO: Decide if we want restrictions on "use" property" (we probably have it on web, if we don't strip it)
   // TODO: Decide if we want place restrictions on key_ops
   static Future<AesCbcSecretKey> importJsonWebKey(Map<String, dynamic> jwk) async {
-    final impl = await AesCbcSecretKeyImpl.importJsonWebKey(jwk);
+    final impl = await webCryptImpl.aesCbcSecretKey.importJsonWebKey(jwk);
     return AesCbcSecretKey._(impl);
   }
 
@@ -131,7 +131,7 @@ final class AesCbcSecretKey {
   /// final key = await AesCbcSecretKey.generate(256);
   /// ```
   static Future<AesCbcSecretKey> generateKey(int length) async {
-    final impl = await AesCbcSecretKeyImpl.generateKey(length);
+    final impl = await webCryptImpl.aesCbcSecretKey.generateKey(length);
     return AesCbcSecretKey._(impl);
   }
 
