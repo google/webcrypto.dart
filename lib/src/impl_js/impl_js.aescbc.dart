@@ -66,7 +66,7 @@ final class _StaticAesCbcSecretKeyImpl implements StaticAesCbcSecretKeyImpl {
   }
 }
 
-class _AesCbcSecretKeyImpl implements AesCbcSecretKeyImpl {
+final class _AesCbcSecretKeyImpl implements AesCbcSecretKeyImpl {
   final subtle.JSCryptoKey _key;
   _AesCbcSecretKeyImpl(this._key);
 
