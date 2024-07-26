@@ -6,7 +6,7 @@ abstract interface class StaticAesCbcSecretKeyImpl {
   Future<AesCbcSecretKeyImpl> generateKey(int length);
 }
 
-abstract class AesCbcSecretKeyImpl {
+abstract interface class AesCbcSecretKeyImpl {
   Future<Uint8List> encryptBytes(List<int> data, List<int> iv);
   Future<Uint8List> decryptBytes(List<int> data, List<int> iv);
   Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv);
