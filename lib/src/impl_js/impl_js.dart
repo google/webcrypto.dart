@@ -56,7 +56,7 @@ class _KeyPair<S, T> implements KeyPair<S, T> {
   _KeyPair({required this.privateKey, required this.publicKey});
 }
 
-const webCryptImpl = _WebCryptoImpl();
+const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
 final class _WebCryptoImpl implements WebCryptoImpl {
   const _WebCryptoImpl();
