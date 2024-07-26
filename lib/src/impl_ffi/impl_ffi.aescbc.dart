@@ -112,7 +112,7 @@ final class _StaticAesCbcSecretKeyImpl implements StaticAesCbcSecretKeyImpl {
   }
 }
 
-class _AesCbcSecretKeyImpl extends AesCbcSecretKeyImpl {
+final class _AesCbcSecretKeyImpl extends AesCbcSecretKeyImpl {
   final Uint8List _key;
   _AesCbcSecretKeyImpl(this._key);
 
