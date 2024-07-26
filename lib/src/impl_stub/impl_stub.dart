@@ -4,7 +4,7 @@ import 'package:webcrypto/src/impl_interface/impl_interface.dart';
 
 part 'impl_stub.aescbc.dart';
 
-const webCryptImpl = _WebCryptoImpl();
+const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
 final class _WebCryptoImpl implements WebCryptoImpl {
   const _WebCryptoImpl();
