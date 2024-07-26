@@ -70,10 +70,10 @@ class _KeyPair<S, T> implements KeyPair<S, T> {
 }
 
 
-final webCryptImpl = _WebCryptoImpl();
+const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
 final class _WebCryptoImpl implements WebCryptoImpl {
-  _WebCryptoImpl();
+  const _WebCryptoImpl();
 
   @override
   final aesCbcSecretKey = const _StaticAesCbcSecretKeyImpl();
