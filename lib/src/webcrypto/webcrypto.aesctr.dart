@@ -28,9 +28,10 @@ part of 'webcrypto.dart';
 ///
 /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
 /// [2]: https://tools.ietf.org/html/rfc7517
-@sealed
-abstract class AesCtrSecretKey {
-  AesCtrSecretKey._(); // keep the constructor private.
+final class AesCtrSecretKey {
+  final AesCtrSecretKeyImpl _impl;
+
+  AesCtrSecretKey._(this._impl); // keep the constructor private.
 
   /// Import an [AesCtrSecretKey] from raw [keyData].
   ///
@@ -66,8 +67,9 @@ abstract class AesCtrSecretKey {
   /// // Decrypt message (requires the same counter ctr and length N)
   /// print(utf8.decode(await k.decryptBytes(c, ctr, N))); // hello world
   /// ```
-  static Future<AesCtrSecretKey> importRawKey(List<int> keyData) {
-    return impl.aesCtr_importRawKey(keyData);
+  static Future<AesCtrSecretKey> importRawKey(List<int> keyData) async {
+    final impl = await webCryptImpl.aesCtrSecretKey.importRawKey(keyData);
+    return AesCtrSecretKey._(impl);
   }
 
   /// Import an [AesCtrSecretKey] from [JSON Web Key][1].
@@ -102,8 +104,9 @@ abstract class AesCtrSecretKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  static Future<AesCtrSecretKey> importJsonWebKey(Map<String, dynamic> jwk) {
-    return impl.aesCtr_importJsonWebKey(jwk);
+  static Future<AesCtrSecretKey> importJsonWebKey(Map<String, dynamic> jwk) async {
+    final impl = await webCryptImpl.aesCtrSecretKey.importJsonWebKey(jwk);
+    return AesCtrSecretKey._(impl);
   }
 
   /// Generate random [AesCtrSecretKey].
@@ -122,8 +125,9 @@ abstract class AesCtrSecretKey {
   /// // Generate a new random AES-CTR secret key for AES-256.
   /// final key = await AesCtrSecretKey.generate(256);
   /// ```
-  static Future<AesCtrSecretKey> generateKey(int length) {
-    return impl.aesCtr_generateKey(length);
+  static Future<AesCtrSecretKey> generateKey(int length) async {
+    final impl = await webCryptImpl.aesCtrSecretKey.generateKey(length);
+    return AesCtrSecretKey._(impl);
   }
 
   /// Encrypt [data] with this [AesCtrSecretKey] using AES in _Counter mode_,
@@ -181,7 +185,8 @@ abstract class AesCtrSecretKey {
     List<int> data,
     List<int> counter,
     int length,
-  );
+  ) => 
+    _impl.encryptBytes(data, counter, length);
 
   /// Encrypt [data] with this [AesCtrSecretKey] using AES in _Counter mode_,
   /// as specified in [NIST SP800-38A][1].
@@ -237,7 +242,8 @@ abstract class AesCtrSecretKey {
     Stream<List<int>> data,
     List<int> counter,
     int length,
-  );
+  ) => 
+    _impl.encryptStream(data, counter, length);
 
   /// Decrypt [data] with this [AesCtrSecretKey] using AES in _Counter mode_,
   /// as specified in [NIST SP800-38A][1].
@@ -259,7 +265,8 @@ abstract class AesCtrSecretKey {
     List<int> data,
     List<int> counter,
     int length,
-  );
+  ) =>
+    _impl.decryptBytes(data, counter, length);
 
   /// Decrypt [data] with this [AesCtrSecretKey] using AES in _Counter mode_,
   /// as specified in [NIST SP800-38A][1].
@@ -275,7 +282,8 @@ abstract class AesCtrSecretKey {
     Stream<List<int>> data,
     List<int> counter,
     int length,
-  );
+  ) =>
+    _impl.decryptStream(data, counter, length);
 
   /// Export [AesCtrSecretKey] as raw bytes.
   ///
@@ -297,7 +305,7 @@ abstract class AesCtrSecretKey {
   /// // If we wanted to we could import the key as follows:
   /// // key = await AesCtrSecretKey.importRawKey(secretBytes);
   /// ```
-  Future<Uint8List> exportRawKey();
+  Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
   /// Export [AesCtrSecretKey] as [JSON Web Key][1].
   ///
@@ -321,5 +329,5 @@ abstract class AesCtrSecretKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }

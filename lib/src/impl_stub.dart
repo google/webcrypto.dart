@@ -203,14 +203,6 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
 
 //---------------------- AES-CTR
 
-Future<AesCtrSecretKey> aesCtr_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
-
-Future<AesCtrSecretKey> aesCtr_importJsonWebKey(Map<String, dynamic> jwk) =>
-    throw _notImplemented;
-
-Future<AesCtrSecretKey> aesCtr_generateKey(int length) => throw _notImplemented;
-
 //---------------------- AES-CBC
 
 //---------------------- AES-GCM

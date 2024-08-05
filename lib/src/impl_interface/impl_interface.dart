@@ -19,6 +19,7 @@ import 'dart:async';
 
 
 part 'impl_interface.aescbc.dart';
+part 'impl_interface.aesctr.dart';
 
 /// Interface to be provided by platform implementations.
 ///
@@ -38,4 +39,5 @@ part 'impl_interface.aescbc.dart';
 /// plugable these interfaces will be renamed.
 abstract interface class WebCryptoImpl {
   StaticAesCbcSecretKeyImpl get aesCbcSecretKey;
+  StaticAesCtrSecretKeyImpl get aesCtrSecretKey;
 }
