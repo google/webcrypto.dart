@@ -16,19 +16,19 @@
 
 part of 'impl_ffi.dart';
 
-Future<AesCbcSecretKey> aesCbc_importRawKey(List<int> keyData) async =>
-    _AesCbcSecretKey(_aesImportRawKey(keyData));
+Future<AesCbcSecretKeyImpl> aesCbc_importRawKey(List<int> keyData) async =>
+    _AesCbcSecretKeyImpl(_aesImportRawKey(keyData));
 
-Future<AesCbcSecretKey> aesCbc_importJsonWebKey(
+Future<AesCbcSecretKeyImpl> aesCbc_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async =>
-    _AesCbcSecretKey(_aesImportJwkKey(
+    _AesCbcSecretKeyImpl(_aesImportJwkKey(
       jwk,
       expectedJwkAlgSuffix: 'CBC',
     ));
 
-Future<AesCbcSecretKey> aesCbc_generateKey(int length) async =>
-    _AesCbcSecretKey(_aesGenerateKey(length));
+Future<AesCbcSecretKeyImpl> aesCbc_generateKey(int length) async =>
+    _AesCbcSecretKeyImpl(_aesGenerateKey(length));
 
 Stream<Uint8List> _aesCbcEncryptOrDecrypt(
   Uint8List key,
@@ -93,9 +93,30 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
   });
 }
 
-class _AesCbcSecretKey implements AesCbcSecretKey {
+final class _StaticAesCbcSecretKeyImpl implements StaticAesCbcSecretKeyImpl {
+  const _StaticAesCbcSecretKeyImpl();
+
+  @override
+  Future<AesCbcSecretKeyImpl> importRawKey(List<int> keyData) async {
+    // TODO: Move implementation into this method in a follow up PR
+    // TODO: Move implementation into this method in a follow up PR
+    return await aesCbc_importRawKey(keyData);
+  }
+
+  @override
+  Future<AesCbcSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) async { 
+    return await aesCbc_importJsonWebKey(jwk);
+  }
+
+  @override
+  Future<AesCbcSecretKeyImpl> generateKey(int length) async { 
+    return await aesCbc_generateKey(length);
+  }
+}
+
+final class _AesCbcSecretKeyImpl extends AesCbcSecretKeyImpl {
   final Uint8List _key;
-  _AesCbcSecretKey(this._key);
+  _AesCbcSecretKeyImpl(this._key);
 
   @override
   String toString() {

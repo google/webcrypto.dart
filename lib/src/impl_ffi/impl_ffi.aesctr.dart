@@ -16,19 +16,19 @@
 
 part of 'impl_ffi.dart';
 
-Future<AesCtrSecretKey> aesCtr_importRawKey(List<int> keyData) async =>
-    _AesCtrSecretKey(_aesImportRawKey(keyData));
+Future<AesCtrSecretKeyImpl> aesCtr_importRawKey(List<int> keyData) async =>
+    _AesCtrSecretKeyImpl(_aesImportRawKey(keyData));
 
-Future<AesCtrSecretKey> aesCtr_importJsonWebKey(
+Future<AesCtrSecretKeyImpl> aesCtr_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async =>
-    _AesCtrSecretKey(_aesImportJwkKey(
+    _AesCtrSecretKeyImpl(_aesImportJwkKey(
       jwk,
       expectedJwkAlgSuffix: 'CTR',
     ));
 
-Future<AesCtrSecretKey> aesCtr_generateKey(int length) async =>
-    _AesCtrSecretKey(_aesGenerateKey(length));
+Future<AesCtrSecretKeyImpl> aesCtr_generateKey(int length) async =>
+    _AesCtrSecretKeyImpl(_aesGenerateKey(length));
 
 BigInt _parseBigEndian(List<int> data, [int? bitLength]) {
   bitLength ??= data.length * 8;
@@ -200,9 +200,30 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
   });
 }
 
-class _AesCtrSecretKey implements AesCtrSecretKey {
+final class _StaticAesCtrSecretKeyImpl implements StaticAesCtrSecretKeyImpl {
+  const _StaticAesCtrSecretKeyImpl();
+
+  @override
+  Future<AesCtrSecretKeyImpl> importRawKey(List<int> keyData) async {
+    return await aesCtr_importRawKey(keyData);
+  }
+
+  @override
+  Future<AesCtrSecretKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+  ) async {
+    return await aesCtr_importJsonWebKey(jwk);
+  }
+
+  @override
+  Future<AesCtrSecretKeyImpl> generateKey(int length) async {
+    return await aesCtr_generateKey(length);
+  }
+}
+
+final class _AesCtrSecretKeyImpl extends AesCtrSecretKeyImpl {
   final Uint8List _key;
-  _AesCtrSecretKey(this._key);
+  _AesCtrSecretKeyImpl(this._key);
 
   @override
   String toString() {

@@ -34,9 +34,10 @@ part of 'webcrypto.dart';
 /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
 /// [2]: https://tools.ietf.org/html/rfc2315#section-10.3
 /// [3]: https://tools.ietf.org/html/rfc7517
-@sealed
-abstract class AesCbcSecretKey {
-  AesCbcSecretKey._(); // keep the constructor private.
+final class AesCbcSecretKey {
+  final AesCbcSecretKeyImpl _impl;
+
+  AesCbcSecretKey._(this._impl); // keep the constructor private.
 
   /// Import an [AesCbcSecretKey] from raw [keyData].
   ///
@@ -69,8 +70,9 @@ abstract class AesCbcSecretKey {
   ///
   /// print(utf8.decode(await k.decryptBytes(c, iv))); // hello world
   /// ```
-  static Future<AesCbcSecretKey> importRawKey(List<int> keyData) {
-    return impl.aesCbc_importRawKey(keyData);
+  static Future<AesCbcSecretKey> importRawKey(List<int> keyData) async {
+    final impl = await webCryptImpl.aesCbcSecretKey.importRawKey(keyData);
+    return AesCbcSecretKey._(impl);
   }
 
   /// Import an [AesCbcSecretKey] from [JSON Web Key][1].
@@ -107,8 +109,9 @@ abstract class AesCbcSecretKey {
   /// [1]: https://tools.ietf.org/html/rfc7517
   // TODO: Decide if we want restrictions on "use" property" (we probably have it on web, if we don't strip it)
   // TODO: Decide if we want place restrictions on key_ops
-  static Future<AesCbcSecretKey> importJsonWebKey(Map<String, dynamic> jwk) {
-    return impl.aesCbc_importJsonWebKey(jwk);
+  static Future<AesCbcSecretKey> importJsonWebKey(Map<String, dynamic> jwk) async {
+    final impl = await webCryptImpl.aesCbcSecretKey.importJsonWebKey(jwk);
+    return AesCbcSecretKey._(impl);
   }
 
   /// Generate random [AesCbcSecretKey].
@@ -127,8 +130,9 @@ abstract class AesCbcSecretKey {
   /// // Generate a new random AES-CBC secret key for AES-256.
   /// final key = await AesCbcSecretKey.generate(256);
   /// ```
-  static Future<AesCbcSecretKey> generateKey(int length) {
-    return impl.aesCbc_generateKey(length);
+  static Future<AesCbcSecretKey> generateKey(int length) async {
+    final impl = await webCryptImpl.aesCbcSecretKey.generateKey(length);
+    return AesCbcSecretKey._(impl);
   }
 
   /// Encrypt [data] with this [AesCbcSecretKey] using AES in _Cipher Block
@@ -172,7 +176,8 @@ abstract class AesCbcSecretKey {
   /// {@endtemplate}
   ///
   /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
-  Future<Uint8List> encryptBytes(List<int> data, List<int> iv);
+  Future<Uint8List> encryptBytes(List<int> data, List<int> iv) =>
+      _impl.encryptBytes(data, iv);
 
   /// Encrypt [data] with this [AesCbcSecretKey] using AES in _Cipher Block
   /// Chaining_ mode, as specified in [NIST SP800-38A][1].
@@ -216,7 +221,8 @@ abstract class AesCbcSecretKey {
   /// {@endtemplate}
   ///
   /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv);
+  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) =>
+      _impl.encryptStream(data, iv);
 
   /// Decrypt [data] with this [AesCbcSecretKey] using AES in _Cipher Block
   /// Chaining_ mode, as specified in [NIST SP800-38A][1].
@@ -238,7 +244,8 @@ abstract class AesCbcSecretKey {
   /// {@macro AesCbcSecretKey-encryptBytes/decryptBytes:example}
   ///
   /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
-  Future<Uint8List> decryptBytes(List<int> data, List<int> iv);
+  Future<Uint8List> decryptBytes(List<int> data, List<int> iv) =>
+      _impl.decryptBytes(data, iv);
 
   /// Decrypt [data] with this [AesCbcSecretKey] using AES in _Cipher Block
   /// Chaining_ mode, as specified in [NIST SP800-38A][1].
@@ -250,7 +257,8 @@ abstract class AesCbcSecretKey {
   /// {@macro AesCbcSecretKey-encryptStream/decryptStream:example}
   ///
   /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv);
+  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) =>
+      _impl.decryptStream(data, iv);
 
   /// Export [AesCbcSecretKey] as raw bytes.
   ///
@@ -272,7 +280,7 @@ abstract class AesCbcSecretKey {
   /// // If we wanted to we could import the key as follows:
   /// // key = await AesCbcSecretKey.importRawKey(secretBytes);
   /// ```
-  Future<Uint8List> exportRawKey();
+  Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
   /// Export [AesCbcSecretKey] as [JSON Web Key][1].
   ///
@@ -296,5 +304,5 @@ abstract class AesCbcSecretKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
