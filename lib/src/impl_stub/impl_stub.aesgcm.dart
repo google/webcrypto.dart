@@ -12,25 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library webcrypto.impl_stub;
+part of 'impl_stub.dart';
 
-import 'package:webcrypto/src/impl_interface/impl_interface.dart';
-
-part 'impl_stub.aescbc.dart';
-part 'impl_stub.aesctr.dart';
-part 'impl_stub.aesgcm.dart';
-
-const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
-
-final class _WebCryptoImpl implements WebCryptoImpl {
-  const _WebCryptoImpl();
+final class _StaticAesGcmSecretKeyImpl implements StaticAesGcmSecretKeyImpl {
+  const _StaticAesGcmSecretKeyImpl();
 
   @override
-  final aesCbcSecretKey = const _StaticAesCbcSecretKeyImpl();
+  Future<AesGcmSecretKeyImpl> importRawKey(List<int> keyData) =>
+    throw UnimplementedError('Not implemented');
 
   @override
-  final aesCtrSecretKey = const _StaticAesCtrSecretKeyImpl();
+  Future<AesGcmSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) =>
+    throw UnimplementedError('Not implemented');
 
   @override
-  final aesGcmSecretKey = const _StaticAesGcmSecretKeyImpl();
+  Future<AesGcmSecretKeyImpl> generateKey(int length) =>
+    throw UnimplementedError('Not implemented');
 }

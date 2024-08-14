@@ -207,14 +207,6 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
 
 //---------------------- AES-GCM
 
-Future<AesGcmSecretKey> aesGcm_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
-
-Future<AesGcmSecretKey> aesGcm_importJsonWebKey(Map<String, dynamic> jwk) =>
-    throw _notImplemented;
-
-Future<AesGcmSecretKey> aesGcm_generateKey(int length) => throw _notImplemented;
-
 //---------------------- ECDH
 
 Future<EcdhPrivateKey> ecdhPrivateKey_importPkcs8Key(
