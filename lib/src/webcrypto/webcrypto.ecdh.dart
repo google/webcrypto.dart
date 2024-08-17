@@ -51,9 +51,10 @@ part of 'webcrypto.dart';
 /// }
 /// ```
 /// {@endtemplate}
-@sealed
-abstract class EcdhPrivateKey {
-  EcdhPrivateKey._(); // keep the constructor private.
+final class EcdhPrivateKey {
+  final EcdhPrivateKeyImpl _impl;
+
+  EcdhPrivateKey._(this._impl); // keep the constructor private.
 
   /// Import [EcdhPrivateKey] in the [PKCS #8][1] format.
   ///
@@ -91,8 +92,9 @@ abstract class EcdhPrivateKey {
   static Future<EcdhPrivateKey> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
-  ) {
-    return impl.ecdhPrivateKey_importPkcs8Key(keyData, curve);
+  ) async {
+    final impl = await webCryptImpl.ecdhPrivateKey.importPkcs8Key(keyData, curve);
+    return EcdhPrivateKey._(impl);
   }
 
   /// Import ECDH private key in [JSON Web Key][1] format.
@@ -150,8 +152,9 @@ abstract class EcdhPrivateKey {
   static Future<EcdhPrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) {
-    return impl.ecdhPrivateKey_importJsonWebKey(jwk, curve);
+  ) async {
+    final impl = await webCryptImpl.ecdhPrivateKey.importJsonWebKey(jwk, curve);
+    return EcdhPrivateKey._(impl);
   }
 
   /// Generate a new [EcdhPrivateKey] and [EcdhPublicKey] pair.
@@ -176,10 +179,11 @@ abstract class EcdhPrivateKey {
   /// }
   /// ```
   /// 
-  static Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> generateKey(
+  static Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> generateKey(
     EllipticCurve curve,
-  ) {
-    return impl.ecdhPrivateKey_generateKey(curve);
+  ) async {
+    final impl = await webCryptImpl.ecdhPrivateKey.generateKey(curve);
+    return impl;
   }
 
   /// Derive a shared secret from two ECDH key pairs using the private key from one pair 
@@ -202,7 +206,8 @@ abstract class EcdhPrivateKey {
   // See: https://tools.ietf.org/html/rfc6090#section-4
   // Notice that this is not uniformly distributed, see also:
   // https://tools.ietf.org/html/rfc6090#appendix-B
-  Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey);
+  Future<Uint8List> deriveBits(int length, EcdhPublicKeyImpl publicKey) =>
+    _impl.deriveBits(length, publicKey);
 
   /// Export the [EcdhPrivateKey] as a [PKCS #8][1] key.
   ///
@@ -227,7 +232,7 @@ abstract class EcdhPrivateKey {
   /// }
   /// ```
   /// [1]: https://datatracker.ietf.org/doc/html/rfc5208
-  Future<Uint8List> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
   /// Export the [EcdhPrivateKey] as a [JSON Web Key][1].
   /// 
@@ -251,19 +256,21 @@ abstract class EcdhPrivateKey {
   /// }
   /// ```
   /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
-@sealed
-abstract class EcdhPublicKey {
-  EcdhPublicKey._(); // keep the constructor private.
+final class EcdhPublicKey {
+  final EcdhPublicKeyImpl _impl;
+
+  EcdhPublicKey._(this._impl); // keep the constructor private.
 
   /// TODO: find out of this works on Firefox
   static Future<EcdhPublicKey> importRawKey(
     List<int> keyData,
     EllipticCurve curve,
-  ) {
-    return impl.ecdhPublicKey_importRawKey(keyData, curve);
+  ) async {
+    final impl = await webCryptImpl.ecdhPublicKey.importRawKey(keyData, curve);
+    return EcdhPublicKey._(impl);
   }
 
   /// ## Compatibility
@@ -283,8 +290,9 @@ abstract class EcdhPublicKey {
   static Future<EcdhPublicKey> importSpkiKey(
     List<int> keyData,
     EllipticCurve curve,
-  ) {
-    return impl.ecdhPublicKey_importSpkiKey(keyData, curve);
+  ) async {
+    final impl = await webCryptImpl.ecdhPublicKey.importSpkiKey(keyData, curve);
+    return EcdhPublicKey._(impl);
   }
 
   /// Import ECDH public key in [JSON Web Key][1] format.
@@ -341,16 +349,17 @@ abstract class EcdhPublicKey {
   static Future<EcdhPublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) {
-    return impl.ecdhPublicKey_importJsonWebKey(jwk, curve);
+  ) async {
+    final impl = await webCryptImpl.ecdhPublicKey.importJsonWebKey(jwk, curve);
+    return EcdhPublicKey._(impl);
   }
 
-  Future<Uint8List> exportRawKey();
+  Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
   /// Note: Due to bug in Chrome/BoringSSL, SPKI keys exported from Firefox < 72
   /// cannot be imported in Chrome/BoringSSL.
   /// See compatibility section in [EcdhPublicKey.importSpkiKey].
-  Future<Uint8List> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey() => _impl.exportSpkiKey();
 
   /// Export the [EcdhPublicKey] as a [JSON Web Key][1].
   /// 
@@ -382,5 +391,5 @@ abstract class EcdhPublicKey {
   /// }
   /// ```
   /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
