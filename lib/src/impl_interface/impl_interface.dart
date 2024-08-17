@@ -17,9 +17,12 @@ library impl_stub;
 import 'dart:typed_data';
 import 'dart:async';
 
+import 'package:webcrypto/webcrypto.dart';
+
 
 part 'impl_interface.aescbc.dart';
 part 'impl_interface.aesctr.dart';
+part 'impl_interface.hmac.dart';
 
 /// Interface to be provided by platform implementations.
 ///
@@ -40,4 +43,5 @@ part 'impl_interface.aesctr.dart';
 abstract interface class WebCryptoImpl {
   StaticAesCbcSecretKeyImpl get aesCbcSecretKey;
   StaticAesCtrSecretKeyImpl get aesCtrSecretKey;
+  StaticHmacSecretKeyImpl get hmacSecretKey;
 }

@@ -80,4 +80,7 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final aesCtrSecretKey = const _StaticAesCtrSecretKeyImpl();
+
+  @override
+  final hmacSecretKey = const _StaticHmacSecretKeyImpl();
 }
