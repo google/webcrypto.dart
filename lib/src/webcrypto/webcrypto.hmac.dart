@@ -230,7 +230,7 @@ final class HmacSecretKey {
   /// instead, these methods computes a signature and does a
   /// fixed-time comparison.
   /// {@endtemplate}
-  Future<Uint8List> signBytes(List<int> data) => _impl.signBytes(data);
+  Future<Uint8List> signBytes(List<int> data) async => await _impl.signBytes(data);
 
   /// Compute an HMAC signature of given [data] stream.
   ///
