@@ -45,7 +45,6 @@ const Hash sha256 = _UnimplementedHash();
 const Hash sha384 = _UnimplementedHash();
 const Hash sha512 = _UnimplementedHash();
 
-//---------------------- HMAC
 
 //---------------------- RSASSA_PKCS1_v1_5
 
