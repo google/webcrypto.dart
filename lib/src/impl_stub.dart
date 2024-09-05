@@ -217,41 +217,6 @@ Future<AesGcmSecretKey> aesGcm_generateKey(int length) => throw _notImplemented;
 
 //---------------------- ECDH
 
-Future<EcdhPrivateKey> ecdhPrivateKey_importPkcs8Key(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdhPrivateKey> ecdhPrivateKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> ecdhPrivateKey_generateKey(
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdhPublicKey> ecdhPublicKey_importRawKey(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdhPublicKey> ecdhPublicKey_importSpkiKey(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
 //---------------------- HKDF
 
 Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) =>
