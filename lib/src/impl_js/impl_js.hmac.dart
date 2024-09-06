@@ -18,12 +18,12 @@ part of 'impl_js.dart';
 
 const _hmacAlgorithm = subtle.Algorithm(name: 'HMAC');
 
-Future<HmacSecretKey> hmacSecretKey_importRawKey(
+Future<HmacSecretKeyImpl> hmacSecretKey_importRawKey(
   List<int> keyData,
   Hash hash, {
   int? length,
 }) async {
-  return _HmacSecretKey(await _importKey(
+  return _HmacSecretKeyImpl(await _importKey(
     'raw',
     keyData,
     length == null
@@ -41,12 +41,12 @@ Future<HmacSecretKey> hmacSecretKey_importRawKey(
   ));
 }
 
-Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
+Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash, {
   int? length,
 }) async {
-  return _HmacSecretKey(await _importJsonWebKey(
+  return _HmacSecretKeyImpl(await _importJsonWebKey(
     jwk,
     length == null
         ? subtle.Algorithm(
@@ -63,9 +63,9 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   ));
 }
 
-Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash,
+Future<HmacSecretKeyImpl> hmacSecretKey_generateKey(Hash hash,
     {int? length}) async {
-  return _HmacSecretKey(await _generateKey(
+  return _HmacSecretKeyImpl(await _generateKey(
     length == null
         ? subtle.Algorithm(
             name: 'HMAC',
@@ -81,9 +81,30 @@ Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash,
   ));
 }
 
-class _HmacSecretKey implements HmacSecretKey {
+final class _StaticHmacSecretKeyImpl implements StaticHmacSecretKeyImpl {
+  const _StaticHmacSecretKeyImpl();
+
+  @override
+  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash,
+      {int? length}) {
+    return hmacSecretKey_importRawKey(keyData, hash, length: length);
+  }
+
+  @override
+  Future<HmacSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash,
+      {int? length}) {
+    return hmacSecretKey_importJsonWebKey(jwk, hash, length: length);
+  }
+
+  @override
+  Future<HmacSecretKeyImpl> generateKey(Hash hash, {int? length = 32}) {
+    return hmacSecretKey_generateKey(hash, length: length);
+  }
+}
+
+final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
   final subtle.JSCryptoKey _key;
-  _HmacSecretKey(this._key);
+  _HmacSecretKeyImpl(this._key);
 
   @override
   String toString() {

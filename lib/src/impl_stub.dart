@@ -45,23 +45,6 @@ const Hash sha256 = _UnimplementedHash();
 const Hash sha384 = _UnimplementedHash();
 const Hash sha512 = _UnimplementedHash();
 
-//---------------------- HMAC
-Future<HmacSecretKey> hmacSecretKey_importRawKey(
-  List<int> keyData,
-  Hash hash, {
-  int? length,
-}) =>
-    throw _notImplemented;
-
-Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash, {
-  int? length,
-}) =>
-    throw _notImplemented;
-
-Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash, {int? length}) =>
-    throw _notImplemented;
 
 //---------------------- RSASSA_PKCS1_v1_5
 

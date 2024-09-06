@@ -49,18 +49,18 @@ String _hmacJwkAlgFromHash(_Hash hash) {
   throw UnsupportedError('hash is not supported');
 }
 
-Future<HmacSecretKey> hmacSecretKey_importRawKey(
+Future<HmacSecretKeyImpl> hmacSecretKey_importRawKey(
   List<int> keyData,
   Hash hash, {
   int? length,
 }) async {
-  return _HmacSecretKey(
+  return _HmacSecretKeyImpl(
     _asUint8ListZeroedToBitLength(keyData, length),
     _Hash.fromHash(hash),
   );
 }
 
-Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
+Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash, {
   int? length,
@@ -86,7 +86,7 @@ Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
   return hmacSecretKey_importRawKey(keyData, hash, length: length);
 }
 
-Future<HmacSecretKey> hmacSecretKey_generateKey(
+Future<HmacSecretKeyImpl> hmacSecretKey_generateKey(
   Hash hash, {
   int? length,
 }) async {
@@ -95,25 +95,44 @@ Future<HmacSecretKey> hmacSecretKey_generateKey(
   final keyData = Uint8List((length / 8).ceil());
   fillRandomBytes(keyData);
 
-  return _HmacSecretKey(
+  return _HmacSecretKeyImpl(
     _asUint8ListZeroedToBitLength(keyData, length),
     h,
   );
 }
 
-class _HmacSecretKey implements HmacSecretKey {
-  final _Hash _hash;
-  final Uint8List _keyData;
-
-  _HmacSecretKey(this._keyData, this._hash);
+final class _StaticHmacSecretKeyImpl implements StaticHmacSecretKeyImpl {
+  const _StaticHmacSecretKeyImpl();
 
   @override
-  String toString() {
-    return 'Instance of \'HmacSecretKey\'';
+  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash, {int? length}) {
+    return hmacSecretKey_importRawKey(keyData, hash, length: length);
   }
 
   @override
-  Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
+  Future<HmacSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash, {int? length}) {
+    return hmacSecretKey_importJsonWebKey(jwk, hash, length: length);
+  }
+
+  @override
+  Future<HmacSecretKeyImpl> generateKey(Hash hash, {int? length = 32}) {
+    return hmacSecretKey_generateKey(hash, length: length);
+  }
+}
+
+final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
+  final _Hash _hash;
+  final Uint8List _keyData;
+
+  _HmacSecretKeyImpl(this._keyData, this._hash);
+
+  @override
+  String toString() {
+    return 'Instance of \'HmacSecretKeyImpl\'';
+  }
+
+  @override
+  Future<Uint8List>  signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) {
