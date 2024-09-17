@@ -20,6 +20,7 @@ import 'package:webcrypto/webcrypto.dart';
 part 'impl_stub.aescbc.dart';
 part 'impl_stub.aesctr.dart';
 part 'impl_stub.hmac.dart';
+part 'impl_stub.pbkdf2.dart';
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
@@ -34,4 +35,7 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final hmacSecretKey = const _StaticHmacSecretKeyImpl();
+
+  @override
+  final pbkdf2SecretKey = const _StaticPbkdf2SecretKeyImpl();
 }

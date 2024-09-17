@@ -242,5 +242,3 @@ Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) =>
 
 //---------------------- PBKDF2
 
-Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
