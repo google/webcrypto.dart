@@ -23,6 +23,7 @@ import 'package:webcrypto/webcrypto.dart';
 part 'impl_interface.aescbc.dart';
 part 'impl_interface.aesctr.dart';
 part 'impl_interface.hmac.dart';
+part 'impl_interface.rsaoaep.dart';
 
 /// Interface to be provided by platform implementations.
 ///
@@ -44,4 +45,6 @@ abstract interface class WebCryptoImpl {
   StaticAesCbcSecretKeyImpl get aesCbcSecretKey;
   StaticAesCtrSecretKeyImpl get aesCtrSecretKey;
   StaticHmacSecretKeyImpl get hmacSecretKey;
+  StaticRsaOaepPrivateKeyImpl get rsaOaepPrivateKey;
+  StaticRsaOaepPublicKeyImpl get rsaOaepPublicKey;
 }

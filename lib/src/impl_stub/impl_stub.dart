@@ -20,6 +20,7 @@ import 'package:webcrypto/webcrypto.dart';
 part 'impl_stub.aescbc.dart';
 part 'impl_stub.aesctr.dart';
 part 'impl_stub.hmac.dart';
+part 'impl_stub.rsaoaep.dart';
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
@@ -34,4 +35,10 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final hmacSecretKey = const _StaticHmacSecretKeyImpl();
+
+  @override
+  final rsaOaepPrivateKey = const _StaticRsaOaepPrivateKeyImpl();
+
+  @override
+  final rsaOaepPublicKey = const _StaticRsaOaepPublicKeyImpl();
 }

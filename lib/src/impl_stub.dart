@@ -152,38 +152,6 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
 
 //---------------------- RSA-OAEP
 
-Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
-  List<int> keyData,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
-    rsaOaepPrivateKey_generateKey(
-  int modulusLength,
-  BigInt publicExponent,
-  Hash hash,
-) =>
-        throw _notImplemented;
-
-Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
-  List<int> keyData,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
 //---------------------- AES-CTR
 
 //---------------------- AES-CBC
