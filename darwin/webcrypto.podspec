@@ -28,7 +28,6 @@ Pod::Spec.new do |s|
   s.compiler_flags      = [
     '-DOPENSSL_NO_ASM',
     '-DDOPENSSL_SMALL',
-    '-GCC_WARN_INHIBIT_ALL_WARNINGS',
     '-w',
   ]
 
