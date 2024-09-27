@@ -38,9 +38,9 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
-  macos:
-    name: webcrypto on macOS desktop / Chrome
-    runs-on: macos-14
+  macos-14:
+    name: webcrypto on macOS 14 desktop / Chrome
+    runs-on: macos-14 # Test with xcode 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -65,6 +65,33 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: flutter pub run test -p vm,chrome # TODO: Enable firefox if it works
+  macos-16:
+    name: webcrypto on macOS 15 desktop / Chrome
+    runs-on: macos-16 # Test with xcode 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Configure Flutter
+        run: |
+          flutter config --no-analytics
+      - run: flutter pub get
+      - run: flutter pub run webcrypto:setup
+      - run: flutter test
+      - run: flutter test --platform chrome
+      - run: flutter test integration_test/webcrypto_test.dart -d macos
+        working-directory: ./example
+      - uses: nanasess/setup-chromedriver@v2
+      - name: Run integration_test with chromedriver
+        working-directory: ./example
+        run: |
+          ../tool/with-chromedriver.sh flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/webcrypto_test.dart \
+            -d chrome
+      - run: flutter pub run test -p vm,chrome,firefox
   windows:
     name: webcrypto on Windows desktop / Chrome / Firefox
     runs-on: windows-latest
