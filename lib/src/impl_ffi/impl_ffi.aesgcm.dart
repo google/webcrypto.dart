@@ -16,19 +16,19 @@
 
 part of 'impl_ffi.dart';
 
-Future<AesGcmSecretKey> aesGcm_importRawKey(List<int> keyData) async =>
-    _AesGcmSecretKey(_aesImportRawKey(keyData));
+Future<AesGcmSecretKeyImpl> aesGcm_importRawKey(List<int> keyData) async =>
+    _AesGcmSecretKeyImpl(_aesImportRawKey(keyData));
 
-Future<AesGcmSecretKey> aesGcm_importJsonWebKey(
+Future<AesGcmSecretKeyImpl> aesGcm_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async =>
-    _AesGcmSecretKey(_aesImportJwkKey(
+    _AesGcmSecretKeyImpl(_aesImportJwkKey(
       jwk,
       expectedJwkAlgSuffix: 'GCM',
     ));
 
-Future<AesGcmSecretKey> aesGcm_generateKey(int length) async =>
-    _AesGcmSecretKey(_aesGenerateKey(length));
+Future<AesGcmSecretKeyImpl> aesGcm_generateKey(int length) async =>
+    _AesGcmSecretKeyImpl(_aesGenerateKey(length));
 
 Future<Uint8List> _aesGcmEncryptDecrypt(
   List<int> key,
@@ -111,9 +111,28 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
   });
 }
 
-class _AesGcmSecretKey implements AesGcmSecretKey {
+final class _StaticAesGcmSecretKeyImpl implements StaticAesGcmSecretKeyImpl {
+  const _StaticAesGcmSecretKeyImpl();
+
+  @override
+  Future<AesGcmSecretKeyImpl> importRawKey(List<int> keyData) async {
+    return await aesGcm_importRawKey(keyData);
+  }
+
+  @override
+  Future<AesGcmSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) async {
+    return await aesGcm_importJsonWebKey(jwk);
+  }
+
+  @override
+  Future<AesGcmSecretKeyImpl> generateKey(int length) async {
+    return await aesGcm_generateKey(length);
+  }
+}
+
+final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
   final Uint8List _key;
-  _AesGcmSecretKey(this._key);
+  _AesGcmSecretKeyImpl(this._key);
 
   @override
   String toString() {
