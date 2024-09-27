@@ -50,17 +50,20 @@ part of 'webcrypto.dart';
 ///
 /// [1]: https://tools.ietf.org/html/rfc8018
 // TODO: Rewrite all RFC links to use https://www.rfc-editor.org/rfc/rfcXXXX
-@sealed
-abstract class Pbkdf2SecretKey {
-  Pbkdf2SecretKey._(); // keep the constructor private.
+
+final class Pbkdf2SecretKey {
+  final Pbkdf2SecretKeyImpl _impl;
+  
+  Pbkdf2SecretKey._(this._impl); // keep the constructor private.
 
   /// Import [Pbkdf2SecretKey] from raw [keyData].
   ///
   /// Creates a [Pbkdf2SecretKey] for key derivation using [keyData].
   ///
   /// {@macro Pbkdf2SecretKey:example}
-  static Future<Pbkdf2SecretKey> importRawKey(List<int> keyData) {
-    return impl.pbkdf2SecretKey_importRawKey(keyData);
+  static Future<Pbkdf2SecretKey> importRawKey(List<int> keyData) async {
+    final impl = await webCryptImpl.pbkdf2SecretKey.importRawKey(keyData);
+    return Pbkdf2SecretKey._(impl);
   }
 
   /// Derive key from [salt] and password specified as `keyData` in
@@ -90,5 +93,6 @@ abstract class Pbkdf2SecretKey {
     Hash hash,
     List<int> salt,
     int iterations,
-  );
+  ) =>
+    _impl.deriveBits(length, hash, salt, iterations);
 }
