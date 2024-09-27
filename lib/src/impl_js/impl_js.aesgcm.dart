@@ -18,8 +18,8 @@ part of 'impl_js.dart';
 
 const _aesGcmAlgorithm = subtle.Algorithm(name: 'AES-GCM');
 
-Future<AesGcmSecretKey> aesGcm_importRawKey(List<int> keyData) async {
-  return _AesGcmSecretKey(await _importKey(
+Future<AesGcmSecretKeyImpl> aesGcm_importRawKey(List<int> keyData) async {
+  return _AesGcmSecretKeyImpl(await _importKey(
     'raw',
     keyData,
     _aesGcmAlgorithm,
@@ -28,10 +28,10 @@ Future<AesGcmSecretKey> aesGcm_importRawKey(List<int> keyData) async {
   ));
 }
 
-Future<AesGcmSecretKey> aesGcm_importJsonWebKey(
+Future<AesGcmSecretKeyImpl> aesGcm_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async {
-  return _AesGcmSecretKey(await _importJsonWebKey(
+  return _AesGcmSecretKeyImpl(await _importJsonWebKey(
     jwk,
     _aesGcmAlgorithm,
     _usagesEncryptDecrypt,
@@ -39,17 +39,36 @@ Future<AesGcmSecretKey> aesGcm_importJsonWebKey(
   ));
 }
 
-Future<AesGcmSecretKey> aesGcm_generateKey(int length) async {
-  return _AesGcmSecretKey(await _generateKey(
+Future<AesGcmSecretKeyImpl> aesGcm_generateKey(int length) async {
+  return _AesGcmSecretKeyImpl(await _generateKey(
     _aesGcmAlgorithm.update(length: length),
     _usagesEncryptDecrypt,
     'secret',
   ));
 }
 
-class _AesGcmSecretKey implements AesGcmSecretKey {
+final class _StaticAesGcmSecretKeyImpl implements StaticAesGcmSecretKeyImpl {
+  const _StaticAesGcmSecretKeyImpl();
+
+  @override
+  Future<AesGcmSecretKeyImpl> importRawKey(List<int> keyData) async {
+    return await aesGcm_importRawKey(keyData);
+  }
+
+  @override
+  Future<AesGcmSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) async {
+    return await aesGcm_importJsonWebKey(jwk);
+  }
+
+  @override
+  Future<AesGcmSecretKeyImpl> generateKey(int length) async {
+    return await aesGcm_generateKey(length);
+  }
+}
+
+final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
   final subtle.JSCryptoKey _key;
-  _AesGcmSecretKey(this._key);
+  _AesGcmSecretKeyImpl(this._key);
 
   @override
   String toString() {

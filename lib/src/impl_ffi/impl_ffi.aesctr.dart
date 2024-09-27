@@ -221,7 +221,7 @@ final class _StaticAesCtrSecretKeyImpl implements StaticAesCtrSecretKeyImpl {
   }
 }
 
-final class _AesCtrSecretKeyImpl extends AesCtrSecretKeyImpl {
+final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
   final Uint8List _key;
   _AesCtrSecretKeyImpl(this._key);
 

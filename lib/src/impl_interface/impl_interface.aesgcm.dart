@@ -14,17 +14,15 @@
 
 part of 'impl_interface.dart';
 
-abstract interface class StaticAesCbcSecretKeyImpl {
-  Future<AesCbcSecretKeyImpl> importRawKey(List<int> keyData);
-  Future<AesCbcSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk);
-  Future<AesCbcSecretKeyImpl> generateKey(int length);
+abstract interface class StaticAesGcmSecretKeyImpl {
+  Future<AesGcmSecretKeyImpl> importRawKey(List<int> keyData);
+  Future<AesGcmSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk);
+  Future<AesGcmSecretKeyImpl> generateKey(int length);
 }
 
-abstract interface class AesCbcSecretKeyImpl {
-  Future<Uint8List> encryptBytes(List<int> data, List<int> iv);
-  Future<Uint8List> decryptBytes(List<int> data, List<int> iv);
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv);
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv);
+abstract interface class AesGcmSecretKeyImpl {
+  Future<Uint8List> encryptBytes(List<int> data, List<int> iv, {List<int>? additionalData, int? tagLength});
+  Future<Uint8List> decryptBytes(List<int> data, List<int> iv, {List<int>? additionalData, int? tagLength});
   Future<Uint8List> exportRawKey();
   Future<Map<String, dynamic>> exportJsonWebKey();
 }

@@ -32,9 +32,10 @@ part of 'webcrypto.dart';
 /// [1]: https://csrc.nist.gov/pubs/sp/800/38/d/final
 /// [2]: https://tools.ietf.org/html/rfc7517
 /// [3]: https://en.wikipedia.org/wiki/Authenticated_encryption
-@sealed
-abstract class AesGcmSecretKey {
-  AesGcmSecretKey._(); // keep the constructor private.
+final class AesGcmSecretKey {
+  final AesGcmSecretKeyImpl _impl;
+
+  AesGcmSecretKey._(this._impl); // keep the constructor private.
 
   /// Import an [AesGcmSecretKey] from raw [keyData].
   ///
@@ -66,8 +67,9 @@ abstract class AesGcmSecretKey {
   /// // Decrypt message (requires the same iv)
   /// print(utf8.decode(await k.decryptBytes(c, iv))); // hello world
   /// ```
-  static Future<AesGcmSecretKey> importRawKey(List<int> keyData) {
-    return impl.aesGcm_importRawKey(keyData);
+  static Future<AesGcmSecretKey> importRawKey(List<int> keyData) async {
+    final impl = await webCryptImpl.aesGcmSecretKey.importRawKey(keyData);
+    return AesGcmSecretKey._(impl);
   }
 
   /// Import an [AesGcmSecretKey] from [JSON Web Key][1].
@@ -102,8 +104,9 @@ abstract class AesGcmSecretKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  static Future<AesGcmSecretKey> importJsonWebKey(Map<String, dynamic> jwk) {
-    return impl.aesGcm_importJsonWebKey(jwk);
+  static Future<AesGcmSecretKey> importJsonWebKey(Map<String, dynamic> jwk) async {
+    final impl = await webCryptImpl.aesGcmSecretKey.importJsonWebKey(jwk);
+    return AesGcmSecretKey._(impl);
   }
 
   /// Generate a random [AesGcmSecretKey].
@@ -122,8 +125,9 @@ abstract class AesGcmSecretKey {
   /// // Generate a new random AES-GCM secret key for AES-256.
   /// final key = await AesGcmSecretKey.generate(256);
   /// ```
-  static Future<AesGcmSecretKey> generateKey(int length) {
-    return impl.aesGcm_generateKey(length);
+  static Future<AesGcmSecretKey> generateKey(int length) async {
+    final impl = await webCryptImpl.aesGcmSecretKey.generateKey(length);
+    return AesGcmSecretKey._(impl);
   }
 
   /// Encrypt [data] with this [AesCbcSecretKey] using AES in
@@ -218,7 +222,8 @@ abstract class AesGcmSecretKey {
     List<int> iv, {
     List<int>? additionalData,
     int? tagLength = 128,
-  });
+  }) =>
+      _impl.encryptBytes(data, iv, additionalData: additionalData, tagLength: tagLength);
 
   // TODO: Document this method, notice that [data] must be concatenation of
   //       ciphertext and authentication tag.
@@ -228,7 +233,8 @@ abstract class AesGcmSecretKey {
     List<int> iv, {
     List<int>? additionalData,
     int? tagLength = 128,
-  });
+  }) =>
+      _impl.decryptBytes(data, iv, additionalData: additionalData, tagLength: tagLength);
 
   /// Export [AesGcmSecretKey] as raw bytes.
   ///
@@ -250,7 +256,7 @@ abstract class AesGcmSecretKey {
   /// // If we wanted to we could import the key as follows:
   /// // key = await AesGcmSecretKey.importRawKey(secretBytes);
   /// ```
-  Future<Uint8List> exportRawKey();
+  Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
   /// Export [AesGcmSecretKey] as [JSON Web Key][1].
   ///
@@ -274,5 +280,5 @@ abstract class AesGcmSecretKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }

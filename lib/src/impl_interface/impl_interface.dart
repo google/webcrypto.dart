@@ -24,6 +24,7 @@ part 'impl_interface.aescbc.dart';
 part 'impl_interface.aesctr.dart';
 part 'impl_interface.hmac.dart';
 part 'impl_interface.rsaoaep.dart';
+part 'impl_interface.aesgcm.dart';
 
 /// Interface to be provided by platform implementations.
 ///
@@ -44,6 +45,7 @@ part 'impl_interface.rsaoaep.dart';
 abstract interface class WebCryptoImpl {
   StaticAesCbcSecretKeyImpl get aesCbcSecretKey;
   StaticAesCtrSecretKeyImpl get aesCtrSecretKey;
+  StaticAesGcmSecretKeyImpl get aesGcmSecretKey;
   StaticHmacSecretKeyImpl get hmacSecretKey;
   StaticRsaOaepPrivateKeyImpl get rsaOaepPrivateKey;
   StaticRsaOaepPublicKeyImpl get rsaOaepPublicKey;
