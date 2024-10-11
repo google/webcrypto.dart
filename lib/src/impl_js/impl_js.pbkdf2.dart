@@ -18,8 +18,8 @@ part of 'impl_js.dart';
 
 const _pbkdf2AlgorithmName = 'PBKDF2';
 
-Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
-  return _Pbkdf2SecretKey(await _importKey(
+Future<Pbkdf2SecretKeyImpl> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
+  return _Pbkdf2SecretKeyImpl(await _importKey(
     'raw',
     keyData,
     const subtle.Algorithm(name: _pbkdf2AlgorithmName),
@@ -31,9 +31,18 @@ Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
   ));
 }
 
-class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
+final class _StaticPbkdf2SecretKeyImpl implements StaticPbkdf2SecretKeyImpl {
+  const _StaticPbkdf2SecretKeyImpl();
+
+  @override
+  Future<Pbkdf2SecretKeyImpl> importRawKey(List<int> keyData) {
+    return pbkdf2SecretKey_importRawKey(keyData);
+  }
+}
+
+final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
   final subtle.JSCryptoKey _key;
-  _Pbkdf2SecretKey(this._key);
+  _Pbkdf2SecretKeyImpl(this._key);
 
   @override
   String toString() {

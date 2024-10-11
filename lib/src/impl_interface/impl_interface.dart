@@ -23,6 +23,7 @@ import 'package:webcrypto/webcrypto.dart';
 part 'impl_interface.aescbc.dart';
 part 'impl_interface.aesctr.dart';
 part 'impl_interface.hmac.dart';
+part 'impl_interface.pbkdf2.dart';
 part 'impl_interface.aesgcm.dart';
 
 /// Interface to be provided by platform implementations.
@@ -46,4 +47,5 @@ abstract interface class WebCryptoImpl {
   StaticAesCtrSecretKeyImpl get aesCtrSecretKey;
   StaticAesGcmSecretKeyImpl get aesGcmSecretKey;
   StaticHmacSecretKeyImpl get hmacSecretKey;
+  StaticPbkdf2SecretKeyImpl get pbkdf2SecretKey;
 }

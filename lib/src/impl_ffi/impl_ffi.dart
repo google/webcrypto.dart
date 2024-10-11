@@ -86,4 +86,7 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final hmacSecretKey = const _StaticHmacSecretKeyImpl();
+
+  @override
+  final pbkdf2SecretKey = const _StaticPbkdf2SecretKeyImpl();
 }
