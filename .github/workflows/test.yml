@@ -25,9 +25,12 @@ jobs:
           flutter config --no-analytics
       - run: flutter pub get
       - run: flutter pub run webcrypto:setup
-      - run: flutter test
-      - run: flutter test --platform chrome
-      - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
+      - name: flutter test
+        run: flutter test --coverage
+      - name: flutter test --platform chrome
+        run: flutter test --platform chrome
+      - name: flutter test integration_test/webcrypto_test.dart -d linux
+        run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux --coverage
         working-directory: ./example
       - uses: nanasess/setup-chromedriver@v2
       - name: Run integration_test with chromedriver
@@ -38,6 +41,13 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
+      - name: Convert coverage to lcov
+        run: |
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
   macos:
     name: webcrypto on macOS desktop / Chrome
     runs-on: macos-14
@@ -52,9 +62,11 @@ jobs:
           flutter config --no-analytics
       - run: flutter pub get
       - run: flutter pub run webcrypto:setup
-      - run: flutter test
-      - run: flutter test --platform chrome
-      - run: flutter test integration_test/webcrypto_test.dart -d macos
+      - name: Run tests and collect coverage
+        run: |
+          flutter test --coverage
+          flutter test --platform chrome
+          flutter test integration_test/webcrypto_test.dart -d macos --coverage
         working-directory: ./example
       # TODO: Enable chromdriver testing on MacOS when it works reliably
       #- uses: nanasess/setup-chromedriver@v2
@@ -66,6 +78,13 @@ jobs:
       #      --target=integration_test/webcrypto_test.dart \
       #      -d chrome
       - run: flutter pub run test -p vm,chrome # TODO: Enable firefox if it works
+      - name: Convert coverage to lcov
+        run: |
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
   windows:
     name: webcrypto on Windows desktop / Chrome / Firefox
     runs-on: windows-latest
@@ -81,9 +100,10 @@ jobs:
           flutter config --no-analytics
       - run: flutter pub get
       - run: flutter pub run webcrypto:setup
-      - run: flutter test
-      #- run: flutter test --platform chrome
-      - run: flutter test integration_test/webcrypto_test.dart -d windows
+      - name: Run tests and collect coverage
+        run: |
+          flutter test --coverage
+          flutter test integration_test/webcrypto_test.dart -d windows --coverage
         working-directory: ./example
       - uses: nanasess/setup-chromedriver@v2
       - name: Run integration_test with chromedriver
@@ -95,6 +115,13 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: flutter pub run test -p vm,chrome,firefox
+      - name: Convert coverage to lcov
+        run: |
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
   ios:
     name: webcrypto on iOS emulator (iPhone)
     runs-on: macos-14
@@ -111,8 +138,17 @@ jobs:
         with:
           model: 'iPhone 15'
       - run: flutter pub get
-      - run: flutter test integration_test/webcrypto_test.dart -d iphone
+      - name: Run tests and collect coverage
+        run: |
+          flutter test integration_test/webcrypto_test.dart -d iphone --coverage
         working-directory: ./example
+      - name: Convert coverage to lcov
+        run: |
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
   android:
     name: webcrypto on Android emulator
     runs-on: ubuntu-latest
@@ -140,4 +176,21 @@ jobs:
         with:
           api-level: 28
           working-directory: ./example
-          script: flutter test integration_test/webcrypto_test.dart -d android
+          script: flutter test integration_test/webcrypto_test.dart -d android --coverage
+      - name: Convert coverage to lcov
+        run: |
+          dart run coverage:format_coverage -i ./coverage -o coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
+
+  report-coverage:
+    needs: [linux, macos, windows, ios, android]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
