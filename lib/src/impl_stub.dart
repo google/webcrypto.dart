@@ -45,23 +45,6 @@ const Hash sha256 = _UnimplementedHash();
 const Hash sha384 = _UnimplementedHash();
 const Hash sha512 = _UnimplementedHash();
 
-//---------------------- HMAC
-Future<HmacSecretKey> hmacSecretKey_importRawKey(
-  List<int> keyData,
-  Hash hash, {
-  int? length,
-}) =>
-    throw _notImplemented;
-
-Future<HmacSecretKey> hmacSecretKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash, {
-  int? length,
-}) =>
-    throw _notImplemented;
-
-Future<HmacSecretKey> hmacSecretKey_generateKey(Hash hash, {int? length}) =>
-    throw _notImplemented;
 
 //---------------------- RSASSA_PKCS1_v1_5
 
@@ -207,14 +190,6 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
 
 //---------------------- AES-GCM
 
-Future<AesGcmSecretKey> aesGcm_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
-
-Future<AesGcmSecretKey> aesGcm_importJsonWebKey(Map<String, dynamic> jwk) =>
-    throw _notImplemented;
-
-Future<AesGcmSecretKey> aesGcm_generateKey(int length) => throw _notImplemented;
-
 //---------------------- ECDH
 
 //---------------------- HKDF
@@ -224,5 +199,3 @@ Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) =>
 
 //---------------------- PBKDF2
 
-Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) =>
-    throw _notImplemented;

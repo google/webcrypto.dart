@@ -14,17 +14,17 @@
 
 part of 'impl_interface.dart';
 
-abstract interface class StaticAesCbcSecretKeyImpl {
-  Future<AesCbcSecretKeyImpl> importRawKey(List<int> keyData);
-  Future<AesCbcSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk);
-  Future<AesCbcSecretKeyImpl> generateKey(int length);
+abstract interface class StaticHmacSecretKeyImpl {
+  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash, {int? length});
+  Future<HmacSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash, {int? length});
+  Future<HmacSecretKeyImpl> generateKey(Hash hash, {int? length});
 }
 
-abstract interface class AesCbcSecretKeyImpl {
-  Future<Uint8List> encryptBytes(List<int> data, List<int> iv);
-  Future<Uint8List> decryptBytes(List<int> data, List<int> iv);
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv);
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv);
+abstract interface class HmacSecretKeyImpl {
+  Future<Uint8List> signBytes(List<int> data);
+  Future<bool> verifyBytes(List<int> signature, List<int> data);
+  Future<Uint8List> signStream(Stream<List<int>> data);
+  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data);
   Future<Uint8List> exportRawKey();
   Future<Map<String, dynamic>> exportJsonWebKey();
 }

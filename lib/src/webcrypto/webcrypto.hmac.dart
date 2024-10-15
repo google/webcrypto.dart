@@ -48,9 +48,10 @@ part of 'webcrypto.dart';
 /// ```
 /// 
 /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-@sealed
-abstract class HmacSecretKey {
-  HmacSecretKey._(); // keep the constructor private.
+final class HmacSecretKey {
+  final HmacSecretKeyImpl _impl;
+
+  HmacSecretKey._(this._impl); // keep the constructor private.
 
   /// Import [HmacSecretKey] from raw [keyData].
   ///
@@ -76,7 +77,7 @@ abstract class HmacSecretKey {
     List<int> keyData,
     Hash hash, {
     int? length,
-  }) {
+  }) async {
     // These limitations are given in Web Cryptography Spec:
     // https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
     if (length != null && length > keyData.length * 8) {
@@ -92,7 +93,13 @@ abstract class HmacSecretKey {
       );
     }
 
-    return impl.hmacSecretKey_importRawKey(keyData, hash, length: length);
+    final impl = await webCryptImpl.hmacSecretKey.importRawKey(
+      keyData,
+      hash,
+      length: length,
+    );
+
+    return HmacSecretKey._(impl);
   }
 
   /// Import [HmacSecretKey] from [JSON Web Key][1].
@@ -147,7 +154,7 @@ abstract class HmacSecretKey {
     //       Note. it's not yet clear if JWK always contains key parameters.
     Hash hash, {
     int? length,
-  }) {
+  }) async {
     /*
     TODO: Validate these in the native implememtation
     // These limitations are given in Web Cryptography Spec:
@@ -165,7 +172,9 @@ abstract class HmacSecretKey {
       );
     }*/
 
-    return impl.hmacSecretKey_importJsonWebKey(jwk, hash, length: length);
+    final impl = await webCryptImpl.hmacSecretKey.importJsonWebKey(jwk, hash);
+
+    return HmacSecretKey._(impl);
   }
 
   /// Generate random [HmacSecretKey].
@@ -181,12 +190,14 @@ abstract class HmacSecretKey {
   /// // Generate a new random HMAC secret key.
   /// final key = await HmacSecretKey.generate(Hash.sha256);
   /// ```
-  static Future<HmacSecretKey> generateKey(Hash hash, {int? length}) {
+  static Future<HmacSecretKey> generateKey(Hash hash, {int? length}) async {
     if (length != null && length <= 0) {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }
 
-    return impl.hmacSecretKey_generateKey(hash, length: length);
+    final impl = await webCryptImpl.hmacSecretKey.generateKey(hash, length: length);
+
+    return HmacSecretKey._(impl);
   }
 
   /// Compute an HMAC signature of given [data].
@@ -219,7 +230,7 @@ abstract class HmacSecretKey {
   /// instead, these methods computes a signature and does a
   /// fixed-time comparison.
   /// {@endtemplate}
-  Future<Uint8List> signBytes(List<int> data);
+  Future<Uint8List> signBytes(List<int> data) async => await _impl.signBytes(data);
 
   /// Compute an HMAC signature of given [data] stream.
   ///
@@ -246,7 +257,8 @@ abstract class HmacSecretKey {
   /// ```
   ///
   /// {@macro HMAC-sign:do-not-validate-using-sign}
-  Future<Uint8List> signStream(Stream<List<int>> data);
+  Future<Uint8List> signStream(Stream<List<int>> data) =>
+    _impl.signStream(data);
 
   /// Verify the HMAC [signature] of given [data].
   ///
@@ -282,7 +294,8 @@ abstract class HmacSecretKey {
   /// );
   /// assert(result == true, 'this signature should be valid');
   /// ```
-  Future<bool> verifyBytes(List<int> signature, List<int> data);
+  Future<bool> verifyBytes(List<int> signature, List<int> data) =>
+    _impl.verifyBytes(signature, data);
 
   /// Verify the HMAC [signature] of given [data] stream.
   ///
@@ -313,7 +326,8 @@ abstract class HmacSecretKey {
   /// ]));
   /// assert(result == true, 'this signature should be valid');
   /// ```
-  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data);
+  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) =>
+    _impl.verifyStream(signature, data);
 
   /// Export [HmacSecretKey] as raw bytes.
   ///
@@ -336,7 +350,7 @@ abstract class HmacSecretKey {
   /// // If we wanted to we could import the key as follows:
   /// // key = await HmacSecretKey.importRawKey(secretBytes, Hash.sha256);
   /// ```
-  Future<Uint8List> exportRawKey();
+  Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
   /// Export [HmacSecretKey] as [JSON Web Key][1].
   ///
@@ -360,5 +374,5 @@ abstract class HmacSecretKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }

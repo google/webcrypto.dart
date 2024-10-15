@@ -15,10 +15,14 @@
 library webcrypto.impl_stub;
 
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';
+import 'package:webcrypto/webcrypto.dart';
 import '../webcrypto/webcrypto.dart';
 
 part 'impl_stub.aescbc.dart';
 part 'impl_stub.aesctr.dart';
+part 'impl_stub.aesgcm.dart';
+part 'impl_stub.hmac.dart';
+part 'impl_stub.pbkdf2.dart';
 part 'impl_stub.ecdh.dart';
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
@@ -31,6 +35,15 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final aesCtrSecretKey = const _StaticAesCtrSecretKeyImpl();
+
+  @override
+  final aesGcmSecretKey = const _StaticAesGcmSecretKeyImpl();
+
+  @override
+  final hmacSecretKey = const _StaticHmacSecretKeyImpl();
+
+  @override
+  final pbkdf2SecretKey = const _StaticPbkdf2SecretKeyImpl();
 
   @override
   final ecdhPrivateKey = const _StaticEcdhPrivateKeyImpl();
