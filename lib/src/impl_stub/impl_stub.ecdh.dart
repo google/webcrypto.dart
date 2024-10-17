@@ -26,7 +26,7 @@ final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
     throw UnimplementedError('Not implemented');
 
   @override
-  Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> generateKey(EllipticCurve curve) =>
+  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(EllipticCurve curve) =>
     throw UnimplementedError('Not implemented');
 }
 

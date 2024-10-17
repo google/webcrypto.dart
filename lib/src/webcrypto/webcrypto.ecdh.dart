@@ -56,6 +56,10 @@ final class EcdhPrivateKey {
 
   EcdhPrivateKey._(this._impl); // keep the constructor private.
 
+  factory EcdhPrivateKey(EcdhPrivateKeyImpl impl) {
+    return EcdhPrivateKey._(impl);
+  }
+
   /// Import [EcdhPrivateKey] in the [PKCS #8][1] format.
   ///
   /// Creates an [EcdhPrivateKey] from [keyData] given as the DER encodeding _PrivateKeyInfo structure_ specified in [RFC 5208][1].
@@ -179,11 +183,15 @@ final class EcdhPrivateKey {
   /// }
   /// ```
   /// 
-  static Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> generateKey(
+  static Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> generateKey(
     EllipticCurve curve,
   ) async {
-    final impl = await webCryptImpl.ecdhPrivateKey.generateKey(curve);
-    return impl;
+    final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.ecdhPrivateKey.generateKey(curve);
+    
+    final privateKey = EcdhPrivateKey(privateKeyImpl);
+    final publicKey = EcdhPublicKey(publicKeyImpl);
+
+    return createKeyPair(privateKey, publicKey);
   }
 
   /// Derive a shared secret from two ECDH key pairs using the private key from one pair 
@@ -206,8 +214,11 @@ final class EcdhPrivateKey {
   // See: https://tools.ietf.org/html/rfc6090#section-4
   // Notice that this is not uniformly distributed, see also:
   // https://tools.ietf.org/html/rfc6090#appendix-B
-  Future<Uint8List> deriveBits(int length, EcdhPublicKeyImpl publicKey) =>
-    _impl.deriveBits(length, publicKey);
+  Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
+    final publicKeyImpl = publicKey._impl;
+
+    return _impl.deriveBits(length, publicKeyImpl);
+  }
 
   /// Export the [EcdhPrivateKey] as a [PKCS #8][1] key.
   ///
@@ -263,6 +274,10 @@ final class EcdhPublicKey {
   final EcdhPublicKeyImpl _impl;
 
   EcdhPublicKey._(this._impl); // keep the constructor private.
+
+  factory EcdhPublicKey(EcdhPublicKeyImpl impl) {
+    return EcdhPublicKey._(impl);
+  }
 
   /// TODO: find out of this works on Firefox
   static Future<EcdhPublicKey> importRawKey(

@@ -229,7 +229,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
   });
 }
 
-_KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
+KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
   int modulusLength,
   BigInt publicExponent,
 ) {
@@ -278,9 +278,9 @@ _KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
     final pubKey = _EvpPKey();
     _checkOp(ssl.EVP_PKEY_set1_RSA.invoke(pubKey, pubRSA) == 1);
 
-    return _KeyPair(
-      privateKey: privKey,
-      publicKey: pubKey,
+    return createKeyPair(
+      privKey,
+      pubKey,
     );
   });
 }

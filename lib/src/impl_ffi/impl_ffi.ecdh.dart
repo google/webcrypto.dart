@@ -38,9 +38,9 @@ Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> ecdhPrivateKey_generateKe
   EllipticCurve curve,
 ) async {
   final p = _generateEcKeyPair(curve);
-  return _KeyPair(
-    privateKey: _EcdhPrivateKeyImpl(p.privateKey),
-    publicKey: _EcdhPublicKeyImpl(p.publicKey),
+  return createKeyPair(
+    _EcdhPrivateKeyImpl(p.privateKey),
+    _EcdhPublicKeyImpl(p.publicKey),
   );
 }
 
@@ -80,8 +80,11 @@ final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
       ecdhPrivateKey_importJsonWebKey(jwk, curve);
 
   @override
-  Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> generateKey(EllipticCurve curve) =>
-      ecdhPrivateKey_generateKey(curve);
+  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(EllipticCurve curve) async {
+    final KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl> keyPair = await ecdhPrivateKey_generateKey(curve);
+  
+    return (keyPair.privateKey, keyPair.publicKey);
+  }
 }
 
 final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
@@ -100,7 +103,7 @@ final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
       throw ArgumentError.value(
         publicKey,
         'publicKey',
-        'custom implementations of EcdhPublicKeyImpl is not supported',
+        'custom implementations of EcdhPublicKey is not supported',
       );
     }
     if (length <= 0) {

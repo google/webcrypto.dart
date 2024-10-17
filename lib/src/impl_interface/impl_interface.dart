@@ -17,8 +17,7 @@ library impl_stub;
 import 'dart:typed_data';
 import 'dart:async';
 
-import 'package:webcrypto/webcrypto.dart';
-
+import 'package:webcrypto/webcrypto.dart' show Hash;
 
 part 'impl_interface.aescbc.dart';
 part 'impl_interface.aesctr.dart';
@@ -27,6 +26,37 @@ part 'impl_interface.pbkdf2.dart';
 part 'impl_interface.aesgcm.dart';
 part 'impl_interface.ecdh.dart';
 
+/// A key-pair as returned from key generation.
+class KeyPair<S, T> {
+  KeyPair._(this.privateKey, this.publicKey); // keep the constructor private.
+
+  /// Private key for [publicKey].
+  final S privateKey;
+
+  /// Public key matching [privateKey].
+  final T publicKey;
+}
+
+/// Factory method to create KeyPair instance
+KeyPair<S, T> createKeyPair<S, T>(S privateKey, T publicKey) {
+  return KeyPair._(privateKey, publicKey);
+}
+
+/// Elliptic curves supported by ECDSA and ECDH.
+///
+/// > [!NOTE]
+/// > Additional values may be added to this enum in the future.
+enum EllipticCurve {
+  p256,
+  p384,
+
+  ///
+  ///
+  /// P-521 is **not supported on Safari**, see [bug 216755 (bugs.webkit.org)][1].
+  ///
+  /// [1]: https://bugs.webkit.org/show_bug.cgi?id=216755
+  p521,
+}
 
 /// Interface to be provided by platform implementations.
 ///

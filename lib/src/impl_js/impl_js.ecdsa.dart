@@ -59,9 +59,9 @@ Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
     ),
     _usagesSignVerify,
   );
-  return _KeyPair(
-    privateKey: _EcdsaPrivateKey(pair.privateKey),
-    publicKey: _EcdsaPublicKey(pair.publicKey),
+  return createKeyPair(
+    _EcdsaPrivateKey(pair.privateKey),
+    _EcdsaPublicKey(pair.publicKey),
   );
 }
 

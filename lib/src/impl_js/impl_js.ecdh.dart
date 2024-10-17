@@ -65,9 +65,9 @@ Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> ecdhPrivateKey_generateKe
     ),
     _usagesDeriveBits,
   );
-  return _KeyPair(
-    privateKey: _EcdhPrivateKeyImpl(pair.privateKey),
-    publicKey: _EcdhPublicKeyImpl(pair.publicKey),
+  return createKeyPair(
+    _EcdhPrivateKeyImpl(pair.privateKey),
+     _EcdhPublicKeyImpl(pair.publicKey),
   );
 }
 
@@ -136,8 +136,11 @@ final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
       ecdhPrivateKey_importJsonWebKey(jwk, curve);
 
   @override
-  Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> generateKey(EllipticCurve curve) =>
-      ecdhPrivateKey_generateKey(curve);
+  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(EllipticCurve curve) async {
+    final KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl> keyPair = await ecdhPrivateKey_generateKey(curve);
+  
+    return (keyPair.privateKey, keyPair.publicKey);
+  }
 }
 
 final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
