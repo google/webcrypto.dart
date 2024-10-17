@@ -33,22 +33,22 @@ String _rsaOaepJwkAlgFromHash(_Hash hash) {
   throw UnsupportedError('hash is not supported');
 }
 
-Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
+Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
   // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
   final h = _Hash.fromHash(hash);
-  return _RsaOaepPrivateKey(_importPkcs8RsaPrivateKey(keyData), h);
+  return _RsaOaepPrivateKeyImpl(_importPkcs8RsaPrivateKey(keyData), h);
 }
 
-Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
+Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) async {
   // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
   final h = _Hash.fromHash(hash);
-  return _RsaOaepPrivateKey(
+  return _RsaOaepPrivateKeyImpl(
     _importJwkRsaPrivateOrPublicKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: true,
@@ -59,7 +59,7 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
   );
 }
 
-Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
+Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
     rsaOaepPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
@@ -69,27 +69,27 @@ Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
   final h = _Hash.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
   return _KeyPair(
-    privateKey: _RsaOaepPrivateKey(keys.privateKey, h),
-    publicKey: _RsaOaepPublicKey(keys.publicKey, h),
+    privateKey: _RsaOaepPrivateKeyImpl(keys.privateKey, h),
+    publicKey: _RsaOaepPublicKeyImpl(keys.publicKey, h),
   );
 }
 
-Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
+Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
   // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
   final h = _Hash.fromHash(hash);
-  return _RsaOaepPublicKey(_importSpkiRsaPublicKey(keyData), h);
+  return _RsaOaepPublicKeyImpl(_importSpkiRsaPublicKey(keyData), h);
 }
 
-Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
+Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) async {
   // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
   final h = _Hash.fromHash(hash);
-  return _RsaOaepPublicKey(
+  return _RsaOaepPublicKeyImpl(
     _importJwkRsaPrivateOrPublicKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: false,
@@ -167,11 +167,34 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   });
 }
 
-class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
+final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl {
+  const _StaticRsaOaepPrivateKeyImpl();
+
+  @override
+  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(List<int> keyData, Hash hash) =>
+      rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
+
+  @override
+  Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+    Hash hash,
+  ) =>
+      rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
+
+  @override
+  Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>> generateKey(
+    int modulusLength,
+    BigInt publicExponent,
+    Hash hash,
+  ) =>
+      rsaOaepPrivateKey_generateKey(modulusLength, publicExponent, hash);
+}
+
+final class _RsaOaepPrivateKeyImpl implements RsaOaepPrivateKeyImpl {
   final _EvpPKey _key;
   final _Hash _hash;
 
-  _RsaOaepPrivateKey(this._key, this._hash);
+  _RsaOaepPrivateKeyImpl(this._key, this._hash);
 
   @override
   String toString() {
@@ -203,11 +226,29 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
 }
 
-class _RsaOaepPublicKey implements RsaOaepPublicKey {
+final class _StaticRsaOaepPublicKeyImpl implements StaticRsaOaepPublicKeyImpl {
+  const _StaticRsaOaepPublicKeyImpl();
+
+  @override
+  Future<RsaOaepPublicKeyImpl> importSpkiKey(
+    List<int> keyData,
+    Hash hash,
+  ) =>
+      rsaOaepPublicKey_importSpkiKey(keyData, hash);
+
+  @override
+  Future<RsaOaepPublicKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+    Hash hash,
+  ) =>
+      rsaOaepPublicKey_importJsonWebKey(jwk, hash);
+}
+
+final class _RsaOaepPublicKeyImpl implements RsaOaepPublicKeyImpl {
   final _EvpPKey _key;
   final _Hash _hash;
 
-  _RsaOaepPublicKey(this._key, this._hash);
+  _RsaOaepPublicKeyImpl(this._key, this._hash);
 
   @override
   String toString() {

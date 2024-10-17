@@ -23,6 +23,7 @@ import 'package:webcrypto/webcrypto.dart';
 part 'impl_interface.aescbc.dart';
 part 'impl_interface.aesctr.dart';
 part 'impl_interface.hmac.dart';
+part 'impl_interface.rsaoaep.dart';
 part 'impl_interface.pbkdf2.dart';
 part 'impl_interface.aesgcm.dart';
 
@@ -47,5 +48,7 @@ abstract interface class WebCryptoImpl {
   StaticAesCtrSecretKeyImpl get aesCtrSecretKey;
   StaticAesGcmSecretKeyImpl get aesGcmSecretKey;
   StaticHmacSecretKeyImpl get hmacSecretKey;
+  StaticRsaOaepPrivateKeyImpl get rsaOaepPrivateKey;
+  StaticRsaOaepPublicKeyImpl get rsaOaepPublicKey;
   StaticPbkdf2SecretKeyImpl get pbkdf2SecretKey;
 }

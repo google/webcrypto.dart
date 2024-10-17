@@ -74,5 +74,11 @@ final class _WebCryptoImpl implements WebCryptoImpl {
   final hmacSecretKey = const _StaticHmacSecretKeyImpl();
 
   @override
+  final rsaOaepPrivateKey = const _StaticRsaOaepPrivateKeyImpl();
+
+  @override
+  final rsaOaepPublicKey = const _StaticRsaOaepPublicKeyImpl();
+
+  @override
   final pbkdf2SecretKey = const _StaticPbkdf2SecretKeyImpl();
 }
