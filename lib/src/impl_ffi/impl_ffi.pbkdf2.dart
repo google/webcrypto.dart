@@ -16,14 +16,23 @@
 
 part of 'impl_ffi.dart';
 
-Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
-  return _Pbkdf2SecretKey(Uint8List.fromList(keyData));
+Future<Pbkdf2SecretKeyImpl> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
+  return _Pbkdf2SecretKeyImpl(Uint8List.fromList(keyData));
 }
 
-class _Pbkdf2SecretKey implements Pbkdf2SecretKey {
+final class _StaticPbkdf2SecretKeyImpl implements StaticPbkdf2SecretKeyImpl {
+  const _StaticPbkdf2SecretKeyImpl();
+
+  @override
+  Future<Pbkdf2SecretKeyImpl> importRawKey(List<int> keyData) {
+    return pbkdf2SecretKey_importRawKey(keyData);
+  }
+}
+
+final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
   final Uint8List _key;
 
-  _Pbkdf2SecretKey(this._key);
+  _Pbkdf2SecretKeyImpl(this._key);
 
   @override
   String toString() {
