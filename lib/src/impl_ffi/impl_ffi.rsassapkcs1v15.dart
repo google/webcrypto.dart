@@ -68,9 +68,9 @@ Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
   // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
   final h = _Hash.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
-  return _KeyPair(
-    privateKey: _RsassaPkcs1V15PrivateKey(keys.privateKey, h),
-    publicKey: _RsassaPkcs1V15PublicKey(keys.publicKey, h),
+  return createKeyPair(
+    _RsassaPkcs1V15PrivateKey(keys.privateKey, h),
+    _RsassaPkcs1V15PublicKey(keys.publicKey, h),
   );
 }
 

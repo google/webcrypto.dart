@@ -54,9 +54,9 @@ Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
   EllipticCurve curve,
 ) async {
   final p = _generateEcKeyPair(curve);
-  return _KeyPair(
-    privateKey: _EcdsaPrivateKey(p.privateKey),
-    publicKey: _EcdsaPublicKey(p.publicKey),
+  return createKeyPair(
+    _EcdsaPrivateKey(p.privateKey),
+    _EcdsaPublicKey(p.publicKey),
   );
 }
 

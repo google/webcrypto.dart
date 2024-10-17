@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:webcrypto/src/impl_interface/impl_interface.dart';
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
 import '../utils/detected_runtime.dart';
 
-class _KeyPair<S, T> implements KeyPair<S, T> {
+class _KeyPair<S extends EcdhPrivateKey, T extends EcdhPublicKey>
+    implements KeyPair<S, T> {
   @override
   final S privateKey;
 

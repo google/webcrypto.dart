@@ -67,9 +67,9 @@ Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
   // Validate and get hash function
   final h = _Hash.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
-  return _KeyPair(
-    privateKey: _RsaPssPrivateKey(keys.privateKey, h),
-    publicKey: _RsaPssPublicKey(keys.publicKey, h),
+  return createKeyPair(
+    _RsaPssPrivateKey(keys.privateKey, h),
+    _RsaPssPublicKey(keys.publicKey, h),
   );
 }
 

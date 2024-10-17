@@ -32,6 +32,8 @@ import '../impl_stub/impl_stub.dart'
     if (dart.library.ffi) '../impl_ffi/impl_ffi.dart'
     if (dart.library.js) '../impl_js/impl_js.dart' show webCryptImpl;
 
+export '../impl_interface/impl_interface.dart' show KeyPair, EllipticCurve;
+
 part 'webcrypto.aescbc.dart';
 part 'webcrypto.aesctr.dart';
 part 'webcrypto.aesgcm.dart';
@@ -50,32 +52,4 @@ part 'webcrypto.rsassapkcs1v15.dart';
 @sealed
 abstract class OperationError extends Error {
   OperationError._(); // keep the constructor private.
-}
-
-/// A key-pair as returned from key generation.
-@sealed
-abstract class KeyPair<S, T> {
-  KeyPair._(); // keep the constructor private.
-
-  /// Private key for [publicKey].
-  S get privateKey;
-
-  /// Public key matching [privateKey].
-  T get publicKey;
-}
-
-/// Elliptic curves supported by ECDSA and ECDH.
-///
-/// > [!NOTE]
-/// > Additional values may be added to this enum in the future.
-enum EllipticCurve {
-  p256,
-  p384,
-
-  ///
-  ///
-  /// P-521 is **not supported on Safari**, see [bug 216755 (bugs.webkit.org)][1].
-  ///
-  /// [1]: https://bugs.webkit.org/show_bug.cgi?id=216755
-  p521,
 }
