@@ -14,7 +14,8 @@
 
 part of 'impl_stub.dart';
 
-final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl {
+final class _StaticRsaOaepPrivateKeyImpl
+    implements StaticRsaOaepPrivateKeyImpl {
   const _StaticRsaOaepPrivateKeyImpl();
 
   @override
@@ -23,12 +24,14 @@ final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl 
   }
 
   @override
-  Future<RsaOaepPrivateKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash) {
+  Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash) {
     throw UnimplementedError('Not implemented');
   }
 
   @override
-  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(int modulusLength, BigInt publicExponent, Hash hash) {
+  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
+      int modulusLength, BigInt publicExponent, Hash hash) {
     throw UnimplementedError('Not implemented');
   }
 }

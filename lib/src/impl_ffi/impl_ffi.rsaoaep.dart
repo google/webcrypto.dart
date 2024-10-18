@@ -167,7 +167,8 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   });
 }
 
-final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl {
+final class _StaticRsaOaepPrivateKeyImpl
+    implements StaticRsaOaepPrivateKeyImpl {
   const _StaticRsaOaepPrivateKeyImpl();
 
   @override
@@ -188,7 +189,8 @@ final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl 
     Hash hash,
   ) async {
     final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair =
-        await rsaOaepPrivateKey_generateKey(modulusLength, publicExponent, hash);
+        await rsaOaepPrivateKey_generateKey(
+            modulusLength, publicExponent, hash);
 
     return (keyPair.privateKey, keyPair.publicKey);
   }

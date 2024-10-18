@@ -16,8 +16,10 @@ part of 'impl_interface.dart';
 
 abstract interface class StaticRsaOaepPrivateKeyImpl {
   Future<RsaOaepPrivateKeyImpl> importPkcs8Key(List<int> keyData, Hash hash);
-  Future<RsaOaepPrivateKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash);
-  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(int modulusLength, BigInt publicExponent, Hash hash);
+  Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash);
+  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
+      int modulusLength, BigInt publicExponent, Hash hash);
 }
 
 abstract interface class RsaOaepPrivateKeyImpl {
@@ -28,7 +30,8 @@ abstract interface class RsaOaepPrivateKeyImpl {
 
 abstract interface class StaticRsaOaepPublicKeyImpl {
   Future<RsaOaepPublicKeyImpl> importSpkiKey(List<int> keyData, Hash hash);
-  Future<RsaOaepPublicKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash);
+  Future<RsaOaepPublicKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash);
 }
 
 abstract interface class RsaOaepPublicKeyImpl {

@@ -101,7 +101,8 @@ Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importJsonWebKey(
   ));
 }
 
-final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl {
+final class _StaticRsaOaepPrivateKeyImpl
+    implements StaticRsaOaepPrivateKeyImpl {
   const _StaticRsaOaepPrivateKeyImpl();
 
   @override
@@ -110,13 +111,17 @@ final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl 
   }
 
   @override
-  Future<RsaOaepPrivateKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash) {
+  Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash) {
     return rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
   }
 
   @override
-  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(int modulusLength, BigInt publicExponent, Hash hash) async {
-    final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair = await rsaOaepPrivateKey_generateKey(modulusLength, publicExponent, hash);
+  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
+      int modulusLength, BigInt publicExponent, Hash hash) async {
+    final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair =
+        await rsaOaepPrivateKey_generateKey(
+            modulusLength, publicExponent, hash);
 
     return (keyPair.privateKey, keyPair.publicKey);
   }
@@ -165,7 +170,8 @@ final class _StaticRsaOaepPublicKeyImpl implements StaticRsaOaepPublicKeyImpl {
   }
 
   @override
-  Future<RsaOaepPublicKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash) {
+  Future<RsaOaepPublicKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash) {
     return rsaOaepPublicKey_importJsonWebKey(jwk, hash);
   }
 }
