@@ -16,7 +16,8 @@
 
 part of 'impl_ffi.dart';
 
-Future<Pbkdf2SecretKeyImpl> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
+Future<Pbkdf2SecretKeyImpl> pbkdf2SecretKey_importRawKey(
+    List<int> keyData) async {
   return _Pbkdf2SecretKeyImpl(Uint8List.fromList(keyData));
 }
 

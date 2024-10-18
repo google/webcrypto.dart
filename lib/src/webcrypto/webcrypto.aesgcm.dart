@@ -104,7 +104,8 @@ final class AesGcmSecretKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  static Future<AesGcmSecretKey> importJsonWebKey(Map<String, dynamic> jwk) async {
+  static Future<AesGcmSecretKey> importJsonWebKey(
+      Map<String, dynamic> jwk) async {
     final impl = await webCryptImpl.aesGcmSecretKey.importJsonWebKey(jwk);
     return AesGcmSecretKey._(impl);
   }
@@ -223,7 +224,8 @@ final class AesGcmSecretKey {
     List<int>? additionalData,
     int? tagLength = 128,
   }) =>
-      _impl.encryptBytes(data, iv, additionalData: additionalData, tagLength: tagLength);
+      _impl.encryptBytes(data, iv,
+          additionalData: additionalData, tagLength: tagLength);
 
   // TODO: Document this method, notice that [data] must be concatenation of
   //       ciphertext and authentication tag.
@@ -234,7 +236,8 @@ final class AesGcmSecretKey {
     List<int>? additionalData,
     int? tagLength = 128,
   }) =>
-      _impl.decryptBytes(data, iv, additionalData: additionalData, tagLength: tagLength);
+      _impl.decryptBytes(data, iv,
+          additionalData: additionalData, tagLength: tagLength);
 
   /// Export [AesGcmSecretKey] as raw bytes.
   ///
