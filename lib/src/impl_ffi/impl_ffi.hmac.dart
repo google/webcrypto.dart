@@ -105,12 +105,15 @@ final class _StaticHmacSecretKeyImpl implements StaticHmacSecretKeyImpl {
   const _StaticHmacSecretKeyImpl();
 
   @override
-  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash, {int? length}) {
+  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash,
+      {int? length}) {
     return hmacSecretKey_importRawKey(keyData, hash, length: length);
   }
 
   @override
-  Future<HmacSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash, {int? length}) {
+  Future<HmacSecretKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash,
+      {int? length}) {
     return hmacSecretKey_importJsonWebKey(jwk, hash, length: length);
   }
 
@@ -132,7 +135,7 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
   }
 
   @override
-  Future<Uint8List>  signBytes(List<int> data) => signStream(Stream.value(data));
+  Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) {

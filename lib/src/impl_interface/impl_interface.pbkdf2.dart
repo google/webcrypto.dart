@@ -19,5 +19,6 @@ abstract interface class StaticPbkdf2SecretKeyImpl {
 }
 
 abstract interface class Pbkdf2SecretKeyImpl {
-  Future<Uint8List> deriveBits(int length, Hash hash, List<int> salt, int iterations);
+  Future<Uint8List> deriveBits(
+      int length, Hash hash, List<int> salt, int iterations);
 }

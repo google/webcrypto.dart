@@ -18,7 +18,8 @@ part of 'impl_js.dart';
 
 const _pbkdf2AlgorithmName = 'PBKDF2';
 
-Future<Pbkdf2SecretKeyImpl> pbkdf2SecretKey_importRawKey(List<int> keyData) async {
+Future<Pbkdf2SecretKeyImpl> pbkdf2SecretKey_importRawKey(
+    List<int> keyData) async {
   return _Pbkdf2SecretKeyImpl(await _importKey(
     'raw',
     keyData,

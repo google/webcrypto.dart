@@ -9,6 +9,18 @@ env:
   PUB_ENVIRONMENT: bot.github
 
 jobs:
+  lints:
+    name: Format + Lints
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output none --set-exit-if-changed .
+      - run: dart analyze --fatal-warnings .
   linux:
     name: webcrypto on Linux desktop / Chrome / Firefox
     runs-on: ubuntu-latest

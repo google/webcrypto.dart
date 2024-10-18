@@ -55,7 +55,8 @@ Future<EcdhPrivateKeyImpl> ecdhPrivateKey_importJsonWebKey(
   ));
 }
 
-Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> ecdhPrivateKey_generateKey(
+Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>>
+    ecdhPrivateKey_generateKey(
   EllipticCurve curve,
 ) async {
   final pair = await _generateKeyPair(
@@ -67,7 +68,7 @@ Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>> ecdhPrivateKey_generateKe
   );
   return createKeyPair(
     _EcdhPrivateKeyImpl(pair.privateKey),
-     _EcdhPublicKeyImpl(pair.publicKey),
+    _EcdhPublicKeyImpl(pair.publicKey),
   );
 }
 
@@ -128,17 +129,21 @@ final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
   const _StaticEcdhPrivateKeyImpl();
 
   @override
-  Future<EcdhPrivateKeyImpl> importPkcs8Key(List<int> keyData, EllipticCurve curve) =>
+  Future<EcdhPrivateKeyImpl> importPkcs8Key(
+          List<int> keyData, EllipticCurve curve) =>
       ecdhPrivateKey_importPkcs8Key(keyData, curve);
 
   @override
-  Future<EcdhPrivateKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, EllipticCurve curve) =>
+  Future<EcdhPrivateKeyImpl> importJsonWebKey(
+          Map<String, dynamic> jwk, EllipticCurve curve) =>
       ecdhPrivateKey_importJsonWebKey(jwk, curve);
 
   @override
-  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(EllipticCurve curve) async {
-    final KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl> keyPair = await ecdhPrivateKey_generateKey(curve);
-  
+  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(
+      EllipticCurve curve) async {
+    final KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl> keyPair =
+        await ecdhPrivateKey_generateKey(curve);
+
     return (keyPair.privateKey, keyPair.publicKey);
   }
 }
@@ -199,15 +204,18 @@ final class _StaticEcdhPublicKeyImpl implements StaticEcdhPublicKeyImpl {
   const _StaticEcdhPublicKeyImpl();
 
   @override
-  Future<EcdhPublicKeyImpl> importRawKey(List<int> keyData, EllipticCurve curve) =>
+  Future<EcdhPublicKeyImpl> importRawKey(
+          List<int> keyData, EllipticCurve curve) =>
       ecdhPublicKey_importRawKey(keyData, curve);
 
   @override
-  Future<EcdhPublicKeyImpl> importSpkiKey(List<int> keyData, EllipticCurve curve) =>
+  Future<EcdhPublicKeyImpl> importSpkiKey(
+          List<int> keyData, EllipticCurve curve) =>
       ecdhPublicKey_importSpkiKey(keyData, curve);
 
   @override
-  Future<EcdhPublicKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, EllipticCurve curve) =>
+  Future<EcdhPublicKeyImpl> importJsonWebKey(
+          Map<String, dynamic> jwk, EllipticCurve curve) =>
       ecdhPublicKey_importJsonWebKey(jwk, curve);
 }
 

@@ -15,9 +15,12 @@
 part of 'impl_interface.dart';
 
 abstract interface class StaticEcdhPrivateKeyImpl {
-  Future<EcdhPrivateKeyImpl> importPkcs8Key(List<int> keyData, EllipticCurve curve);
-  Future<EcdhPrivateKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, EllipticCurve curve);
-  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(EllipticCurve curve);
+  Future<EcdhPrivateKeyImpl> importPkcs8Key(
+      List<int> keyData, EllipticCurve curve);
+  Future<EcdhPrivateKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, EllipticCurve curve);
+  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(
+      EllipticCurve curve);
 }
 
 abstract interface class EcdhPrivateKeyImpl {
@@ -27,9 +30,12 @@ abstract interface class EcdhPrivateKeyImpl {
 }
 
 abstract interface class StaticEcdhPublicKeyImpl {
-  Future<EcdhPublicKeyImpl> importRawKey(List<int> keyData, EllipticCurve curve);
-  Future<EcdhPublicKeyImpl> importSpkiKey(List<int> keyData, EllipticCurve curve);
-  Future<EcdhPublicKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, EllipticCurve curve);
+  Future<EcdhPublicKeyImpl> importRawKey(
+      List<int> keyData, EllipticCurve curve);
+  Future<EcdhPublicKeyImpl> importSpkiKey(
+      List<int> keyData, EllipticCurve curve);
+  Future<EcdhPublicKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, EllipticCurve curve);
 }
 
 abstract interface class EcdhPublicKeyImpl {
