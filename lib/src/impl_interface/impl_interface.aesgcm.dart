@@ -21,8 +21,10 @@ abstract interface class StaticAesGcmSecretKeyImpl {
 }
 
 abstract interface class AesGcmSecretKeyImpl {
-  Future<Uint8List> encryptBytes(List<int> data, List<int> iv, {List<int>? additionalData, int? tagLength});
-  Future<Uint8List> decryptBytes(List<int> data, List<int> iv, {List<int>? additionalData, int? tagLength});
+  Future<Uint8List> encryptBytes(List<int> data, List<int> iv,
+      {List<int>? additionalData, int? tagLength});
+  Future<Uint8List> decryptBytes(List<int> data, List<int> iv,
+      {List<int>? additionalData, int? tagLength});
   Future<Uint8List> exportRawKey();
   Future<Map<String, dynamic>> exportJsonWebKey();
 }

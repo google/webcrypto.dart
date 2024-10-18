@@ -91,7 +91,8 @@ final class _StaticHmacSecretKeyImpl implements StaticHmacSecretKeyImpl {
   }
 
   @override
-  Future<HmacSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash,
+  Future<HmacSecretKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash,
       {int? length}) {
     return hmacSecretKey_importJsonWebKey(jwk, hash, length: length);
   }

@@ -18,30 +18,36 @@ final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
   const _StaticEcdhPrivateKeyImpl();
 
   @override
-  Future<EcdhPrivateKeyImpl> importPkcs8Key(List<int> keyData, EllipticCurve curve) =>
-    throw UnimplementedError('Not implemented');
+  Future<EcdhPrivateKeyImpl> importPkcs8Key(
+          List<int> keyData, EllipticCurve curve) =>
+      throw UnimplementedError('Not implemented');
 
   @override
-  Future<EcdhPrivateKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, EllipticCurve curve) =>
-    throw UnimplementedError('Not implemented');
+  Future<EcdhPrivateKeyImpl> importJsonWebKey(
+          Map<String, dynamic> jwk, EllipticCurve curve) =>
+      throw UnimplementedError('Not implemented');
 
   @override
-  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(EllipticCurve curve) =>
-    throw UnimplementedError('Not implemented');
+  Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(
+          EllipticCurve curve) =>
+      throw UnimplementedError('Not implemented');
 }
 
 final class _StaticEcdhPublicKeyImpl implements StaticEcdhPublicKeyImpl {
   const _StaticEcdhPublicKeyImpl();
 
   @override
-  Future<EcdhPublicKeyImpl> importRawKey(List<int> keyData, EllipticCurve curve) =>
-    throw UnimplementedError('Not implemented');
+  Future<EcdhPublicKeyImpl> importRawKey(
+          List<int> keyData, EllipticCurve curve) =>
+      throw UnimplementedError('Not implemented');
 
   @override
-  Future<EcdhPublicKeyImpl> importSpkiKey(List<int> keyData, EllipticCurve curve) =>
-    throw UnimplementedError('Not implemented');
+  Future<EcdhPublicKeyImpl> importSpkiKey(
+          List<int> keyData, EllipticCurve curve) =>
+      throw UnimplementedError('Not implemented');
 
   @override
-  Future<EcdhPublicKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, EllipticCurve curve) =>
-    throw UnimplementedError('Not implemented');
+  Future<EcdhPublicKeyImpl> importJsonWebKey(
+          Map<String, dynamic> jwk, EllipticCurve curve) =>
+      throw UnimplementedError('Not implemented');
 }

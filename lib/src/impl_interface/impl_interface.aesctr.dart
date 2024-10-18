@@ -23,8 +23,10 @@ abstract interface class StaticAesCtrSecretKeyImpl {
 abstract interface class AesCtrSecretKeyImpl {
   Future<Uint8List> encryptBytes(List<int> data, List<int> counter, int length);
   Future<Uint8List> decryptBytes(List<int> data, List<int> counter, int length);
-  Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> counter, int length);
-  Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> counter, int length);
+  Stream<Uint8List> encryptStream(
+      Stream<List<int>> data, List<int> counter, int length);
+  Stream<Uint8List> decryptStream(
+      Stream<List<int>> data, List<int> counter, int length);
   Future<Uint8List> exportRawKey();
   Future<Map<String, dynamic>> exportJsonWebKey();
 }

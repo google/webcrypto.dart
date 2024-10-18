@@ -15,8 +15,11 @@
 part of 'impl_interface.dart';
 
 abstract interface class StaticHmacSecretKeyImpl {
-  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash, {int? length});
-  Future<HmacSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash, {int? length});
+  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash,
+      {int? length});
+  Future<HmacSecretKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash,
+      {int? length});
   Future<HmacSecretKeyImpl> generateKey(Hash hash, {int? length});
 }
 

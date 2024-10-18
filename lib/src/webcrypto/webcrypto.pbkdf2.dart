@@ -53,7 +53,7 @@ part of 'webcrypto.dart';
 
 final class Pbkdf2SecretKey {
   final Pbkdf2SecretKeyImpl _impl;
-  
+
   Pbkdf2SecretKey._(this._impl); // keep the constructor private.
 
   /// Import [Pbkdf2SecretKey] from raw [keyData].
@@ -94,5 +94,5 @@ final class Pbkdf2SecretKey {
     List<int> salt,
     int iterations,
   ) =>
-    _impl.deriveBits(length, hash, salt, iterations);
+      _impl.deriveBits(length, hash, salt, iterations);
 }

@@ -104,12 +104,12 @@ final class _StaticAesCbcSecretKeyImpl implements StaticAesCbcSecretKeyImpl {
   }
 
   @override
-  Future<AesCbcSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) async { 
+  Future<AesCbcSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) async {
     return await aesCbc_importJsonWebKey(jwk);
   }
 
   @override
-  Future<AesCbcSecretKeyImpl> generateKey(int length) async { 
+  Future<AesCbcSecretKeyImpl> generateKey(int length) async {
     return await aesCbc_generateKey(length);
   }
 }
