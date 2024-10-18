@@ -66,7 +66,7 @@ final class _StaticAesCtrSecretKeyImpl implements StaticAesCtrSecretKeyImpl {
   }
 }
 
-final class _AesCtrSecretKeyImpl extends AesCtrSecretKeyImpl {
+final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
   final subtle.JSCryptoKey _key;
   _AesCtrSecretKeyImpl(this._key);
 

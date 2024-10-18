@@ -64,9 +64,9 @@ Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
     ),
     _usagesEncryptDecrypt,
   );
-  return _KeyPair(
-    privateKey: _RsaOaepPrivateKeyImpl(pair.privateKey),
-    publicKey: _RsaOaepPublicKeyImpl(pair.publicKey),
+  return createKeyPair(
+    _RsaOaepPrivateKey(pair.privateKey),
+    _RsaOaepPublicKey(pair.publicKey),
   );
 }
 

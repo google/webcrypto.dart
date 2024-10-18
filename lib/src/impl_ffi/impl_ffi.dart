@@ -58,18 +58,6 @@ class _OperationError extends Error implements OperationError {
   String toString() => _message;
 }
 
-/// Implementation of [KeyPair].
-class _KeyPair<S, T> implements KeyPair<S, T> {
-  @override
-  final S privateKey;
-
-  @override
-  final T publicKey;
-
-  _KeyPair({required this.privateKey, required this.publicKey});
-}
-
-
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
 final class _WebCryptoImpl implements WebCryptoImpl {
@@ -82,7 +70,19 @@ final class _WebCryptoImpl implements WebCryptoImpl {
   final aesCtrSecretKey = const _StaticAesCtrSecretKeyImpl();
 
   @override
+  final aesGcmSecretKey = const _StaticAesGcmSecretKeyImpl();
+
+  @override
   final hmacSecretKey = const _StaticHmacSecretKeyImpl();
+
+  @override
+  final pbkdf2SecretKey = const _StaticPbkdf2SecretKeyImpl();
+
+  @override
+  final ecdhPrivateKey = const _StaticEcdhPrivateKeyImpl();
+
+  @override
+  final ecdhPublicKey = const _StaticEcdhPublicKeyImpl();
 
   @override
   final rsaOaepPrivateKey = const _StaticRsaOaepPrivateKeyImpl();
