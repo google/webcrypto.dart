@@ -77,6 +77,10 @@ final class RsaOaepPrivateKey {
 
   RsaOaepPrivateKey._(this._impl); // keep the constructor private.
 
+  factory RsaOaepPrivateKey(RsaOaepPrivateKeyImpl impl) {
+    return RsaOaepPrivateKey._(impl);
+  }
+
   /// Import RSAES-OAEP private key in PKCS #8 format.
   ///
   /// Creates an [RsaOaepPrivateKey] from [keyData] given as the DER
@@ -219,8 +223,12 @@ final class RsaOaepPrivateKey {
     BigInt publicExponent,
     Hash hash,
   ) async {
-    final pair = await webCryptImpl.rsaOaepPrivateKey.generateKey(modulusLength, publicExponent, hash);
-    return pair as KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>;
+    final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.rsaOaepPrivateKey.generateKey(modulusLength, publicExponent, hash);
+    
+    final privateKey = RsaOaepPrivateKey(privateKeyImpl);
+    final publicKey = RsaOaepPublicKey(publicKeyImpl);
+
+    return createKeyPair(privateKey, publicKey);
   }
 
   /// Decrypt [data] encrypted with [RsaOaepPublicKey.encryptBytes] from the
@@ -347,6 +355,10 @@ final class RsaOaepPublicKey {
   final RsaOaepPublicKeyImpl _impl;
 
   RsaOaepPublicKey._(this._impl); // keep the constructor private.
+
+  factory RsaOaepPublicKey(RsaOaepPublicKeyImpl impl) {
+    return RsaOaepPublicKey._(impl);
+  }
 
   /// Import RSAES-OAEP public key in SPKI format.
   ///

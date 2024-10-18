@@ -28,7 +28,7 @@ final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl 
   }
 
   @override
-  Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>> generateKey(int modulusLength, BigInt publicExponent, Hash hash) {
+  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(int modulusLength, BigInt publicExponent, Hash hash) {
     throw UnimplementedError('Not implemented');
   }
 }

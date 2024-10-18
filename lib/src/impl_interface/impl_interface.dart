@@ -25,6 +25,7 @@ part 'impl_interface.hmac.dart';
 part 'impl_interface.pbkdf2.dart';
 part 'impl_interface.aesgcm.dart';
 part 'impl_interface.ecdh.dart';
+part 'impl_interface.rsaoaep.dart';
 
 /// A key-pair as returned from key generation.
 class KeyPair<S, T> {
@@ -57,7 +58,6 @@ enum EllipticCurve {
   /// [1]: https://bugs.webkit.org/show_bug.cgi?id=216755
   p521,
 }
-part 'impl_interface.rsaoaep.dart';
 
 /// Interface to be provided by platform implementations.
 ///

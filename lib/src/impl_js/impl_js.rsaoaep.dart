@@ -65,8 +65,8 @@ Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
     _usagesEncryptDecrypt,
   );
   return createKeyPair(
-    _RsaOaepPrivateKey(pair.privateKey),
-    _RsaOaepPublicKey(pair.publicKey),
+    _RsaOaepPrivateKeyImpl(pair.privateKey),
+    _RsaOaepPublicKeyImpl(pair.publicKey),
   );
 }
 
@@ -115,8 +115,10 @@ final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl 
   }
 
   @override
-  Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>> generateKey(int modulusLength, BigInt publicExponent, Hash hash) {
-    return rsaOaepPrivateKey_generateKey(modulusLength, publicExponent, hash);
+  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(int modulusLength, BigInt publicExponent, Hash hash) async {
+    final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair = await rsaOaepPrivateKey_generateKey(modulusLength, publicExponent, hash);
+
+    return (keyPair.privateKey, keyPair.publicKey);
   }
 }
 

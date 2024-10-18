@@ -69,8 +69,8 @@ Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
   final h = _Hash.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
   return createKeyPair(
-    _RsaOaepPrivateKey(keys.privateKey, h),
-    _RsaOaepPublicKey(keys.publicKey, h),
+    _RsaOaepPrivateKeyImpl(keys.privateKey, h),
+    _RsaOaepPublicKeyImpl(keys.publicKey, h),
   );
 }
 
@@ -182,12 +182,16 @@ final class _StaticRsaOaepPrivateKeyImpl implements StaticRsaOaepPrivateKeyImpl 
       rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
 
   @override
-  Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>> generateKey(
+  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
     int modulusLength,
     BigInt publicExponent,
     Hash hash,
-  ) =>
-      rsaOaepPrivateKey_generateKey(modulusLength, publicExponent, hash);
+  ) async {
+    final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair =
+        await rsaOaepPrivateKey_generateKey(modulusLength, publicExponent, hash);
+
+    return (keyPair.privateKey, keyPair.publicKey);
+  }
 }
 
 final class _RsaOaepPrivateKeyImpl implements RsaOaepPrivateKeyImpl {
