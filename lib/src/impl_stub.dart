@@ -114,41 +114,6 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
 
 //---------------------- ECDSA
 
-Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdsaPublicKey> ecdsaPublicKey_importRawKey(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdsaPublicKey> ecdsaPublicKey_importSpkiKey(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
 //---------------------- RSA-OAEP
 
 Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(

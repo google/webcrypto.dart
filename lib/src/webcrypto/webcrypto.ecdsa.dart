@@ -14,84 +14,113 @@
 
 part of 'webcrypto.dart';
 
-@sealed
-abstract class EcdsaPrivateKey {
-  EcdsaPrivateKey._(); // keep the constructor private.
+final class EcdsaPrivateKey {
+  final EcdsaPrivateKeyImpl _impl;
+
+  EcdsaPrivateKey._(this._impl); // keep the constructor private.
+
+  factory EcdsaPrivateKey(EcdsaPrivateKeyImpl impl) {
+    return EcdsaPrivateKey._(impl);
+  } 
 
   static Future<EcdsaPrivateKey> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
-  ) {
-    return impl.ecdsaPrivateKey_importPkcs8Key(keyData, curve);
+  ) async {
+    final impl =
+        await webCryptImpl.ecdsaPrivateKey.importPkcs8Key(keyData, curve);
+    return EcdsaPrivateKey._(impl);
   }
 
   static Future<EcdsaPrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) {
-    return impl.ecdsaPrivateKey_importJsonWebKey(jwk, curve);
+  ) async {
+    final impl =
+        await webCryptImpl.ecdsaPrivateKey.importJsonWebKey(jwk, curve);
+    return EcdsaPrivateKey._(impl);
   }
 
   static Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> generateKey(
     EllipticCurve curve,
-  ) {
-    return impl.ecdsaPrivateKey_generateKey(curve);
+  ) async {
+    final (privateKeyImpl, publicKeyImpl) =
+        await webCryptImpl.ecdsaPrivateKey.generateKey(curve);
+
+    final privateKey = EcdsaPrivateKey(privateKeyImpl);
+    final publicKey = EcdsaPublicKey(publicKeyImpl);
+
+    return createKeyPair(privateKey, publicKey);
   }
 
   /// TODO: Document that this returns the raw signature format specified
   ///       in the webcrypto specification. Which is R + S as two raw big endian
   ///       integers zero padded to fill N bytes. Where N is the number of bytes
   ///       required to encode the order of the base points of the curve.
-  Future<Uint8List> signBytes(List<int> data, Hash hash);
-  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash);
+  Future<Uint8List> signBytes(List<int> data, Hash hash) =>
+      _impl.signBytes(data, hash);
 
-  Future<Uint8List> exportPkcs8Key();
+  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) =>
+      _impl.signStream(data, hash);
 
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
+
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
-@sealed
-abstract class EcdsaPublicKey {
-  EcdsaPublicKey._(); // keep the constructor private.
+final class EcdsaPublicKey {
+  final EcdsaPublicKeyImpl _impl;
+
+  factory EcdsaPublicKey(EcdsaPublicKeyImpl impl) {
+    return EcdsaPublicKey._(impl);
+  }
+
+  EcdsaPublicKey._(this._impl); // keep the constructor private.
 
   /// TODO: Document this being X9.62 format
   static Future<EcdsaPublicKey> importRawKey(
     List<int> keyData,
     EllipticCurve curve,
-  ) {
-    return impl.ecdsaPublicKey_importRawKey(keyData, curve);
+  ) async {
+    final impl = await webCryptImpl.ecdsaPublicKey.importRawKey(keyData, curve);
+    return EcdsaPublicKey._(impl);
   }
 
   static Future<EcdsaPublicKey> importSpkiKey(
     List<int> keyData,
     EllipticCurve curve,
-  ) {
-    return impl.ecdsaPublicKey_importSpkiKey(keyData, curve);
+  ) async {
+    final impl =
+        await webCryptImpl.ecdsaPublicKey.importSpkiKey(keyData, curve);
+    return EcdsaPublicKey._(impl);
   }
 
   static Future<EcdsaPublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) {
-    return impl.ecdsaPublicKey_importJsonWebKey(jwk, curve);
+  ) async {
+    final impl = await webCryptImpl.ecdsaPublicKey.importJsonWebKey(jwk, curve);
+    return EcdsaPublicKey._(impl);
   }
 
   Future<bool> verifyBytes(
     List<int> signature,
     List<int> data,
     Hash hash,
-  );
+  ) =>
+      _impl.verifyBytes(signature, data, hash);
 
   Future<bool> verifyStream(
     List<int> signature,
     Stream<List<int>> data,
     Hash hash,
-  );
+  ) =>
+      _impl.verifyStream(signature, data, hash);
 
   /// TODO: Document this being X9.62 format
-  Future<Uint8List> exportRawKey();
+  Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
-  Future<Uint8List> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey() => _impl.exportSpkiKey();
 
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }

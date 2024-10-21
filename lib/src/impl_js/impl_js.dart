@@ -17,6 +17,7 @@ library impl_js;
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';
 
 import '../webcrypto/webcrypto.dart';
@@ -70,4 +71,10 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final ecdhPublicKey = const _StaticEcdhPublicKeyImpl();
+
+  @override
+  final ecdsaPrivateKey = const _StaticEcdsaPrivateKeyImpl();
+
+  @override
+  final ecdsaPublicKey = const _StaticEcdsaPublicKeyImpl();
 }
