@@ -83,4 +83,10 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final ecdhPublicKey = const _StaticEcdhPublicKeyImpl();
+
+  @override
+  final rsaOaepPrivateKey = const _StaticRsaOaepPrivateKeyImpl();
+
+  @override
+  final rsaOaepPublicKey = const _StaticRsaOaepPublicKeyImpl();
 }
