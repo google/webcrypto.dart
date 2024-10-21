@@ -21,7 +21,7 @@ final class EcdsaPrivateKey {
 
   factory EcdsaPrivateKey(EcdsaPrivateKeyImpl impl) {
     return EcdsaPrivateKey._(impl);
-  } 
+  }
 
   static Future<EcdsaPrivateKey> importPkcs8Key(
     List<int> keyData,
