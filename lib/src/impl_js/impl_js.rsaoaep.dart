@@ -18,11 +18,11 @@ part of 'impl_js.dart';
 
 const _rsaOaepAlgorithmName = 'RSA-OAEP';
 
-Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
+Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
-  return _RsaOaepPrivateKey(await _importKey(
+  return _RsaOaepPrivateKeyImpl(await _importKey(
     'pkcs8',
     keyData,
     subtle.Algorithm(
@@ -34,11 +34,11 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
   ));
 }
 
-Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
+Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) async {
-  return _RsaOaepPrivateKey(await _importJsonWebKey(
+  return _RsaOaepPrivateKeyImpl(await _importJsonWebKey(
     jwk,
     subtle.Algorithm(
       name: _rsaOaepAlgorithmName,
@@ -49,7 +49,7 @@ Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
   ));
 }
 
-Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
+Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
     rsaOaepPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
@@ -65,16 +65,16 @@ Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
     _usagesEncryptDecrypt,
   );
   return createKeyPair(
-    _RsaOaepPrivateKey(pair.privateKey),
-    _RsaOaepPublicKey(pair.publicKey),
+    _RsaOaepPrivateKeyImpl(pair.privateKey),
+    _RsaOaepPublicKeyImpl(pair.publicKey),
   );
 }
 
-Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
+Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
-  return _RsaOaepPublicKey(await _importKey(
+  return _RsaOaepPublicKeyImpl(await _importKey(
     'spki',
     keyData,
     subtle.Algorithm(
@@ -86,11 +86,11 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
   ));
 }
 
-Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
+Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) async {
-  return _RsaOaepPublicKey(await _importJsonWebKey(
+  return _RsaOaepPublicKeyImpl(await _importJsonWebKey(
     jwk,
     subtle.Algorithm(
       name: _rsaOaepAlgorithmName,
@@ -101,13 +101,39 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
   ));
 }
 
-class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
+final class _StaticRsaOaepPrivateKeyImpl
+    implements StaticRsaOaepPrivateKeyImpl {
+  const _StaticRsaOaepPrivateKeyImpl();
+
+  @override
+  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(List<int> keyData, Hash hash) {
+    return rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
+  }
+
+  @override
+  Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash) {
+    return rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
+  }
+
+  @override
+  Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
+      int modulusLength, BigInt publicExponent, Hash hash) async {
+    final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair =
+        await rsaOaepPrivateKey_generateKey(
+            modulusLength, publicExponent, hash);
+
+    return (keyPair.privateKey, keyPair.publicKey);
+  }
+}
+
+final class _RsaOaepPrivateKeyImpl implements RsaOaepPrivateKeyImpl {
   final subtle.JSCryptoKey _key;
-  _RsaOaepPrivateKey(this._key);
+  _RsaOaepPrivateKeyImpl(this._key);
 
   @override
   String toString() {
-    return 'Instance of \'RsaOaepPrivateKey\'';
+    return 'Instance of \'RsaOaepPrivateKeyImpl\'';
   }
 
   @override
@@ -135,13 +161,28 @@ class _RsaOaepPrivateKey implements RsaOaepPrivateKey {
   }
 }
 
-class _RsaOaepPublicKey implements RsaOaepPublicKey {
+final class _StaticRsaOaepPublicKeyImpl implements StaticRsaOaepPublicKeyImpl {
+  const _StaticRsaOaepPublicKeyImpl();
+
+  @override
+  Future<RsaOaepPublicKeyImpl> importSpkiKey(List<int> keyData, Hash hash) {
+    return rsaOaepPublicKey_importSpkiKey(keyData, hash);
+  }
+
+  @override
+  Future<RsaOaepPublicKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash) {
+    return rsaOaepPublicKey_importJsonWebKey(jwk, hash);
+  }
+}
+
+final class _RsaOaepPublicKeyImpl implements RsaOaepPublicKeyImpl {
   final subtle.JSCryptoKey _key;
-  _RsaOaepPublicKey(this._key);
+  _RsaOaepPublicKeyImpl(this._key);
 
   @override
   String toString() {
-    return 'Instance of \'RsaOaepPublicKey\'';
+    return 'Instance of \'RsaOaepPublicKeyImpl\'';
   }
 
   @override
