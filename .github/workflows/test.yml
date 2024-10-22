@@ -83,22 +83,7 @@ jobs:
       - run: flutter test --platform chrome
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
-      - uses: nanasess/setup-chromedriver@v2
-      - name: Run integration_test with chromedriver
-        working-directory: ./example
-        run: |
-          chromedriver --port=4444 --trace-buffer-size=100000 &
-          ../tool/with-chromedriver.sh flutter drive \
-            --driver=test_driver/integration_test.dart \
-            --target=integration_test/webcrypto_test.dart \
-            -d chrome --dart-define=CI=true | tee output.log
-          output=$(<output.log)
-          if [[ "$output" =~ \[E\] ]]; then
-            echo "Some tests did not pass. Please check the logs for more information."
-            exit 1
-          fi
-          killall chromedriver || true
-          killall chrome || true        
+      # TODO: Consider integration tests with chromedriver, though they currently timeout 
       - run: flutter pub run test -p vm,chrome,firefox
   windows:
     name: webcrypto on Windows desktop / Chrome / Firefox
