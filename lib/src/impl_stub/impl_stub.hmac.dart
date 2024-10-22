@@ -18,12 +18,15 @@ final class _StaticHmacSecretKeyImpl implements StaticHmacSecretKeyImpl {
   const _StaticHmacSecretKeyImpl();
 
   @override
-  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash, {int? length}) {
+  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, Hash hash,
+      {int? length}) {
     throw UnimplementedError('Not implemented');
   }
 
   @override
-  Future<HmacSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk, Hash hash, {int? length}) {
+  Future<HmacSecretKeyImpl> importJsonWebKey(
+      Map<String, dynamic> jwk, Hash hash,
+      {int? length}) {
     throw UnimplementedError('Not implemented');
   }
 

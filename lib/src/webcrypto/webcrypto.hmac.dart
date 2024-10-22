@@ -25,28 +25,28 @@ part of 'webcrypto.dart';
 ///  * [JWK] format using [HmacSecretKey.importJsonWebKey].
 ///
 /// A random key can also be generated using [HmacSecretKey.generateKey].
-/// 
+///
 /// **Example**
 /// ```dart
 /// import 'package:webcrypto/webcrypto.dart';
 /// import 'dart:convert';
-/// 
+///
 /// Future<void> main() async {
 ///   // Generate an HMAC secret key using SHA-256 hash algorithm.
 ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
-///   
+///
 ///   // Sign the message.
 ///   final signature = await key.signBytes(utf8.encode('Hello World!'));
-/// 
+///
 ///   // Verify the signature.
 ///   final verified = await key.verifyBytes(signature, utf8.encode('Hello World!'));
 ///   assert(verified == true, 'Signature should be valid');
-/// 
+///
 ///  // Export the key as a JSON Web Key.
 ///  final jwk = await key.exportJsonWebKey();
 /// }
 /// ```
-/// 
+///
 /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
 final class HmacSecretKey {
   final HmacSecretKeyImpl _impl;
@@ -195,7 +195,8 @@ final class HmacSecretKey {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }
 
-    final impl = await webCryptImpl.hmacSecretKey.generateKey(hash, length: length);
+    final impl =
+        await webCryptImpl.hmacSecretKey.generateKey(hash, length: length);
 
     return HmacSecretKey._(impl);
   }
@@ -230,7 +231,8 @@ final class HmacSecretKey {
   /// instead, these methods computes a signature and does a
   /// fixed-time comparison.
   /// {@endtemplate}
-  Future<Uint8List> signBytes(List<int> data) async => await _impl.signBytes(data);
+  Future<Uint8List> signBytes(List<int> data) async =>
+      await _impl.signBytes(data);
 
   /// Compute an HMAC signature of given [data] stream.
   ///
@@ -258,7 +260,7 @@ final class HmacSecretKey {
   ///
   /// {@macro HMAC-sign:do-not-validate-using-sign}
   Future<Uint8List> signStream(Stream<List<int>> data) =>
-    _impl.signStream(data);
+      _impl.signStream(data);
 
   /// Verify the HMAC [signature] of given [data].
   ///
@@ -295,7 +297,7 @@ final class HmacSecretKey {
   /// assert(result == true, 'this signature should be valid');
   /// ```
   Future<bool> verifyBytes(List<int> signature, List<int> data) =>
-    _impl.verifyBytes(signature, data);
+      _impl.verifyBytes(signature, data);
 
   /// Verify the HMAC [signature] of given [data] stream.
   ///
@@ -327,7 +329,7 @@ final class HmacSecretKey {
   /// assert(result == true, 'this signature should be valid');
   /// ```
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) =>
-    _impl.verifyStream(signature, data);
+      _impl.verifyStream(signature, data);
 
   /// Export [HmacSecretKey] as raw bytes.
   ///

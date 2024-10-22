@@ -17,7 +17,8 @@ import '../utils/utils.dart';
 import '../utils/testrunner.dart';
 import '../utils/detected_runtime.dart';
 
-class _KeyPair<S, T> implements KeyPair<S, T> {
+class _KeyPair<S extends EcdhPrivateKey, T extends EcdhPublicKey>
+    implements KeyPair<S, T> {
   @override
   final S privateKey;
 

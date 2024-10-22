@@ -9,6 +9,18 @@ env:
   PUB_ENVIRONMENT: bot.github
 
 jobs:
+  lints:
+    name: Format + Lints
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output none --set-exit-if-changed .
+      - run: dart analyze --fatal-warnings .
   linux:
     name: webcrypto on Linux desktop / Chrome / Firefox
     runs-on: ubuntu-latest
@@ -56,14 +68,15 @@ jobs:
       - run: flutter test --platform chrome
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
-      - uses: nanasess/setup-chromedriver@v2
-      - name: Run integration_test with chromedriver
-        working-directory: ./example
-        run: |
-          ../tool/with-chromedriver.sh flutter drive \
-            --driver=test_driver/integration_test.dart \
-            --target=integration_test/webcrypto_test.dart \
-            -d chrome
+      # TODO: Enable chromedriver testing on MacOS when it works reliably
+      #- uses: nanasess/setup-chromedriver@v2
+      #- name: Run integration_test with chromedriver
+      #  working-directory: ./example
+      #  run: |
+      #    ../tool/with-chromedriver.sh flutter drive \
+      #      --driver=test_driver/integration_test.dart \
+      #      --target=integration_test/webcrypto_test.dart \
+      #      -d chrome
       - uses: browser-actions/setup-firefox@v1
       - run: flutter pub run test -p vm,chrome,firefox
   macos-15:
@@ -84,7 +97,7 @@ jobs:
       - run: flutter test --platform chrome
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
-      # TODO: Consider integration tests with chromedriver, though they currently timeout 
+      # TODO: Enable chromedriver testing on MacOS when it works reliably
       - uses: browser-actions/setup-firefox@v1
       - run: flutter pub run test -p vm,chrome,firefox
   windows:

@@ -18,11 +18,11 @@ part of 'impl_js.dart';
 
 const _ecdsaAlgorithmName = 'ECDSA';
 
-Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
+Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPrivateKey(await _importKey(
+  return _EcdsaPrivateKeyImpl(await _importKey(
     'pkcs8',
     keyData,
     subtle.Algorithm(
@@ -34,11 +34,11 @@ Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
   ));
 }
 
-Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
+Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPrivateKey(await _importJsonWebKey(
+  return _EcdsaPrivateKeyImpl(await _importJsonWebKey(
     jwk,
     subtle.Algorithm(
       name: _ecdsaAlgorithmName,
@@ -49,7 +49,8 @@ Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
   ));
 }
 
-Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
+Future<KeyPair<EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl>>
+    ecdsaPrivateKey_generateKey(
   EllipticCurve curve,
 ) async {
   final pair = await _generateKeyPair(
@@ -59,17 +60,17 @@ Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
     ),
     _usagesSignVerify,
   );
-  return _KeyPair(
-    privateKey: _EcdsaPrivateKey(pair.privateKey),
-    publicKey: _EcdsaPublicKey(pair.publicKey),
+  return createKeyPair(
+    _EcdsaPrivateKeyImpl(pair.privateKey),
+    _EcdsaPublicKeyImpl(pair.publicKey),
   );
 }
 
-Future<EcdsaPublicKey> ecdsaPublicKey_importRawKey(
+Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importRawKey(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPublicKey(await _importKey(
+  return _EcdsaPublicKeyImpl(await _importKey(
     'raw',
     keyData,
     subtle.Algorithm(
@@ -81,11 +82,11 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importRawKey(
   ));
 }
 
-Future<EcdsaPublicKey> ecdsaPublicKey_importSpkiKey(
+Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importSpkiKey(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPublicKey(await _importKey(
+  return _EcdsaPublicKeyImpl(await _importKey(
     'spki',
     keyData,
     subtle.Algorithm(
@@ -97,11 +98,11 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importSpkiKey(
   ));
 }
 
-Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
+Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPublicKey(await _importJsonWebKey(
+  return _EcdsaPublicKeyImpl(await _importJsonWebKey(
     jwk,
     subtle.Algorithm(
       name: _ecdsaAlgorithmName,
@@ -112,13 +113,41 @@ Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
   ));
 }
 
-class _EcdsaPrivateKey implements EcdsaPrivateKey {
+final class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
+  const _StaticEcdsaPrivateKeyImpl();
+
+  @override
+  Future<EcdsaPrivateKeyImpl> importPkcs8Key(
+    List<int> keyData,
+    EllipticCurve curve,
+  ) =>
+      ecdsaPrivateKey_importPkcs8Key(keyData, curve);
+
+  @override
+  Future<EcdsaPrivateKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  ) =>
+      ecdsaPrivateKey_importJsonWebKey(jwk, curve);
+
+  @override
+  Future<(EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl)> generateKey(
+    EllipticCurve curve,
+  ) async {
+    final KeyPair<EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl> keyPair =
+        await ecdsaPrivateKey_generateKey(curve);
+
+    return (keyPair.privateKey, keyPair.publicKey);
+  }
+}
+
+final class _EcdsaPrivateKeyImpl implements EcdsaPrivateKeyImpl {
   final subtle.JSCryptoKey _key;
-  _EcdsaPrivateKey(this._key);
+  _EcdsaPrivateKeyImpl(this._key);
 
   @override
   String toString() {
-    return 'Instance of \'EcdsaPrivateKey\'';
+    return 'Instance of \'EcdsaPrivateKeyImpl\'';
   }
 
   @override
@@ -149,13 +178,38 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   }
 }
 
-class _EcdsaPublicKey implements EcdsaPublicKey {
+final class _StaticEcdsaPublicKeyImpl implements StaticEcdsaPublicKeyImpl {
+  const _StaticEcdsaPublicKeyImpl();
+
+  @override
+  Future<EcdsaPublicKeyImpl> importRawKey(
+    List<int> keyData,
+    EllipticCurve curve,
+  ) =>
+      ecdsaPublicKey_importRawKey(keyData, curve);
+
+  @override
+  Future<EcdsaPublicKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  ) =>
+      ecdsaPublicKey_importJsonWebKey(jwk, curve);
+
+  @override
+  Future<EcdsaPublicKeyImpl> importSpkiKey(
+    List<int> keyData,
+    EllipticCurve curve,
+  ) =>
+      ecdsaPublicKey_importSpkiKey(keyData, curve);
+}
+
+final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
   final subtle.JSCryptoKey _key;
-  _EcdsaPublicKey(this._key);
+  _EcdsaPublicKeyImpl(this._key);
 
   @override
   String toString() {
-    return 'Instance of \'EcdsaPublicKey\'';
+    return 'Instance of \'EcdsaPublicKeyImpl\'';
   }
 
   @override

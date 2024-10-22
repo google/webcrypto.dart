@@ -45,7 +45,6 @@ const Hash sha256 = _UnimplementedHash();
 const Hash sha384 = _UnimplementedHash();
 const Hash sha512 = _UnimplementedHash();
 
-
 //---------------------- RSASSA_PKCS1_v1_5
 
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
@@ -115,74 +114,7 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
 
 //---------------------- ECDSA
 
-Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdsaPublicKey> ecdsaPublicKey_importRawKey(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdsaPublicKey> ecdsaPublicKey_importSpkiKey(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
 //---------------------- RSA-OAEP
-
-Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importPkcs8Key(
-  List<int> keyData,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsaOaepPrivateKey> rsaOaepPrivateKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>>
-    rsaOaepPrivateKey_generateKey(
-  int modulusLength,
-  BigInt publicExponent,
-  Hash hash,
-) =>
-        throw _notImplemented;
-
-Future<RsaOaepPublicKey> rsaOaepPublicKey_importSpkiKey(
-  List<int> keyData,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash,
-) =>
-    throw _notImplemented;
 
 //---------------------- AES-CTR
 
@@ -192,47 +124,9 @@ Future<RsaOaepPublicKey> rsaOaepPublicKey_importJsonWebKey(
 
 //---------------------- ECDH
 
-Future<EcdhPrivateKey> ecdhPrivateKey_importPkcs8Key(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdhPrivateKey> ecdhPrivateKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> ecdhPrivateKey_generateKey(
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdhPublicKey> ecdhPublicKey_importRawKey(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdhPublicKey> ecdhPublicKey_importSpkiKey(
-  List<int> keyData,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
-Future<EcdhPublicKey> ecdhPublicKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  EllipticCurve curve,
-) =>
-    throw _notImplemented;
-
 //---------------------- HKDF
 
 Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) =>
     throw _notImplemented;
 
 //---------------------- PBKDF2
-
-Future<Pbkdf2SecretKey> pbkdf2SecretKey_importRawKey(List<int> keyData) =>
-    throw _notImplemented;

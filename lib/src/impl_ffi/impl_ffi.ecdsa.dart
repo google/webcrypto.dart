@@ -32,17 +32,17 @@ String _ecdsaCurveToJwkAlg(EllipticCurve curve) {
   throw UnsupportedError('curve "$curve" is not supported');
 }
 
-Future<EcdsaPrivateKey> ecdsaPrivateKey_importPkcs8Key(
+Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
 ) async =>
-    _EcdsaPrivateKey(_importPkcs8EcPrivateKey(keyData, curve));
+    _EcdsaPrivateKeyImpl(_importPkcs8EcPrivateKey(keyData, curve));
 
-Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
+Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async =>
-    _EcdsaPrivateKey(_importJwkEcPrivateOrPublicKey(
+    _EcdsaPrivateKeyImpl(_importJwkEcPrivateOrPublicKey(
       JsonWebKey.fromJson(jwk),
       curve,
       isPrivateKey: true,
@@ -50,33 +50,34 @@ Future<EcdsaPrivateKey> ecdsaPrivateKey_importJsonWebKey(
       expectedAlg: _ecdsaCurveToJwkAlg(curve),
     ));
 
-Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> ecdsaPrivateKey_generateKey(
+Future<KeyPair<EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl>>
+    ecdsaPrivateKey_generateKey(
   EllipticCurve curve,
 ) async {
   final p = _generateEcKeyPair(curve);
-  return _KeyPair(
-    privateKey: _EcdsaPrivateKey(p.privateKey),
-    publicKey: _EcdsaPublicKey(p.publicKey),
+  return createKeyPair(
+    _EcdsaPrivateKeyImpl(p.privateKey),
+    _EcdsaPublicKeyImpl(p.publicKey),
   );
 }
 
-Future<EcdsaPublicKey> ecdsaPublicKey_importRawKey(
+Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importRawKey(
   List<int> keyData,
   EllipticCurve curve,
 ) async =>
-    _EcdsaPublicKey(_importRawEcPublicKey(keyData, curve));
+    _EcdsaPublicKeyImpl(_importRawEcPublicKey(keyData, curve));
 
-Future<EcdsaPublicKey> ecdsaPublicKey_importSpkiKey(
+Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importSpkiKey(
   List<int> keyData,
   EllipticCurve curve,
 ) async =>
-    _EcdsaPublicKey(_importSpkiEcPublicKey(keyData, curve));
+    _EcdsaPublicKeyImpl(_importSpkiEcPublicKey(keyData, curve));
 
-Future<EcdsaPublicKey> ecdsaPublicKey_importJsonWebKey(
+Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async =>
-    _EcdsaPublicKey(_importJwkEcPrivateOrPublicKey(
+    _EcdsaPublicKeyImpl(_importJwkEcPrivateOrPublicKey(
       JsonWebKey.fromJson(jwk),
       curve,
       isPrivateKey: false,
@@ -180,14 +181,40 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
   });
 }
 
-class _EcdsaPrivateKey implements EcdsaPrivateKey {
+final class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
+  const _StaticEcdsaPrivateKeyImpl();
+
+  @override
+  Future<EcdsaPrivateKeyImpl> importPkcs8Key(
+          List<int> keyData, EllipticCurve curve) =>
+      ecdsaPrivateKey_importPkcs8Key(keyData, curve);
+
+  @override
+  Future<EcdsaPrivateKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  ) =>
+      ecdsaPrivateKey_importJsonWebKey(jwk, curve);
+
+  @override
+  Future<(EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl)> generateKey(
+    EllipticCurve curve,
+  ) async {
+    final KeyPair<EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl> keyPair =
+        await ecdsaPrivateKey_generateKey(curve);
+
+    return (keyPair.privateKey, keyPair.publicKey);
+  }
+}
+
+final class _EcdsaPrivateKeyImpl implements EcdsaPrivateKeyImpl {
   final _EvpPKey _key;
 
-  _EcdsaPrivateKey(this._key);
+  _EcdsaPrivateKeyImpl(this._key);
 
   @override
   String toString() {
-    return 'Instance of \'EcdsaPrivateKey\'';
+    return 'Instance of \'EcdsaPrivateKeyImpl\'';
   }
 
   @override
@@ -209,14 +236,35 @@ class _EcdsaPrivateKey implements EcdsaPrivateKey {
   Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
 }
 
-class _EcdsaPublicKey implements EcdsaPublicKey {
+final class _StaticEcdsaPublicKeyImpl implements StaticEcdsaPublicKeyImpl {
+  const _StaticEcdsaPublicKeyImpl();
+
+  @override
+  Future<EcdsaPublicKeyImpl> importRawKey(
+          List<int> keyData, EllipticCurve curve) =>
+      ecdsaPublicKey_importRawKey(keyData, curve);
+
+  @override
+  Future<EcdsaPublicKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  ) =>
+      ecdsaPublicKey_importJsonWebKey(jwk, curve);
+
+  @override
+  Future<EcdsaPublicKeyImpl> importSpkiKey(
+          List<int> keyData, EllipticCurve curve) =>
+      ecdsaPublicKey_importSpkiKey(keyData, curve);
+}
+
+final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
   final _EvpPKey _key;
 
-  _EcdsaPublicKey(this._key);
+  _EcdsaPublicKeyImpl(this._key);
 
   @override
   String toString() {
-    return 'Instance of \'EcdsaPublicKey\'';
+    return 'Instance of \'EcdsaPublicKeyImpl\'';
   }
 
   @override

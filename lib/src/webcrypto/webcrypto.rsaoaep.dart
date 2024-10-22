@@ -72,9 +72,14 @@ part of 'webcrypto.dart';
 /// [1]: https://tools.ietf.org/html/rfc3447
 /// [2]: https://tools.ietf.org/html/rfc5208
 /// [3]: https://tools.ietf.org/html/rfc7517
-@sealed
-abstract class RsaOaepPrivateKey {
-  RsaOaepPrivateKey._(); // keep the constructor private.
+final class RsaOaepPrivateKey {
+  final RsaOaepPrivateKeyImpl _impl;
+
+  RsaOaepPrivateKey._(this._impl); // keep the constructor private.
+
+  factory RsaOaepPrivateKey(RsaOaepPrivateKeyImpl impl) {
+    return RsaOaepPrivateKey._(impl);
+  }
 
   /// Import RSAES-OAEP private key in PKCS #8 format.
   ///
@@ -112,8 +117,10 @@ abstract class RsaOaepPrivateKey {
   static Future<RsaOaepPrivateKey> importPkcs8Key(
     List<int> keyData,
     Hash hash,
-  ) {
-    return impl.rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
+  ) async {
+    final impl =
+        await webCryptImpl.rsaOaepPrivateKey.importPkcs8Key(keyData, hash);
+    return RsaOaepPrivateKey._(impl);
   }
 
   /// Import RSAES-OAEP private key in [JSON Web Key][1] format.
@@ -159,8 +166,10 @@ abstract class RsaOaepPrivateKey {
   static Future<RsaOaepPrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
-  ) {
-    return impl.rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
+  ) async {
+    final impl =
+        await webCryptImpl.rsaOaepPrivateKey.importJsonWebKey(jwk, hash);
+    return RsaOaepPrivateKey._(impl);
   }
 
   /// Generate an RSAES-OAEP public/private key-pair.
@@ -215,12 +224,14 @@ abstract class RsaOaepPrivateKey {
     int modulusLength,
     BigInt publicExponent,
     Hash hash,
-  ) {
-    return impl.rsaOaepPrivateKey_generateKey(
-      modulusLength,
-      publicExponent,
-      hash,
-    );
+  ) async {
+    final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.rsaOaepPrivateKey
+        .generateKey(modulusLength, publicExponent, hash);
+
+    final privateKey = RsaOaepPrivateKey(privateKeyImpl);
+    final publicKey = RsaOaepPublicKey(publicKeyImpl);
+
+    return createKeyPair(privateKey, publicKey);
   }
 
   /// Decrypt [data] encrypted with [RsaOaepPublicKey.encryptBytes] from the
@@ -263,7 +274,8 @@ abstract class RsaOaepPrivateKey {
   /// );
   /// // Now both Alice and Bob share a secret key.
   /// ```
-  Future<Uint8List> decryptBytes(List<int> data, {List<int>? label});
+  Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) =>
+      _impl.decryptBytes(data, label: label);
 
   /// Export this RSAES-OAEP private key in PKCS #8 format.
   ///
@@ -292,7 +304,7 @@ abstract class RsaOaepPrivateKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc5208
-  Future<Uint8List> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
   /// Export RSAES-OAEP private key in [JSON Web Key][1] format.
   ///
@@ -320,7 +332,7 @@ abstract class RsaOaepPrivateKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
 /// RSAES-OAEP public key for decryption of messages.
@@ -342,9 +354,14 @@ abstract class RsaOaepPrivateKey {
 /// [1]: https://tools.ietf.org/html/rfc3447
 /// [2]: https://tools.ietf.org/html/rfc5280
 /// [3]: https://tools.ietf.org/html/rfc7517
-@sealed
-abstract class RsaOaepPublicKey {
-  RsaOaepPublicKey._(); // keep the constructor private.
+final class RsaOaepPublicKey {
+  final RsaOaepPublicKeyImpl _impl;
+
+  RsaOaepPublicKey._(this._impl); // keep the constructor private.
+
+  factory RsaOaepPublicKey(RsaOaepPublicKeyImpl impl) {
+    return RsaOaepPublicKey._(impl);
+  }
 
   /// Import RSAES-OAEP public key in SPKI format.
   ///
@@ -382,8 +399,10 @@ abstract class RsaOaepPublicKey {
   static Future<RsaOaepPublicKey> importSpkiKey(
     List<int> keyData,
     Hash hash,
-  ) {
-    return impl.rsaOaepPublicKey_importSpkiKey(keyData, hash);
+  ) async {
+    final impl =
+        await webCryptImpl.rsaOaepPublicKey.importSpkiKey(keyData, hash);
+    return RsaOaepPublicKey._(impl);
   }
 
   /// Import RSAES-OAEP public key in [JSON Web Key][1] format.
@@ -423,8 +442,10 @@ abstract class RsaOaepPublicKey {
   static Future<RsaOaepPublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
-  ) {
-    return impl.rsaOaepPublicKey_importJsonWebKey(jwk, hash);
+  ) async {
+    final impl =
+        await webCryptImpl.rsaOaepPublicKey.importJsonWebKey(jwk, hash);
+    return RsaOaepPublicKey._(impl);
   }
 
   /// Encrypt [data] such that it can only be decrypted with
@@ -493,7 +514,8 @@ abstract class RsaOaepPublicKey {
   //
   // See also documentation for crypto/rsa in golang:
   // https://pkg.go.dev/crypto/rsa#EncryptOAEP
-  Future<Uint8List> encryptBytes(List<int> data, {List<int>? label});
+  Future<Uint8List> encryptBytes(List<int> data, {List<int>? label}) =>
+      _impl.encryptBytes(data, label: label);
 
   /// Export this RSAES-OAEP public key in SPKI format.
   ///
@@ -522,7 +544,7 @@ abstract class RsaOaepPublicKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc5280
-  Future<Uint8List> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey() => _impl.exportSpkiKey();
 
   /// Export RSAES-OAEP public key in [JSON Web Key][1] format.
   ///
@@ -550,5 +572,5 @@ abstract class RsaOaepPublicKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }

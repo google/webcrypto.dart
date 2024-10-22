@@ -19,13 +19,13 @@ final class _StaticAesCbcSecretKeyImpl implements StaticAesCbcSecretKeyImpl {
 
   @override
   Future<AesCbcSecretKeyImpl> importRawKey(List<int> keyData) =>
-    throw UnimplementedError('Not implemented');
+      throw UnimplementedError('Not implemented');
 
   @override
   Future<AesCbcSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) =>
-    throw UnimplementedError('Not implemented');
+      throw UnimplementedError('Not implemented');
 
   @override
   Future<AesCbcSecretKeyImpl> generateKey(int length) =>
-    throw UnimplementedError('Not implemented');
+      throw UnimplementedError('Not implemented');
 }

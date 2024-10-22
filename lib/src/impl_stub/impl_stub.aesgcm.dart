@@ -19,13 +19,13 @@ final class _StaticAesGcmSecretKeyImpl implements StaticAesGcmSecretKeyImpl {
 
   @override
   Future<AesGcmSecretKeyImpl> importRawKey(List<int> keyData) =>
-    throw UnimplementedError('Not implemented');
+      throw UnimplementedError('Not implemented');
 
   @override
   Future<AesGcmSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) =>
-    throw UnimplementedError('Not implemented');
+      throw UnimplementedError('Not implemented');
 
   @override
   Future<AesGcmSecretKeyImpl> generateKey(int length) =>
-    throw UnimplementedError('Not implemented');
+      throw UnimplementedError('Not implemented');
 }

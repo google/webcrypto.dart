@@ -14,18 +14,11 @@
 
 part of 'impl_stub.dart';
 
-final class _StaticAesCtrSecretKeyImpl implements StaticAesCtrSecretKeyImpl {
-  const _StaticAesCtrSecretKeyImpl();
+final class _StaticPbkdf2SecretKeyImpl implements StaticPbkdf2SecretKeyImpl {
+  const _StaticPbkdf2SecretKeyImpl();
 
   @override
-  Future<AesCtrSecretKeyImpl> importRawKey(List<int> keyData) =>
-      throw UnimplementedError('Not implemented');
-
-  @override
-  Future<AesCtrSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) =>
-      throw UnimplementedError('Not implemented');
-
-  @override
-  Future<AesCtrSecretKeyImpl> generateKey(int length) =>
-      throw UnimplementedError('Not implemented');
+  Future<Pbkdf2SecretKeyImpl> importRawKey(List<int> keyData) {
+    throw UnimplementedError('Not implemented');
+  }
 }
