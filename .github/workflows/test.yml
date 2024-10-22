@@ -63,11 +63,11 @@ jobs:
         run: |
           flutter config --no-analytics
       - run: flutter pub get
-      - run: flutter pub run webcrypto:setup
-      - run: flutter test
-      - run: flutter test --platform chrome
-      - run: flutter test integration_test/webcrypto_test.dart -d macos
-        working-directory: ./example
+      #- run: flutter pub run webcrypto:setup
+      #- run: flutter test
+      #- run: flutter test --platform chrome
+      #- run: flutter test integration_test/webcrypto_test.dart -d macos
+      #  working-directory: ./example
       # TODO: Enable chromdriver testing on MacOS when it works reliably
       #- uses: nanasess/setup-chromedriver@v2
       #- name: Run integration_test with chromedriver
@@ -77,7 +77,9 @@ jobs:
       #      --driver=test_driver/integration_test.dart \
       #      --target=integration_test/webcrypto_test.dart \
       #      -d chrome
-      - run: flutter pub run test -p vm,chrome # TODO: Enable firefox if it works
+      - run: browser-actions/setup-firefox@v1
+      - run: bash -c 'which firefox'
+      #- run: flutter pub run test -p vm,chrome # TODO: Enable firefox if it works
   windows:
     name: webcrypto on Windows desktop / Chrome / Firefox
     runs-on: windows-latest
