@@ -50,17 +50,19 @@ part of 'webcrypto.dart';
 /// [1]: https://tools.ietf.org/html/rfc5869
 // TODO: It might be wise to use a random salt, then suggest that the non-secret
 //       salt is stored or exchanged...
-@sealed
-abstract class HkdfSecretKey {
-  HkdfSecretKey._(); // keep the constructor private.
+final class HkdfSecretKey {
+  final HkdfSecretKeyImpl _impl;
+
+  HkdfSecretKey._(this._impl); // keep the constructor private.
 
   /// Import [HkdfSecretKey] from raw [keyData].
   ///
   /// Creates a [HkdfSecretKey] for key derivation using [keyData].
   ///
   /// {@macro HkdfSecretKey:example}
-  static Future<HkdfSecretKey> importRawKey(List<int> keyData) {
-    return impl.hkdfSecretKey_importRawKey(keyData);
+  static Future<HkdfSecretKey> importRawKey(List<int> keyData) async {
+    final impl = await webCryptImpl.hkdfSecretKey.importRawKey(keyData);
+    return HkdfSecretKey._(impl);
   }
 
   /// Derive key from [salt], [info] and password specified as `keyData` in
@@ -89,5 +91,6 @@ abstract class HkdfSecretKey {
     Hash hash,
     List<int> salt,
     List<int> info,
-  );
+  ) =>
+      _impl.deriveBits(length, hash, salt, info);
 }

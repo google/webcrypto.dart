@@ -82,4 +82,7 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final rsaOaepPublicKey = const _StaticRsaOaepPublicKeyImpl();
+
+  @override
+  final hkdfSecretKey = const _StaticHkdfSecretKeyImpl();
 }

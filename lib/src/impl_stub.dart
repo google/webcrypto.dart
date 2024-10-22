@@ -126,7 +126,4 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
 
 //---------------------- HKDF
 
-Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) =>
-    throw _notImplemented;
-
 //---------------------- PBKDF2

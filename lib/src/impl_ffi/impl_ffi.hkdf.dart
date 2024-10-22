@@ -16,13 +16,22 @@
 
 part of 'impl_ffi.dart';
 
-Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async =>
-    _HkdfSecretKey(Uint8List.fromList(keyData));
+Future<HkdfSecretKeyImpl> hkdfSecretKey_importRawKey(List<int> keyData) async =>
+    _HkdfSecretKeyImpl(Uint8List.fromList(keyData));
 
-class _HkdfSecretKey implements HkdfSecretKey {
+final class _StaticHkdfSecretKeyImpl implements StaticHkdfSecretKeyImpl {
+  const _StaticHkdfSecretKeyImpl();
+
+  @override
+  Future<HkdfSecretKeyImpl> importRawKey(List<int> keyData) async {
+    return hkdfSecretKey_importRawKey(keyData);
+  }
+}
+
+final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
   final Uint8List _key;
 
-  _HkdfSecretKey(this._key);
+  _HkdfSecretKeyImpl(this._key);
 
   @override
   String toString() {
