@@ -25,6 +25,7 @@ part 'impl_interface.hmac.dart';
 part 'impl_interface.pbkdf2.dart';
 part 'impl_interface.aesgcm.dart';
 part 'impl_interface.ecdh.dart';
+part 'impl_interface.ecdsa.dart';
 part 'impl_interface.rsaoaep.dart';
 
 /// A key-pair as returned from key generation.
@@ -83,6 +84,8 @@ abstract interface class WebCryptoImpl {
   StaticPbkdf2SecretKeyImpl get pbkdf2SecretKey;
   StaticEcdhPrivateKeyImpl get ecdhPrivateKey;
   StaticEcdhPublicKeyImpl get ecdhPublicKey;
+  StaticEcdsaPrivateKeyImpl get ecdsaPrivateKey;
+  StaticEcdsaPublicKeyImpl get ecdsaPublicKey;
   StaticRsaOaepPrivateKeyImpl get rsaOaepPrivateKey;
   StaticRsaOaepPublicKeyImpl get rsaOaepPublicKey;
 }
