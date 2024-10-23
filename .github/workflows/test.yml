@@ -22,7 +22,7 @@ jobs:
       - run: dart format --output none --set-exit-if-changed .
       - run: dart analyze --fatal-warnings .
   linux:
-    name: webcrypto on Linux desktop / Chrome / Firefox
+    name: Linux desktop / Chrome / Firefox
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
           flag-name: linux
           parallel: true
   macos-14:
-    name: webcrypto on macOS 14 desktop / Chrome
+    name: MacOS 14 desktop / Chrome / Firefox
     runs-on: macos-14 # Test with xcode 15
     steps:
       - uses: actions/checkout@v4
@@ -96,7 +96,7 @@ jobs:
           export FIREFOX_EXECUTABLE="$(which firefox)"
           flutter pub run test -p vm,chrome,firefox
   macos-15:
-    name: webcrypto on macOS 15 desktop / Chrome
+    name: MacOS 15 desktop / Chrome / Firefox
     runs-on: macos-15 # Test with xcode 16
     steps:
       - uses: actions/checkout@v4
@@ -123,7 +123,7 @@ jobs:
           export FIREFOX_EXECUTABLE="$(which firefox)"
           flutter pub run test -p vm,chrome,firefox
   windows:
-    name: webcrypto on Windows desktop / Chrome / Firefox
+    name: Windows desktop / Chrome / Firefox
     runs-on: windows-latest
     steps:
       - uses: ilammy/setup-nasm@v1
@@ -162,7 +162,7 @@ jobs:
           flag-name: windows
           parallel: true
   ios:
-    name: webcrypto on iOS emulator (iPhone)
+    name: iOS emulator (iPhone)
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
@@ -180,7 +180,7 @@ jobs:
       - run: flutter test integration_test/webcrypto_test.dart -d iphone
         working-directory: ./example
   android:
-    name: webcrypto on Android emulator
+    name: Android emulator
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
