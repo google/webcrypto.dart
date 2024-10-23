@@ -28,6 +28,7 @@ part 'impl_interface.ecdh.dart';
 part 'impl_interface.ecdsa.dart';
 part 'impl_interface.rsaoaep.dart';
 part 'impl_interface.hkdf.dart';
+part 'impl_interface.rsapss.dart';
 
 /// A key-pair as returned from key generation.
 class KeyPair<S, T> {
@@ -90,4 +91,6 @@ abstract interface class WebCryptoImpl {
   StaticRsaOaepPrivateKeyImpl get rsaOaepPrivateKey;
   StaticRsaOaepPublicKeyImpl get rsaOaepPublicKey;
   StaticHkdfSecretKeyImpl get hkdfSecretKey;
+  StaticRsaPssPrivateKeyImpl get rsaPssPrivateKey;
+  StaticRsaPssPublicKeyImpl get rsaPssPublicKey;
 }

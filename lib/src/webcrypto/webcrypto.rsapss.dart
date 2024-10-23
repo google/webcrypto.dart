@@ -64,9 +64,14 @@ part of 'webcrypto.dart';
 /// [1]: https://tools.ietf.org/html/rfc3447
 /// [2]: https://tools.ietf.org/html/rfc5208
 /// [3]: https://tools.ietf.org/html/rfc7517
-@sealed
-abstract class RsaPssPrivateKey {
-  RsaPssPrivateKey._(); // keep the constructor private.
+final class RsaPssPrivateKey {
+  final RsaPssPrivateKeyImpl _impl;
+
+  RsaPssPrivateKey._(this._impl); // keep the constructor private.
+
+  factory RsaPssPrivateKey(RsaPssPrivateKeyImpl impl) {
+    return RsaPssPrivateKey._(impl);
+  }
 
   /// Import RSASSA-PSS private key in PKCS #8 format.
   ///
@@ -104,8 +109,9 @@ abstract class RsaPssPrivateKey {
   static Future<RsaPssPrivateKey> importPkcs8Key(
     List<int> keyData,
     Hash hash,
-  ) {
-    return impl.rsaPssPrivateKey_importPkcs8Key(keyData, hash);
+  ) async {
+    final impl = await webCryptImpl.rsaPssPrivateKey.importPkcs8Key(keyData, hash);
+    return RsaPssPrivateKey._(impl);
   }
 
   /// Import RSASSA-PSS private key in [JSON Web Key][1] format.
@@ -151,8 +157,9 @@ abstract class RsaPssPrivateKey {
   static Future<RsaPssPrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
-  ) {
-    return impl.rsaPssPrivateKey_importJsonWebKey(jwk, hash);
+  ) async {
+    final impl = await webCryptImpl.rsaPssPrivateKey.importJsonWebKey(jwk, hash);
+    return RsaPssPrivateKey._(impl);
   }
 
   /// Generate an RSASSA-PSS public/private key-pair.
@@ -207,12 +214,14 @@ abstract class RsaPssPrivateKey {
     int modulusLength,
     BigInt publicExponent,
     Hash hash,
-  ) {
-    return impl.rsaPssPrivateKey_generateKey(
-      modulusLength,
-      publicExponent,
-      hash,
-    );
+  ) async {
+    final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.rsaPssPrivateKey
+        .generateKey(modulusLength, publicExponent, hash);
+
+    final privateKey = RsaPssPrivateKey(privateKeyImpl);
+    final publicKey = RsaPssPublicKey(publicKeyImpl);
+
+    return createKeyPair(privateKey, publicKey);
   }
 
   /// Sign [data] with this RSASSA-PSS private key.
@@ -286,7 +295,7 @@ abstract class RsaPssPrivateKey {
   // Which makes it hard for us to say that it's not useful.
   //
   // Note: Web Cryptography specification references RFC 3447, not FIPS 186-4.
-  Future<Uint8List> signBytes(List<int> data, int saltLength);
+  Future<Uint8List> signBytes(List<int> data, int saltLength) => _impl.signBytes(data, saltLength);
 
   /// Sign [data] with this RSASSA-PSS private key.
   ///
@@ -340,7 +349,7 @@ abstract class RsaPssPrivateKey {
   ///
   /// [1]: https://tools.ietf.org/html/rfc3447#section-9.1
   /// [2]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
-  Future<Uint8List> signStream(Stream<List<int>> data, int saltLength);
+  Future<Uint8List> signStream(Stream<List<int>> data, int saltLength) => _impl.signStream(data, saltLength);
 
   /// Export this RSASSA-PSS private key in PKCS #8 format.
   ///
@@ -369,7 +378,7 @@ abstract class RsaPssPrivateKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc5208
-  Future<Uint8List> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
   /// Export RSASSA-PSS private key in [JSON Web Key][1] format.
   ///
@@ -397,7 +406,7 @@ abstract class RsaPssPrivateKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
 /// RSASSA-PSS public key for verifying signatures.
@@ -417,9 +426,14 @@ abstract class RsaPssPrivateKey {
 /// [1]: https://tools.ietf.org/html/rfc3447
 /// [2]: https://tools.ietf.org/html/rfc5280
 /// [3]: https://tools.ietf.org/html/rfc7517
-@sealed
-abstract class RsaPssPublicKey {
-  RsaPssPublicKey._(); // keep the constructor private.
+final class RsaPssPublicKey {
+  final RsaPssPublicKeyImpl _impl;
+
+  RsaPssPublicKey._(this._impl); // keep the constructor private.
+
+  factory RsaPssPublicKey(RsaPssPublicKeyImpl impl) {
+    return RsaPssPublicKey._(impl);
+  }
 
   /// Import RSASSA-PSS public key in SPKI format.
   ///
@@ -457,8 +471,9 @@ abstract class RsaPssPublicKey {
   static Future<RsaPssPublicKey> importSpkiKey(
     List<int> keyData,
     Hash hash,
-  ) {
-    return impl.rsaPssPublicKey_importSpkiKey(keyData, hash);
+  ) async {
+    final impl = await webCryptImpl.rsaPssPublicKey.importSpkiKey(keyData, hash);
+    return RsaPssPublicKey._(impl);
   }
 
   /// Import RSASSA-PSS public key in [JSON Web Key][1] format.
@@ -498,8 +513,9 @@ abstract class RsaPssPublicKey {
   static Future<RsaPssPublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
-  ) {
-    return impl.rsaPssPublicKey_importJsonWebKey(jwk, hash);
+  ) async {
+    final impl = await webCryptImpl.rsaPssPublicKey.importJsonWebKey(jwk, hash);
+    return RsaPssPublicKey._(impl);
   }
 
   /// Verify [signature] of [data] using this RSASSA-PSS public key.
@@ -547,7 +563,7 @@ abstract class RsaPssPublicKey {
     List<int> signature,
     List<int> data,
     int saltLength,
-  );
+  ) => _impl.verifyBytes(signature, data, saltLength);
 
   /// Verify [signature] of [data] using this RSASSA-PSS public key.
   ///
@@ -593,7 +609,7 @@ abstract class RsaPssPublicKey {
     List<int> signature,
     Stream<List<int>> data,
     int saltLength,
-  );
+  ) => _impl.verifyStream(signature, data, saltLength);
 
   /// Export RSASSA-PSS public key in SPKI format.
   ///
@@ -622,7 +638,7 @@ abstract class RsaPssPublicKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc5280
-  Future<Uint8List> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey() => _impl.exportSpkiKey();
 
   /// Export RSASSA-PSS public key in [JSON Web Key][1] format.
   ///
@@ -650,5 +666,5 @@ abstract class RsaPssPublicKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }

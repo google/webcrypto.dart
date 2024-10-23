@@ -18,11 +18,11 @@ part of 'impl_js.dart';
 
 const _rsaPssAlgorithmName = 'RSA-PSS';
 
-Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
+Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importPkcs8Key(
   List<int> keyData,
   Hash hash,
 ) async {
-  return _RsaPssPrivateKey(await _importKey(
+  return _RsaPssPrivateKeyImpl(await _importKey(
     'pkcs8',
     keyData,
     subtle.Algorithm(name: _rsaPssAlgorithmName, hash: _getHashAlgorithm(hash)),
@@ -31,11 +31,11 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
   ));
 }
 
-Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
+Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) async {
-  return _RsaPssPrivateKey(await _importJsonWebKey(
+  return _RsaPssPrivateKeyImpl(await _importJsonWebKey(
     jwk,
     subtle.Algorithm(name: _rsaPssAlgorithmName, hash: _getHashAlgorithm(hash)),
     _usagesSign,
@@ -43,7 +43,8 @@ Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
   ));
 }
 
-Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
+Future<KeyPair<RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl>>
+    rsaPssPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
   Hash hash,
@@ -58,16 +59,16 @@ Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
     _usagesSignVerify,
   );
   return createKeyPair(
-    _RsaPssPrivateKey(pair.privateKey),
-    _RsaPssPublicKey(pair.publicKey),
+    _RsaPssPrivateKeyImpl(pair.privateKey),
+    _RsaPssPublicKeyImpl(pair.publicKey),
   );
 }
 
-Future<RsaPssPublicKey> rsaPssPublicKey_importSpkiKey(
+Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importSpkiKey(
   List<int> keyData,
   Hash hash,
 ) async {
-  return _RsaPssPublicKey(await _importKey(
+  return _RsaPssPublicKeyImpl(await _importKey(
     'spki',
     keyData,
     subtle.Algorithm(name: _rsaPssAlgorithmName, hash: _getHashAlgorithm(hash)),
@@ -76,11 +77,11 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importSpkiKey(
   ));
 }
 
-Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
+Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   Hash hash,
 ) async {
-  return _RsaPssPublicKey(await _importJsonWebKey(
+  return _RsaPssPublicKeyImpl(await _importJsonWebKey(
     jwk,
     subtle.Algorithm(name: _rsaPssAlgorithmName, hash: _getHashAlgorithm(hash)),
     _usagesVerify,
@@ -88,9 +89,41 @@ Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
   ));
 }
 
-class _RsaPssPrivateKey implements RsaPssPrivateKey {
+final class _StaticRsaPssPrivateKeyImpl implements StaticRsaPssPrivateKeyImpl {
+  const _StaticRsaPssPrivateKeyImpl();
+
+  @override
+  Future<RsaPssPrivateKeyImpl> importPkcs8Key(
+    List<int> keyData,
+    Hash hash,
+  ) async {
+    return await rsaPssPrivateKey_importPkcs8Key(keyData, hash);
+  }
+
+  @override
+  Future<RsaPssPrivateKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+    Hash hash,
+  ) async {
+    return await rsaPssPrivateKey_importJsonWebKey(jwk, hash);
+  }
+
+  @override
+  Future<(RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl)> generateKey(
+    int modulusLength,
+    BigInt publicExponent,
+    Hash hash,
+  ) async {
+    final KeyPair<RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl> keyPair =
+        await rsaPssPrivateKey_generateKey(modulusLength, publicExponent, hash);
+
+    return (keyPair.privateKey, keyPair.publicKey);
+  }
+}
+
+final class _RsaPssPrivateKeyImpl implements RsaPssPrivateKeyImpl {
   final subtle.JSCryptoKey _key;
-  _RsaPssPrivateKey(this._key);
+  _RsaPssPrivateKeyImpl(this._key);
 
   @override
   String toString() {
@@ -130,9 +163,29 @@ class _RsaPssPrivateKey implements RsaPssPrivateKey {
   }
 }
 
-class _RsaPssPublicKey implements RsaPssPublicKey {
+final class _StaticRsaPssPublicKeyImpl implements StaticRsaPssPublicKeyImpl {
+  const _StaticRsaPssPublicKeyImpl();
+
+  @override
+  Future<RsaPssPublicKeyImpl> importSpkiKey(
+    List<int> keyData,
+    Hash hash,
+  ) async {
+    return await rsaPssPublicKey_importSpkiKey(keyData, hash);
+  }
+
+  @override
+  Future<RsaPssPublicKeyImpl> importJsonWebKey(
+    Map<String, dynamic> jwk,
+    Hash hash,
+  ) async {
+    return await rsaPssPublicKey_importJsonWebKey(jwk, hash);
+  }
+}
+
+final class _RsaPssPublicKeyImpl implements RsaPssPublicKeyImpl {
   final subtle.JSCryptoKey _key;
-  _RsaPssPublicKey(this._key);
+  _RsaPssPublicKeyImpl(this._key);
 
   @override
   String toString() {
