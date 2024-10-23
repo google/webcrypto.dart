@@ -18,22 +18,31 @@ part of 'impl_js.dart';
 
 const _hkdfAlgorithmName = 'HKDF';
 
-Future<HkdfSecretKey> hkdfSecretKey_importRawKey(List<int> keyData) async {
-  return _HkdfSecretKey(await _importKey(
+Future<HkdfSecretKeyImpl> hkdfSecretKey_importRawKey(List<int> keyData) async {
+  return _HkdfSecretKeyImpl(await _importKey(
     'raw',
     keyData,
     const subtle.Algorithm(name: _hkdfAlgorithmName),
     _usagesDeriveBits,
     'secret',
-    // Unlike all other key types it makes no sense to HkdfSecretKey to be
+    // Unlike all other key types it makes no sense to HkdfSecretKeyImpl to be
     // exported, and indeed webcrypto requires `extractable: false`.
     extractable: false,
   ));
 }
 
-class _HkdfSecretKey implements HkdfSecretKey {
+final class _StaticHkdfSecretKeyImpl implements StaticHkdfSecretKeyImpl {
+  const _StaticHkdfSecretKeyImpl();
+
+  @override
+  Future<HkdfSecretKeyImpl> importRawKey(List<int> keyData) async {
+    return await hkdfSecretKey_importRawKey(keyData);
+  }
+}
+
+final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
   final subtle.JSCryptoKey _key;
-  _HkdfSecretKey(this._key);
+  _HkdfSecretKeyImpl(this._key);
 
   @override
   String toString() {
