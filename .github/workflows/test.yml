@@ -50,9 +50,9 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
-  macos:
-    name: webcrypto on macOS desktop / Chrome
-    runs-on: macos-14
+  macos-14:
+    name: webcrypto on macOS 14 desktop / Chrome
+    runs-on: macos-14 # Test with xcode 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -68,7 +68,7 @@ jobs:
       - run: flutter test --platform chrome
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
-      # TODO: Enable chromdriver testing on MacOS when it works reliably
+      # TODO: Enable chromedriver testing on MacOS when it works reliably
       #- uses: nanasess/setup-chromedriver@v2
       #- name: Run integration_test with chromedriver
       #  working-directory: ./example
@@ -77,6 +77,33 @@ jobs:
       #      --driver=test_driver/integration_test.dart \
       #      --target=integration_test/webcrypto_test.dart \
       #      -d chrome
+      - uses: browser-actions/setup-firefox@v1
+      - name: flutter pub run test -p vm,chrome,firefox
+        shell: bash
+        # Remove FIREFOX_EXECUTABLE override when flutter upgrades past package:test 1.25.8
+        # Issue is fixed in https://github.com/dart-lang/test/pull/2276
+        run: |
+          export FIREFOX_EXECUTABLE="$(which firefox)"
+          flutter pub run test -p vm,chrome,firefox
+  macos-15:
+    name: webcrypto on macOS 15 desktop / Chrome
+    runs-on: macos-15 # Test with xcode 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Configure Flutter
+        run: |
+          flutter config --no-analytics
+      - run: flutter pub get
+      - run: flutter pub run webcrypto:setup
+      - run: flutter test
+      - run: flutter test --platform chrome
+      - run: flutter test integration_test/webcrypto_test.dart -d macos
+        working-directory: ./example
+      # TODO: Enable chromedriver testing on MacOS when it works reliably
       - uses: browser-actions/setup-firefox@v1
       - name: flutter pub run test -p vm,chrome,firefox
         shell: bash
