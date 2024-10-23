@@ -25,6 +25,8 @@ Future<void> main() async {
 }
 ```
 
+[![Coverage Status](https://coveralls.io/repos/github/google/webcrypto.dart/badge.svg?branch=master)](https://coveralls.io/github/google/webcrypto.dart?branch=master)
+
 **Features:**
  * Get random bytes
  * Digest (sha-1/sha-256/sha-384/sha-512)
