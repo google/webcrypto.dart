@@ -50,6 +50,16 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
+      # Test with coverage collection as a separate step.
+      # This will run in debug mode, so we test both with and without coverage.
+      - run: xvfb-run flutter pub run test -p vm,chrome,firefox --coverage ./coverage
+      # Report collected coverage
+      - name: Convert coverage to lcov
+        run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@v2
+          with:
+            flag-name: linux
+            parallel: true
   macos-14:
     name: webcrypto on macOS 14 desktop / Chrome
     runs-on: macos-14 # Test with xcode 15
@@ -129,6 +139,16 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: flutter pub run test -p vm,chrome,firefox
+      # Test with coverage collection as a separate step.
+      # This will run in debug mode, so we test both with and without coverage.
+      - run: xvfb-run flutter pub run test -p vm,chrome,firefox --coverage ./coverage
+      # Report collected coverage
+      - name: Convert coverage to lcov
+        run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@v2
+          with:
+            flag-name: windows
+            parallel: true
   ios:
     name: webcrypto on iOS emulator (iPhone)
     runs-on: macos-14
@@ -175,3 +195,13 @@ jobs:
           api-level: 28
           working-directory: ./example
           script: flutter test integration_test/webcrypto_test.dart -d android
+  coverage:
+    name: Report to coveralls
+    runs-on: ubuntu-latest
+    needs:
+      - linux
+      - windows
+    steps:
+      - uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
