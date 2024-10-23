@@ -153,7 +153,7 @@ jobs:
       - run: flutter pub run test -p vm,chrome,firefox
       # Test with coverage collection as a separate step.
       # This will run in debug mode, so we test both with and without coverage.
-      - run: xvfb-run flutter pub run test -p vm,chrome,firefox --coverage ./coverage
+      - run: flutter pub run test -p vm,chrome,firefox --coverage ./coverage
       # Report collected coverage
       - name: Convert coverage to lcov
         run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
