@@ -110,7 +110,8 @@ final class RsaPssPrivateKey {
     List<int> keyData,
     Hash hash,
   ) async {
-    final impl = await webCryptImpl.rsaPssPrivateKey.importPkcs8Key(keyData, hash);
+    final impl =
+        await webCryptImpl.rsaPssPrivateKey.importPkcs8Key(keyData, hash);
     return RsaPssPrivateKey._(impl);
   }
 
@@ -158,7 +159,8 @@ final class RsaPssPrivateKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) async {
-    final impl = await webCryptImpl.rsaPssPrivateKey.importJsonWebKey(jwk, hash);
+    final impl =
+        await webCryptImpl.rsaPssPrivateKey.importJsonWebKey(jwk, hash);
     return RsaPssPrivateKey._(impl);
   }
 
@@ -295,7 +297,8 @@ final class RsaPssPrivateKey {
   // Which makes it hard for us to say that it's not useful.
   //
   // Note: Web Cryptography specification references RFC 3447, not FIPS 186-4.
-  Future<Uint8List> signBytes(List<int> data, int saltLength) => _impl.signBytes(data, saltLength);
+  Future<Uint8List> signBytes(List<int> data, int saltLength) =>
+      _impl.signBytes(data, saltLength);
 
   /// Sign [data] with this RSASSA-PSS private key.
   ///
@@ -349,7 +352,8 @@ final class RsaPssPrivateKey {
   ///
   /// [1]: https://tools.ietf.org/html/rfc3447#section-9.1
   /// [2]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
-  Future<Uint8List> signStream(Stream<List<int>> data, int saltLength) => _impl.signStream(data, saltLength);
+  Future<Uint8List> signStream(Stream<List<int>> data, int saltLength) =>
+      _impl.signStream(data, saltLength);
 
   /// Export this RSASSA-PSS private key in PKCS #8 format.
   ///
@@ -472,7 +476,8 @@ final class RsaPssPublicKey {
     List<int> keyData,
     Hash hash,
   ) async {
-    final impl = await webCryptImpl.rsaPssPublicKey.importSpkiKey(keyData, hash);
+    final impl =
+        await webCryptImpl.rsaPssPublicKey.importSpkiKey(keyData, hash);
     return RsaPssPublicKey._(impl);
   }
 
@@ -563,7 +568,8 @@ final class RsaPssPublicKey {
     List<int> signature,
     List<int> data,
     int saltLength,
-  ) => _impl.verifyBytes(signature, data, saltLength);
+  ) =>
+      _impl.verifyBytes(signature, data, saltLength);
 
   /// Verify [signature] of [data] using this RSASSA-PSS public key.
   ///
@@ -609,7 +615,8 @@ final class RsaPssPublicKey {
     List<int> signature,
     Stream<List<int>> data,
     int saltLength,
-  ) => _impl.verifyStream(signature, data, saltLength);
+  ) =>
+      _impl.verifyStream(signature, data, saltLength);
 
   /// Export RSASSA-PSS public key in SPKI format.
   ///
