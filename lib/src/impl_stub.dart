@@ -47,38 +47,6 @@ const Hash sha512 = _UnimplementedHash();
 
 //---------------------- RSASSA_PKCS1_v1_5
 
-Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
-  List<int> keyData,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
-    rsassaPkcs1V15PrivateKey_generateKey(
-  int modulusLength,
-  BigInt publicExponent,
-  Hash hash,
-) =>
-        throw _notImplemented;
-
-Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey(
-  List<int> keyData,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
 //---------------------- RSA-PSS
 
 //---------------------- ECDSA

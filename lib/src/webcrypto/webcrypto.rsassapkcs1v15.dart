@@ -58,9 +58,14 @@ part of 'webcrypto.dart';
 /// [1]: https://tools.ietf.org/html/rfc3447
 /// [2]: https://tools.ietf.org/html/rfc5208
 /// [3]: https://tools.ietf.org/html/rfc7517
-@sealed
-abstract class RsassaPkcs1V15PrivateKey {
-  RsassaPkcs1V15PrivateKey._(); // keep the constructor private.
+final class RsassaPkcs1V15PrivateKey {
+  final RsaSsaPkcs1V15PrivateKeyImpl _impl;
+
+  RsassaPkcs1V15PrivateKey._(this._impl); // keep the constructor private.
+
+  factory RsassaPkcs1V15PrivateKey(RsaSsaPkcs1V15PrivateKeyImpl impl) {
+    return RsassaPkcs1V15PrivateKey._(impl);
+  }
 
   /// Import RSASSA-PKCS1-v1_5 private key in PKCS #8 format.
   ///
@@ -100,8 +105,10 @@ abstract class RsassaPkcs1V15PrivateKey {
   static Future<RsassaPkcs1V15PrivateKey> importPkcs8Key(
     List<int> keyData,
     Hash hash,
-  ) {
-    return impl.rsassaPkcs1V15PrivateKey_importPkcs8Key(keyData, hash);
+  ) async {
+    final impl = await webCryptImpl.rsaSsaPkcs1v15PrivateKey
+        .importPkcs8Key(keyData, hash);
+    return RsassaPkcs1V15PrivateKey._(impl);
   }
 
   /// Import RSASSA-PKCS1-v1_5 private key in [JSON Web Key][1] format.
@@ -159,8 +166,10 @@ abstract class RsassaPkcs1V15PrivateKey {
   static Future<RsassaPkcs1V15PrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
-  ) {
-    return impl.rsassaPkcs1V15PrivateKey_importJsonWebKey(jwk, hash);
+  ) async {
+    final impl =
+        await webCryptImpl.rsaSsaPkcs1v15PrivateKey.importJsonWebKey(jwk, hash);
+    return RsassaPkcs1V15PrivateKey._(impl);
   }
 
   /// Generate an RSASSA-PKCS1-v1_5 public/private key-pair.
@@ -239,12 +248,18 @@ abstract class RsassaPkcs1V15PrivateKey {
     int modulusLength,
     BigInt publicExponent,
     Hash hash,
-  ) {
-    return impl.rsassaPkcs1V15PrivateKey_generateKey(
+  ) async {
+    final (privateKeyImpl, publicKeyImpl) =
+        await webCryptImpl.rsaSsaPkcs1v15PrivateKey.generateKey(
       modulusLength,
       publicExponent,
       hash,
     );
+
+    final privateKey = RsassaPkcs1V15PrivateKey(privateKeyImpl);
+    final publicKey = RsassaPkcs1V15PublicKey(publicKeyImpl);
+
+    return createKeyPair(privateKey, publicKey);
   }
 
   /// Sign [data] with this RSASSA-PKCS1-v1_5 private key.
@@ -278,7 +293,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// print('signature: ${base64.encode(signature)}');
   /// ```
-  Future<Uint8List> signBytes(List<int> data);
+  Future<Uint8List> signBytes(List<int> data) => _impl.signBytes(data);
 
   /// Sign [data] with this RSASSA-PKCS1-v1_5 private key.
   ///
@@ -313,7 +328,8 @@ abstract class RsassaPkcs1V15PrivateKey {
   ///
   /// print('signature: ${base64.encode(signature)}');
   /// ```
-  Future<Uint8List> signStream(Stream<List<int>> data);
+  Future<Uint8List> signStream(Stream<List<int>> data) =>
+      _impl.signStream(data);
 
   /// Export this RSASSA-PKCS1-v1_5 private key in PKCS #8 format.
   ///
@@ -342,7 +358,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc5208
-  Future<Uint8List> exportPkcs8Key();
+  Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
   /// Export RSASSA-PKCS1-v1_5 private key in [JSON Web Key][1] format.
   ///
@@ -373,7 +389,7 @@ abstract class RsassaPkcs1V15PrivateKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
 /// RSASSA-PKCS1-v1_5 public key for signing messages.
@@ -395,9 +411,14 @@ abstract class RsassaPkcs1V15PrivateKey {
 /// [1]: https://tools.ietf.org/html/rfc3447
 /// [2]: https://tools.ietf.org/html/rfc5280
 /// [3]: https://tools.ietf.org/html/rfc7517
-@sealed
-abstract class RsassaPkcs1V15PublicKey {
-  RsassaPkcs1V15PublicKey._(); // keep the constructor private.
+final class RsassaPkcs1V15PublicKey {
+  final RsaSsaPkcs1V15PublicKeyImpl _impl;
+
+  RsassaPkcs1V15PublicKey._(this._impl); // keep the constructor private.
+
+  factory RsassaPkcs1V15PublicKey(RsaSsaPkcs1V15PublicKeyImpl impl) {
+    return RsassaPkcs1V15PublicKey._(impl);
+  }
 
   /// Import RSASSA-PKCS1-v1_5 public key in SPKI format.
   ///
@@ -435,8 +456,10 @@ abstract class RsassaPkcs1V15PublicKey {
   static Future<RsassaPkcs1V15PublicKey> importSpkiKey(
     List<int> keyData,
     Hash hash,
-  ) {
-    return impl.rsassaPkcs1V15PublicKey_importSpkiKey(keyData, hash);
+  ) async {
+    final impl =
+        await webCryptImpl.rsaSsaPkcs1v15PublicKey.importSpkiKey(keyData, hash);
+    return RsassaPkcs1V15PublicKey._(impl);
   }
 
   /// Import RSASSA-PKCS1-v1_5 public key in [JSON Web Key][1] format.
@@ -476,8 +499,10 @@ abstract class RsassaPkcs1V15PublicKey {
   static Future<RsassaPkcs1V15PublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
-  ) {
-    return impl.rsassaPkcs1V15PublicKey_importJsonWebKey(jwk, hash);
+  ) async {
+    final impl =
+        await webCryptImpl.rsaSsaPkcs1v15PublicKey.importJsonWebKey(jwk, hash);
+    return RsassaPkcs1V15PublicKey._(impl);
   }
 
   /// Verify [signature] of [data] using this RSASSA-PKCS1-v1_5 public key.
@@ -511,7 +536,8 @@ abstract class RsassaPkcs1V15PublicKey {
   ///   print('Authentic message from Bob: $message');
   /// }
   /// ```
-  Future<bool> verifyBytes(List<int> signature, List<int> data);
+  Future<bool> verifyBytes(List<int> signature, List<int> data) =>
+      _impl.verifyBytes(signature, data);
 
   /// Verify [signature] of [data] using this RSASSA-PKCS1-v1_5 public key.
   ///
@@ -544,7 +570,8 @@ abstract class RsassaPkcs1V15PublicKey {
   ///   print('Authentic message from Bob: $message');
   /// }
   /// ```
-  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data);
+  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) =>
+      _impl.verifyStream(signature, data);
 
   /// Export RSASSA-PKCS1-v1_5 public key in SPKI format.
   ///
@@ -573,7 +600,7 @@ abstract class RsassaPkcs1V15PublicKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc5280
-  Future<Uint8List> exportSpkiKey();
+  Future<Uint8List> exportSpkiKey() => _impl.exportSpkiKey();
 
   /// Export RSASSA-PKCS1-v1_5 public key in [JSON Web Key][1] format.
   ///
@@ -601,5 +628,5 @@ abstract class RsassaPkcs1V15PublicKey {
   /// ```
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
-  Future<Map<String, dynamic>> exportJsonWebKey();
+  Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
