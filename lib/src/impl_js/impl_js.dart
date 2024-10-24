@@ -91,4 +91,10 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final rsaPssPublicKey = const _StaticRsaPssPublicKeyImpl();
+
+  @override
+  final rsaSsaPkcs1v15PrivateKey = const _StaticRsaSsaPkcs1V15PrivateKeyImpl();
+
+  @override
+  final rsaSsaPkcs1v15PublicKey = const _StaticRsaSsaPkcs1V15PublicKeyImpl();
 }
