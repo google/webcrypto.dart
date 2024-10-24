@@ -27,6 +27,7 @@ part 'impl_stub.ecdh.dart';
 part 'impl_stub.ecdsa.dart';
 part 'impl_stub.rsaoaep.dart';
 part 'impl_stub.hkdf.dart';
+part 'impl_stub.rsapss.dart';
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
@@ -68,4 +69,10 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final hkdfSecretKey = const _StaticHkdfSecretKeyImpl();
+
+  @override
+  final rsaPssPrivateKey = const _StaticRsaPssPrivateKeyImpl();
+
+  @override
+  final rsaPssPublicKey = const _StaticRsaPssPublicKeyImpl();
 }

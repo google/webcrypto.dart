@@ -81,37 +81,6 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
 
 //---------------------- RSA-PSS
 
-Future<RsaPssPrivateKey> rsaPssPrivateKey_importPkcs8Key(
-  List<int> keyData,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsaPssPrivateKey> rsaPssPrivateKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> rsaPssPrivateKey_generateKey(
-  int modulusLength,
-  BigInt publicExponent,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsaPssPublicKey> rsaPssPublicKey_importSpkiKey(
-  List<int> keyData,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
-Future<RsaPssPublicKey> rsaPssPublicKey_importJsonWebKey(
-  Map<String, dynamic> jwk,
-  Hash hash,
-) =>
-    throw _notImplemented;
-
 //---------------------- ECDSA
 
 //---------------------- RSA-OAEP
