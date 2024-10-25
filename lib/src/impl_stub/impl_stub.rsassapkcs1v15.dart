@@ -14,44 +14,47 @@
 
 part of 'impl_stub.dart';
 
-final class _StaticRsaPssPrivateKeyImpl implements StaticRsaPssPrivateKeyImpl {
-  const _StaticRsaPssPrivateKeyImpl();
+final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
+    implements StaticRsaSsaPkcs1v15PrivateKeyImpl {
+  const _StaticRsaSsaPkcs1V15PrivateKeyImpl();
 
   @override
-  Future<RsaPssPrivateKeyImpl> importPkcs8Key(
+  Future<RsaSsaPkcs1V15PrivateKeyImpl> importPkcs8Key(
     List<int> keyData,
     HashImpl hash,
   ) =>
       throw UnimplementedError('Not implemented');
 
   @override
-  Future<RsaPssPrivateKeyImpl> importJsonWebKey(
+  Future<RsaSsaPkcs1V15PrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     HashImpl hash,
   ) =>
       throw UnimplementedError('Not implemented');
 
   @override
-  Future<(RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl)> generateKey(
+  Future<(RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl)>
+      generateKey(
     int modulusLength,
     BigInt publicExponent,
     HashImpl hash,
   ) =>
-      throw UnimplementedError('Not implemented');
+          throw UnimplementedError('Not implemented');
 }
 
-final class _StaticRsaPssPublicKeyImpl implements StaticRsaPssPublicKeyImpl {
-  const _StaticRsaPssPublicKeyImpl();
+final class _StaticRsaSsaPkcs1V15PublicKeyImpl
+    implements StaticRsaSsaPkcs1v15PublicKeyImpl {
+  const _StaticRsaSsaPkcs1V15PublicKeyImpl();
 
   @override
-  Future<RsaPssPublicKeyImpl> importSpkiKey(
+  Future<RsaSsaPkcs1V15PublicKeyImpl> importSpkiKey(
     List<int> keyData,
     HashImpl hash,
   ) =>
       throw UnimplementedError('Not implemented');
 
   @override
-  Future<RsaPssPublicKeyImpl> importJsonWebKey(
+  Future<RsaSsaPkcs1V15PublicKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     HashImpl hash,
   ) =>

@@ -27,6 +27,7 @@ part 'impl_interface.ecdsa.dart';
 part 'impl_interface.rsaoaep.dart';
 part 'impl_interface.hkdf.dart';
 part 'impl_interface.rsapss.dart';
+part 'impl_interface.rsassapkcs1v15.dart';
 part 'impl_interface.digest.dart';
 
 /// A key-pair as returned from key generation.
@@ -92,6 +93,8 @@ abstract interface class WebCryptoImpl {
   StaticHkdfSecretKeyImpl get hkdfSecretKey;
   StaticRsaPssPrivateKeyImpl get rsaPssPrivateKey;
   StaticRsaPssPublicKeyImpl get rsaPssPublicKey;
+  StaticRsaSsaPkcs1v15PrivateKeyImpl get rsaSsaPkcs1v15PrivateKey;
+  StaticRsaSsaPkcs1v15PublicKeyImpl get rsaSsaPkcs1v15PublicKey;
   HashImpl get sha1;
   HashImpl get sha256;
   HashImpl get sha384;

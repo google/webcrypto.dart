@@ -15,6 +15,8 @@
 part of 'impl_interface.dart';
 
 abstract interface class HashImpl {
+  HashImpl(HashImpl impl);
+
   Future<Uint8List> digestBytes(List<int> data);
   Future<Uint8List> digestStream(Stream<List<int>> data);
   String hmacJwkAlg(HashImpl hash);
