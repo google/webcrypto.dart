@@ -29,22 +29,6 @@ void fillRandomBytes(TypedData destination) {
 
 //---------------------- Hash Algorithms
 
-class _UnimplementedHash implements Hash {
-  const _UnimplementedHash();
-
-  @override
-  Future<Uint8List> digestBytes(List<int> data) => throw _notImplemented;
-
-  @override
-  Future<Uint8List> digestStream(Stream<List<int>> data) =>
-      throw _notImplemented;
-}
-
-const Hash sha1 = _UnimplementedHash();
-const Hash sha256 = _UnimplementedHash();
-const Hash sha384 = _UnimplementedHash();
-const Hash sha512 = _UnimplementedHash();
-
 //---------------------- RSASSA_PKCS1_v1_5
 
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(

@@ -14,11 +14,11 @@
 
 part of 'impl_interface.dart';
 
-abstract interface class StaticPbkdf2SecretKeyImpl {
-  Future<Pbkdf2SecretKeyImpl> importRawKey(List<int> keyData);
-}
-
-abstract interface class Pbkdf2SecretKeyImpl {
-  Future<Uint8List> deriveBits(
-      int length, HashImpl hash, List<int> salt, int iterations);
+abstract interface class HashImpl {
+  Future<Uint8List> digestBytes(List<int> data);
+  Future<Uint8List> digestStream(Stream<List<int>> data);
+  String hmacJwkAlg(HashImpl hash);
+  String rsaOaepJwkAlg(HashImpl hash);
+  String rsaPssJwkAlg(HashImpl hash);
+  String rsassaPkcs1V15JwkAlg(HashImpl hash);
 }

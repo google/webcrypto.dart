@@ -95,7 +95,7 @@ final class HmacSecretKey {
 
     final impl = await webCryptImpl.hmacSecretKey.importRawKey(
       keyData,
-      hash,
+      hash as HashImpl,
       length: length,
     );
 
@@ -172,7 +172,7 @@ final class HmacSecretKey {
       );
     }*/
 
-    final impl = await webCryptImpl.hmacSecretKey.importJsonWebKey(jwk, hash);
+    final impl = await webCryptImpl.hmacSecretKey.importJsonWebKey(jwk, hash as HashImpl);
 
     return HmacSecretKey._(impl);
   }
@@ -196,7 +196,7 @@ final class HmacSecretKey {
     }
 
     final impl =
-        await webCryptImpl.hmacSecretKey.generateKey(hash, length: length);
+        await webCryptImpl.hmacSecretKey.generateKey(hash as HashImpl, length: length);
 
     return HmacSecretKey._(impl);
   }

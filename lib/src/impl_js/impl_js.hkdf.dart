@@ -52,7 +52,7 @@ final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
   @override
   Future<Uint8List> deriveBits(
     int length,
-    Hash hash,
+    HashImpl hash,
     List<int> salt,
     List<int> info,
   ) async {

@@ -14,17 +14,17 @@
 
 part of 'impl_ffi.dart';
 
-abstract class _Hash implements Hash {
-  const _Hash();
+abstract class _HashImpl implements HashImpl {
+  const _HashImpl();
 
-  factory _Hash.fromHash(Hash hash) {
-    if (hash is _Hash) {
+  factory _HashImpl.fromHash(HashImpl hash) {
+    if (hash is _HashImpl) {
       return hash;
     }
     throw ArgumentError.value(
       hash,
       'hash',
-      'Custom implementations of Hash is not supported',
+      'Custom implementations of HashImpl is not supported',
     );
   }
 
@@ -62,39 +62,104 @@ abstract class _Hash implements Hash {
       return out.copy(size);
     });
   }
+
+  @override
+  String hmacJwkAlg(HashImpl hash) {
+    if (hash == sha1) {
+      return 'HS1';
+    } else if (hash == sha256) {
+      return 'HS256';
+    } else if (hash == sha384) {
+      return 'HS384';
+    } else if (hash == sha512) {
+      return 'HS512';
+    } else {
+      throw UnsupportedError('hash is not supported');
+    }
+  }
+
+  @override
+  String rsaOaepJwkAlg(HashImpl hash){
+    if (hash == sha1) {
+      return 'RSA-OAEP-1';
+    } else if (hash == sha256) {
+      return 'RSA-OAEP-256';
+    } else if (hash == sha384) {
+      return 'RSA-OAEP-384';
+    } else if (hash == sha512) {
+      return 'RSA-OAEP-512';
+    } else {
+      throw UnsupportedError('hash is not supported');
+    }
+  }
+
+  @override
+  String rsaPssJwkAlg(HashImpl hash){
+    if (hash == sha1) {
+      return 'PS1';
+    } else if (hash == sha256) {
+      return 'PS256';
+    } else if (hash == sha384) {
+      return 'PS384';
+    } else if (hash == sha512) {
+      return 'PS512';
+    } else {
+      throw UnsupportedError('hash is not supported');
+    }
+  }
+
+  @override
+  String rsassaPkcs1V15JwkAlg(HashImpl hash){
+    if (hash == sha1) {
+      return 'RS1';
+    } else if (hash == sha256) {
+      return 'RS256';
+    } else if (hash == sha384) {
+      return 'RS384';
+    } else if (hash == sha512) {
+      return 'RS512';
+    } else {
+      throw UnsupportedError('hash is not supported');
+    }
+  }
 }
 
-class _Sha1 extends _Hash {
+final class _Sha1 extends _HashImpl {
   const _Sha1();
 
   @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha1;
 }
 
-class _Sha256 extends _Hash {
+final class _Sha256 extends _HashImpl {
   const _Sha256();
 
   @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha256;
 }
 
-class _Sha384 extends _Hash {
+final class _Sha384 extends _HashImpl {
   const _Sha384();
 
   @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha384;
 }
 
-class _Sha512 extends _Hash {
+final class _Sha512 extends _HashImpl {
   const _Sha512();
 
   @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha512;
 }
 
-const Hash sha1 = _Sha1();
-const Hash sha256 = _Sha256();
-const Hash sha384 = _Sha384();
-const Hash sha512 = _Sha512();
+// const HashImpl sha1 = _Sha1();
+// const HashImpl sha256 = _Sha256();
+// const HashImpl sha384 = _Sha384();
+// const HashImpl sha512 = _Sha512();
+
+ HashImpl get sha1 => const _Sha1();
+  HashImpl get sha256 => const _Sha256();
+  HashImpl get sha384 => const _Sha384();
+  HashImpl get sha512 => const _Sha512();
 // Note: Before adding new hash implementations, make sure to update all the
-//       places that does if (hash == Hash.shaXXX) ...
+//       places that does if (hash == HashImpl.shaXXX) ...

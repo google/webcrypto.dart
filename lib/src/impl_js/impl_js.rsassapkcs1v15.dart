@@ -20,7 +20,7 @@ const _rsassaPkcs1V15Algorithm = subtle.Algorithm(name: 'RSASSA-PKCS1-v1_5');
 
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
   List<int> keyData,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsassaPkcs1V15PrivateKey(await _importKey(
     'pkcs8',
@@ -33,7 +33,7 @@ Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importPkcs8Key(
 
 Future<RsassaPkcs1V15PrivateKey> rsassaPkcs1V15PrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsassaPkcs1V15PrivateKey(await _importJsonWebKey(
     jwk,
@@ -47,7 +47,7 @@ Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
     rsassaPkcs1V15PrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
-  Hash hash,
+  HashImpl hash,
 ) async {
   final pair = await _generateKeyPair(
     _rsassaPkcs1V15Algorithm.update(
@@ -65,7 +65,7 @@ Future<KeyPair<RsassaPkcs1V15PrivateKey, RsassaPkcs1V15PublicKey>>
 
 Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey(
   List<int> keyData,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsassaPkcs1V15PublicKey(await _importKey(
     'spki',
@@ -78,7 +78,7 @@ Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importSpkiKey(
 
 Future<RsassaPkcs1V15PublicKey> rsassaPkcs1V15PublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsassaPkcs1V15PublicKey(await _importJsonWebKey(
     jwk,

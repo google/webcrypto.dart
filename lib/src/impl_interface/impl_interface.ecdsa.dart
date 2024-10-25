@@ -24,8 +24,8 @@ abstract interface class StaticEcdsaPrivateKeyImpl {
 }
 
 abstract interface class EcdsaPrivateKeyImpl {
-  Future<Uint8List> signBytes(List<int> data, Hash hash);
-  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash);
+  Future<Uint8List> signBytes(List<int> data, HashImpl hash);
+  Future<Uint8List> signStream(Stream<List<int>> data, HashImpl hash);
   Future<Uint8List> exportPkcs8Key();
   Future<Map<String, dynamic>> exportJsonWebKey();
 }
@@ -40,9 +40,9 @@ abstract interface class StaticEcdsaPublicKeyImpl {
 }
 
 abstract interface class EcdsaPublicKeyImpl {
-  Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash);
+  Future<bool> verifyBytes(List<int> signature, List<int> data, HashImpl hash);
   Future<bool> verifyStream(
-      List<int> signature, Stream<List<int>> data, Hash hash);
+      List<int> signature, Stream<List<int>> data, HashImpl hash);
   Future<Uint8List> exportRawKey();
   Future<Uint8List> exportSpkiKey();
   Future<Map<String, dynamic>> exportJsonWebKey();

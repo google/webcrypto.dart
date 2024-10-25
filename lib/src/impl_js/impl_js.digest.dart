@@ -14,9 +14,9 @@
 
 part of 'impl_js.dart';
 
-class _Hash implements Hash {
+class _HashImpl implements HashImpl {
   final String _algorithm;
-  const _Hash(this._algorithm);
+  const _HashImpl(this._algorithm);
 
   @override
   Future<Uint8List> digestBytes(List<int> data) async {
@@ -33,16 +33,88 @@ class _Hash implements Hash {
   Future<Uint8List> digestStream(Stream<List<int>> data) async {
     return await digestBytes(await _bufferStream(data));
   }
+
+  @override
+  String hmacJwkAlg(HashImpl hash) {
+    final algorithm = _getHashAlgorithm(hash);
+    switch (algorithm) {
+      case 'SHA-1':
+        return 'HS1';
+      case 'SHA-256':
+        return 'HS256';
+      case 'SHA-384':
+        return 'HS384';
+      case 'SHA-512':
+        return 'HS512';
+      default:
+        assert(false); // This should never happen!
+        throw UnsupportedError('hash is not supported');
+    }
+  }
+
+  @override
+  String rsaOaepJwkAlg(HashImpl hash) {
+    final algorithm = _getHashAlgorithm(hash);
+    switch (algorithm) {
+      case 'SHA-1':
+        return 'RSA-OAEP';
+      case 'SHA-256':
+        return 'RSA-OAEP-256';
+      case 'SHA-384':
+        return 'RSA-OAEP-384';
+      case 'SHA-512':
+        return 'RSA-OAEP-512';
+      default:
+        assert(false); // This should never happen!
+        throw UnsupportedError('hash is not supported');
+    }
+  }
+
+  @override
+  String rsaPssJwkAlg(HashImpl hash) {
+    final algorithm = _getHashAlgorithm(hash);
+    switch (algorithm) {
+      case 'SHA-1':
+        return 'PS1';
+      case 'SHA-256':
+        return 'PS256';
+      case 'SHA-384':
+        return 'PS384';
+      case 'SHA-512':
+        return 'PS512';
+      default:
+        assert(false); // This should never happen!
+        throw UnsupportedError('hash is not supported');
+    }
+  }
+
+  @override
+  String rsassaPkcs1V15JwkAlg(HashImpl hash) {
+    final algorithm = _getHashAlgorithm(hash);
+    switch (algorithm) {
+      case 'SHA-1':
+        return 'RS1';
+      case 'SHA-256':
+        return 'RS256';
+      case 'SHA-384':
+        return 'RS384';
+      case 'SHA-512':
+        return 'RS512';
+      default:
+        assert(false); // This should never happen!
+        throw UnsupportedError('hash is not supported');
+    }
+  }
 }
 
-const Hash sha1 = _Hash('SHA-1');
-const Hash sha256 = _Hash('SHA-256');
-const Hash sha384 = _Hash('SHA-384');
-const Hash sha512 = _Hash('SHA-512');
+const HashImpl sha1 = _HashImpl('SHA-1');
+const HashImpl sha256 = _HashImpl('SHA-256');
+const HashImpl sha384 = _HashImpl('SHA-384');
+const HashImpl sha512 = _HashImpl('SHA-512');
 
 /// Get the algorithm from [hash] or throw an [ArgumentError].
-String _getHashAlgorithm(Hash hash) {
-  if (hash is _Hash) {
+String _getHashAlgorithm(HashImpl hash) {
+  if (hash is _HashImpl) {
     return hash._algorithm;
   }
   throw ArgumentError.value(

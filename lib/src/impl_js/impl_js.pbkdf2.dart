@@ -53,7 +53,7 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
   @override
   Future<Uint8List> deriveBits(
     int length,
-    Hash hash,
+    HashImpl hash,
     List<int> salt,
     int iterations,
   ) async {

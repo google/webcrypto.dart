@@ -43,14 +43,14 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
   @override
   Future<Uint8List> deriveBits(
     int length,
-    Hash hash,
+    HashImpl hash,
     List<int> salt,
     int iterations,
   ) async {
     if (length < 0) {
       throw ArgumentError.value(length, 'length', 'must be positive integer');
     }
-    final md = _Hash.fromHash(hash)._md;
+    final md = _HashImpl.fromHash(hash)._md;
 
     // Mirroring limitations in chromium:
     // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/pbkdf2.cc#75

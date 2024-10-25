@@ -151,7 +151,7 @@ final class _EcdsaPrivateKeyImpl implements EcdsaPrivateKeyImpl {
   }
 
   @override
-  Future<Uint8List> signBytes(List<int> data, Hash hash) async {
+  Future<Uint8List> signBytes(List<int> data, HashImpl hash) async {
     return await _sign(
       subtle.Algorithm(
         name: _ecdsaAlgorithmName,
@@ -163,7 +163,7 @@ final class _EcdsaPrivateKeyImpl implements EcdsaPrivateKeyImpl {
   }
 
   @override
-  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
+  Future<Uint8List> signStream(Stream<List<int>> data, HashImpl hash) async {
     return await signBytes(await _bufferStream(data), hash);
   }
 
@@ -214,7 +214,7 @@ final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
 
   @override
   Future<bool> verifyBytes(
-      List<int> signature, List<int> data, Hash hash) async {
+      List<int> signature, List<int> data, HashImpl hash) async {
     return await _verify(
       subtle.Algorithm(
         name: _ecdsaAlgorithmName,
@@ -230,7 +230,7 @@ final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
   Future<bool> verifyStream(
     List<int> signature,
     Stream<List<int>> data,
-    Hash hash,
+    HashImpl hash,
   ) async {
     return await verifyBytes(signature, await _bufferStream(data), hash);
   }

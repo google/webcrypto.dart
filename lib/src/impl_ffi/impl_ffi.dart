@@ -104,4 +104,16 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final rsaPssPublicKey = const _StaticRsaPssPublicKeyImpl();
+
+  @override
+  final sha1 = const _Sha1();
+
+  @override
+  final sha256 = const _Sha256();
+
+  @override
+  final sha384 = const _Sha384();
+
+  @override
+  final sha512 = const _Sha512();
 }

@@ -30,9 +30,10 @@ part of 'webcrypto.dart';
 /// to other methods in this library.
 ///
 /// [1]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf
-@sealed
-abstract class Hash {
-  Hash._(); // keep the constructor private.
+final class Hash {
+ final HashImpl _impl;
+
+  Hash._(this._impl); // keep the constructor private.
 
   /// Compute a cryptographic hash-sum of [data] using this [Hash].
   ///
@@ -50,7 +51,7 @@ abstract class Hash {
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
   /// ```
-  Future<Uint8List> digestBytes(List<int> data);
+  Future<Uint8List> digestBytes(List<int> data) => _impl.digestBytes(data);
 
   /// Compute a cryptographic hash-sum of [data] stream using this [Hash].
   ///
@@ -75,7 +76,8 @@ abstract class Hash {
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
   /// ```
-  Future<Uint8List> digestStream(Stream<List<int>> data);
+  Future<Uint8List> digestStream(Stream<List<int>> data) =>
+      _impl.digestStream(data);
 
   /// SHA-1 as specified in [FIPS PUB 180-4][1].
   ///
@@ -98,7 +100,7 @@ abstract class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static const Hash sha1 = impl.sha1;
+  static Hash sha1 = Hash._(webCryptImpl.sha1);
 
   /// SHA-256 as specified in [FIPS PUB 180-4][1].
   ///
@@ -118,7 +120,7 @@ abstract class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static const Hash sha256 = impl.sha256;
+  static Hash sha256 = Hash._(webCryptImpl.sha256);
 
   /// SHA-384 as specified in [FIPS PUB 180-4][1].
   ///
@@ -138,7 +140,7 @@ abstract class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static const Hash sha384 = impl.sha384;
+  static Hash sha384 = Hash._(webCryptImpl.sha384);
 
   /// SHA-512 as specified in [FIPS PUB 180-4][1].
   ///
@@ -158,5 +160,5 @@ abstract class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static const Hash sha512 = impl.sha512;
+  static Hash sha512 = Hash._(webCryptImpl.sha512);
 }

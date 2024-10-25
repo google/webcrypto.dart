@@ -58,10 +58,10 @@ final class EcdsaPrivateKey {
   ///       integers zero padded to fill N bytes. Where N is the number of bytes
   ///       required to encode the order of the base points of the curve.
   Future<Uint8List> signBytes(List<int> data, Hash hash) =>
-      _impl.signBytes(data, hash);
+      _impl.signBytes(data, hash as HashImpl);
 
   Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) =>
-      _impl.signStream(data, hash);
+      _impl.signStream(data, hash as HashImpl);
 
   Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
@@ -108,14 +108,14 @@ final class EcdsaPublicKey {
     List<int> data,
     Hash hash,
   ) =>
-      _impl.verifyBytes(signature, data, hash);
+      _impl.verifyBytes(signature, data, hash as HashImpl);
 
   Future<bool> verifyStream(
     List<int> signature,
     Stream<List<int>> data,
     Hash hash,
   ) =>
-      _impl.verifyStream(signature, data, hash);
+      _impl.verifyStream(signature, data, hash as HashImpl);
 
   /// TODO: Document this being X9.62 format
   Future<Uint8List> exportRawKey() => _impl.exportRawKey();

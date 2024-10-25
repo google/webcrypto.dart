@@ -14,9 +14,9 @@
 
 library webcrypto.impl_stub;
 
+import 'dart:typed_data';
+
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';
-import 'package:webcrypto/webcrypto.dart';
-import '../webcrypto/webcrypto.dart';
 
 part 'impl_stub.aescbc.dart';
 part 'impl_stub.aesctr.dart';
@@ -28,6 +28,7 @@ part 'impl_stub.ecdsa.dart';
 part 'impl_stub.rsaoaep.dart';
 part 'impl_stub.hkdf.dart';
 part 'impl_stub.rsapss.dart';
+part 'impl_stub.digest.dart';
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
@@ -75,4 +76,16 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final rsaPssPublicKey = const _StaticRsaPssPublicKeyImpl();
+
+  @override
+  final sha1 = const _HashImpl();
+
+  @override
+  final sha256 = const _HashImpl();
+
+  @override
+  final sha384 = const _HashImpl();
+
+  @override
+  final sha512 = const _HashImpl();
 }

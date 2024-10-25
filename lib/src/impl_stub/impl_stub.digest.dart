@@ -14,41 +14,35 @@
 
 part of 'impl_stub.dart';
 
-final class _StaticRsaPssPrivateKeyImpl implements StaticRsaPssPrivateKeyImpl {
-  const _StaticRsaPssPrivateKeyImpl();
+final class _HashImpl implements HashImpl {
+  const _HashImpl();
 
-  Future<RsaPssPrivateKeyImpl> importPkcs8Key(
-    List<int> keyData,
-    HashImpl hash,
-  ) =>
+  @override
+  Future<Uint8List> digestBytes(List<int> data) =>
       throw UnimplementedError('Not implemented');
 
-  Future<RsaPssPrivateKeyImpl> importJsonWebKey(
-    Map<String, dynamic> jwk,
-    HashImpl hash,
-  ) =>
+  @override
+  Future<Uint8List> digestStream(Stream<List<int>> data) =>
       throw UnimplementedError('Not implemented');
 
-  Future<(RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl)> generateKey(
-    int modulusLength,
-    BigInt publicExponent,
-    HashImpl hash,
-  ) =>
-      throw UnimplementedError('Not implemented');
-}
-
-final class _StaticRsaPssPublicKeyImpl implements StaticRsaPssPublicKeyImpl {
-  const _StaticRsaPssPublicKeyImpl();
-
-  Future<RsaPssPublicKeyImpl> importSpkiKey(
-    List<int> keyData,
-    HashImpl hash,
-  ) =>
+  @override
+  String hmacJwkAlg(HashImpl hash) =>
       throw UnimplementedError('Not implemented');
 
-  Future<RsaPssPublicKeyImpl> importJsonWebKey(
-    Map<String, dynamic> jwk,
-    HashImpl hash,
-  ) =>
+  @override
+  String rsaOaepJwkAlg(HashImpl hash) =>
+      throw UnimplementedError('Not implemented');
+
+  @override
+  String rsaPssJwkAlg(HashImpl hash) =>
+      throw UnimplementedError('Not implemented');
+
+  @override
+  String rsassaPkcs1V15JwkAlg(HashImpl hash) =>
       throw UnimplementedError('Not implemented');
 }
+
+const HashImpl sha1 = _HashImpl();
+const HashImpl sha256 = _HashImpl();
+const HashImpl sha384 = _HashImpl();
+const HashImpl sha512 = _HashImpl();

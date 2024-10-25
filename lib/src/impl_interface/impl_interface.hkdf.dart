@@ -21,7 +21,7 @@ abstract interface class StaticHkdfSecretKeyImpl {
 abstract interface class HkdfSecretKeyImpl {
   Future<Uint8List> deriveBits(
     int length,
-    Hash hash,
+    HashImpl hash,
     List<int> salt,
     List<int> info,
   );

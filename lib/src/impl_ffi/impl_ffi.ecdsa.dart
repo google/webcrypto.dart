@@ -218,12 +218,12 @@ final class _EcdsaPrivateKeyImpl implements EcdsaPrivateKeyImpl {
   }
 
   @override
-  Future<Uint8List> signBytes(List<int> data, Hash hash) =>
+  Future<Uint8List> signBytes(List<int> data, HashImpl hash) =>
       signStream(Stream.value(data), hash);
 
   @override
-  Future<Uint8List> signStream(Stream<List<int>> data, Hash hash) async {
-    final md = _Hash.fromHash(hash)._md;
+  Future<Uint8List> signStream(Stream<List<int>> data, HashImpl hash) async {
+    final md = _HashImpl.fromHash(hash)._md;
     final sig = await _signStream(_key, md, data);
     return _convertEcdsaDerSignatureToWebCryptoSignature(_key, sig);
   }
@@ -268,16 +268,16 @@ final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
   }
 
   @override
-  Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) =>
+  Future<bool> verifyBytes(List<int> signature, List<int> data, HashImpl hash) =>
       verifyStream(signature, Stream.value(data), hash);
 
   @override
   Future<bool> verifyStream(
     List<int> signature,
     Stream<List<int>> data,
-    Hash hash,
+    HashImpl hash,
   ) async {
-    final md = _Hash.fromHash(hash)._md;
+    final md = _HashImpl.fromHash(hash)._md;
 
     // Convert to DER signature
     final sig = _convertEcdsaWebCryptoSignatureToDerSignature(_key, signature);
