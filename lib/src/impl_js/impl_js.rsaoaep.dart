@@ -106,7 +106,8 @@ final class _StaticRsaOaepPrivateKeyImpl
   const _StaticRsaOaepPrivateKeyImpl();
 
   @override
-  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(List<int> keyData, HashImpl hash) {
+  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(
+      List<int> keyData, HashImpl hash) {
     return rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
   }
 

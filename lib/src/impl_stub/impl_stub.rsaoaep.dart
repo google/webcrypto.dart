@@ -19,7 +19,8 @@ final class _StaticRsaOaepPrivateKeyImpl
   const _StaticRsaOaepPrivateKeyImpl();
 
   @override
-  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(List<int> keyData, HashImpl hash) {
+  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(
+      List<int> keyData, HashImpl hash) {
     throw UnimplementedError('Not implemented');
   }
 

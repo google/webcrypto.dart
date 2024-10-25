@@ -106,7 +106,8 @@ final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
 
   @override
   Future<(RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl)>
-      generateKey(int modulusLength, BigInt publicExponent, HashImpl hash) async {
+      generateKey(
+          int modulusLength, BigInt publicExponent, HashImpl hash) async {
     final KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>
         pair = await rsassaPkcs1V15PrivateKey_generateKey(
             modulusLength, publicExponent, hash);

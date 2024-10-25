@@ -519,7 +519,8 @@ final class RsaPssPublicKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) async {
-    final impl = await webCryptImpl.rsaPssPublicKey.importJsonWebKey(jwk, hash._impl);
+    final impl =
+        await webCryptImpl.rsaPssPublicKey.importJsonWebKey(jwk, hash._impl);
     return RsaPssPublicKey._(impl);
   }
 

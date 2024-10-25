@@ -15,7 +15,8 @@
 part of 'impl_interface.dart';
 
 abstract interface class StaticRsaOaepPrivateKeyImpl {
-  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(List<int> keyData, HashImpl hash);
+  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(
+      List<int> keyData, HashImpl hash);
   Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
       Map<String, dynamic> jwk, HashImpl hash);
   Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(

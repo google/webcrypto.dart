@@ -31,7 +31,7 @@ part of 'webcrypto.dart';
 ///
 /// [1]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf
 final class Hash {
- final HashImpl _impl;
+  final HashImpl _impl;
 
   Hash._(this._impl); // keep the constructor private.
   HashImpl get impl => _impl;

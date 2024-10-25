@@ -268,7 +268,8 @@ final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
   }
 
   @override
-  Future<bool> verifyBytes(List<int> signature, List<int> data, HashImpl hash) =>
+  Future<bool> verifyBytes(
+          List<int> signature, List<int> data, HashImpl hash) =>
       verifyStream(signature, Stream.value(data), hash);
 
   @override

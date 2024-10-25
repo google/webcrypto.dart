@@ -118,8 +118,8 @@ final class RsaOaepPrivateKey {
     List<int> keyData,
     Hash hash,
   ) async {
-    final impl =
-        await webCryptImpl.rsaOaepPrivateKey.importPkcs8Key(keyData, hash._impl);
+    final impl = await webCryptImpl.rsaOaepPrivateKey
+        .importPkcs8Key(keyData, hash._impl);
     return RsaOaepPrivateKey._(impl);
   }
 
