@@ -36,7 +36,7 @@ Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importJsonWebKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: true,
       expectedUse: 'sig',
-      expectedAlg: _HashImpl.fromHash(h).rsaPssJwkAlg(h),
+      expectedAlg: h.rsaPssJwkAlg,
     ),
     h,
   );
@@ -73,12 +73,8 @@ Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importJsonWebKey(
   // Validate and get hash function
   final h = _HashImpl.fromHash(hash);
   return _RsaPssPublicKeyImpl(
-    _importJwkRsaPrivateOrPublicKey(
-      JsonWebKey.fromJson(jwk),
-      isPrivateKey: false,
-      expectedUse: 'sig',
-      expectedAlg: _HashImpl.fromHash(h).rsaPssJwkAlg(h),
-    ),
+    _importJwkRsaPrivateOrPublicKey(JsonWebKey.fromJson(jwk),
+        isPrivateKey: false, expectedUse: 'sig', expectedAlg: h.rsaPssJwkAlg),
     h,
   );
 }
@@ -154,9 +150,7 @@ final class _RsaPssPrivateKeyImpl implements RsaPssPrivateKeyImpl {
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
       _exportJwkRsaPrivateOrPublicKey(_key,
-          isPrivateKey: true,
-          jwkUse: 'sig',
-          jwkAlg: _HashImpl.fromHash(_hash).rsaPssJwkAlg(_hash));
+          isPrivateKey: true, jwkUse: 'sig', jwkAlg: _hash.rsaPssJwkAlg);
 
   @override
   Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
@@ -228,9 +222,7 @@ final class _RsaPssPublicKeyImpl implements RsaPssPublicKeyImpl {
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
       _exportJwkRsaPrivateOrPublicKey(_key,
-          isPrivateKey: false,
-          jwkUse: 'sig',
-          jwkAlg: _HashImpl.fromHash(_hash).rsaPssJwkAlg(_hash));
+          isPrivateKey: false, jwkUse: 'sig', jwkAlg: _hash.rsaPssJwkAlg);
 
   @override
   Future<Uint8List> exportSpkiKey() async => _exportSpkiKey(_key);

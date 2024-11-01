@@ -36,7 +36,7 @@ Future<RsaSsaPkcs1V15PrivateKeyImpl> rsassaPkcs1V15PrivateKey_importJsonWebKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: true,
       expectedUse: 'sig',
-      expectedAlg: _HashImpl.fromHash(h).rsassaPkcs1V15JwkAlg(h),
+      expectedAlg: h.rsassaPkcs1V15JwkAlg,
     ),
     h,
   );
@@ -77,7 +77,7 @@ Future<RsaSsaPkcs1V15PublicKeyImpl> rsassaPkcs1V15PublicKey_importJsonWebKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: false,
       expectedUse: 'sig',
-      expectedAlg: _HashImpl.fromHash(h).rsassaPkcs1V15JwkAlg(h),
+      expectedAlg: h.rsassaPkcs1V15JwkAlg,
     ),
     h,
   );
@@ -142,7 +142,7 @@ final class _RsaSsaPkcs1V15PrivateKeyImpl
       _exportJwkRsaPrivateOrPublicKey(
         _key,
         isPrivateKey: true,
-        jwkAlg: _HashImpl.fromHash(_hash).rsassaPkcs1V15JwkAlg(_hash),
+        jwkAlg: _hash.rsassaPkcs1V15JwkAlg,
         jwkUse: 'sig',
       );
 
@@ -187,7 +187,7 @@ final class _RsaSsaPkcs1V15PublicKeyImpl
       _exportJwkRsaPrivateOrPublicKey(
         _key,
         isPrivateKey: false,
-        jwkAlg: _HashImpl.fromHash(_hash).rsassaPkcs1V15JwkAlg(_hash),
+        jwkAlg: _hash.rsassaPkcs1V15JwkAlg,
         jwkUse: 'sig',
       );
 

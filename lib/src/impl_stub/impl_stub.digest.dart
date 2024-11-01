@@ -24,25 +24,4 @@ final class _HashImpl implements HashImpl {
   @override
   Future<Uint8List> digestStream(Stream<List<int>> data) =>
       throw UnimplementedError('Not implemented');
-
-  @override
-  String hmacJwkAlg(HashImpl hash) =>
-      throw UnimplementedError('Not implemented');
-
-  @override
-  String rsaOaepJwkAlg(HashImpl hash) =>
-      throw UnimplementedError('Not implemented');
-
-  @override
-  String rsaPssJwkAlg(HashImpl hash) =>
-      throw UnimplementedError('Not implemented');
-
-  @override
-  String rsassaPkcs1V15JwkAlg(HashImpl hash) =>
-      throw UnimplementedError('Not implemented');
 }
-
-const HashImpl sha1 = _HashImpl();
-const HashImpl sha256 = _HashImpl();
-const HashImpl sha384 = _HashImpl();
-const HashImpl sha512 = _HashImpl();

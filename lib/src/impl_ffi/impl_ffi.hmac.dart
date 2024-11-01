@@ -57,7 +57,7 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   checkJwk(k.kty == 'oct', 'kty', 'must be "oct"');
   checkJwk(k.k != null, 'k', 'must be present');
   checkJwk(k.use == null || k.use == 'sig', 'use', 'must be "sig", if present');
-  final expectedAlg = _HashImpl.fromHash(h).hmacJwkAlg(h);
+  final expectedAlg = h.hmacJwkAlg;
   checkJwk(
     k.alg == null || k.alg == expectedAlg,
     'alg',
@@ -169,7 +169,7 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
     return JsonWebKey(
       kty: 'oct',
       use: 'sig',
-      alg: _HashImpl.fromHash(_hash).hmacJwkAlg(_hash),
+      alg: _hash.hmacJwkAlg,
       k: _jwkEncodeBase64UrlNoPadding(_keyData),
     ).toJson();
   }

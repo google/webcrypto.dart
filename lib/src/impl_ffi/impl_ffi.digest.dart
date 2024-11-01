@@ -21,11 +21,8 @@ abstract class _HashImpl implements HashImpl {
     if (hash is _HashImpl) {
       return hash;
     }
-    throw ArgumentError.value(
-      hash,
-      'hash',
-      'Custom implementations of HashImpl is not supported',
-    );
+    throw AssertionError(
+        'Internal invariant violated: Custom implementations of HashImpl are not supported.');
   }
 
   @protected
@@ -65,57 +62,27 @@ abstract class _HashImpl implements HashImpl {
 
   String get hmacJwkAlg;
 
-  @override
-  String rsaOaepJwkAlg(HashImpl hash) {
-    if (hash == sha1) {
-      return 'RSA-OAEP-1';
-    } else if (hash == sha256) {
-      return 'RSA-OAEP-256';
-    } else if (hash == sha384) {
-      return 'RSA-OAEP-384';
-    } else if (hash == sha512) {
-      return 'RSA-OAEP-512';
-    } else {
-      throw UnsupportedError('hash is not supported');
-    }
-  }
+  String get rsaOaepJwkAlg;
 
-  @override
-  String rsaPssJwkAlg(HashImpl hash) {
-    if (hash == sha1) {
-      return 'PS1';
-    } else if (hash == sha256) {
-      return 'PS256';
-    } else if (hash == sha384) {
-      return 'PS384';
-    } else if (hash == sha512) {
-      return 'PS512';
-    } else {
-      throw UnsupportedError('hash is not supported');
-    }
-  }
+  String get rsaPssJwkAlg;
 
-  @override
-  String rsassaPkcs1V15JwkAlg(HashImpl hash) {
-    if (hash == sha1) {
-      return 'RS1';
-    } else if (hash == sha256) {
-      return 'RS256';
-    } else if (hash == sha384) {
-      return 'RS384';
-    } else if (hash == sha512) {
-      return 'RS512';
-    } else {
-      throw UnsupportedError('hash is not supported');
-    }
-  }
+  String get rsassaPkcs1V15JwkAlg;
 }
 
 final class _Sha1 extends _HashImpl {
   const _Sha1();
-  
+
   @override
   String get hmacJwkAlg => 'HS1';
+
+  @override
+  String get rsaOaepJwkAlg => 'RSA-OAEP-1';
+
+  @override
+  String get rsaPssJwkAlg => 'PS1';
+
+  @override
+  String get rsassaPkcs1V15JwkAlg => 'RS1';
 
   @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha1;
@@ -125,6 +92,18 @@ final class _Sha256 extends _HashImpl {
   const _Sha256();
 
   @override
+  String get hmacJwkAlg => 'HS256';
+
+  @override
+  String get rsaOaepJwkAlg => 'RSA-OAEP-256';
+
+  @override
+  String get rsaPssJwkAlg => 'PS256';
+
+  @override
+  String get rsassaPkcs1V15JwkAlg => 'RS256';
+
+  @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha256;
 }
 
@@ -132,11 +111,35 @@ final class _Sha384 extends _HashImpl {
   const _Sha384();
 
   @override
+  String get hmacJwkAlg => 'HS384';
+
+  @override
+  String get rsaOaepJwkAlg => 'RSA-OAEP-384';
+
+  @override
+  String get rsaPssJwkAlg => 'PS384';
+
+  @override
+  String get rsassaPkcs1V15JwkAlg => 'RS384';
+
+  @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha384;
 }
 
 final class _Sha512 extends _HashImpl {
   const _Sha512();
+
+  @override
+  String get hmacJwkAlg => 'HS512';
+
+  @override
+  String get rsaOaepJwkAlg => 'RSA-OAEP-512';
+
+  @override
+  String get rsaPssJwkAlg => 'PS512';
+
+  @override
+  String get rsassaPkcs1V15JwkAlg => 'RS512';
 
   @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha512;

@@ -36,7 +36,7 @@ Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importJsonWebKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: true,
       expectedUse: 'enc',
-      expectedAlg: _HashImpl.fromHash(h).rsaOaepJwkAlg(h),
+      expectedAlg: h.rsaOaepJwkAlg,
     ),
     h,
   );
@@ -77,7 +77,7 @@ Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importJsonWebKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: false,
       expectedUse: 'enc',
-      expectedAlg: _HashImpl.fromHash(h).rsaOaepJwkAlg(h),
+      expectedAlg: h.rsaOaepJwkAlg,
     ),
     h,
   );
@@ -209,7 +209,7 @@ final class _RsaOaepPrivateKeyImpl implements RsaOaepPrivateKeyImpl {
         _key,
         isPrivateKey: true,
         jwkUse: 'enc',
-        jwkAlg: _HashImpl.fromHash(_hash).rsaOaepJwkAlg(_hash),
+        jwkAlg: _hash.rsaOaepJwkAlg,
       );
 
   @override
@@ -263,7 +263,7 @@ final class _RsaOaepPublicKeyImpl implements RsaOaepPublicKeyImpl {
         _key,
         isPrivateKey: false,
         jwkUse: 'enc',
-        jwkAlg: _HashImpl.fromHash(_hash).rsaOaepJwkAlg(_hash),
+        jwkAlg: _hash.rsaOaepJwkAlg,
       );
 
   @override
