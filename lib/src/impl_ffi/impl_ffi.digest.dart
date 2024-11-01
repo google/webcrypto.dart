@@ -63,20 +63,7 @@ abstract class _HashImpl implements HashImpl {
     });
   }
 
-  @override
-  String hmacJwkAlg(HashImpl hash) {
-    if (hash == sha1) {
-      return 'HS1';
-    } else if (hash == sha256) {
-      return 'HS256';
-    } else if (hash == sha384) {
-      return 'HS384';
-    } else if (hash == sha512) {
-      return 'HS512';
-    } else {
-      throw UnsupportedError('hash is not supported');
-    }
-  }
+  String get hmacJwkAlg;
 
   @override
   String rsaOaepJwkAlg(HashImpl hash) {
