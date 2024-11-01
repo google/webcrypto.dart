@@ -113,6 +113,9 @@ abstract class _HashImpl implements HashImpl {
 
 final class _Sha1 extends _HashImpl {
   const _Sha1();
+  
+  @override
+  String get hmacJwkAlg => 'HS1';
 
   @override
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha1;
