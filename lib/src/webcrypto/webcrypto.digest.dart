@@ -34,7 +34,6 @@ final class Hash {
   final HashImpl _impl;
 
   Hash._(this._impl); // keep the constructor private.
-  HashImpl get impl => _impl;
 
   /// Compute a cryptographic hash-sum of [data] using this [Hash].
   ///
