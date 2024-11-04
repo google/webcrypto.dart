@@ -14,7 +14,7 @@
 
 part of 'impl_js.dart';
 
-class _HashImpl implements HashImpl {
+final class _HashImpl implements HashImpl {
   final String _algorithm;
   const _HashImpl(this._algorithm);
 
