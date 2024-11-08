@@ -92,5 +92,5 @@ final class HkdfSecretKey {
     List<int> salt,
     List<int> info,
   ) =>
-      _impl.deriveBits(length, hash, salt, info);
+      _impl.deriveBits(length, hash._impl, salt, info);
 }

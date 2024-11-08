@@ -20,7 +20,7 @@ const _rsaPssAlgorithmName = 'RSA-PSS';
 
 Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importPkcs8Key(
   List<int> keyData,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsaPssPrivateKeyImpl(await _importKey(
     'pkcs8',
@@ -33,7 +33,7 @@ Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importPkcs8Key(
 
 Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsaPssPrivateKeyImpl(await _importJsonWebKey(
     jwk,
@@ -47,7 +47,7 @@ Future<KeyPair<RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl>>
     rsaPssPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
-  Hash hash,
+  HashImpl hash,
 ) async {
   final pair = await _generateKeyPair(
     subtle.Algorithm(
@@ -66,7 +66,7 @@ Future<KeyPair<RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl>>
 
 Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importSpkiKey(
   List<int> keyData,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsaPssPublicKeyImpl(await _importKey(
     'spki',
@@ -79,7 +79,7 @@ Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importSpkiKey(
 
 Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsaPssPublicKeyImpl(await _importJsonWebKey(
     jwk,
@@ -95,7 +95,7 @@ final class _StaticRsaPssPrivateKeyImpl implements StaticRsaPssPrivateKeyImpl {
   @override
   Future<RsaPssPrivateKeyImpl> importPkcs8Key(
     List<int> keyData,
-    Hash hash,
+    HashImpl hash,
   ) async {
     return await rsaPssPrivateKey_importPkcs8Key(keyData, hash);
   }
@@ -103,7 +103,7 @@ final class _StaticRsaPssPrivateKeyImpl implements StaticRsaPssPrivateKeyImpl {
   @override
   Future<RsaPssPrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
-    Hash hash,
+    HashImpl hash,
   ) async {
     return await rsaPssPrivateKey_importJsonWebKey(jwk, hash);
   }
@@ -112,7 +112,7 @@ final class _StaticRsaPssPrivateKeyImpl implements StaticRsaPssPrivateKeyImpl {
   Future<(RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl)> generateKey(
     int modulusLength,
     BigInt publicExponent,
-    Hash hash,
+    HashImpl hash,
   ) async {
     final KeyPair<RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl> keyPair =
         await rsaPssPrivateKey_generateKey(modulusLength, publicExponent, hash);
@@ -169,7 +169,7 @@ final class _StaticRsaPssPublicKeyImpl implements StaticRsaPssPublicKeyImpl {
   @override
   Future<RsaPssPublicKeyImpl> importSpkiKey(
     List<int> keyData,
-    Hash hash,
+    HashImpl hash,
   ) async {
     return await rsaPssPublicKey_importSpkiKey(keyData, hash);
   }
@@ -177,7 +177,7 @@ final class _StaticRsaPssPublicKeyImpl implements StaticRsaPssPublicKeyImpl {
   @override
   Future<RsaPssPublicKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
-    Hash hash,
+    HashImpl hash,
   ) async {
     return await rsaPssPublicKey_importJsonWebKey(jwk, hash);
   }

@@ -17,8 +17,6 @@ library impl_stub;
 import 'dart:typed_data';
 import 'dart:async';
 
-import 'package:webcrypto/webcrypto.dart' show Hash;
-
 part 'impl_interface.aescbc.dart';
 part 'impl_interface.aesctr.dart';
 part 'impl_interface.hmac.dart';
@@ -30,6 +28,7 @@ part 'impl_interface.rsaoaep.dart';
 part 'impl_interface.hkdf.dart';
 part 'impl_interface.rsapss.dart';
 part 'impl_interface.rsassapkcs1v15.dart';
+part 'impl_interface.digest.dart';
 
 /// A key-pair as returned from key generation.
 class KeyPair<S, T> {
@@ -96,4 +95,8 @@ abstract interface class WebCryptoImpl {
   StaticRsaPssPublicKeyImpl get rsaPssPublicKey;
   StaticRsaSsaPkcs1v15PrivateKeyImpl get rsaSsaPkcs1v15PrivateKey;
   StaticRsaSsaPkcs1v15PublicKeyImpl get rsaSsaPkcs1v15PublicKey;
+  HashImpl get sha1;
+  HashImpl get sha256;
+  HashImpl get sha384;
+  HashImpl get sha512;
 }

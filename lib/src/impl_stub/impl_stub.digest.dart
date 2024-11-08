@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'impl_interface.dart';
+part of 'impl_stub.dart';
 
-abstract interface class StaticPbkdf2SecretKeyImpl {
-  Future<Pbkdf2SecretKeyImpl> importRawKey(List<int> keyData);
-}
+final class _HashImpl implements HashImpl {
+  const _HashImpl();
 
-abstract interface class Pbkdf2SecretKeyImpl {
-  Future<Uint8List> deriveBits(
-      int length, HashImpl hash, List<int> salt, int iterations);
+  @override
+  Future<Uint8List> digestBytes(List<int> data) =>
+      throw UnimplementedError('Not implemented');
+
+  @override
+  Future<Uint8List> digestStream(Stream<List<int>> data) =>
+      throw UnimplementedError('Not implemented');
 }

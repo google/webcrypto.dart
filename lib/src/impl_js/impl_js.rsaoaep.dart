@@ -20,7 +20,7 @@ const _rsaOaepAlgorithmName = 'RSA-OAEP';
 
 Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importPkcs8Key(
   List<int> keyData,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsaOaepPrivateKeyImpl(await _importKey(
     'pkcs8',
@@ -36,7 +36,7 @@ Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importPkcs8Key(
 
 Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsaOaepPrivateKeyImpl(await _importJsonWebKey(
     jwk,
@@ -53,7 +53,7 @@ Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
     rsaOaepPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
-  Hash hash,
+  HashImpl hash,
 ) async {
   final pair = await _generateKeyPair(
     subtle.Algorithm(
@@ -72,7 +72,7 @@ Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
 
 Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importSpkiKey(
   List<int> keyData,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsaOaepPublicKeyImpl(await _importKey(
     'spki',
@@ -88,7 +88,7 @@ Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importSpkiKey(
 
 Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
-  Hash hash,
+  HashImpl hash,
 ) async {
   return _RsaOaepPublicKeyImpl(await _importJsonWebKey(
     jwk,
@@ -106,19 +106,20 @@ final class _StaticRsaOaepPrivateKeyImpl
   const _StaticRsaOaepPrivateKeyImpl();
 
   @override
-  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(List<int> keyData, Hash hash) {
+  Future<RsaOaepPrivateKeyImpl> importPkcs8Key(
+      List<int> keyData, HashImpl hash) {
     return rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
   }
 
   @override
   Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, Hash hash) {
+      Map<String, dynamic> jwk, HashImpl hash) {
     return rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
   }
 
   @override
   Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
-      int modulusLength, BigInt publicExponent, Hash hash) async {
+      int modulusLength, BigInt publicExponent, HashImpl hash) async {
     final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair =
         await rsaOaepPrivateKey_generateKey(
             modulusLength, publicExponent, hash);
@@ -165,13 +166,13 @@ final class _StaticRsaOaepPublicKeyImpl implements StaticRsaOaepPublicKeyImpl {
   const _StaticRsaOaepPublicKeyImpl();
 
   @override
-  Future<RsaOaepPublicKeyImpl> importSpkiKey(List<int> keyData, Hash hash) {
+  Future<RsaOaepPublicKeyImpl> importSpkiKey(List<int> keyData, HashImpl hash) {
     return rsaOaepPublicKey_importSpkiKey(keyData, hash);
   }
 
   @override
   Future<RsaOaepPublicKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, Hash hash) {
+      Map<String, dynamic> jwk, HashImpl hash) {
     return rsaOaepPublicKey_importJsonWebKey(jwk, hash);
   }
 }

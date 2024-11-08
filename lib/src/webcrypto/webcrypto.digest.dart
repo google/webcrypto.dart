@@ -30,9 +30,10 @@ part of 'webcrypto.dart';
 /// to other methods in this library.
 ///
 /// [1]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf
-@sealed
-abstract class Hash {
-  Hash._(); // keep the constructor private.
+abstract final class Hash {
+  HashImpl get _impl;
+
+  const Hash._(); // keep the constructor private.
 
   /// Compute a cryptographic hash-sum of [data] using this [Hash].
   ///
@@ -50,7 +51,7 @@ abstract class Hash {
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
   /// ```
-  Future<Uint8List> digestBytes(List<int> data);
+  Future<Uint8List> digestBytes(List<int> data) => _impl.digestBytes(data);
 
   /// Compute a cryptographic hash-sum of [data] stream using this [Hash].
   ///
@@ -75,7 +76,8 @@ abstract class Hash {
   /// // Print the base64 encoded hash
   /// print(base64.encode(hash));
   /// ```
-  Future<Uint8List> digestStream(Stream<List<int>> data);
+  Future<Uint8List> digestStream(Stream<List<int>> data) =>
+      _impl.digestStream(data);
 
   /// SHA-1 as specified in [FIPS PUB 180-4][1].
   ///
@@ -98,7 +100,7 @@ abstract class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static const Hash sha1 = impl.sha1;
+  static const Hash sha1 = _Sha1();
 
   /// SHA-256 as specified in [FIPS PUB 180-4][1].
   ///
@@ -118,7 +120,7 @@ abstract class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static const Hash sha256 = impl.sha256;
+  static const Hash sha256 = _Sha256();
 
   /// SHA-384 as specified in [FIPS PUB 180-4][1].
   ///
@@ -138,7 +140,7 @@ abstract class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static const Hash sha384 = impl.sha384;
+  static const Hash sha384 = _Sha384();
 
   /// SHA-512 as specified in [FIPS PUB 180-4][1].
   ///
@@ -158,5 +160,33 @@ abstract class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static const Hash sha512 = impl.sha512;
+  static const Hash sha512 = _Sha512();
+}
+
+final class _Sha1 extends Hash {
+  const _Sha1() : super._();
+
+  @override
+  HashImpl get _impl => webCryptImpl.sha1;
+}
+
+final class _Sha256 extends Hash {
+  const _Sha256() : super._();
+
+  @override
+  HashImpl get _impl => webCryptImpl.sha256;
+}
+
+final class _Sha384 extends Hash {
+  const _Sha384() : super._();
+
+  @override
+  HashImpl get _impl => webCryptImpl.sha384;
+}
+
+final class _Sha512 extends Hash {
+  const _Sha512() : super._();
+
+  @override
+  HashImpl get _impl => webCryptImpl.sha512;
 }

@@ -16,44 +16,27 @@
 
 part of 'impl_ffi.dart';
 
-String _rsassaPkcs1V15JwkAlgFromHash(_Hash hash) {
-  if (hash == Hash.sha1) {
-    return 'RS1';
-  }
-  if (hash == Hash.sha256) {
-    return 'RS256';
-  }
-  if (hash == Hash.sha384) {
-    return 'RS384';
-  }
-  if (hash == Hash.sha512) {
-    return 'RS512';
-  }
-  assert(false); // This should never happen!
-  throw UnsupportedError('hash is not supported');
-}
-
 Future<RsaSsaPkcs1V15PrivateKeyImpl> rsassaPkcs1V15PrivateKey_importPkcs8Key(
   List<int> keyData,
-  Hash hash,
+  HashImpl hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final h = _Hash.fromHash(hash);
+  // Get hash first, to avoid a leak of EVP_PKEY if _HashImpl.fromHash throws
+  final h = _HashImpl.fromHash(hash);
   return _RsaSsaPkcs1V15PrivateKeyImpl(_importPkcs8RsaPrivateKey(keyData), h);
 }
 
 Future<RsaSsaPkcs1V15PrivateKeyImpl> rsassaPkcs1V15PrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
-  Hash hash,
+  HashImpl hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final h = _Hash.fromHash(hash);
+  // Get hash first, to avoid a leak of EVP_PKEY if _HashImpl.fromHash throws
+  final h = _HashImpl.fromHash(hash);
   return _RsaSsaPkcs1V15PrivateKeyImpl(
     _importJwkRsaPrivateOrPublicKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: true,
       expectedUse: 'sig',
-      expectedAlg: _rsassaPkcs1V15JwkAlgFromHash(h),
+      expectedAlg: h.rsassaPkcs1V15JwkAlg,
     ),
     h,
   );
@@ -63,10 +46,10 @@ Future<KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>>
     rsassaPkcs1V15PrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
-  Hash hash,
+  HashImpl hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final h = _Hash.fromHash(hash);
+  // Get hash first, to avoid a leak of EVP_PKEY if _HashImpl.fromHash throws
+  final h = _HashImpl.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
   return createKeyPair(
     _RsaSsaPkcs1V15PrivateKeyImpl(keys.privateKey, h),
@@ -76,25 +59,25 @@ Future<KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>>
 
 Future<RsaSsaPkcs1V15PublicKeyImpl> rsassaPkcs1V15PublicKey_importSpkiKey(
   List<int> keyData,
-  Hash hash,
+  HashImpl hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final h = _Hash.fromHash(hash);
+  // Get hash first, to avoid a leak of EVP_PKEY if _HashImpl.fromHash throws
+  final h = _HashImpl.fromHash(hash);
   return _RsaSsaPkcs1V15PublicKeyImpl(_importSpkiRsaPublicKey(keyData), h);
 }
 
 Future<RsaSsaPkcs1V15PublicKeyImpl> rsassaPkcs1V15PublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
-  Hash hash,
+  HashImpl hash,
 ) async {
-  // Get hash first, to avoid a leak of EVP_PKEY if _Hash.fromHash throws
-  final h = _Hash.fromHash(hash);
+  // Get hash first, to avoid a leak of EVP_PKEY if _HashImpl.fromHash throws
+  final h = _HashImpl.fromHash(hash);
   return _RsaSsaPkcs1V15PublicKeyImpl(
     _importJwkRsaPrivateOrPublicKey(
       JsonWebKey.fromJson(jwk),
       isPrivateKey: false,
       expectedUse: 'sig',
-      expectedAlg: _rsassaPkcs1V15JwkAlgFromHash(h),
+      expectedAlg: h.rsassaPkcs1V15JwkAlg,
     ),
     h,
   );
@@ -107,14 +90,14 @@ final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
   @override
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importPkcs8Key(
     List<int> keyData,
-    Hash hash,
+    HashImpl hash,
   ) =>
       rsassaPkcs1V15PrivateKey_importPkcs8Key(keyData, hash);
 
   @override
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
-    Hash hash,
+    HashImpl hash,
   ) =>
       rsassaPkcs1V15PrivateKey_importJsonWebKey(jwk, hash);
 
@@ -123,7 +106,7 @@ final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
       generateKey(
     int modulusLength,
     BigInt publicExponent,
-    Hash hash,
+    HashImpl hash,
   ) async {
     final KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>
         pair = await rsassaPkcs1V15PrivateKey_generateKey(
@@ -136,7 +119,7 @@ final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
 final class _RsaSsaPkcs1V15PrivateKeyImpl
     implements RsaSsaPkcs1V15PrivateKeyImpl {
   final _EvpPKey _key;
-  final _Hash _hash;
+  final _HashImpl _hash;
 
   _RsaSsaPkcs1V15PrivateKeyImpl(this._key, this._hash);
 
@@ -159,7 +142,7 @@ final class _RsaSsaPkcs1V15PrivateKeyImpl
       _exportJwkRsaPrivateOrPublicKey(
         _key,
         isPrivateKey: true,
-        jwkAlg: _rsassaPkcs1V15JwkAlgFromHash(_hash),
+        jwkAlg: _hash.rsassaPkcs1V15JwkAlg,
         jwkUse: 'sig',
       );
 
@@ -173,19 +156,19 @@ final class _StaticRsaSsaPkcs1V15PublicKeyImpl
 
   @override
   Future<RsaSsaPkcs1V15PublicKeyImpl> importSpkiKey(
-          List<int> keyData, Hash hash) =>
+          List<int> keyData, HashImpl hash) =>
       rsassaPkcs1V15PublicKey_importSpkiKey(keyData, hash);
 
   @override
   Future<RsaSsaPkcs1V15PublicKeyImpl> importJsonWebKey(
-          Map<String, dynamic> jwk, Hash hash) =>
+          Map<String, dynamic> jwk, HashImpl hash) =>
       rsassaPkcs1V15PublicKey_importJsonWebKey(jwk, hash);
 }
 
 final class _RsaSsaPkcs1V15PublicKeyImpl
     implements RsaSsaPkcs1V15PublicKeyImpl {
   final _EvpPKey _key;
-  final _Hash _hash;
+  final _HashImpl _hash;
 
   _RsaSsaPkcs1V15PublicKeyImpl(this._key, this._hash);
 
@@ -204,7 +187,7 @@ final class _RsaSsaPkcs1V15PublicKeyImpl
       _exportJwkRsaPrivateOrPublicKey(
         _key,
         isPrivateKey: false,
-        jwkAlg: _rsassaPkcs1V15JwkAlgFromHash(_hash),
+        jwkAlg: _hash.rsassaPkcs1V15JwkAlg,
         jwkUse: 'sig',
       );
 

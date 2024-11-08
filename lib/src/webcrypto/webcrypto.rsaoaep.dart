@@ -118,8 +118,8 @@ final class RsaOaepPrivateKey {
     List<int> keyData,
     Hash hash,
   ) async {
-    final impl =
-        await webCryptImpl.rsaOaepPrivateKey.importPkcs8Key(keyData, hash);
+    final impl = await webCryptImpl.rsaOaepPrivateKey
+        .importPkcs8Key(keyData, hash._impl);
     return RsaOaepPrivateKey._(impl);
   }
 
@@ -168,7 +168,7 @@ final class RsaOaepPrivateKey {
     Hash hash,
   ) async {
     final impl =
-        await webCryptImpl.rsaOaepPrivateKey.importJsonWebKey(jwk, hash);
+        await webCryptImpl.rsaOaepPrivateKey.importJsonWebKey(jwk, hash._impl);
     return RsaOaepPrivateKey._(impl);
   }
 
@@ -226,7 +226,7 @@ final class RsaOaepPrivateKey {
     Hash hash,
   ) async {
     final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.rsaOaepPrivateKey
-        .generateKey(modulusLength, publicExponent, hash);
+        .generateKey(modulusLength, publicExponent, hash._impl);
 
     final privateKey = RsaOaepPrivateKey(privateKeyImpl);
     final publicKey = RsaOaepPublicKey(publicKeyImpl);
@@ -401,7 +401,7 @@ final class RsaOaepPublicKey {
     Hash hash,
   ) async {
     final impl =
-        await webCryptImpl.rsaOaepPublicKey.importSpkiKey(keyData, hash);
+        await webCryptImpl.rsaOaepPublicKey.importSpkiKey(keyData, hash._impl);
     return RsaOaepPublicKey._(impl);
   }
 
@@ -444,7 +444,7 @@ final class RsaOaepPublicKey {
     Hash hash,
   ) async {
     final impl =
-        await webCryptImpl.rsaOaepPublicKey.importJsonWebKey(jwk, hash);
+        await webCryptImpl.rsaOaepPublicKey.importJsonWebKey(jwk, hash._impl);
     return RsaOaepPublicKey._(impl);
   }
 

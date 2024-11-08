@@ -14,9 +14,9 @@
 
 part of 'impl_js.dart';
 
-class _Hash implements Hash {
+final class _HashImpl implements HashImpl {
   final String _algorithm;
-  const _Hash(this._algorithm);
+  const _HashImpl(this._algorithm);
 
   @override
   Future<Uint8List> digestBytes(List<int> data) async {
@@ -35,19 +35,10 @@ class _Hash implements Hash {
   }
 }
 
-const Hash sha1 = _Hash('SHA-1');
-const Hash sha256 = _Hash('SHA-256');
-const Hash sha384 = _Hash('SHA-384');
-const Hash sha512 = _Hash('SHA-512');
-
 /// Get the algorithm from [hash] or throw an [ArgumentError].
-String _getHashAlgorithm(Hash hash) {
-  if (hash is _Hash) {
+String _getHashAlgorithm(HashImpl hash) {
+  if (hash is _HashImpl) {
     return hash._algorithm;
   }
-  throw ArgumentError.value(
-    hash,
-    'hash',
-    'Only built-in hash functions is allowed',
-  );
+  throw AssertionError('Custom implementations of HashImpl are not supported.');
 }
