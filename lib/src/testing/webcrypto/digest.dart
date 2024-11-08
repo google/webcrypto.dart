@@ -63,7 +63,7 @@ List<({String name, Future<void> Function() test})> tests() {
   });
 
   test('SHA-1: libsum', () async {
-    final h = Hash.sha1;
+    const h = Hash.sha1;
     final bytes = await h.digestStream(_utf8Stream(libsum));
     final hash = base64Encode(bytes);
     check(hash == 'nBxI1wju5YS4yWgFXBL6K/AUZmk=');
@@ -74,7 +74,7 @@ List<({String name, Future<void> Function() test})> tests() {
   });
 
   test('SHA-256: libsum', () async {
-    final h = Hash.sha256;
+    const h = Hash.sha256;
     final bytes = await h.digestStream(_utf8Stream(libsum));
     final hash = base64Encode(bytes);
     check(hash == 'GbcmmlUnvPkRtNYTM4dKmqsrSXQSURg5IRJcFaL2pDI=');
@@ -85,7 +85,7 @@ List<({String name, Future<void> Function() test})> tests() {
   });
 
   test('SHA-384: libsum', () async {
-    final h = Hash.sha384;
+    const h = Hash.sha384;
     final bytes = await h.digestStream(_utf8Stream(libsum));
     final hash = base64Encode(bytes);
     check(hash ==
@@ -97,7 +97,7 @@ List<({String name, Future<void> Function() test})> tests() {
   });
 
   test('SHA-512: libsum', () async {
-    final h = Hash.sha512;
+    const h = Hash.sha512;
     final bytes = await h.digestStream(_utf8Stream(libsum));
     final hash = base64Encode(bytes);
     check(hash ==

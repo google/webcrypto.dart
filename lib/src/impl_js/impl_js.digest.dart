@@ -40,9 +40,5 @@ String _getHashAlgorithm(HashImpl hash) {
   if (hash is _HashImpl) {
     return hash._algorithm;
   }
-  throw ArgumentError.value(
-    hash,
-    'hash',
-    'Only built-in hash functions is allowed',
-  );
+  throw  AssertionError('Custom implementations of HashImpl are not supported.');
 }

@@ -145,14 +145,5 @@ final class _Sha512 extends _HashImpl {
   ffi.Pointer<EVP_MD> Function() get _algorithm => ssl.EVP_sha512;
 }
 
-// const HashImpl sha1 = _Sha1();
-// const HashImpl sha256 = _Sha256();
-// const HashImpl sha384 = _Sha384();
-// const HashImpl sha512 = _Sha512();
-
-HashImpl get sha1 => const _Sha1();
-HashImpl get sha256 => const _Sha256();
-HashImpl get sha384 => const _Sha384();
-HashImpl get sha512 => const _Sha512();
 // Note: Before adding new hash implementations, make sure to update all the
 //       places that does if (hash == HashImpl.shaXXX) ...

@@ -30,10 +30,10 @@ part of 'webcrypto.dart';
 /// to other methods in this library.
 ///
 /// [1]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf
-final class Hash {
-  final HashImpl _impl;
+abstract final class Hash {
+  HashImpl get _impl;
 
-  Hash._(this._impl); // keep the constructor private.
+  const Hash._(); // keep the constructor private.
 
   /// Compute a cryptographic hash-sum of [data] using this [Hash].
   ///
@@ -100,7 +100,7 @@ final class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static Hash sha1 = Hash._(webCryptImpl.sha1);
+  static const Hash sha1 = _Sha1();
 
   /// SHA-256 as specified in [FIPS PUB 180-4][1].
   ///
@@ -120,7 +120,7 @@ final class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static Hash sha256 = Hash._(webCryptImpl.sha256);
+  static const Hash sha256 = _Sha256();
 
   /// SHA-384 as specified in [FIPS PUB 180-4][1].
   ///
@@ -140,7 +140,7 @@ final class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static Hash sha384 = Hash._(webCryptImpl.sha384);
+  static const Hash sha384 = _Sha384();
 
   /// SHA-512 as specified in [FIPS PUB 180-4][1].
   ///
@@ -160,5 +160,33 @@ final class Hash {
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
-  static Hash sha512 = Hash._(webCryptImpl.sha512);
+  static const Hash sha512 = _Sha512();
+}
+
+final class _Sha1 extends Hash {
+  const _Sha1() : super._();
+  
+  @override
+  HashImpl get _impl => webCryptImpl.sha1;
+}
+
+final class _Sha256 extends Hash {
+  const _Sha256() : super._();
+  
+  @override
+  HashImpl get _impl => webCryptImpl.sha256;
+}
+
+final class _Sha384 extends Hash {
+  const _Sha384() : super._();
+  
+  @override
+  HashImpl get _impl => webCryptImpl.sha384;
+}
+
+final class _Sha512 extends Hash {
+  const _Sha512() : super._();
+  
+  @override
+  HashImpl get _impl => webCryptImpl.sha512;
 }
