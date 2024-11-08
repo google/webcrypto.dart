@@ -40,5 +40,5 @@ String _getHashAlgorithm(HashImpl hash) {
   if (hash is _HashImpl) {
     return hash._algorithm;
   }
-  throw  AssertionError('Custom implementations of HashImpl are not supported.');
+  throw AssertionError('Custom implementations of HashImpl are not supported.');
 }

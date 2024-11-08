@@ -60,12 +60,48 @@ abstract class _HashImpl implements HashImpl {
     });
   }
 
+  /// Algorithm (`alg` for JWK) when this hash algorithm is used in an HMAC.
+  ///
+  /// For SHA-1, it returns 'HS1'.
+  /// For SHA-256, it returns 'HS256'.
+  /// For SHA-384, it returns 'HS384'.
+  /// For SHA-512, it returns 'HS512'.
+  ///
+  /// See canonical registry in:
+  /// https://www.iana.org/assignments/jose/jose.xhtml
   String get hmacJwkAlg;
 
+  /// Algorithm (`alg` for JWK) when this hash algorithm is used in RSA-OAEP.
+  ///
+  /// For SHA-1, it returns 'RSA-OAEP-1'.
+  /// For SHA-256, it returns 'RSA-OAEP-256'.
+  /// For SHA-384, it returns 'RSA-OAEP-384'.
+  /// For SHA-512, it returns 'RSA-OAEP-512'.
+  ///
+  /// See canonical registry in:
+  /// https://www.iana.org/assignments/jose/jose.xhtml
   String get rsaOaepJwkAlg;
 
+  /// Algorithm (`alg` for JWK) when this hash algorithm is used in RSA-PSS.
+  ///
+  /// For SHA-1, it returns 'PS1'.
+  /// For SHA-256, it returns 'PS256'.
+  /// For SHA-384, it returns 'PS384'.
+  /// For SHA-512, it returns 'PS512'.
+  ///
+  /// See canonical registry in:
+  /// https://www.iana.org/assignments/jose/jose.xhtml
   String get rsaPssJwkAlg;
 
+  /// Algorithm (`alg` for JWK) when this hash algorithm is used in RSASSA-PKCS1-v1_5.
+  ///
+  /// For SHA-1, it returns 'RS1'.
+  /// For SHA-256, it returns 'RS256'.
+  /// For SHA-384, it returns 'RS384'.
+  /// For SHA-512, it returns 'RS512'.
+  ///
+  /// See canonical registry in:
+  /// https://www.iana.org/assignments/jose/jose.xhtml
   String get rsassaPkcs1V15JwkAlg;
 }
 
