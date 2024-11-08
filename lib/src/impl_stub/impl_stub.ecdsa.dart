@@ -14,7 +14,7 @@
 
 part of 'impl_stub.dart';
 
-class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
+final class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
   const _StaticEcdsaPrivateKeyImpl();
 
   @override
@@ -38,7 +38,7 @@ class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
       throw UnimplementedError('Not implemented');
 }
 
-class _StaticEcdsaPublicKeyImpl implements StaticEcdsaPublicKeyImpl {
+final class _StaticEcdsaPublicKeyImpl implements StaticEcdsaPublicKeyImpl {
   const _StaticEcdsaPublicKeyImpl();
 
   @override

@@ -30,7 +30,7 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
-      fillRandomBytes(data);
+      webCryptImpl.random.fillRandomBytes(data);
       expect(
         data.any((e) => e != 0),
         isTrue,
@@ -39,7 +39,7 @@ void main() {
 
     test('Uint8List: too long', () {
       expect(
-        () => fillRandomBytes(Uint8List(1000000)),
+        () => webCryptImpl.random.fillRandomBytes(Uint8List(1000000)),
         throwsA(
           isA<ArgumentError>(),
         ),
@@ -48,7 +48,7 @@ void main() {
 
     test('Uint64List: not supported type', () {
       expect(
-        () => fillRandomBytes(Uint64List(32)),
+        () => webCryptImpl.random.fillRandomBytes(Uint64List(32)),
         throwsA(
           isA<UnsupportedError>(),
         ),

@@ -30,6 +30,7 @@ part 'impl_stub.hkdf.dart';
 part 'impl_stub.rsapss.dart';
 part 'impl_stub.rsassapkcs1v15.dart';
 part 'impl_stub.digest.dart';
+part 'impl_stub.random.dart';
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
@@ -95,4 +96,7 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final sha512 = const _HashImpl();
+
+  @override
+  final random = const _RandomImpl();
 }

@@ -29,6 +29,7 @@ part 'impl_interface.hkdf.dart';
 part 'impl_interface.rsapss.dart';
 part 'impl_interface.rsassapkcs1v15.dart';
 part 'impl_interface.digest.dart';
+part 'impl_interface.random.dart';
 
 /// A key-pair as returned from key generation.
 class KeyPair<S, T> {
@@ -99,4 +100,5 @@ abstract interface class WebCryptoImpl {
   HashImpl get sha256;
   HashImpl get sha384;
   HashImpl get sha512;
+  RandomImpl get random;
 }
