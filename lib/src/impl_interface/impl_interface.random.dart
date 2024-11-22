@@ -14,6 +14,6 @@
 
 part of 'impl_interface.dart';
 
-abstract class RandomImpl {
+abstract interface class RandomImpl {
   void fillRandomBytes(TypedData destination);
 }
