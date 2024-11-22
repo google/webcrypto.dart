@@ -20,7 +20,6 @@ import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:webcrypto/src/crypto_subtle.dart' as subtle;
-import 'package:webcrypto/src/impl_js/impl_js.dart';
 
 void main() {
   group('fillRandomBytes', () {
@@ -30,7 +29,7 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
-      webCryptImpl.random.fillRandomBytes(data);
+      subtle.window.crypto.getRandomValues(data.toJS);
       expect(
         data.any((e) => e != 0),
         isTrue,
@@ -39,7 +38,7 @@ void main() {
 
     test('Uint8List: too long', () {
       expect(
-        () => webCryptImpl.random.fillRandomBytes(Uint8List(1000000)),
+        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
         throwsA(
           isA<ArgumentError>(),
         ),
@@ -48,7 +47,7 @@ void main() {
 
     test('Uint64List: not supported type', () {
       expect(
-        () => webCryptImpl.random.fillRandomBytes(Uint64List(32)),
+        () => subtle.window.crypto.getRandomValues(Uint8List.view(Uint64List(32).buffer).toJS),
         throwsA(
           isA<UnsupportedError>(),
         ),
