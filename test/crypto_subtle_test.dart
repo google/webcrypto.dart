@@ -38,9 +38,13 @@ void main() {
 
     test('Uint8List: too long', () {
       expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List(65536).toJS),
+        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
         throwsA(
-          isA<ArgumentError>(),
+          isA<subtle.JSDomException>().having(
+            (e) => e.name,
+            'name',
+            'QuotaExceededError',
+          ),
         ),
       );
     });
