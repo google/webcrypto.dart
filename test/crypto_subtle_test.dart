@@ -51,7 +51,8 @@ void main() {
 
     test('Uint64List: not supported type', () {
       expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List.view(Uint64List(32).buffer).toJS),
+        () => subtle.window.crypto
+            .getRandomValues(Uint8List.view(Uint64List(32).buffer).toJS),
         throwsA(
           isA<UnsupportedError>(),
         ),
