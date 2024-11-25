@@ -1,3 +1,10 @@
+# 0.5.8
+* Update architecture to discourage subclassing, and enable future extensibility without breaking API compatibility.
+* Migrate to from Gradle Imperative Apply to Gradle Plugin DSL.
+* Bumped Kotlin Version to 1.7.10.
+* Removed the `GCC_WARN_INHIBIT_ALL_WARNINGS` option to ensure compatibitity with Xcode 16.
+* Added GitHub Actions for coverage reports and dart format checks.
+
 # 0.5.7
 * Added compatibility for AGP 8.4.
 * Improved API documentation for ECDH.
