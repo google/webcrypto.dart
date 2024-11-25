@@ -102,7 +102,7 @@ void _checkOp(bool condition, {String? message, String? fallback}) {
     // Always extract the error to ensure we clear the error queue.
     final err = _extractError();
     message ??= err ?? fallback ?? 'unknown error';
-    throw _OperationError(message);
+    throw operationError(message);
   }
 }
 

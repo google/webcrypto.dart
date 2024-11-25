@@ -69,7 +69,7 @@ Object _translateDomException(
     case 'DataError':
       return FormatException(message);
     case 'OperationError':
-      return _OperationError(message);
+      return operationError(message);
     case 'InvalidAccessError':
       // InvalidAccessError occurs when the request operation is not valid for
       // the provided key. This is typically because:

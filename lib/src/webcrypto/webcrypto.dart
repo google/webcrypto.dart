@@ -20,7 +20,6 @@
 ///       This could be documented for each method or at library level.
 library webcrypto;
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:typed_data';
@@ -32,7 +31,8 @@ import '../impl_stub/impl_stub.dart'
     if (dart.library.ffi) '../impl_ffi/impl_ffi.dart'
     if (dart.library.js) '../impl_js/impl_js.dart' show webCryptImpl;
 
-export '../impl_interface/impl_interface.dart' show KeyPair, EllipticCurve;
+export '../impl_interface/impl_interface.dart'
+    show KeyPair, EllipticCurve, OperationError;
 
 part 'webcrypto.aescbc.dart';
 part 'webcrypto.aesctr.dart';
@@ -47,9 +47,3 @@ part 'webcrypto.random.dart';
 part 'webcrypto.rsaoaep.dart';
 part 'webcrypto.rsapss.dart';
 part 'webcrypto.rsassapkcs1v15.dart';
-
-/// Thrown when an operation failed for an operation-specific reason.
-@sealed
-abstract class OperationError extends Error {
-  OperationError._(); // keep the constructor private.
-}

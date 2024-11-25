@@ -142,7 +142,7 @@ final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
           ssl.EC_GROUP_get_degree(ssl.EC_KEY_get0_group(privEcKey));
       final maxLength = 8 * (fieldSize / 8).ceil();
       if (length > maxLength) {
-        throw _OperationError(
+        throw operationError(
           'Length in ECDH key derivation is too large. '
           'Maximum allowed is $maxLength bits.',
         );

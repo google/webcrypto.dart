@@ -41,7 +41,7 @@ EllipticCurve _ecCurveFromNID(int nid) {
     return EllipticCurve.p521;
   }
   // This should never happen!
-  throw _OperationError('internal error detecting curve');
+  throw operationError('internal error detecting curve');
 }
 
 String _ecCurveToJwkCrv(EllipticCurve curve) {
