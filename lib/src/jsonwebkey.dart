@@ -20,7 +20,7 @@
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
 /// [2]: https://www.iana.org/assignments/jose/jose.xhtml#web-key-parameters
-class JsonWebKey {
+final class JsonWebKey {
   String? kty;
   String? use;
   List<String>? key_ops;
@@ -217,7 +217,7 @@ class JsonWebKey {
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
 /// [2]: https://tools.ietf.org/html/rfc7518#section-6.3.2.7
-class RsaOtherPrimesInfo {
+final class RsaOtherPrimesInfo {
   String r;
   String d;
   String t;
