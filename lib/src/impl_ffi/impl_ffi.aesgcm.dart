@@ -41,7 +41,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
   final additionalData_ = additionalData ??= <int>[];
   if (isEncrypt && data.length > (1 << 39) - 256) {
     // More than this is not allowed by Web crypto spec, we shall honor that.
-    throw _OperationError('data may not be more than 2^39 - 256 bytes');
+    throw operationError('data may not be more than 2^39 - 256 bytes');
   }
   if (tagLength != 32 &&
       tagLength != 64 &&
@@ -50,7 +50,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
       tagLength != 112 &&
       tagLength != 120 &&
       tagLength != 128) {
-    throw _OperationError('tagLength must be 32, 64, 96, 104, 112, 120 or 128');
+    throw operationError('tagLength must be 32, 64, 96, 104, 112, 120 or 128');
   }
 
   // TODO: Check iv length is less than EVP_AEAD_nonce_length, if this is a requirement!

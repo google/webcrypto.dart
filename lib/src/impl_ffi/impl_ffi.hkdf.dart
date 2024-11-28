@@ -53,7 +53,7 @@ final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
     // Mirroring limitations in chromium:
     // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/hkdf.cc#74
     if (length % 8 != 0) {
-      throw _OperationError('The length for HKDF must be a multiple of 8 bits');
+      throw operationError('The length for HKDF must be a multiple of 8 bits');
     }
 
     final lengthInBytes = length ~/ 8;
@@ -76,7 +76,7 @@ final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
         if (ERR_GET_LIB(packed_error) == ERR_LIB_HKDF &&
             ERR_GET_REASON(packed_error) == HKDF_R_OUTPUT_TOO_LARGE) {
           ssl.ERR_clear_error();
-          throw _OperationError(
+          throw operationError(
             'Length specified for HkdfSecretKey.deriveBits is too long',
           );
         }

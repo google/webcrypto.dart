@@ -55,15 +55,15 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
     // Mirroring limitations in chromium:
     // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/pbkdf2.cc#75
     if (length % 8 != 0) {
-      throw _OperationError(
+      throw operationError(
           'The length for PBKDF2 must be a multiple of 8 bits');
     }
     if (length == 0) {
-      throw _OperationError(
+      throw operationError(
           'A length of zero is not allowed Pbkdf2SecretKey.deriveBits');
     }
     if (iterations <= 0) {
-      throw _OperationError(
+      throw operationError(
           'Iterations <= 0 is not allowed for Pbkdf2SecretKey.deriveBits');
     }
 
