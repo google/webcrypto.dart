@@ -99,6 +99,17 @@ Object _translateDomException(
       '"${e.name}", message: $message');
 }
 
+Object _translateJavaScriptException(Error e) {
+  // dart2wasm throws _JavaScriptError, but _JavaScriptError is not exposed.
+  final errorMessage = e.toString();
+  final message = 'browser threw "$errorMessage"';
+  if (errorMessage.contains('Unsupported operation:')) {
+    return UnsupportedError(message);
+  }
+
+  return ArgumentError(message);
+}
+
 /// Handle instances of [subtle.JSDomException] specified in the
 /// [Web Cryptograpy specification][1].
 ///
