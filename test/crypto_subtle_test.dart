@@ -63,37 +63,51 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
-      subtle.window.crypto.getRandomValues(data.toJS);
+      final result = subtle.window.crypto.getRandomValues(data.toJS);
       expect(
-        data.any((e) => e != 0),
+        result,
+        isA<JSUint8Array>(),
+      );
+      expect(
+        (result as JSUint8Array).toDart.any((e) => e != 0),
         isTrue,
       );
     });
 
     test('getRandomValues: too long', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
-        throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'QuotaExceededError',
-          ),
-        ),
-      );
+      try {
+        subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS);
+      } on subtle.JSDomException catch (e) {
+        // dart2js throws QuotaExceededError
+        expect(
+          e.name,
+          'QuotaExceededError',
+        );
+      } on Error catch (e) {
+        // dart2wasm throws _JavaScriptError
+        expect(
+          e.runtimeType.toString(),
+          '_JavaScriptError',
+        );
+      }
     });
 
     test('getRandomValues: not supported type', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
-        throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'TypeMismatchError',
-          ),
-        ),
-      );
+      try {
+        subtle.window.crypto.getRandomValues(Float32List(32).toJS);
+      } on subtle.JSDomException catch (e) {
+        // dart2js throws TypeMismatchError
+        expect(
+          e.name,
+          'TypeMismatchError',
+        );
+      } on Error catch (e) {
+        // dart2wasm throws _JavaScriptError
+        expect(
+          e.runtimeType.toString(),
+          '_JavaScriptError',
+        );
+      }
     });
   });
 
@@ -122,7 +136,7 @@ void main() {
               false,
             )
             .having(
-              (key) => key.usages,
+              (key) => key.usages.toDartList,
               'usages',
               containsAll(['encrypt', 'decrypt']),
             ),
@@ -198,7 +212,7 @@ void main() {
               true,
             )
             .having(
-              (key) => key.publicKey.usages,
+              (key) => key.publicKey.usages.toDartList,
               'publicKey.usages',
               ['encrypt'],
             )
@@ -213,7 +227,7 @@ void main() {
               false,
             )
             .having(
-              (key) => key.privateKey.usages,
+              (key) => key.privateKey.usages.toDartList,
               'privateKey.usages',
               ['decrypt'],
             ),
@@ -246,7 +260,7 @@ void main() {
               true,
             )
             .having(
-              (key) => key.publicKey.usages,
+              (key) => key.publicKey.usages.toDartList,
               'publicKey.usages',
               ['encrypt'],
             )
@@ -261,7 +275,7 @@ void main() {
               false,
             )
             .having(
-              (key) => key.privateKey.usages,
+              (key) => key.privateKey.usages.toDartList,
               'privateKey.usages',
               ['decrypt'],
             ),
@@ -292,4 +306,8 @@ void main() {
       );
     });
   });
+}
+
+extension on JSArray<JSString> {
+  List<String> get toDartList => toDart.map((e) => e.toDart).toList();
 }
