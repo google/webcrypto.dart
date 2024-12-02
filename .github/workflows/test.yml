@@ -12,6 +12,7 @@ jobs:
   lints:
     name: Format + Lints
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -24,6 +25,7 @@ jobs:
   linux:
     name: Linux desktop / Chrome / Firefox
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -53,6 +55,7 @@ jobs:
   macos-14:
     name: MacOS 14 desktop / Chrome / Firefox
     runs-on: macos-14 # Test with xcode 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -88,6 +91,7 @@ jobs:
   macos-15:
     name: MacOS 15 desktop / Chrome / Firefox
     runs-on: macos-15 # Test with xcode 16
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -115,6 +119,7 @@ jobs:
   windows:
     name: Windows desktop / Chrome / Firefox
     runs-on: windows-latest
+    timeout-minutes: 10
     steps:
       - uses: ilammy/setup-nasm@v1
       - uses: actions/checkout@v4
@@ -144,6 +149,7 @@ jobs:
   ios:
     name: iOS emulator (iPhone)
     runs-on: macos-14
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -162,6 +168,7 @@ jobs:
   android:
     name: Android emulator
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -190,6 +197,7 @@ jobs:
   linux-coverage:
     name: Linux desktop / Chrome / Firefox (coverage)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -215,6 +223,7 @@ jobs:
   windows-coverage:
     name: Windows desktop / Chrome / Firefox (coverage)
     runs-on: windows-latest
+    timeout-minutes: 10
     steps:
       - uses: ilammy/setup-nasm@v1
       - uses: actions/checkout@v4
@@ -239,6 +248,7 @@ jobs:
   coverage:
     name: Report to coveralls
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs:
       - linux-coverage
       - windows-coverage
