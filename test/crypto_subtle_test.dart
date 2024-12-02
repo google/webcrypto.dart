@@ -20,6 +20,7 @@ import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:webcrypto/src/crypto_subtle.dart' as subtle;
+import 'package:webcrypto/webcrypto.dart';
 
 void main() {
   group('fillRandomBytes', () {
@@ -29,7 +30,7 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
-      subtle.window.crypto.getRandomValues(data.toJS);
+      fillRandomBytes(data);
       expect(
         data.any((e) => e != 0),
         isTrue,
@@ -38,21 +39,16 @@ void main() {
 
     test('Uint8List: too long', () {
       expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
+        () => fillRandomBytes(Uint8List(1000000)),
         throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'QuotaExceededError',
-          ),
+          isA<ArgumentError>(),
         ),
       );
     });
 
     test('Uint64List: not supported type', () {
       expect(
-        () => subtle.window.crypto
-            .getRandomValues(Uint8List.view(Uint64List(32).buffer).toJS),
+        () => fillRandomBytes(Uint64List(32)),
         throwsA(
           isA<UnsupportedError>(),
         ),
@@ -67,7 +63,7 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
-      subtle.window.crypto.getRandomValues(data.toJS);
+      fillRandomBytes(data);
       expect(
         data.any((e) => e != 0),
         isTrue,
@@ -76,26 +72,18 @@ void main() {
 
     test('getRandomValues: too long', () {
       expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
+        () => fillRandomBytes(Uint8List(1000000)),
         throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'QuotaExceededError',
-          ),
+          isA<ArgumentError>(),
         ),
       );
     });
 
     test('getRandomValues: not supported type', () {
       expect(
-        () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
+        () => fillRandomBytes(Uint64List(32)),
         throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'TypeMismatchError',
-          ),
+          isA<UnsupportedError>(),
         ),
       );
     });
