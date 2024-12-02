@@ -211,7 +211,6 @@ jobs:
           flutter config --no-analytics
       - run: flutter pub get
       - run: flutter pub run webcrypto:setup
-      - uses: nanasess/setup-chromedriver@v2
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox --coverage ./coverage
       # Report collected coverage
       - name: Convert coverage to lcov
