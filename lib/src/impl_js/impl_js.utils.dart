@@ -99,11 +99,27 @@ Object _translateDomException(
       '"${e.name}", message: $message');
 }
 
+/// Convert [Error] to [UnknownError].
+/// dart2wasm throws _JavaScriptError, but _JavaScriptError is not exposed.
+///
+/// [1]: https://github.com/dart-lang/sdk/issues/55496
+/// [2]: https://api.dart.dev/stable/latest/dart-core/Error-class.html
 Object _translateJavaScriptException(Error e) {
-  // dart2wasm throws _JavaScriptError, but _JavaScriptError is not exposed.
   final errorMessage = e.toString();
   final message = 'browser threw "$errorMessage"';
-  return ArgumentError(message);
+  return UnknownError(message);
+}
+
+/// Error class for handling JavaScriptError that occurred in package:webcrypto.
+class UnknownError extends Error {
+  UnknownError(this.message);
+
+  final String message;
+
+  @override
+  String toString() => 'UnknownError: $message. '
+      'Note: This version of package:webcrypto cannot distinguish between Error types from the browser. '
+      'Please check the issue: https://github.com/google/webcrypto.dart/issues/182';
 }
 
 /// Handle instances of [subtle.JSDomException] specified in the
