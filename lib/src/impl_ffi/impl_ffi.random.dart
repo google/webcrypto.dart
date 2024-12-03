@@ -14,15 +14,20 @@
 
 part of 'impl_ffi.dart';
 
-void fillRandomBytes(TypedData destination) {
-  return _Scope.sync((scope) {
-    final dest = destination.buffer.asUint8List(
-      destination.offsetInBytes,
-      destination.lengthInBytes,
-    );
+final class _RandomImpl implements RandomImpl {
+  const _RandomImpl();
 
-    final out = scope<ffi.Uint8>(dest.length);
-    _checkOp(ssl.RAND_bytes(out, dest.length) == 1);
-    dest.setAll(0, out.asTypedList(dest.length));
-  });
+  @override
+  void fillRandomBytes(TypedData destination) {
+    return _Scope.sync((scope) {
+      final dest = destination.buffer.asUint8List(
+        destination.offsetInBytes,
+        destination.lengthInBytes,
+      );
+
+      final out = scope<ffi.Uint8>(dest.length);
+      _checkOp(ssl.RAND_bytes(out, dest.length) == 1);
+      dest.setAll(0, out.asTypedList(dest.length));
+    });
+  }
 }

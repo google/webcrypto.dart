@@ -12,17 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'impl_js.dart';
+part of 'impl_stub.dart';
 
 final class _RandomImpl implements RandomImpl {
   const _RandomImpl();
 
   @override
   void fillRandomBytes(TypedData destination) {
-    try {
-      subtle.getRandomValues(destination);
-    } on subtle.JSDomException catch (e) {
-      throw _translateDomException(e);
-    }
+    throw UnimplementedError('Not implemented');
   }
 }
