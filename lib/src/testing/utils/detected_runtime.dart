@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import 'detected_runtime_stub.dart'
-    if (dart.library.html) 'detected_runtime_html.dart';
+    if (dart.library.js_interop) 'detected_runtime_js_interop.dart';
 
 export 'detected_runtime_stub.dart'
-    if (dart.library.html) 'detected_runtime_html.dart' show detectedRuntime;
+    if (dart.library.js_interop) 'detected_runtime_js_interop.dart'
+    show detectedRuntime;
 
 /// Return `null` instead of [value] on Firefox.
 ///
