@@ -41,7 +41,12 @@ void main() {
       expect(
         () => fillRandomBytes(Uint8List(1000000)),
         throwsA(
-          isA<ArgumentError>(),
+          // dart2js throws ArgumentError
+          // dart2wasm throws UnknownError
+          anyOf(
+            isA<ArgumentError>(),
+            isA<UnknownError>(),
+          ),
         ),
       );
     });
