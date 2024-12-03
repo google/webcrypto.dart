@@ -122,7 +122,7 @@ void main() {
               false,
             )
             .having(
-              (key) => key.usages,
+              (key) => key.usages.toDartList,
               'usages',
               containsAll(['encrypt', 'decrypt']),
             ),
@@ -198,7 +198,7 @@ void main() {
               true,
             )
             .having(
-              (key) => key.publicKey.usages,
+              (key) => key.publicKey.usages.toDartList,
               'publicKey.usages',
               ['encrypt'],
             )
@@ -213,7 +213,7 @@ void main() {
               false,
             )
             .having(
-              (key) => key.privateKey.usages,
+              (key) => key.privateKey.usages.toDartList,
               'privateKey.usages',
               ['decrypt'],
             ),
@@ -246,7 +246,7 @@ void main() {
               true,
             )
             .having(
-              (key) => key.publicKey.usages,
+              (key) => key.publicKey.usages.toDartList,
               'publicKey.usages',
               ['encrypt'],
             )
@@ -261,7 +261,7 @@ void main() {
               false,
             )
             .having(
-              (key) => key.privateKey.usages,
+              (key) => key.privateKey.usages.toDartList,
               'privateKey.usages',
               ['decrypt'],
             ),
@@ -292,4 +292,8 @@ void main() {
       );
     });
   });
+}
+
+extension on JSArray<JSString> {
+  List<String> get toDartList => toDart.map((e) => e.toDart).toList();
 }
