@@ -44,6 +44,11 @@ void fillRandomBytes(TypedData destination) {
   } on UnsupportedError {
     rethrow;
   } on Error catch (e) {
+    final errorName = e.toString();
+    if (errorName != 'JavaScriptError') {
+      rethrow;
+    }
+
     throw _translateJavaScriptException(e);
   }
 }

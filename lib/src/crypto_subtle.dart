@@ -334,23 +334,29 @@ extension type JSRsaOtherPrimesInfo(JSObject _) implements JSObject {
 
 TypedData getRandomValues(TypedData array) {
   if (array is Uint8List) {
-    final values = window.crypto.getRandomValues(array.toJS);
-    return (values as JSUint8Array).toDart;
+    final values = array.toJS;
+    window.crypto.getRandomValues(values);
+    return values.toDart;
   } else if (array is Uint16List) {
-    final values = window.crypto.getRandomValues(array.toJS);
-    return (values as JSUint16Array).toDart;
+    final values = array.toJS;
+    window.crypto.getRandomValues(values);
+    return values.toDart;
   } else if (array is Uint32List) {
-    final values = window.crypto.getRandomValues(array.toJS);
-    return (values as JSUint32Array).toDart;
+    final values = array.toJS;
+    window.crypto.getRandomValues(values);
+    return values.toDart;
   } else if (array is Int8List) {
-    final values = window.crypto.getRandomValues(array.toJS);
-    return (values as JSInt8Array).toDart;
+    final values = array.toJS;
+    window.crypto.getRandomValues(values);
+    return values.toDart;
   } else if (array is Int16List) {
-    final values = window.crypto.getRandomValues(array.toJS);
-    return (values as JSInt16Array).toDart;
+    final values = array.toJS;
+    window.crypto.getRandomValues(values);
+    return values.toDart;
   } else if (array is Int32List) {
-    final values = window.crypto.getRandomValues(array.toJS);
-    return (values as JSInt32Array).toDart;
+    final values = array.toJS;
+    window.crypto.getRandomValues(values);
+    return values.toDart;
   } else {
     throw ArgumentError.value(
       array,

@@ -63,13 +63,10 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
-      final result = subtle.window.crypto.getRandomValues(data.toJS);
+      final values = data.toJS;
+      subtle.window.crypto.getRandomValues(values);
       expect(
-        result,
-        isA<JSUint8Array>(),
-      );
-      expect(
-        (result as JSUint8Array).toDart.any((e) => e != 0),
+        values.toDart.any((e) => e != 0),
         isTrue,
       );
     });
@@ -84,10 +81,10 @@ void main() {
           'QuotaExceededError',
         );
       } on Error catch (e) {
-        // dart2wasm throws _JavaScriptError
+        // dart2wasm throws JavaScriptError
         expect(
-          e.runtimeType.toString(),
-          '_JavaScriptError',
+          e.toString(),
+          'JavaScriptError',
         );
       }
     });
@@ -102,10 +99,10 @@ void main() {
           'TypeMismatchError',
         );
       } on Error catch (e) {
-        // dart2wasm throws _JavaScriptError
+        // dart2wasm throws JavaScriptError
         expect(
-          e.runtimeType.toString(),
-          '_JavaScriptError',
+          e.toString(),
+          'JavaScriptError',
         );
       }
     });
