@@ -26,9 +26,6 @@ jobs:
     name: Linux desktop / Chrome / Firefox
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      matrix:
-        option: ["", "--wasm"]
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -43,7 +40,8 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run webcrypto:setup
       - run: flutter test
-      - run: flutter test --platform chrome ${{ matrix.option }}
+      - run: flutter test --platform chrome
+      - run: flutter test --platform chrome --wasm
       - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
         working-directory: ./example
       - uses: nanasess/setup-chromedriver@v2
@@ -59,9 +57,6 @@ jobs:
     name: MacOS 14 desktop / Chrome / Firefox
     runs-on: macos-14 # Test with xcode 15
     timeout-minutes: 15
-    strategy:
-      matrix:
-        option: ["", "--wasm"]
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -74,7 +69,8 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run webcrypto:setup
       - run: flutter test
-      - run: flutter test --platform chrome ${{ matrix.option }}
+      - run: flutter test --platform chrome
+      - run: flutter test --platform chrome --wasm
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
       # TODO: Enable chromedriver testing on MacOS when it works reliably
@@ -129,9 +125,6 @@ jobs:
     name: Windows desktop / Chrome / Firefox
     runs-on: windows-latest
     timeout-minutes: 15
-    # strategy:
-    #   matrix:
-    #     option: [ "", "--wasm"]
     steps:
       - uses: ilammy/setup-nasm@v1
       - uses: actions/checkout@v4
@@ -145,7 +138,8 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run webcrypto:setup
       - run: flutter test
-      #- run: flutter test --platform chrome ${{ matrix.option }}
+      #- run: flutter test --platform chrome
+      #- run: flutter test --platform chrome --wasm
       - run: flutter test integration_test/webcrypto_test.dart -d windows
         working-directory: ./example
       - uses: nanasess/setup-chromedriver@v2
