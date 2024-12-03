@@ -336,33 +336,35 @@ TypedData getRandomValues(TypedData array) {
   if (array is Uint8List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
+    array.setAll(0, values.toDart);
     return values.toDart;
   } else if (array is Uint16List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
+    array.setAll(0, values.toDart);
     return values.toDart;
   } else if (array is Uint32List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
+    array.setAll(0, values.toDart);
     return values.toDart;
   } else if (array is Int8List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
+    array.setAll(0, values.toDart);
     return values.toDart;
   } else if (array is Int16List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
+    array.setAll(0, values.toDart);
     return values.toDart;
   } else if (array is Int32List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
+    array.setAll(0, values.toDart);
     return values.toDart;
   } else {
-    throw ArgumentError.value(
-      array,
-      'array',
-      'Unsupported TypedData type',
-    );
+    throw UnsupportedError('Unsupported TypedData type ${array.runtimeType}');
   }
 }
 

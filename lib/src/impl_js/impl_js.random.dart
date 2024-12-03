@@ -16,33 +16,9 @@ part of 'impl_js.dart';
 
 void fillRandomBytes(TypedData destination) {
   try {
-    if (destination is Uint8List) {
-      final newValues = subtle.getRandomValues(destination);
-      destination.setAll(0, newValues as Uint8List);
-    } else if (destination is Uint16List) {
-      final newValues = subtle.getRandomValues(destination);
-      destination.setAll(0, newValues as Uint16List);
-    } else if (destination is Uint32List) {
-      final newValues = subtle.getRandomValues(destination);
-      destination.setAll(0, newValues as Uint32List);
-    } else if (destination is Int8List) {
-      final newValues = subtle.getRandomValues(destination);
-      destination.setAll(0, newValues as Int8List);
-    } else if (destination is Int16List) {
-      final newValues = subtle.getRandomValues(destination);
-      destination.setAll(0, newValues as Int16List);
-    } else if (destination is Int32List) {
-      final newValues = subtle.getRandomValues(destination);
-      destination.setAll(0, newValues as Int32List);
-    } else {
-      throw UnsupportedError(
-        'Unsupported TypedData type: ${destination.runtimeType}',
-      );
-    }
+    subtle.getRandomValues(destination);
   } on subtle.JSDomException catch (e) {
     throw _translateDomException(e);
-  } on UnsupportedError {
-    rethrow;
   } on Error catch (e) {
     final errorName = e.toString();
     if (errorName != 'JavaScriptError') {
