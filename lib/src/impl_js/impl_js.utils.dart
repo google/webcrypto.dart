@@ -103,10 +103,6 @@ Object _translateJavaScriptException(Error e) {
   // dart2wasm throws _JavaScriptError, but _JavaScriptError is not exposed.
   final errorMessage = e.toString();
   final message = 'browser threw "$errorMessage"';
-  if (errorMessage.contains('Unsupported operation:')) {
-    return UnsupportedError(message);
-  }
-
   return ArgumentError(message);
 }
 
