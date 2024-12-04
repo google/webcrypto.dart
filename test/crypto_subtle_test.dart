@@ -68,13 +68,30 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
+      subtle.window.crypto.getRandomValues(data.toJS);
+      expect(
+        data.any((e) => e != 0),
+        isTrue,
+      );
+    }, skip: 'dart2wasm');
+
+    test('getRandomValues: success', () {
+      final data = Uint8List(16 * 1024);
+      expect(
+        data.every((e) => e == 0),
+        isTrue,
+      );
       final values = data.toJS;
       subtle.window.crypto.getRandomValues(values);
+      expect(
+        data.every((e) => e == 0),
+        isTrue,
+      );
       expect(
         values.toDart.any((e) => e != 0),
         isTrue,
       );
-    });
+    }, skip: 'dart2js');
 
     test('getRandomValues: too long', () {
       try {
