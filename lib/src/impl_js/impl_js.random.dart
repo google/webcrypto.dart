@@ -25,6 +25,6 @@ void fillRandomBytes(TypedData destination) {
       rethrow;
     }
 
-    throw _translateJavaScriptException(e);
+    throw _translateJavaScriptException();
   }
 }

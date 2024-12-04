@@ -104,20 +104,16 @@ Object _translateDomException(
 ///
 /// [1]: https://github.com/dart-lang/sdk/issues/55496
 /// [2]: https://api.dart.dev/stable/latest/dart-core/Error-class.html
-Object _translateJavaScriptException(Error e) {
-  final errorMessage = e.toString();
-  final message = 'browser threw "$errorMessage"';
-  return UnknownError(message);
+Object _translateJavaScriptException() {
+  return UnknownError();
 }
 
 /// Error class for handling JavaScriptError that occurred in package:webcrypto.
 class UnknownError extends Error {
-  UnknownError(this.message);
-
-  final String message;
+  UnknownError();
 
   @override
-  String toString() => 'UnknownError: $message. '
+  String toString() => 'UnknownError: browser threw JavaScriptError. '
       'Note: This version of package:webcrypto cannot distinguish between Error types from the browser. '
       'Please check the issue: https://github.com/google/webcrypto.dart/issues/182';
 }
