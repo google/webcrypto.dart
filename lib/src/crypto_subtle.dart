@@ -19,7 +19,8 @@ library common;
 import 'dart:js_interop';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWasm;
+import 'package:meta/meta.dart';
 
 import 'jsonwebkey.dart' show JsonWebKey, RsaOtherPrimesInfo;
 
