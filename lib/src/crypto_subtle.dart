@@ -19,7 +19,6 @@ library common;
 import 'dart:js_interop';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show kIsWasm;
 import 'package:meta/meta.dart';
 
 import 'jsonwebkey.dart' show JsonWebKey, RsaOtherPrimesInfo;
@@ -339,37 +338,37 @@ TypedData getRandomValues(TypedData array) {
   if (array is Uint8List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
-    if (kIsWasm) {
+    if (array != values.toDart) {
       array.setAll(0, values.toDart);
     }
   } else if (array is Uint16List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
-    if (kIsWasm) {
+    if (array != values.toDart) {
       array.setAll(0, values.toDart);
     }
   } else if (array is Uint32List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
-    if (kIsWasm) {
+    if (array != values.toDart) {
       array.setAll(0, values.toDart);
     }
   } else if (array is Int8List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
-    if (kIsWasm) {
+    if (array != values.toDart) {
       array.setAll(0, values.toDart);
     }
   } else if (array is Int16List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
-    if (kIsWasm) {
+    if (array != values.toDart) {
       array.setAll(0, values.toDart);
     }
   } else if (array is Int32List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
-    if (kIsWasm) {
+    if (array != values.toDart) {
       array.setAll(0, values.toDart);
     }
   } else {
