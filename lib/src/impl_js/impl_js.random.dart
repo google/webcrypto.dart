@@ -19,5 +19,12 @@ void fillRandomBytes(TypedData destination) {
     subtle.getRandomValues(destination);
   } on subtle.JSDomException catch (e) {
     throw _translateDomException(e);
+  } on Error catch (e) {
+    final errorName = e.toString();
+    if (errorName != 'JavaScriptError') {
+      rethrow;
+    }
+
+    throw _translateJavaScriptException();
   }
 }

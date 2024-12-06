@@ -41,7 +41,12 @@ void main() {
       expect(
         () => fillRandomBytes(Uint8List(1000000)),
         throwsA(
-          isA<ArgumentError>(),
+          // dart2js throws ArgumentError
+          // dart2wasm throws UnknownError
+          anyOf(
+            isA<ArgumentError>(),
+            isA<UnknownError>(),
+          ),
         ),
       );
     });
@@ -68,32 +73,60 @@ void main() {
         data.any((e) => e != 0),
         isTrue,
       );
-    });
+    }, skip: 'dart2wasm');
+
+    test('getRandomValues: success', () {
+      final data = Uint8List(16 * 1024);
+      expect(
+        data.every((e) => e == 0),
+        isTrue,
+      );
+      final values = data.toJS;
+      subtle.window.crypto.getRandomValues(values);
+      expect(
+        data.every((e) => e == 0),
+        isTrue,
+      );
+      expect(
+        values.toDart.any((e) => e != 0),
+        isTrue,
+      );
+    }, skip: 'dart2js');
 
     test('getRandomValues: too long', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
-        throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'QuotaExceededError',
-          ),
-        ),
-      );
+      try {
+        subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS);
+      } on subtle.JSDomException catch (e) {
+        // dart2js throws QuotaExceededError
+        expect(
+          e.name,
+          'QuotaExceededError',
+        );
+      } on Error catch (e) {
+        // dart2wasm throws JavaScriptError
+        expect(
+          e.toString(),
+          'JavaScriptError',
+        );
+      }
     });
 
     test('getRandomValues: not supported type', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
-        throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'TypeMismatchError',
-          ),
-        ),
-      );
+      try {
+        subtle.window.crypto.getRandomValues(Float32List(32).toJS);
+      } on subtle.JSDomException catch (e) {
+        // dart2js throws TypeMismatchError
+        expect(
+          e.name,
+          'TypeMismatchError',
+        );
+      } on Error catch (e) {
+        // dart2wasm throws JavaScriptError
+        expect(
+          e.toString(),
+          'JavaScriptError',
+        );
+      }
     });
   });
 
