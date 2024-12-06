@@ -345,7 +345,7 @@ TypedData getRandomValues(TypedData array) {
   //
   // For this reason, we must use `.setAll` to copy the values into `array`, if it
   // was not cast.
-  // 
+  //
   // See also: https://github.com/dart-lang/sdk/issues/59651
   if (array is Uint8List) {
     final jsArray = array.toJS;

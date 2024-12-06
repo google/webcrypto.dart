@@ -105,7 +105,7 @@ Object _translateDomException(
 /// [1]: https://github.com/dart-lang/sdk/issues/55496
 /// [2]: https://api.dart.dev/stable/latest/dart-core/Error-class.html
 Object _translateJavaScriptException() {
-  return UnknownError();
+  return UnknownError._();
 }
 
 /// Error class for handling JavaScriptError that occurred in package:webcrypto.
