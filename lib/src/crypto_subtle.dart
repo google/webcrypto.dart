@@ -348,40 +348,46 @@ TypedData getRandomValues(TypedData array) {
   // 
   // See also: https://github.com/dart-lang/sdk/issues/59651
   if (array is Uint8List) {
-    final values = array.toJS;
-    window.crypto.getRandomValues(values);
-    if (array != values.toDart) {
-      array.setAll(0, values.toDart);
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
     }
   } else if (array is Uint16List) {
-    final values = array.toJS;
-    window.crypto.getRandomValues(values);
-    if (array != values.toDart) {
-      array.setAll(0, values.toDart);
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
     }
   } else if (array is Uint32List) {
-    final values = array.toJS;
-    window.crypto.getRandomValues(values);
-    if (array != values.toDart) {
-      array.setAll(0, values.toDart);
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
     }
   } else if (array is Int8List) {
-    final values = array.toJS;
-    window.crypto.getRandomValues(values);
-    if (array != values.toDart) {
-      array.setAll(0, values.toDart);
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
     }
   } else if (array is Int16List) {
-    final values = array.toJS;
-    window.crypto.getRandomValues(values);
-    if (array != values.toDart) {
-      array.setAll(0, values.toDart);
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
     }
   } else if (array is Int32List) {
-    final values = array.toJS;
-    window.crypto.getRandomValues(values);
-    if (array != values.toDart) {
-      array.setAll(0, values.toDart);
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
     }
   } else {
     throw UnsupportedError('Unsupported TypedData type ${array.runtimeType}');
