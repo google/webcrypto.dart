@@ -333,8 +333,20 @@ extension type JSRsaOtherPrimesInfo(JSObject _) implements JSObject {
 }
 
 TypedData getRandomValues(TypedData array) {
-  // Since dart2wasm does not reflect values in the array, use setAll to reflect them.
-  // see: https://github.com/dart-lang/sdk/issues/59651
+  // The `.toJS` on `Uint8List` (and friends) may:
+  //   * cast,
+  //   * create a wrapper, or,
+  //   * clone.
+  // See: https://api.dart.dev/dart-js_interop/Uint8ListToJSUint8Array/toJS.html
+  //
+  // Thus, when we do `.toJS` and pass the resulting object to `getRandomValues`,
+  // we don't know if `.toJS` simply cast or created a wrapper such that changes
+  // made by `getRandomBytes` are reflected in `array`.
+  //
+  // For this reason, we must use `.setAll` to copy the values into `array`, if it
+  // was not cast.
+  // 
+  // See also: https://github.com/dart-lang/sdk/issues/59651
   if (array is Uint8List) {
     final values = array.toJS;
     window.crypto.getRandomValues(values);
