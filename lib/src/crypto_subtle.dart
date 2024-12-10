@@ -390,7 +390,11 @@ TypedData getRandomValues(TypedData array) {
       array.setAll(0, dartArray);
     }
   } else {
-    throw UnsupportedError('Unsupported TypedData type ${array.runtimeType}');
+    throw ArgumentError.value(
+      array,
+      'array',
+      'Unsupported TypedData type',
+    );
   }
 
   return array;

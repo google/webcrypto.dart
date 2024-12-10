@@ -82,7 +82,7 @@ void main() {
         expect(
           () => fillRandomBytes(data),
           throwsA(
-            isA<UnsupportedError>(),
+            isA<ArgumentError>(),
           ),
         );
       }
@@ -99,8 +99,8 @@ void main() {
           expect(
             () => fillRandomBytes(data),
             throwsA(
-              // dart2waasm throws UnsupportedError in fillRandomBytes method
-              isA<UnsupportedError>(),
+              // dart2wasm throws ArgumentError in fillRandomBytes method
+              isA<ArgumentError>(),
             ),
           );
         }
