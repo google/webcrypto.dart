@@ -22,37 +22,100 @@ import 'package:test/test.dart';
 import 'package:webcrypto/src/crypto_subtle.dart' as subtle;
 import 'package:webcrypto/src/impl_js/impl_js.dart';
 
+// Cannot import `package:flutter/foundation.dart` because it depends on `dart:ui`. Define it independently for testing.
+const bool kIsWasm = bool.fromEnvironment('dart.tool.dart2wasm');
+
 void main() {
   group('fillRandomBytes', () {
-    test('Uint8List: success', () {
-      final data = Uint8List(16 * 1024);
-      expect(
-        data.every((e) => e == 0),
-        isTrue,
-      );
-      fillRandomBytes(data);
-      expect(
-        data.any((e) => e != 0),
-        isTrue,
-      );
+    test('success', () {
+      final list = [
+        Uint8List(16 * 1024),
+        Uint16List(16 * 1024),
+        Uint32List(16 * 1024),
+        Int8List(16 * 1024),
+        Int16List(16 * 1024),
+        Int32List(16 * 1024),
+      ];
+      for (final data in list) {
+        expect(
+          data.every((e) => e == 0),
+          isTrue,
+        );
+        fillRandomBytes(data);
+        expect(
+          data.any((e) => e != 0),
+          isTrue,
+        );
+      }
     });
 
-    test('Uint8List: too long', () {
-      expect(
-        () => fillRandomBytes(Uint8List(1000000)),
-        throwsA(
-          isA<ArgumentError>(),
-        ),
-      );
+    test('too long', () {
+      final list = [
+        Uint8List(1000000),
+        Uint16List(1000000),
+        Uint32List(1000000),
+        Int8List(1000000),
+        Int16List(1000000),
+        Int32List(1000000),
+      ];
+      for (final data in list) {
+        expect(
+          () => fillRandomBytes(data),
+          throwsA(
+            // dart2js throws ArgumentError
+            // dart2wasm throws UnknownError
+            anyOf(
+              isA<ArgumentError>(),
+              isA<UnknownError>(),
+            ),
+          ),
+        );
+      }
     });
 
-    test('Uint64List: not supported type', () {
-      expect(
-        () => fillRandomBytes(Uint64List(32)),
-        throwsA(
-          isA<UnsupportedError>(),
-        ),
-      );
+    test('not supported type', () {
+      final list = [
+        Float32List(32),
+        Float64List(32),
+      ];
+      for (final data in list) {
+        expect(
+          () => fillRandomBytes(data),
+          throwsA(
+            isA<ArgumentError>(),
+          ),
+        );
+      }
+    });
+
+    test('list that is supported depending on the environment', () {
+      if (kIsWasm) {
+        final list = [
+          Uint64List(32),
+          Int64List(32),
+        ];
+
+        for (final data in list) {
+          expect(
+            () => fillRandomBytes(data),
+            throwsA(
+              // dart2wasm throws ArgumentError in fillRandomBytes method
+              isA<ArgumentError>(),
+            ),
+          );
+        }
+      } else {
+        try {
+          final _ = [
+            Uint64List(32),
+            Int64List(32),
+          ];
+          fail('dart2js does not reach this line');
+        } catch (e) {
+          // dart2js throws UnsupportedError in list creation
+          expect(e, isA<UnsupportedError>());
+        }
+      }
     });
   });
 
@@ -63,37 +126,61 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
-      subtle.window.crypto.getRandomValues(data.toJS);
+      final values = data.toJS;
+      subtle.window.crypto.getRandomValues(values);
+      if (kIsWasm) {
+        // In dart2wasm, the value is not reflected in Uint8List.
+        expect(
+          data.every((e) => e == 0),
+          isTrue,
+        );
+      } else {
+        // In dart2js, the value is reflected in Uint8List.
+        expect(
+          data.every((e) => e == 0),
+          isFalse,
+        );
+      }
       expect(
-        data.any((e) => e != 0),
+        values.toDart.any((e) => e != 0),
         isTrue,
       );
     });
 
     test('getRandomValues: too long', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS),
-        throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'QuotaExceededError',
-          ),
-        ),
-      );
+      try {
+        subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS);
+      } on subtle.JSDomException catch (e) {
+        // dart2js throws QuotaExceededError
+        expect(
+          e.name,
+          'QuotaExceededError',
+        );
+      } on Error catch (e) {
+        // dart2wasm throws JavaScriptError
+        expect(
+          e.toString(),
+          'JavaScriptError',
+        );
+      }
     });
 
     test('getRandomValues: not supported type', () {
-      expect(
-        () => subtle.window.crypto.getRandomValues(Float32List(32).toJS),
-        throwsA(
-          isA<subtle.JSDomException>().having(
-            (e) => e.name,
-            'name',
-            'TypeMismatchError',
-          ),
-        ),
-      );
+      try {
+        subtle.window.crypto.getRandomValues(Float32List(32).toJS);
+      } on subtle.JSDomException catch (e) {
+        // dart2js throws TypeMismatchError
+        expect(
+          e.name,
+          'TypeMismatchError',
+        );
+      } on Error catch (e) {
+        // dart2wasm throws JavaScriptError
+        expect(
+          e.toString(),
+          'JavaScriptError',
+        );
+      }
     });
   });
 
