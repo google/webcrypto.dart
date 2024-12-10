@@ -18,10 +18,12 @@ library;
 import 'dart:js_interop';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:test/test.dart';
 import 'package:webcrypto/src/crypto_subtle.dart' as subtle;
 import 'package:webcrypto/src/impl_js/impl_js.dart';
+
+// Cannot import `package:flutter/foundation.dart` because it depends on `dart:ui`. Define it independently for testing.
+const bool kIsWasm = bool.fromEnvironment('dart.tool.dart2wasm');
 
 void main() {
   group('fillRandomBytes', () {
