@@ -18,6 +18,7 @@ library;
 import 'dart:js_interop';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:test/test.dart';
 import 'package:webcrypto/src/crypto_subtle.dart' as subtle;
 import 'package:webcrypto/src/impl_js/impl_js.dart';
@@ -68,30 +69,26 @@ void main() {
         data.every((e) => e == 0),
         isTrue,
       );
-      subtle.window.crypto.getRandomValues(data.toJS);
-      expect(
-        data.any((e) => e != 0),
-        isTrue,
-      );
-    }, skip: 'dart2wasm');
-
-    test('getRandomValues: success', () {
-      final data = Uint8List(16 * 1024);
-      expect(
-        data.every((e) => e == 0),
-        isTrue,
-      );
       final values = data.toJS;
       subtle.window.crypto.getRandomValues(values);
-      expect(
-        data.every((e) => e == 0),
-        isTrue,
-      );
+      if (kIsWasm) {
+        // In dart2wasm, the value is not reflected in Uint8List.
+        expect(
+          data.every((e) => e == 0),
+          isTrue,
+        );
+      } else {
+        // In dart2js, the value is reflected in Uint8List.
+        expect(
+          data.every((e) => e == 0),
+          isFalse,
+        );
+      }
       expect(
         values.toDart.any((e) => e != 0),
         isTrue,
       );
-    }, skip: 'dart2js');
+    });
 
     test('getRandomValues: too long', () {
       try {
