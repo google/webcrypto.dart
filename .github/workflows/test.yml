@@ -239,7 +239,7 @@ jobs:
           flutter config --no-analytics
       - run: flutter pub get
       - run: flutter pub run webcrypto:setup
-      - run: flutter pub run test -p vm,chrome,firefox -c dart2js,dart2wasm --coverage ./coverage
+      - run: flutter pub run test -p vm,chrome,firefox --coverage ./coverage
       # Report collected coverage
       - name: Convert coverage to lcov
         run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
