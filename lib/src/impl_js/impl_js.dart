@@ -19,7 +19,6 @@ import 'dart:typed_data';
 
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';
 
-import '../webcrypto/webcrypto.dart';
 import '../crypto_subtle.dart' as subtle;
 
 part 'impl_js.aescbc.dart';
@@ -36,14 +35,6 @@ part 'impl_js.rsaoaep.dart';
 part 'impl_js.rsapss.dart';
 part 'impl_js.rsassapkcs1v15.dart';
 part 'impl_js.utils.dart';
-
-/// Implementation of [OperationError].
-class _OperationError extends Error implements OperationError {
-  final String _message;
-  _OperationError(this._message);
-  @override
-  String toString() => _message;
-}
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 

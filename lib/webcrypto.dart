@@ -42,6 +42,7 @@
 ///  * `InvalidAccessError` shouldn't occur, except for ECDH key derivation with
 ///     mismatching curves where it becomes an [ArgumentError].
 ///
+/// @docImport 'src/webcrypto/webcrypto.dart';
 library webcrypto;
 
 export 'src/webcrypto/webcrypto.dart';

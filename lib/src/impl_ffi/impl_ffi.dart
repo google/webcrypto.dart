@@ -48,16 +48,6 @@ part 'impl_ffi.rsa_common.dart';
 part 'impl_ffi.ec_common.dart';
 part 'impl_ffi.aes_common.dart';
 
-/// Implementation of [OperationError].
-class _OperationError extends Error implements OperationError {
-  final String _message;
-
-  _OperationError(this._message);
-
-  @override
-  String toString() => _message;
-}
-
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
 
 final class _WebCryptoImpl implements WebCryptoImpl {

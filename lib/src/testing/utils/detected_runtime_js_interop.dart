@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' show window;
+import 'dart:js_interop';
+
+@JS('window.navigator.userAgent')
+external String get userAgent;
 
 /// Detected runtime based on [rendering engine][1], this is one of:
 ///  * `'firefox'` (if rendering engine is `'gecko'`),
@@ -32,7 +34,7 @@ import 'dart:html' show window;
 ///
 /// [1]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 final String detectedRuntime = () {
-  final ua = window.navigator.userAgent;
+  final ua = userAgent;
 
   if (ua.contains('Gecko/')) {
     return 'firefox';

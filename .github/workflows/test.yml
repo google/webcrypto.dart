@@ -12,6 +12,7 @@ jobs:
   lints:
     name: Format + Lints
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -24,6 +25,7 @@ jobs:
   linux:
     name: Linux desktop / Chrome / Firefox
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -39,6 +41,7 @@ jobs:
       - run: flutter pub run webcrypto:setup
       - run: flutter test
       - run: flutter test --platform chrome
+      - run: flutter test --platform chrome --wasm
       - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
         working-directory: ./example
       - uses: nanasess/setup-chromedriver@v2
@@ -50,19 +53,10 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
-      # Test with coverage collection as a separate step.
-      # This will run in debug mode, so we test both with and without coverage.
-      - run: xvfb-run flutter pub run test -p vm,chrome,firefox --coverage ./coverage
-      # Report collected coverage
-      - name: Convert coverage to lcov
-        run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
-      - uses: coverallsapp/github-action@v2
-        with:
-          flag-name: linux
-          parallel: true
   macos-14:
     name: MacOS 14 desktop / Chrome / Firefox
     runs-on: macos-14 # Test with xcode 15
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -76,6 +70,7 @@ jobs:
       - run: flutter pub run webcrypto:setup
       - run: flutter test
       - run: flutter test --platform chrome
+      - run: flutter test --platform chrome --wasm
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
       # TODO: Enable chromedriver testing on MacOS when it works reliably
@@ -98,6 +93,7 @@ jobs:
   macos-15:
     name: MacOS 15 desktop / Chrome / Firefox
     runs-on: macos-15 # Test with xcode 16
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -111,6 +107,7 @@ jobs:
       - run: flutter pub run webcrypto:setup
       - run: flutter test
       - run: flutter test --platform chrome
+      - run: flutter test --platform chrome --wasm
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
       # TODO: Enable chromedriver testing on MacOS when it works reliably
@@ -125,6 +122,7 @@ jobs:
   windows:
     name: Windows desktop / Chrome / Firefox
     runs-on: windows-latest
+    timeout-minutes: 15
     steps:
       - uses: ilammy/setup-nasm@v1
       - uses: actions/checkout@v4
@@ -139,6 +137,7 @@ jobs:
       - run: flutter pub run webcrypto:setup
       - run: flutter test
       #- run: flutter test --platform chrome
+      #- run: flutter test --platform chrome --wasm
       - run: flutter test integration_test/webcrypto_test.dart -d windows
         working-directory: ./example
       - uses: nanasess/setup-chromedriver@v2
@@ -151,19 +150,10 @@ jobs:
             --target=integration_test/webcrypto_test.dart \
             -d chrome
       - run: flutter pub run test -p vm,chrome,firefox
-      # Test with coverage collection as a separate step.
-      # This will run in debug mode, so we test both with and without coverage.
-      - run: flutter pub run test -p vm,chrome,firefox --coverage ./coverage
-      # Report collected coverage
-      - name: Convert coverage to lcov
-        run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
-      - uses: coverallsapp/github-action@v2
-        with:
-          flag-name: windows
-          parallel: true
   ios:
     name: iOS emulator (iPhone)
     runs-on: macos-14
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -182,6 +172,7 @@ jobs:
   android:
     name: Android emulator
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -207,12 +198,62 @@ jobs:
           api-level: 28
           working-directory: ./example
           script: flutter test integration_test/webcrypto_test.dart -d android
+  linux-coverage:
+    name: Linux desktop / Chrome / Firefox (coverage)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Configure Flutter
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+          flutter config --no-analytics
+      - run: flutter pub get
+      - run: flutter pub run webcrypto:setup
+      - run: xvfb-run flutter pub run test -p vm,chrome,firefox -c dart2js,dart2wasm --coverage ./coverage
+      # Report collected coverage
+      - name: Convert coverage to lcov
+        run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@v2
+        with:
+          flag-name: linux
+          parallel: true
+  windows-coverage:
+    name: Windows desktop / Chrome / Firefox (coverage)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: ilammy/setup-nasm@v1
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Configure Flutter
+        run: |
+          flutter config --no-analytics
+      - run: flutter pub get
+      - run: flutter pub run webcrypto:setup
+      - run: flutter pub run test -p vm,chrome,firefox --coverage ./coverage
+      # Report collected coverage
+      - name: Convert coverage to lcov
+        run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
+      - uses: coverallsapp/github-action@v2
+        with:
+          flag-name: windows
+          parallel: true
   coverage:
     name: Report to coveralls
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs:
-      - linux
-      - windows
+      - linux-coverage
+      - windows-coverage
     steps:
       - uses: coverallsapp/github-action@v2
         with:

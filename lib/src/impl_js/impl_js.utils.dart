@@ -69,7 +69,7 @@ Object _translateDomException(
     case 'DataError':
       return FormatException(message);
     case 'OperationError':
-      return _OperationError(message);
+      return operationError(message);
     case 'InvalidAccessError':
       // InvalidAccessError occurs when the request operation is not valid for
       // the provided key. This is typically because:
@@ -97,6 +97,25 @@ Object _translateDomException(
   // Unknown exception, we cannot handle this case.
   return AssertionError('Unexpected exception from web cryptography'
       '"${e.name}", message: $message');
+}
+
+/// Convert [Error] to [UnknownError].
+/// dart2wasm throws _JavaScriptError, but _JavaScriptError is not exposed.
+///
+/// [1]: https://github.com/dart-lang/sdk/issues/55496
+/// [2]: https://api.dart.dev/stable/latest/dart-core/Error-class.html
+Object _translateJavaScriptException() {
+  return UnknownError._();
+}
+
+/// Error class for handling JavaScriptError that occurred in package:webcrypto.
+final class UnknownError extends Error {
+  UnknownError._();
+
+  @override
+  String toString() => 'UnknownError: Browser threw JavaScriptError. '
+      'Note: This version of package:webcrypto cannot distinguish between error types from the browser. '
+      'See: https://github.com/google/webcrypto.dart/issues/182';
 }
 
 /// Handle instances of [subtle.JSDomException] specified in the

@@ -17,6 +17,8 @@ library impl_stub;
 import 'dart:typed_data';
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 part 'impl_interface.aescbc.dart';
 part 'impl_interface.aesctr.dart';
 part 'impl_interface.hmac.dart';
@@ -62,6 +64,20 @@ enum EllipticCurve {
   /// [1]: https://bugs.webkit.org/show_bug.cgi?id=216755
   p521,
 }
+
+/// Thrown when an operation failed for an operation-specific reason.
+final class OperationError extends Error {
+  final String _message;
+
+  OperationError._(this._message); // keep the constructor private.
+
+  @override
+  String toString() => _message;
+}
+
+/// Creating an [OperationError].
+@internal
+OperationError operationError(String message) => OperationError._(message);
 
 /// Interface to be provided by platform implementations.
 ///
