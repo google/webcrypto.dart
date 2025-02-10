@@ -333,24 +333,62 @@ extension type JSRsaOtherPrimesInfo(JSObject _) implements JSObject {
 }
 
 TypedData getRandomValues(TypedData array) {
+  // The `.toJS` on `Uint8List` (and friends) may:
+  //   * cast,
+  //   * create a wrapper, or,
+  //   * clone.
+  // See: https://api.dart.dev/dart-js_interop/Uint8ListToJSUint8Array/toJS.html
+  //
+  // Thus, when we do `.toJS` and pass the resulting object to `getRandomValues`,
+  // we don't know if `.toJS` simply cast or created a wrapper such that changes
+  // made by `getRandomBytes` are reflected in `array`.
+  //
+  // For this reason, we must use `.setAll` to copy the values into `array`, if it
+  // was not cast.
+  //
+  // See also: https://github.com/dart-lang/sdk/issues/59651
   if (array is Uint8List) {
-    window.crypto.getRandomValues(array.toJS);
-    return array;
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
+    }
   } else if (array is Uint16List) {
-    window.crypto.getRandomValues(array.toJS);
-    return array;
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
+    }
   } else if (array is Uint32List) {
-    window.crypto.getRandomValues(array.toJS);
-    return array;
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
+    }
   } else if (array is Int8List) {
-    window.crypto.getRandomValues(array.toJS);
-    return array;
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
+    }
   } else if (array is Int16List) {
-    window.crypto.getRandomValues(array.toJS);
-    return array;
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
+    }
   } else if (array is Int32List) {
-    window.crypto.getRandomValues(array.toJS);
-    return array;
+    final jsArray = array.toJS;
+    window.crypto.getRandomValues(jsArray);
+    final dartArray = jsArray.toDart;
+    if (array != dartArray) {
+      array.setAll(0, dartArray);
+    }
   } else {
     throw ArgumentError.value(
       array,
@@ -358,6 +396,8 @@ TypedData getRandomValues(TypedData array) {
       'Unsupported TypedData type',
     );
   }
+
+  return array;
 }
 
 Future<ByteBuffer> decrypt(
