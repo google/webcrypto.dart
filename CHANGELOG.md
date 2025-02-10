@@ -4,7 +4,8 @@
 * Bumped Kotlin Version to 1.7.10.
 * Removed the `GCC_WARN_INHIBIT_ALL_WARNINGS` option to ensure compatibitity with Xcode 16.
 * Code coverage is now 89% as reported to [coveralls.io](https://coveralls.io/github/google/webcrypto.dart?branch=master)!
- * Add support for compiling to WASM.
+* Add support for compiling to WASM.
+
 # 0.5.7
 * Added compatibility for AGP 8.4.
 * Improved API documentation for ECDH.
