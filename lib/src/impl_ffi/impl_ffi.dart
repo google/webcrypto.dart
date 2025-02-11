@@ -112,4 +112,7 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final sha512 = const _Sha512();
+
+  @override
+  final random = const _RandomImpl();
 }

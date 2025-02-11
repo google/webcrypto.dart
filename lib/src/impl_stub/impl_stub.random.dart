@@ -12,22 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-part of 'impl_ffi.dart';
+part of 'impl_stub.dart';
 
 final class _RandomImpl implements RandomImpl {
   const _RandomImpl();
 
   @override
   void fillRandomBytes(TypedData destination) {
-    return _Scope.sync((scope) {
-      final dest = destination.buffer.asUint8List(
-        destination.offsetInBytes,
-        destination.lengthInBytes,
-      );
-
-      final out = scope<ffi.Uint8>(dest.length);
-      _checkOp(ssl.RAND_bytes(out, dest.length) == 1);
-      dest.setAll(0, out.asTypedList(dest.length));
-    });
+    throw UnimplementedError('Not implemented');
   }
 }

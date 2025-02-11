@@ -14,17 +14,22 @@
 
 part of 'impl_js.dart';
 
-void fillRandomBytes(TypedData destination) {
-  try {
-    subtle.getRandomValues(destination);
-  } on subtle.JSDomException catch (e) {
-    throw _translateDomException(e);
-  } on Error catch (e) {
-    final errorName = e.toString();
-    if (errorName != 'JavaScriptError') {
-      rethrow;
-    }
+final class _RandomImpl implements RandomImpl {
+  const _RandomImpl();
 
-    throw _translateJavaScriptException();
+  @override
+  void fillRandomBytes(TypedData destination) {
+    try {
+      subtle.getRandomValues(destination);
+    } on subtle.JSDomException catch (e) {
+      throw _translateDomException(e);
+    } on Error catch (e) {
+      final errorName = e.toString();
+      if (errorName != 'JavaScriptError') {
+        rethrow;
+      }
+
+      throw _translateJavaScriptException();
+    }
   }
 }
