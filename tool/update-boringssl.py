@@ -29,10 +29,11 @@ TOOL_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.dirname(TOOL_PATH)
 
 BORINGSSL_REPOSITORY = 'https://boringssl.googlesource.com/boringssl'
-BORINGSSL_REVISION = 'a6d321b11fa80496b7c8ae6405468c212d4f5c87'
+BORINGSSL_REVISION = 'e056f59c7dfdcf891af03bc7900c946ac485c78f'
 
 
 def cleanup():
+
     """ Remove boringssl sources and generated files """
     paths = [
         os.path.join(ROOT_PATH, 'third_party', 'boringssl'),
@@ -83,15 +84,49 @@ def bump_revision(new_revision):
                 file.write(line)
 
 
+
+
+import json
 def get_latest_revision():
     """ Fetch the latest commit hash from the BoringSSL repository """
     response = requests.get(f'{BORINGSSL_REPOSITORY}/+log/master?format=JSON')
+    print(f"Response status code: {response.status_code}")
+    print(f"Response text: {response.text}")
+
     if response.status_code == 200:
-        data = response.json()
+        # Check if response text is empty
+        if not response.text:
+            raise Exception("Response is empty.")
+        
+        # Remove the first chars : )]}'
+        json_text = response.text[5:]
+
+        # Check if the response is valid JSON
+        try:
+            data = json.loads(json_text)
+        except Exception as e:
+            print(f"Error processing JSON: {e}")
+            raise Exception("Response is not valid JSON.")
+
+        if 'log' not in data:
+            raise Exception("JSON response does not contain the 'log' key.")
+        if not isinstance(data['log'], list):
+            raise Exception("'log' is not a list")
+
+        if len(data['log']) == 0:
+            raise Exception("'log' list is empty.")
+        
+        if 'commit' not in data['log'][0]:
+            raise Exception("First element of 'log' does not contain the 'commit' key.")
+
         latest_commit = data['log'][0]['commit']
         return latest_commit
     else:
         raise Exception('Failed to fetch the latest revision')
+
+
+
+
 
 
 def main():
