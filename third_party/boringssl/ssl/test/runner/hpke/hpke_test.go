@@ -1,4 +1,4 @@
-// Copyright (c) 2020, Google Inc.
+// Copyright 2020 The BoringSSL Authors
 //
 // Permission to use, copy, modify, and/or distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -18,13 +18,11 @@ import (
 	"bytes"
 	_ "crypto/sha256"
 	_ "crypto/sha512"
+	_ "embed"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
 	"testing"
 )
 
@@ -32,9 +30,8 @@ const (
 	exportOnlyAEAD uint16 = 0xffff
 )
 
-var (
-	testDataDir = flag.String("testdata", "testdata", "The path to the test vector JSON file.")
-)
+//go:embed testdata/test-vectors.json
+var testVectorsJSON []byte
 
 // Simple round-trip test for fixed inputs.
 func TestRoundTrip(t *testing.T) {
@@ -98,15 +95,8 @@ type ExportTestVector struct {
 
 // TestVectors checks all relevant test vectors in test-vectors.json.
 func TestVectors(t *testing.T) {
-	jsonStr, err := ioutil.ReadFile(filepath.Join(*testDataDir, "test-vectors.json"))
-	if err != nil {
-		t.Errorf("error reading test vectors: %s", err)
-		return
-	}
-
 	var testVectors []HpkeTestVector
-	err = json.Unmarshal(jsonStr, &testVectors)
-	if err != nil {
+	if err := json.Unmarshal(testVectorsJSON, &testVectors); err != nil {
 		t.Errorf("error parsing test vectors: %s", err)
 		return
 	}

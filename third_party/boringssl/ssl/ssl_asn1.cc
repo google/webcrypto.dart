@@ -1,84 +1,12 @@
-/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
- * All rights reserved.
- *
- * This package is an SSL implementation written
- * by Eric Young (eay@cryptsoft.com).
- * The implementation was written so as to conform with Netscapes SSL.
- *
- * This library is free for commercial and non-commercial use as long as
- * the following conditions are aheared to.  The following conditions
- * apply to all code found in this distribution, be it the RC4, RSA,
- * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
- * included with this distribution is covered by the same copyright terms
- * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- *
- * Copyright remains Eric Young's, and as such any Copyright notices in
- * the code are not to be removed.
- * If this package is used in a product, Eric Young should be given attribution
- * as the author of the parts of the library used.
- * This can be in the form of a textual message at program startup or
- * in documentation (online or textual) provided with the package.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *    "This product includes cryptographic software written by
- *     Eric Young (eay@cryptsoft.com)"
- *    The word 'cryptographic' can be left out if the rouines from the library
- *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from
- *    the apps directory (application code) you must include an acknowledgement:
- *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- *
- * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * The licence and distribution terms for any publically available version or
- * derivative of this code cannot be changed.  i.e. this code cannot simply be
- * copied and put under another distribution licence
- * [including the GNU Public Licence.]
- */
-/* ====================================================================
+/*
+ * Copyright 1995-2016 The OpenSSL Project Authors. All Rights Reserved.
  * Copyright 2005 Nokia. All rights reserved.
  *
- * The portions of the attached software ("Contribution") is developed by
- * Nokia Corporation and is licensed pursuant to the OpenSSL open source
- * license.
- *
- * The Contribution, originally written by Mika Kousa and Pasi Eronen of
- * Nokia Corporation, consists of the "PSK" (Pre-Shared Key) ciphersuites
- * support (see RFC 4279) to OpenSSL.
- *
- * No patent licenses or other rights except those expressly stated in
- * the OpenSSL open source license shall be deemed granted or received
- * expressly, by implication, estoppel, or otherwise.
- *
- * No assurances are provided by Nokia that the Contribution does not
- * infringe the patent or other intellectual property rights of any third
- * party or that the license provides you with all the necessary rights
- * to make use of the Contribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. IN
- * ADDITION TO THE DISCLAIMERS INCLUDED IN THE LICENSE, NOKIA
- * SPECIFICALLY DISCLAIMS ANY LIABILITY FOR CLAIMS BROUGHT BY YOU OR ANY
- * OTHER ENTITY BASED ON INFRINGEMENT OF INTELLECTUAL PROPERTY RIGHTS OR
- * OTHERWISE. */
+ * Licensed under the OpenSSL license (the "License").  You may not use
+ * this file except in compliance with the License.  You can obtain a copy
+ * in the file LICENSE in the source distribution or at
+ * https://www.openssl.org/source/license.html
+ */
 
 #include <openssl/ssl.h>
 
@@ -150,57 +78,57 @@ BSSL_NAMESPACE_BEGIN
 
 static const unsigned kVersion = 1;
 
-static const unsigned kTimeTag =
+static const CBS_ASN1_TAG kTimeTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 1;
-static const unsigned kTimeoutTag =
+static const CBS_ASN1_TAG kTimeoutTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 2;
-static const unsigned kPeerTag =
+static const CBS_ASN1_TAG kPeerTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 3;
-static const unsigned kSessionIDContextTag =
+static const CBS_ASN1_TAG kSessionIDContextTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 4;
-static const unsigned kVerifyResultTag =
+static const CBS_ASN1_TAG kVerifyResultTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 5;
-static const unsigned kHostNameTag =
+static const CBS_ASN1_TAG kHostNameTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 6;
-static const unsigned kPSKIdentityTag =
+static const CBS_ASN1_TAG kPSKIdentityTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 8;
-static const unsigned kTicketLifetimeHintTag =
+static const CBS_ASN1_TAG kTicketLifetimeHintTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 9;
-static const unsigned kTicketTag =
+static const CBS_ASN1_TAG kTicketTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 10;
-static const unsigned kPeerSHA256Tag =
+static const CBS_ASN1_TAG kPeerSHA256Tag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 13;
-static const unsigned kOriginalHandshakeHashTag =
+static const CBS_ASN1_TAG kOriginalHandshakeHashTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 14;
-static const unsigned kSignedCertTimestampListTag =
+static const CBS_ASN1_TAG kSignedCertTimestampListTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 15;
-static const unsigned kOCSPResponseTag =
+static const CBS_ASN1_TAG kOCSPResponseTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 16;
-static const unsigned kExtendedMasterSecretTag =
+static const CBS_ASN1_TAG kExtendedMasterSecretTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 17;
-static const unsigned kGroupIDTag =
+static const CBS_ASN1_TAG kGroupIDTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 18;
-static const unsigned kCertChainTag =
+static const CBS_ASN1_TAG kCertChainTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 19;
-static const unsigned kTicketAgeAddTag =
+static const CBS_ASN1_TAG kTicketAgeAddTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 21;
-static const unsigned kIsServerTag =
+static const CBS_ASN1_TAG kIsServerTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 22;
-static const unsigned kPeerSignatureAlgorithmTag =
+static const CBS_ASN1_TAG kPeerSignatureAlgorithmTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 23;
-static const unsigned kTicketMaxEarlyDataTag =
+static const CBS_ASN1_TAG kTicketMaxEarlyDataTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 24;
-static const unsigned kAuthTimeoutTag =
+static const CBS_ASN1_TAG kAuthTimeoutTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 25;
-static const unsigned kEarlyALPNTag =
+static const CBS_ASN1_TAG kEarlyALPNTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 26;
-static const unsigned kIsQuicTag =
+static const CBS_ASN1_TAG kIsQuicTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 27;
-static const unsigned kQuicEarlyDataContextTag =
+static const CBS_ASN1_TAG kQuicEarlyDataContextTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 28;
-static const unsigned kLocalALPSTag =
+static const CBS_ASN1_TAG kLocalALPSTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 29;
-static const unsigned kPeerALPSTag =
+static const CBS_ASN1_TAG kPeerALPSTag =
     CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 30;
 
 static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
@@ -216,14 +144,14 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
       !CBB_add_asn1(&session, &child, CBS_ASN1_OCTETSTRING) ||
       !CBB_add_u16(&child, (uint16_t)(in->cipher->id & 0xffff)) ||
       // The session ID is irrelevant for a session ticket.
-      !CBB_add_asn1_octet_string(&session, in->session_id,
-                                 for_ticket ? 0 : in->session_id_length) ||
-      !CBB_add_asn1_octet_string(&session, in->secret, in->secret_length) ||
+      !CBB_add_asn1_octet_string(&session, in->session_id.data(),
+                                 for_ticket ? 0 : in->session_id.size()) ||
+      !CBB_add_asn1_octet_string(&session, in->secret.data(),
+                                 in->secret.size()) ||
       !CBB_add_asn1(&session, &child, kTimeTag) ||
       !CBB_add_asn1_uint64(&child, in->time) ||
       !CBB_add_asn1(&session, &child, kTimeoutTag) ||
       !CBB_add_asn1_uint64(&child, in->timeout)) {
-    OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
     return 0;
   }
 
@@ -234,7 +162,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
     if (!CBB_add_asn1(&session, &child, kPeerTag) ||
         !CBB_add_bytes(&child, CRYPTO_BUFFER_data(buffer),
                        CRYPTO_BUFFER_len(buffer))) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -242,15 +169,14 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
   // Although it is OPTIONAL and usually empty, OpenSSL has
   // historically always encoded the sid_ctx.
   if (!CBB_add_asn1(&session, &child, kSessionIDContextTag) ||
-      !CBB_add_asn1_octet_string(&child, in->sid_ctx, in->sid_ctx_length)) {
-    OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
+      !CBB_add_asn1_octet_string(&child, in->sid_ctx.data(),
+                                 in->sid_ctx.size())) {
     return 0;
   }
 
   if (in->verify_result != X509_V_OK) {
     if (!CBB_add_asn1(&session, &child, kVerifyResultTag) ||
         !CBB_add_asn1_uint64(&child, in->verify_result)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -260,7 +186,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
         !CBB_add_asn1_octet_string(&child,
                                    (const uint8_t *)in->psk_identity.get(),
                                    strlen(in->psk_identity.get()))) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -268,7 +193,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
   if (in->ticket_lifetime_hint > 0) {
     if (!CBB_add_asn1(&session, &child, kTicketLifetimeHintTag) ||
         !CBB_add_asn1_uint64(&child, in->ticket_lifetime_hint)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -277,7 +201,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
     if (!CBB_add_asn1(&session, &child, kTicketTag) ||
         !CBB_add_asn1_octet_string(&child, in->ticket.data(),
                                    in->ticket.size())) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -286,16 +209,14 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
     if (!CBB_add_asn1(&session, &child, kPeerSHA256Tag) ||
         !CBB_add_asn1_octet_string(&child, in->peer_sha256,
                                    sizeof(in->peer_sha256))) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
 
-  if (in->original_handshake_hash_len > 0) {
+  if (!in->original_handshake_hash.empty()) {
     if (!CBB_add_asn1(&session, &child, kOriginalHandshakeHashTag) ||
-        !CBB_add_asn1_octet_string(&child, in->original_handshake_hash,
-                                   in->original_handshake_hash_len)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
+        !CBB_add_asn1_octet_string(&child, in->original_handshake_hash.data(),
+                                   in->original_handshake_hash.size())) {
       return 0;
     }
   }
@@ -305,7 +226,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
         !CBB_add_asn1_octet_string(
             &child, CRYPTO_BUFFER_data(in->signed_cert_timestamp_list.get()),
             CRYPTO_BUFFER_len(in->signed_cert_timestamp_list.get()))) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -315,7 +235,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
         !CBB_add_asn1_octet_string(
             &child, CRYPTO_BUFFER_data(in->ocsp_response.get()),
             CRYPTO_BUFFER_len(in->ocsp_response.get()))) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -323,32 +242,28 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
   if (in->extended_master_secret) {
     if (!CBB_add_asn1(&session, &child, kExtendedMasterSecretTag) ||
         !CBB_add_asn1_bool(&child, true)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
 
-  if (in->group_id > 0 &&
-      (!CBB_add_asn1(&session, &child, kGroupIDTag) ||
+  if (in->group_id > 0 &&                               //
+      (!CBB_add_asn1(&session, &child, kGroupIDTag) ||  //
        !CBB_add_asn1_uint64(&child, in->group_id))) {
-    OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
     return 0;
   }
 
   // The certificate chain is only serialized if the leaf's SHA-256 isn't
   // serialized instead.
-  if (in->certs != NULL &&
-      !in->peer_sha256_valid &&
+  if (in->certs != NULL &&       //
+      !in->peer_sha256_valid &&  //
       sk_CRYPTO_BUFFER_num(in->certs.get()) >= 2) {
     if (!CBB_add_asn1(&session, &child, kCertChainTag)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
     for (size_t i = 1; i < sk_CRYPTO_BUFFER_num(in->certs.get()); i++) {
       const CRYPTO_BUFFER *buffer = sk_CRYPTO_BUFFER_value(in->certs.get(), i);
       if (!CBB_add_bytes(&child, CRYPTO_BUFFER_data(buffer),
                          CRYPTO_BUFFER_len(buffer))) {
-        OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
         return 0;
       }
     }
@@ -358,7 +273,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
     if (!CBB_add_asn1(&session, &child, kTicketAgeAddTag) ||
         !CBB_add_asn1(&child, &child2, CBS_ASN1_OCTETSTRING) ||
         !CBB_add_u32(&child2, in->ticket_age_add)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -366,7 +280,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
   if (!in->is_server) {
     if (!CBB_add_asn1(&session, &child, kIsServerTag) ||
         !CBB_add_asn1_bool(&child, false)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -374,21 +287,18 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
   if (in->peer_signature_algorithm != 0 &&
       (!CBB_add_asn1(&session, &child, kPeerSignatureAlgorithmTag) ||
        !CBB_add_asn1_uint64(&child, in->peer_signature_algorithm))) {
-    OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
     return 0;
   }
 
   if (in->ticket_max_early_data != 0 &&
       (!CBB_add_asn1(&session, &child, kTicketMaxEarlyDataTag) ||
        !CBB_add_asn1_uint64(&child, in->ticket_max_early_data))) {
-    OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
     return 0;
   }
 
   if (in->timeout != in->auth_timeout &&
       (!CBB_add_asn1(&session, &child, kAuthTimeoutTag) ||
        !CBB_add_asn1_uint64(&child, in->auth_timeout))) {
-    OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
     return 0;
   }
 
@@ -396,7 +306,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
     if (!CBB_add_asn1(&session, &child, kEarlyALPNTag) ||
         !CBB_add_asn1_octet_string(&child, in->early_alpn.data(),
                                    in->early_alpn.size())) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -404,7 +313,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
   if (in->is_quic) {
     if (!CBB_add_asn1(&session, &child, kIsQuicTag) ||
         !CBB_add_asn1_bool(&child, true)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -413,7 +321,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
     if (!CBB_add_asn1(&session, &child, kQuicEarlyDataContextTag) ||
         !CBB_add_asn1_octet_string(&child, in->quic_early_data_context.data(),
                                    in->quic_early_data_context.size())) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -426,7 +333,6 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
         !CBB_add_asn1(&session, &child, kPeerALPSTag) ||
         !CBB_add_asn1_octet_string(&child, in->peer_application_settings.data(),
                                    in->peer_application_settings.size())) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
   }
@@ -438,7 +344,8 @@ static int SSL_SESSION_to_bytes_full(const SSL_SESSION *in, CBB *cbb,
 // tagged with |tag| from |cbs| and saves it in |*out|. If the element was not
 // found, it sets |*out| to NULL. It returns one on success, whether or not the
 // element was found, and zero on decode error.
-static int SSL_SESSION_parse_string(CBS *cbs, UniquePtr<char> *out, unsigned tag) {
+static int SSL_SESSION_parse_string(CBS *cbs, UniquePtr<char> *out,
+                                    CBS_ASN1_TAG tag) {
   CBS value;
   int present;
   if (!CBS_get_optional_asn1_octet_string(cbs, &value, &present, tag)) {
@@ -452,7 +359,6 @@ static int SSL_SESSION_parse_string(CBS *cbs, UniquePtr<char> *out, unsigned tag
     }
     char *raw = nullptr;
     if (!CBS_strdup(&value, &raw)) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return 0;
     }
     out->reset(raw);
@@ -466,7 +372,7 @@ static int SSL_SESSION_parse_string(CBS *cbs, UniquePtr<char> *out, unsigned tag
 // tagged with |tag| from |cbs| and stows it in |*out|. It returns one on
 // success, whether or not the element was found, and zero on decode error.
 static bool SSL_SESSION_parse_octet_string(CBS *cbs, Array<uint8_t> *out,
-                                           unsigned tag) {
+                                           CBS_ASN1_TAG tag) {
   CBS value;
   if (!CBS_get_optional_asn1_octet_string(cbs, &value, NULL, tag)) {
     OPENSSL_PUT_ERROR(SSL, SSL_R_INVALID_SSL_SESSION);
@@ -477,7 +383,7 @@ static bool SSL_SESSION_parse_octet_string(CBS *cbs, Array<uint8_t> *out,
 
 static int SSL_SESSION_parse_crypto_buffer(CBS *cbs,
                                            UniquePtr<CRYPTO_BUFFER> *out,
-                                           unsigned tag,
+                                           CBS_ASN1_TAG tag,
                                            CRYPTO_BUFFER_POOL *pool) {
   if (!CBS_peek_asn1_tag(cbs, tag)) {
     return 1;
@@ -492,28 +398,12 @@ static int SSL_SESSION_parse_crypto_buffer(CBS *cbs,
   }
   out->reset(CRYPTO_BUFFER_new_from_CBS(&value, pool));
   if (*out == nullptr) {
-    OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
     return 0;
   }
   return 1;
 }
 
-// SSL_SESSION_parse_bounded_octet_string parses an optional ASN.1 OCTET STRING
-// explicitly tagged with |tag| of size at most |max_out|.
-static int SSL_SESSION_parse_bounded_octet_string(
-    CBS *cbs, uint8_t *out, uint8_t *out_len, uint8_t max_out, unsigned tag) {
-  CBS value;
-  if (!CBS_get_optional_asn1_octet_string(cbs, &value, NULL, tag) ||
-      CBS_len(&value) > max_out) {
-    OPENSSL_PUT_ERROR(SSL, SSL_R_INVALID_SSL_SESSION);
-    return 0;
-  }
-  OPENSSL_memcpy(out, CBS_data(&value), CBS_len(&value));
-  *out_len = (uint8_t)CBS_len(&value);
-  return 1;
-}
-
-static int SSL_SESSION_parse_long(CBS *cbs, long *out, unsigned tag,
+static int SSL_SESSION_parse_long(CBS *cbs, long *out, CBS_ASN1_TAG tag,
                                   long default_value) {
   uint64_t value;
   if (!CBS_get_optional_asn1_uint64(cbs, &value, tag,
@@ -526,7 +416,7 @@ static int SSL_SESSION_parse_long(CBS *cbs, long *out, unsigned tag,
   return 1;
 }
 
-static int SSL_SESSION_parse_u32(CBS *cbs, uint32_t *out, unsigned tag,
+static int SSL_SESSION_parse_u32(CBS *cbs, uint32_t *out, CBS_ASN1_TAG tag,
                                  uint32_t default_value) {
   uint64_t value;
   if (!CBS_get_optional_asn1_uint64(cbs, &value, tag,
@@ -539,7 +429,7 @@ static int SSL_SESSION_parse_u32(CBS *cbs, uint32_t *out, unsigned tag,
   return 1;
 }
 
-static int SSL_SESSION_parse_u16(CBS *cbs, uint16_t *out, unsigned tag,
+static int SSL_SESSION_parse_u16(CBS *cbs, uint16_t *out, CBS_ASN1_TAG tag,
                                  uint16_t default_value) {
   uint64_t value;
   if (!CBS_get_optional_asn1_uint64(cbs, &value, tag,
@@ -563,15 +453,15 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
   CBS session;
   uint64_t version, ssl_version;
   uint16_t unused;
-  if (!CBS_get_asn1(cbs, &session, CBS_ASN1_SEQUENCE) ||
-      !CBS_get_asn1_uint64(&session, &version) ||
-      version != kVersion ||
-      !CBS_get_asn1_uint64(&session, &ssl_version) ||
+  if (!CBS_get_asn1(cbs, &session, CBS_ASN1_SEQUENCE) ||  //
+      !CBS_get_asn1_uint64(&session, &version) ||         //
+      version != kVersion ||                              //
+      !CBS_get_asn1_uint64(&session, &ssl_version) ||     //
       // Require sessions have versions valid in either TLS or DTLS. The session
       // will not be used by the handshake if not applicable, but, for
       // simplicity, never parse a session that does not pass
       // |ssl_protocol_version_from_wire|.
-      ssl_version > UINT16_MAX ||
+      ssl_version > UINT16_MAX ||  //
       !ssl_protocol_version_from_wire(&unused, ssl_version)) {
     OPENSSL_PUT_ERROR(SSL, SSL_R_INVALID_SSL_SESSION);
     return nullptr;
@@ -580,8 +470,8 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
 
   CBS cipher;
   uint16_t cipher_value;
-  if (!CBS_get_asn1(&session, &cipher, CBS_ASN1_OCTETSTRING) ||
-      !CBS_get_u16(&cipher, &cipher_value) ||
+  if (!CBS_get_asn1(&session, &cipher, CBS_ASN1_OCTETSTRING) ||  //
+      !CBS_get_u16(&cipher, &cipher_value) ||                    //
       CBS_len(&cipher) != 0) {
     OPENSSL_PUT_ERROR(SSL, SSL_R_INVALID_SSL_SESSION);
     return nullptr;
@@ -592,25 +482,16 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
     return nullptr;
   }
 
-  CBS session_id, secret;
-  if (!CBS_get_asn1(&session, &session_id, CBS_ASN1_OCTETSTRING) ||
-      CBS_len(&session_id) > SSL3_MAX_SSL_SESSION_ID_LENGTH ||
-      !CBS_get_asn1(&session, &secret, CBS_ASN1_OCTETSTRING) ||
-      CBS_len(&secret) > SSL_MAX_MASTER_KEY_LENGTH) {
-    OPENSSL_PUT_ERROR(SSL, SSL_R_INVALID_SSL_SESSION);
-    return nullptr;
-  }
-  OPENSSL_memcpy(ret->session_id, CBS_data(&session_id), CBS_len(&session_id));
-  ret->session_id_length = CBS_len(&session_id);
-  OPENSSL_memcpy(ret->secret, CBS_data(&secret), CBS_len(&secret));
-  ret->secret_length = CBS_len(&secret);
-
-  CBS child;
+  CBS session_id, secret, child;
   uint64_t timeout;
-  if (!CBS_get_asn1(&session, &child, kTimeTag) ||
+  if (!CBS_get_asn1(&session, &session_id, CBS_ASN1_OCTETSTRING) ||
+      !ret->session_id.TryCopyFrom(session_id) ||
+      !CBS_get_asn1(&session, &secret, CBS_ASN1_OCTETSTRING) ||
+      !ret->secret.TryCopyFrom(secret) ||
+      !CBS_get_asn1(&session, &child, kTimeTag) ||
       !CBS_get_asn1_uint64(&child, &ret->time) ||
       !CBS_get_asn1(&session, &child, kTimeoutTag) ||
-      !CBS_get_asn1_uint64(&child, &timeout) ||
+      !CBS_get_asn1_uint64(&child, &timeout) ||  //
       timeout > UINT32_MAX) {
     OPENSSL_PUT_ERROR(SSL, SSL_R_INVALID_SSL_SESSION);
     return nullptr;
@@ -627,9 +508,10 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
   }
   // |peer| is processed with the certificate chain.
 
-  if (!SSL_SESSION_parse_bounded_octet_string(
-          &session, ret->sid_ctx, &ret->sid_ctx_length, sizeof(ret->sid_ctx),
-          kSessionIDContextTag) ||
+  CBS sid_ctx;
+  if (!CBS_get_optional_asn1_octet_string(
+          &session, &sid_ctx, /*out_present=*/nullptr, kSessionIDContextTag) ||
+      !ret->sid_ctx.TryCopyFrom(sid_ctx) ||
       !SSL_SESSION_parse_long(&session, &ret->verify_result, kVerifyResultTag,
                               X509_V_OK)) {
     return nullptr;
@@ -667,10 +549,11 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
     ret->peer_sha256_valid = false;
   }
 
-  if (!SSL_SESSION_parse_bounded_octet_string(
-          &session, ret->original_handshake_hash,
-          &ret->original_handshake_hash_len,
-          sizeof(ret->original_handshake_hash), kOriginalHandshakeHashTag) ||
+  CBS original_handshake_hash;
+  if (!CBS_get_optional_asn1_octet_string(&session, &original_handshake_hash,
+                                          /*out_present=*/nullptr,
+                                          kOriginalHandshakeHashTag) ||
+      !ret->original_handshake_hash.TryCopyFrom(original_handshake_hash) ||
       !SSL_SESSION_parse_crypto_buffer(&session,
                                        &ret->signed_cert_timestamp_list,
                                        kSignedCertTimestampListTag, pool) ||
@@ -709,15 +592,13 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
   if (has_peer || has_cert_chain) {
     ret->certs.reset(sk_CRYPTO_BUFFER_new_null());
     if (ret->certs == nullptr) {
-      OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
       return nullptr;
     }
 
     if (has_peer) {
       UniquePtr<CRYPTO_BUFFER> buffer(CRYPTO_BUFFER_new_from_CBS(&peer, pool));
-      if (!buffer ||
+      if (!buffer ||  //
           !PushToStack(ret->certs.get(), std::move(buffer))) {
-        OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
         return nullptr;
       }
     }
@@ -733,7 +614,6 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
       UniquePtr<CRYPTO_BUFFER> buffer(CRYPTO_BUFFER_new_from_CBS(&cert, pool));
       if (buffer == nullptr ||
           !PushToStack(ret->certs.get(), std::move(buffer))) {
-        OPENSSL_PUT_ERROR(SSL, ERR_R_MALLOC_FAILURE);
         return nullptr;
       }
     }
@@ -743,8 +623,8 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
   int age_add_present;
   if (!CBS_get_optional_asn1_octet_string(&session, &age_add, &age_add_present,
                                           kTicketAgeAddTag) ||
-      (age_add_present &&
-       !CBS_get_u32(&age_add, &ret->ticket_age_add)) ||
+      (age_add_present &&                                //
+       !CBS_get_u32(&age_add, &ret->ticket_age_add)) ||  //
       CBS_len(&age_add) != 0) {
     return nullptr;
   }
@@ -808,7 +688,7 @@ UniquePtr<SSL_SESSION> SSL_SESSION_parse(CBS *cbs,
   return ret;
 }
 
-int ssl_session_serialize(const SSL_SESSION *in, CBB *cbb) {
+bool ssl_session_serialize(const SSL_SESSION *in, CBB *cbb) {
   return SSL_SESSION_to_bytes_full(in, cbb, 0);
 }
 

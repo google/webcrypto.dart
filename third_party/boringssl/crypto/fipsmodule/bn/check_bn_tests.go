@@ -1,4 +1,4 @@
-// Copyright (c) 2016, Google Inc.
+// Copyright 2016 The BoringSSL Authors
 //
 // Permission to use, copy, modify, and/or distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -11,6 +11,8 @@
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 // CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+//go:build ignore
 
 package main
 
@@ -135,7 +137,7 @@ func checkKeys(t test, keys ...string) bool {
 		}
 	}
 
-	for k, _ := range t.Values {
+	for k := range t.Values {
 		var found bool
 		for _, k2 := range keys {
 			if k == k2 {

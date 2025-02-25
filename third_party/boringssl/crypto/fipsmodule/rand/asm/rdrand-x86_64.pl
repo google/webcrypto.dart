@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Copyright (c) 2015, Google Inc.
+# Copyright 2015 The BoringSSL Authors
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -46,6 +46,7 @@ print<<___;
 .align	16
 CRYPTO_rdrand:
 .cfi_startproc
+	_CET_ENDBR
 	xorq %rax, %rax
 	rdrand $tmp1
 	# An add-with-carry of zero effectively sets %rax to the carry flag.
@@ -64,6 +65,7 @@ CRYPTO_rdrand:
 .align 16
 CRYPTO_rdrand_multiple8_buf:
 .cfi_startproc
+	_CET_ENDBR
 	test $len, $len
 	jz .Lout
 	movq \$8, $tmp1

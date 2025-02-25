@@ -1,4 +1,4 @@
-/* Copyright (c) 2016, Google Inc.
+/* Copyright 2016 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <openssl/rand.h>
@@ -31,7 +32,7 @@
 
 
 int main(int argc, char **argv) {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleMock(&argc, argv);
   bssl::SetupGoogleTest();
 
   bool unwind_tests = true;

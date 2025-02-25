@@ -1,4 +1,4 @@
-/* Copyright (c) 2015, Google Inc.
+/* Copyright 2015 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -21,8 +21,10 @@
 #include <string.h>
 
 #include <iosfwd>
-#include <string>
+#include <string_view>
 #include <vector>
+
+#include <gtest/gtest.h>
 
 #include <openssl/span.h>
 
@@ -41,12 +43,8 @@ struct Bytes {
   Bytes(const char *data_arg, size_t len_arg)
       : span_(reinterpret_cast<const uint8_t *>(data_arg), len_arg) {}
 
-  explicit Bytes(const char *str)
-      : span_(reinterpret_cast<const uint8_t *>(str), strlen(str)) {}
-  explicit Bytes(const std::string &str)
-      : span_(reinterpret_cast<const uint8_t *>(str.data()), str.size()) {}
-  explicit Bytes(bssl::Span<const uint8_t> span)
-      : span_(span) {}
+  explicit Bytes(std::string_view str) : span_(bssl::StringAsBytes(str)) {}
+  explicit Bytes(bssl::Span<const uint8_t> span) : span_(span) {}
 
   bssl::Span<const uint8_t> span_;
 };
@@ -57,6 +55,13 @@ inline bool operator==(const Bytes &a, const Bytes &b) {
 
 inline bool operator!=(const Bytes &a, const Bytes &b) { return !(a == b); }
 
+// Declassified returns a declassified copy of some input.
+inline std::vector<uint8_t> Declassified(bssl::Span<const uint8_t> in) {
+  std::vector<uint8_t> copy(in.begin(), in.end());
+  CONSTTIME_DECLASSIFY(copy.data(), copy.size());
+  return copy;
+}
+
 std::ostream &operator<<(std::ostream &os, const Bytes &in);
 
 // DecodeHex decodes |in| from hexadecimal and writes the output to |out|. It
@@ -66,6 +71,10 @@ bool DecodeHex(std::vector<uint8_t> *out, const std::string &in);
 
 // EncodeHex returns |in| encoded in hexadecimal.
 std::string EncodeHex(bssl::Span<const uint8_t> in);
+
+// ErrorEquals asserts that |err| is an error with library |lib| and reason
+// |reason|.
+testing::AssertionResult ErrorEquals(uint32_t err, int lib, int reason);
 
 
 #endif  // OPENSSL_HEADER_CRYPTO_TEST_TEST_UTIL_H

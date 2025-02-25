@@ -1,4 +1,4 @@
-// Copyright (c) 2016, Google Inc.
+// Copyright 2016 The BoringSSL Authors
 //
 // Permission to use, copy, modify, and/or distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -28,9 +28,7 @@ type deterministicRand struct {
 }
 
 func (d *deterministicRand) Read(buf []byte) (int, error) {
-	for i := range buf {
-		buf[i] = 0
-	}
+	clear(buf)
 	var nonce [12]byte
 	binary.LittleEndian.PutUint64(nonce[:8], d.numCalls)
 	cipher, err := chacha20.NewUnauthenticatedCipher(deterministicRandKey, nonce[:])

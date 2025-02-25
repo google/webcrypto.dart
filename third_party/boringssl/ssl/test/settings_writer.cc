@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Google Inc.
+/* Copyright 2018 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -75,8 +75,11 @@ bool SettingsWriter::Commit() {
   }
   bssl::UniquePtr<uint8_t> free_settings(settings);
 
-  using ScopedFILE = std::unique_ptr<FILE, decltype(&fclose)>;
-  ScopedFILE file(fopen(path_.c_str(), "w"), fclose);
+  struct FileCloser {
+    void operator()(FILE *f) const { fclose(f); }
+  };
+  using ScopedFILE = std::unique_ptr<FILE, FileCloser>;
+  ScopedFILE file(fopen(path_.c_str(), "w"));
   if (!file) {
     return false;
   }

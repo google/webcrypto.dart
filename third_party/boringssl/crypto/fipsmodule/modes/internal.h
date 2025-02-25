@@ -1,50 +1,11 @@
-/* ====================================================================
- * Copyright (c) 2008 The OpenSSL Project.  All rights reserved.
+/*
+ * Copyright 2010-2016 The OpenSSL Project Authors. All Rights Reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. All advertising materials mentioning features or use of this
- *    software must display the following acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
- *
- * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
- *    endorse or promote products derived from this software without
- *    prior written permission. For written permission, please contact
- *    openssl-core@openssl.org.
- *
- * 5. Products derived from this software may not be called "OpenSSL"
- *    nor may "OpenSSL" appear in their names without prior written
- *    permission of the OpenSSL Project.
- *
- * 6. Redistributions of any form whatsoever must retain the following
- *    acknowledgment:
- *    "This product includes software developed by the OpenSSL Project
- *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
- *
- * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- * ==================================================================== */
+ * Licensed under the OpenSSL license (the "License").  You may not use
+ * this file except in compliance with the License.  You can obtain a copy
+ * in the file LICENSE in the source distribution or at
+ * https://www.openssl.org/source/license.html
+ */
 
 #ifndef OPENSSL_HEADER_MODES_INTERNAL_H
 #define OPENSSL_HEADER_MODES_INTERNAL_H
@@ -53,50 +14,43 @@
 
 #include <openssl/aes.h>
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "../../internal.h"
+#include "../aes/internal.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
 
-// block128_f is the type of an AES block cipher implementation.
-//
-// Unlike upstream OpenSSL, it and the other functions in this file hard-code
-// |AES_KEY|. It is undefined in C to call a function pointer with anything
-// other than the original type. Thus we either must match |block128_f| to the
-// type signature of |AES_encrypt| and friends or pass in |void*| wrapper
-// functions.
-//
-// These functions are called exclusively with AES, so we use the former.
-typedef void (*block128_f)(const uint8_t in[16], uint8_t out[16],
-                           const AES_KEY *key);
+inline void CRYPTO_xor16(uint8_t out[16], const uint8_t a[16],
+                         const uint8_t b[16]) {
+  // TODO(davidben): Ideally we'd leave this to the compiler, which could use
+  // vector registers, etc. But the compiler doesn't know that |in| and |out|
+  // cannot partially alias. |restrict| is slightly two strict (we allow exact
+  // aliasing), but perhaps in-place could be a separate function?
+  static_assert(16 % sizeof(crypto_word_t) == 0,
+                "block cannot be evenly divided into words");
+  for (size_t i = 0; i < 16; i += sizeof(crypto_word_t)) {
+    CRYPTO_store_word_le(
+        out + i, CRYPTO_load_word_le(a + i) ^ CRYPTO_load_word_le(b + i));
+  }
+}
 
 
 // CTR.
 
-// ctr128_f is the type of a function that performs CTR-mode encryption.
-typedef void (*ctr128_f)(const uint8_t *in, uint8_t *out, size_t blocks,
-                         const AES_KEY *key, const uint8_t ivec[16]);
-
-// CRYPTO_ctr128_encrypt encrypts (or decrypts, it's the same in CTR mode)
+// CRYPTO_ctr128_encrypt_ctr32 encrypts (or decrypts, it's the same in CTR mode)
 // |len| bytes from |in| to |out| using |block| in counter mode. There's no
 // requirement that |len| be a multiple of any value and any partial blocks are
 // stored in |ecount_buf| and |*num|, which must be zeroed before the initial
 // call. The counter is a 128-bit, big-endian value in |ivec| and is
-// incremented by this function.
-void CRYPTO_ctr128_encrypt(const uint8_t *in, uint8_t *out, size_t len,
-                           const AES_KEY *key, uint8_t ivec[16],
-                           uint8_t ecount_buf[16], unsigned *num,
-                           block128_f block);
-
-// CRYPTO_ctr128_encrypt_ctr32 acts like |CRYPTO_ctr128_encrypt| but takes
-// |ctr|, a function that performs CTR mode but only deals with the lower 32
-// bits of the counter. This is useful when |ctr| can be an optimised
-// function.
+// incremented by this function. If the counter overflows, it wraps around.
+// |ctr| must be a function that performs CTR mode but only deals with the lower
+// 32 bits of the counter.
 void CRYPTO_ctr128_encrypt_ctr32(const uint8_t *in, uint8_t *out, size_t len,
                                  const AES_KEY *key, uint8_t ivec[16],
                                  uint8_t ecount_buf[16], unsigned *num,
@@ -111,53 +65,50 @@ void CRYPTO_ctr128_encrypt_ctr32(const uint8_t *in, uint8_t *out, size_t len,
 // can be safely copied. Additionally, |gcm_key| is split into a separate
 // struct.
 
+// gcm_impl_t specifies an assembly implementation of AES-GCM.
+enum gcm_impl_t {
+  gcm_separate = 0,  // No combined AES-GCM, but may have AES-CTR and GHASH.
+  gcm_x86_aesni,
+  gcm_x86_vaes_avx2,
+  gcm_x86_vaes_avx10_512,
+  gcm_arm64_aes,
+};
+
 typedef struct { uint64_t hi,lo; } u128;
 
 // gmult_func multiplies |Xi| by the GCM key and writes the result back to
 // |Xi|.
-typedef void (*gmult_func)(uint64_t Xi[2], const u128 Htable[16]);
+typedef void (*gmult_func)(uint8_t Xi[16], const u128 Htable[16]);
 
 // ghash_func repeatedly multiplies |Xi| by the GCM key and adds in blocks from
 // |inp|. The result is written back to |Xi| and the |len| argument must be a
 // multiple of 16.
-typedef void (*ghash_func)(uint64_t Xi[2], const u128 Htable[16],
+typedef void (*ghash_func)(uint8_t Xi[16], const u128 Htable[16],
                            const uint8_t *inp, size_t len);
 
 typedef struct gcm128_key_st {
-  // Note the MOVBE-based, x86-64, GHASH assembly requires |H| and |Htable| to
-  // be the first two elements of this struct. Additionally, some assembly
-  // routines require a 16-byte-aligned |Htable| when hashing data, but not
-  // initialization. |GCM128_KEY| is not itself aligned to simplify embedding in
-  // |EVP_AEAD_CTX|, but |Htable|'s offset must be a multiple of 16.
-  u128 H;
   u128 Htable[16];
   gmult_func gmult;
   ghash_func ghash;
+  AES_KEY aes;
 
+  ctr128_f ctr;
   block128_f block;
-
-  // use_aesni_gcm_crypt is true if this context should use the assembly
-  // functions |aesni_gcm_encrypt| and |aesni_gcm_decrypt| to process data.
-  unsigned use_aesni_gcm_crypt:1;
+  enum gcm_impl_t impl;
 } GCM128_KEY;
 
 // GCM128_CONTEXT contains state for a single GCM operation. The structure
 // should be zero-initialized before use.
 typedef struct {
   // The following 5 names follow names in GCM specification
-  union {
-    uint64_t u[2];
-    uint32_t d[4];
-    uint8_t c[16];
-    crypto_word_t t[16 / sizeof(crypto_word_t)];
-  } Yi, EKi, EK0, len, Xi;
-
-  // Note that the order of |Xi| and |gcm_key| is fixed by the MOVBE-based,
-  // x86-64, GHASH assembly. Additionally, some assembly routines require
-  // |gcm_key| to be 16-byte aligned. |GCM128_KEY| is not itself aligned to
-  // simplify embedding in |EVP_AEAD_CTX|.
-  alignas(16) GCM128_KEY gcm_key;
-
+  uint8_t Yi[16];
+  uint8_t EKi[16];
+  uint8_t EK0[16];
+  struct {
+    uint64_t aad;
+    uint64_t msg;
+  } len;
+  uint8_t Xi[16];
   unsigned mres, ares;
 } GCM128_CONTEXT;
 
@@ -169,79 +120,55 @@ int crypto_gcm_clmul_enabled(void);
 
 // CRYPTO_ghash_init writes a precomputed table of powers of |gcm_key| to
 // |out_table| and sets |*out_mult| and |*out_hash| to (potentially hardware
-// accelerated) functions for performing operations in the GHASH field. If the
-// AVX implementation was used |*out_is_avx| will be true.
+// accelerated) functions for performing operations in the GHASH field.
 void CRYPTO_ghash_init(gmult_func *out_mult, ghash_func *out_hash,
-                       u128 *out_key, u128 out_table[16], int *out_is_avx,
-                       const uint8_t gcm_key[16]);
+                       u128 out_table[16], const uint8_t gcm_key[16]);
 
-// CRYPTO_gcm128_init_key initialises |gcm_key| to use |block| (typically AES)
-// with the given key. |block_is_hwaes| is one if |block| is |aes_hw_encrypt|.
-OPENSSL_EXPORT void CRYPTO_gcm128_init_key(GCM128_KEY *gcm_key,
-                                           const AES_KEY *key, block128_f block,
-                                           int block_is_hwaes);
+// CRYPTO_gcm128_init_aes_key initialises |gcm_key| to with AES key |key|.
+void CRYPTO_gcm128_init_aes_key(GCM128_KEY *gcm_key, const uint8_t *key,
+                                size_t key_bytes);
 
-// CRYPTO_gcm128_setiv sets the IV (nonce) for |ctx|. The |key| must be the
-// same key that was passed to |CRYPTO_gcm128_init|.
-OPENSSL_EXPORT void CRYPTO_gcm128_setiv(GCM128_CONTEXT *ctx, const AES_KEY *key,
-                                        const uint8_t *iv, size_t iv_len);
+// CRYPTO_gcm128_init_ctx initializes |ctx| to encrypt with |key| and |iv|.
+void CRYPTO_gcm128_init_ctx(const GCM128_KEY *key, GCM128_CONTEXT *ctx,
+                            const uint8_t *iv, size_t iv_len);
 
-// CRYPTO_gcm128_aad sets the authenticated data for an instance of GCM.
-// This must be called before and data is encrypted. It returns one on success
+// CRYPTO_gcm128_aad adds to the authenticated data for an instance of GCM.
+// This must be called before and data is encrypted. |key| must be the same
+// value that was passed to |CRYPTO_gcm128_init_ctx|. It returns one on success
 // and zero otherwise.
-OPENSSL_EXPORT int CRYPTO_gcm128_aad(GCM128_CONTEXT *ctx, const uint8_t *aad,
-                                     size_t len);
+int CRYPTO_gcm128_aad(const GCM128_KEY *key, GCM128_CONTEXT *ctx,
+                      const uint8_t *aad, size_t aad_len);
 
-// CRYPTO_gcm128_encrypt encrypts |len| bytes from |in| to |out|. The |key|
-// must be the same key that was passed to |CRYPTO_gcm128_init|. It returns one
-// on success and zero otherwise.
-OPENSSL_EXPORT int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
-                                         const AES_KEY *key, const uint8_t *in,
-                                         uint8_t *out, size_t len);
+// CRYPTO_gcm128_encrypt encrypts |len| bytes from |in| to |out|. |key| must be
+// the same value that was passed to |CRYPTO_gcm128_init_ctx|. It returns one on
+// success and zero otherwise.
+int CRYPTO_gcm128_encrypt(const GCM128_KEY *key, GCM128_CONTEXT *ctx,
+                          const uint8_t *in, uint8_t *out, size_t len);
 
-// CRYPTO_gcm128_decrypt decrypts |len| bytes from |in| to |out|. The |key|
-// must be the same key that was passed to |CRYPTO_gcm128_init|. It returns one
-// on success and zero otherwise.
-OPENSSL_EXPORT int CRYPTO_gcm128_decrypt(GCM128_CONTEXT *ctx,
-                                         const AES_KEY *key, const uint8_t *in,
-                                         uint8_t *out, size_t len);
-
-// CRYPTO_gcm128_encrypt_ctr32 encrypts |len| bytes from |in| to |out| using
-// a CTR function that only handles the bottom 32 bits of the nonce, like
-// |CRYPTO_ctr128_encrypt_ctr32|. The |key| must be the same key that was
-// passed to |CRYPTO_gcm128_init|. It returns one on success and zero
-// otherwise.
-OPENSSL_EXPORT int CRYPTO_gcm128_encrypt_ctr32(GCM128_CONTEXT *ctx,
-                                               const AES_KEY *key,
-                                               const uint8_t *in, uint8_t *out,
-                                               size_t len, ctr128_f stream);
-
-// CRYPTO_gcm128_decrypt_ctr32 decrypts |len| bytes from |in| to |out| using
-// a CTR function that only handles the bottom 32 bits of the nonce, like
-// |CRYPTO_ctr128_encrypt_ctr32|. The |key| must be the same key that was
-// passed to |CRYPTO_gcm128_init|. It returns one on success and zero
-// otherwise.
-OPENSSL_EXPORT int CRYPTO_gcm128_decrypt_ctr32(GCM128_CONTEXT *ctx,
-                                               const AES_KEY *key,
-                                               const uint8_t *in, uint8_t *out,
-                                               size_t len, ctr128_f stream);
+// CRYPTO_gcm128_decrypt decrypts |len| bytes from |in| to |out|. |key| must be
+// the same value that was passed to |CRYPTO_gcm128_init_ctx|. It returns one on
+// success and zero otherwise.
+int CRYPTO_gcm128_decrypt(const GCM128_KEY *key, GCM128_CONTEXT *ctx,
+                          const uint8_t *in, uint8_t *out, size_t len);
 
 // CRYPTO_gcm128_finish calculates the authenticator and compares it against
-// |len| bytes of |tag|. It returns one on success and zero otherwise.
-OPENSSL_EXPORT int CRYPTO_gcm128_finish(GCM128_CONTEXT *ctx, const uint8_t *tag,
-                                        size_t len);
+// |len| bytes of |tag|. |key| must be the same value that was passed to
+// |CRYPTO_gcm128_init_ctx|. It returns one on success and zero otherwise.
+int CRYPTO_gcm128_finish(const GCM128_KEY *key, GCM128_CONTEXT *ctx,
+                         const uint8_t *tag, size_t len);
 
 // CRYPTO_gcm128_tag calculates the authenticator and copies it into |tag|.
-// The minimum of |len| and 16 bytes are copied into |tag|.
-OPENSSL_EXPORT void CRYPTO_gcm128_tag(GCM128_CONTEXT *ctx, uint8_t *tag,
-                                      size_t len);
+// The minimum of |len| and 16 bytes are copied into |tag|. |key| must be the
+// same value that was passed to |CRYPTO_gcm128_init_ctx|.
+void CRYPTO_gcm128_tag(const GCM128_KEY *key, GCM128_CONTEXT *ctx, uint8_t *tag,
+                       size_t len);
 
 
 // GCM assembly.
 
 void gcm_init_nohw(u128 Htable[16], const uint64_t H[2]);
-void gcm_gmult_nohw(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_nohw(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
+void gcm_gmult_nohw(uint8_t Xi[16], const u128 Htable[16]);
+void gcm_ghash_nohw(uint8_t Xi[16], const u128 Htable[16], const uint8_t *inp,
                     size_t len);
 
 #if !defined(OPENSSL_NO_ASM)
@@ -249,29 +176,54 @@ void gcm_ghash_nohw(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
 #if defined(OPENSSL_X86) || defined(OPENSSL_X86_64)
 #define GCM_FUNCREF
 void gcm_init_clmul(u128 Htable[16], const uint64_t Xi[2]);
-void gcm_gmult_clmul(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_clmul(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
+void gcm_gmult_clmul(uint8_t Xi[16], const u128 Htable[16]);
+void gcm_ghash_clmul(uint8_t Xi[16], const u128 Htable[16], const uint8_t *inp,
                      size_t len);
 
-// |gcm_gmult_ssse3| and |gcm_ghash_ssse3| require |Htable| to be
-// 16-byte-aligned, but |gcm_init_ssse3| does not.
 void gcm_init_ssse3(u128 Htable[16], const uint64_t Xi[2]);
-void gcm_gmult_ssse3(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_ssse3(uint64_t Xi[2], const u128 Htable[16], const uint8_t *in,
+void gcm_gmult_ssse3(uint8_t Xi[16], const u128 Htable[16]);
+void gcm_ghash_ssse3(uint8_t Xi[16], const u128 Htable[16], const uint8_t *in,
                      size_t len);
 
 #if defined(OPENSSL_X86_64)
 #define GHASH_ASM_X86_64
 void gcm_init_avx(u128 Htable[16], const uint64_t Xi[2]);
-void gcm_gmult_avx(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_avx(uint64_t Xi[2], const u128 Htable[16], const uint8_t *in,
+void gcm_gmult_avx(uint8_t Xi[16], const u128 Htable[16]);
+void gcm_ghash_avx(uint8_t Xi[16], const u128 Htable[16], const uint8_t *in,
                    size_t len);
 
-#define AESNI_GCM
+#define HW_GCM
 size_t aesni_gcm_encrypt(const uint8_t *in, uint8_t *out, size_t len,
-                         const AES_KEY *key, uint8_t ivec[16], uint64_t *Xi);
+                         const AES_KEY *key, uint8_t ivec[16],
+                         const u128 Htable[16], uint8_t Xi[16]);
 size_t aesni_gcm_decrypt(const uint8_t *in, uint8_t *out, size_t len,
-                         const AES_KEY *key, uint8_t ivec[16], uint64_t *Xi);
+                         const AES_KEY *key, uint8_t ivec[16],
+                         const u128 Htable[16], uint8_t Xi[16]);
+
+void gcm_init_vpclmulqdq_avx2(u128 Htable[16], const uint64_t H[2]);
+void gcm_gmult_vpclmulqdq_avx2(uint8_t Xi[16], const u128 Htable[16]);
+void gcm_ghash_vpclmulqdq_avx2(uint8_t Xi[16], const u128 Htable[16],
+                               const uint8_t *in, size_t len);
+void aes_gcm_enc_update_vaes_avx2(const uint8_t *in, uint8_t *out, size_t len,
+                                  const AES_KEY *key, const uint8_t ivec[16],
+                                  const u128 Htable[16], uint8_t Xi[16]);
+void aes_gcm_dec_update_vaes_avx2(const uint8_t *in, uint8_t *out, size_t len,
+                                  const AES_KEY *key, const uint8_t ivec[16],
+                                  const u128 Htable[16], uint8_t Xi[16]);
+
+void gcm_init_vpclmulqdq_avx10_512(u128 Htable[16], const uint64_t H[2]);
+void gcm_gmult_vpclmulqdq_avx10(uint8_t Xi[16], const u128 Htable[16]);
+void gcm_ghash_vpclmulqdq_avx10_512(uint8_t Xi[16], const u128 Htable[16],
+                                    const uint8_t *in, size_t len);
+void aes_gcm_enc_update_vaes_avx10_512(const uint8_t *in, uint8_t *out,
+                                       size_t len, const AES_KEY *key,
+                                       const uint8_t ivec[16],
+                                       const u128 Htable[16], uint8_t Xi[16]);
+void aes_gcm_dec_update_vaes_avx10_512(const uint8_t *in, uint8_t *out,
+                                       size_t len, const AES_KEY *key,
+                                       const uint8_t ivec[16],
+                                       const u128 Htable[16], uint8_t Xi[16]);
+
 #endif  // OPENSSL_X86_64
 
 #if defined(OPENSSL_X86)
@@ -279,32 +231,35 @@ size_t aesni_gcm_decrypt(const uint8_t *in, uint8_t *out, size_t len,
 #endif  // OPENSSL_X86
 
 #elif defined(OPENSSL_ARM) || defined(OPENSSL_AARCH64)
+
 #define GHASH_ASM_ARM
 #define GCM_FUNCREF
 
-OPENSSL_INLINE int gcm_pmull_capable(void) {
-  return CRYPTO_is_ARMv8_PMULL_capable();
-}
+inline int gcm_pmull_capable(void) { return CRYPTO_is_ARMv8_PMULL_capable(); }
 
-void gcm_init_v8(u128 Htable[16], const uint64_t Xi[2]);
-void gcm_gmult_v8(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_v8(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
+void gcm_init_v8(u128 Htable[16], const uint64_t H[2]);
+void gcm_gmult_v8(uint8_t Xi[16], const u128 Htable[16]);
+void gcm_ghash_v8(uint8_t Xi[16], const u128 Htable[16], const uint8_t *inp,
                   size_t len);
 
-OPENSSL_INLINE int gcm_neon_capable(void) { return CRYPTO_is_NEON_capable(); }
+inline int gcm_neon_capable(void) { return CRYPTO_is_NEON_capable(); }
 
-void gcm_init_neon(u128 Htable[16], const uint64_t Xi[2]);
-void gcm_gmult_neon(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_neon(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
+void gcm_init_neon(u128 Htable[16], const uint64_t H[2]);
+void gcm_gmult_neon(uint8_t Xi[16], const u128 Htable[16]);
+void gcm_ghash_neon(uint8_t Xi[16], const u128 Htable[16], const uint8_t *inp,
                     size_t len);
 
-#elif defined(OPENSSL_PPC64LE)
-#define GHASH_ASM_PPC64LE
-#define GCM_FUNCREF
-void gcm_init_p8(u128 Htable[16], const uint64_t Xi[2]);
-void gcm_gmult_p8(uint64_t Xi[2], const u128 Htable[16]);
-void gcm_ghash_p8(uint64_t Xi[2], const u128 Htable[16], const uint8_t *inp,
-                  size_t len);
+#if defined(OPENSSL_AARCH64)
+#define HW_GCM
+// These functions are defined in aesv8-gcm-armv8.pl.
+void aes_gcm_enc_kernel(const uint8_t *in, uint64_t in_bits, void *out,
+                        void *Xi, uint8_t *ivec, const AES_KEY *key,
+                        const u128 Htable[16]);
+void aes_gcm_dec_kernel(const uint8_t *in, uint64_t in_bits, void *out,
+                        void *Xi, uint8_t *ivec, const AES_KEY *key,
+                        const u128 Htable[16]);
+#endif
+
 #endif
 #endif  // OPENSSL_NO_ASM
 
@@ -377,20 +332,11 @@ size_t CRYPTO_cts128_encrypt_block(const uint8_t *in, uint8_t *out, size_t len,
 //
 // POLYVAL is a polynomial authenticator that operates over a field very
 // similar to the one that GHASH uses. See
-// https://tools.ietf.org/html/draft-irtf-cfrg-gcmsiv-02#section-3.
-
-typedef union {
-  uint64_t u[2];
-  uint8_t c[16];
-} polyval_block;
+// https://www.rfc-editor.org/rfc/rfc8452.html#section-3.
 
 struct polyval_ctx {
-  // Note that the order of |S|, |H| and |Htable| is fixed by the MOVBE-based,
-  // x86-64, GHASH assembly. Additionally, some assembly routines require
-  // |Htable| to be 16-byte aligned.
-  polyval_block S;
-  u128 H;
-  alignas(16) u128 Htable[16];
+  uint8_t S[16];
+  u128 Htable[16];
   gmult_func gmult;
   ghash_func ghash;
 };

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Google Inc.
+/* Copyright 2018 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,8 +17,6 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *buf, size_t len) {
   STRING_PIECE sp = {reinterpret_cast<const char *>(buf), len};
-  crypto_get_arm_hwcap_from_cpuinfo(&sp);
   crypto_get_arm_hwcap2_from_cpuinfo(&sp);
-  crypto_cpuinfo_has_broken_neon(&sp);
   return 0;
 }

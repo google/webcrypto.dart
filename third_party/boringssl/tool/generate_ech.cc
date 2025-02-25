@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, Google Inc.
+/* Copyright 2021 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -119,13 +119,12 @@ bool GenerateECH(const std::vector<std::string> &args) {
     fprintf(stderr, "Failed to serialize the ECHConfigList\n");
     return false;
   }
-  if (!WriteToFile(
-          args_map["-out-ech-config-list"],
-          bssl::MakeConstSpan(CBB_data(cbb.get()), CBB_len(cbb.get()))) ||
+  if (!WriteToFile(args_map["-out-ech-config-list"],
+                   bssl::Span(CBB_data(cbb.get()), CBB_len(cbb.get()))) ||
       !WriteToFile(args_map["-out-ech-config"],
-                   bssl::MakeConstSpan(ech_config, ech_config_len)) ||
+                   bssl::Span(ech_config, ech_config_len)) ||
       !WriteToFile(args_map["-out-private-key"],
-                   bssl::MakeConstSpan(private_key, private_key_len))) {
+                   bssl::Span(private_key, private_key_len))) {
     fprintf(stderr, "Failed to write ECHConfig or private key to file\n");
     return false;
   }

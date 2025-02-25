@@ -1,4 +1,4 @@
-// Copyright (c) 2017, Google Inc.
+// Copyright 2017 The BoringSSL Authors
 //
 // Permission to use, copy, modify, and/or distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -12,12 +12,13 @@
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 // CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+//go:build ignore
+
 package main
 
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -270,11 +271,11 @@ func convertComments(path string, in []byte) []byte {
 
 func main() {
 	for _, arg := range os.Args[1:] {
-		in, err := ioutil.ReadFile(arg)
+		in, err := os.ReadFile(arg)
 		if err != nil {
 			panic(err)
 		}
-		if err := ioutil.WriteFile(arg, convertComments(arg, in), 0666); err != nil {
+		if err := os.WriteFile(arg, convertComments(arg, in), 0666); err != nil {
 			panic(err)
 		}
 	}

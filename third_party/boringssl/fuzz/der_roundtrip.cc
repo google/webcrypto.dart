@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, Google Inc.
+/* Copyright 2022 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -22,7 +22,7 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *buf, size_t len) {
   CBS cbs, body;
-  unsigned tag;
+  CBS_ASN1_TAG tag;
   CBS_init(&cbs, buf, len);
   if (CBS_get_any_asn1(&cbs, &body, &tag)) {
     // DER has a unique encoding, so any parsed input should round-trip

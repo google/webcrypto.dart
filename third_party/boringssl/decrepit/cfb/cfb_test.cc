@@ -1,4 +1,4 @@
-// Copyright (c) 2017, Google Inc.
+// Copyright 2017 The BoringSSL Authors
 //
 // Permission to use, copy, modify, and/or distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -10,7 +10,7 @@
 // SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-// CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <openssl/cipher.h>
 
@@ -87,7 +87,7 @@ TEST(CFBTest, TestVectors) {
     SCOPED_TRACE(test_num);
 
     const size_t input_len = sizeof(test.plaintext);
-    std::unique_ptr<uint8_t[]> out(new uint8_t[input_len]);
+    auto out = std::make_unique<uint8_t[]>(input_len);
 
     for (size_t stride = 1; stride <= input_len; stride++) {
       bssl::ScopedEVP_CIPHER_CTX ctx;
@@ -134,7 +134,7 @@ TEST(CFBTest, TestVectors) {
                                      nullptr, test.key, test.iv));
     }
 
-    std::unique_ptr<uint8_t[]> plaintext(new uint8_t[input_len]);
+    auto plaintext = std::make_unique<uint8_t[]>(input_len);
     int num_bytes;
     ASSERT_TRUE(EVP_DecryptUpdate(decrypt_ctx.get(), plaintext.get(),
                                   &num_bytes, out.get(), input_len));

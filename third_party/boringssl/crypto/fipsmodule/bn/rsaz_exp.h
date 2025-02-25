@@ -32,19 +32,16 @@ extern "C" {
 // modulo |m_norm|. |base_norm| must be fully-reduced and |exponent| must have
 // the high bit set (it is 1024 bits wide). |RR| and |k0| must be |RR| and |n0|,
 // respectively, extracted from |m_norm|'s |BN_MONT_CTX|. |storage_words| is a
-// temporary buffer that must be aligned to |MOD_EXP_CTIME_MIN_CACHE_LINE_WIDTH|
-// bytes.
+// temporary buffer that must be aligned to |MOD_EXP_CTIME_ALIGN| bytes.
 void RSAZ_1024_mod_exp_avx2(BN_ULONG result[16], const BN_ULONG base_norm[16],
                             const BN_ULONG exponent[16],
                             const BN_ULONG m_norm[16], const BN_ULONG RR[16],
                             BN_ULONG k0,
                             BN_ULONG storage_words[MOD_EXP_CTIME_STORAGE_LEN]);
 
-OPENSSL_INLINE int rsaz_avx2_capable(void) {
-  return CRYPTO_is_AVX2_capable();
-}
+inline int rsaz_avx2_capable(void) { return CRYPTO_is_AVX2_capable(); }
 
-OPENSSL_INLINE int rsaz_avx2_preferred(void) {
+inline int rsaz_avx2_preferred(void) {
   if (CRYPTO_is_BMI1_capable() && CRYPTO_is_BMI2_capable() &&
       CRYPTO_is_ADX_capable()) {
     // If BMI1, BMI2, and ADX are available, x86_64-mont5.pl is faster. See the
@@ -79,13 +76,15 @@ void rsaz_1024_sqr_avx2(BN_ULONG ret[40], const BN_ULONG a[40],
                         const BN_ULONG n[40], BN_ULONG k, int count);
 
 // rsaz_1024_scatter5_avx2 stores |val| at index |i| of |tbl|. |i| must be
-// positive and at most 31. Note the table only uses 18 |BN_ULONG|s per entry
-// instead of 40. It packs two 29-bit limbs into each |BN_ULONG| and only stores
-// 36 limbs rather than the padded 40.
+// positive and at most 31. It is treated as public. Note the table only uses 18
+// |BN_ULONG|s per entry instead of 40. It packs two 29-bit limbs into each
+// |BN_ULONG| and only stores 36 limbs rather than the padded 40.
 void rsaz_1024_scatter5_avx2(BN_ULONG tbl[32 * 18], const BN_ULONG val[40],
                              int i);
 
-// rsaz_1024_gather5_avx2 loads index |i| of |tbl| and writes it to |val|.
+// rsaz_1024_gather5_avx2 loads index |i| of |tbl| and writes it to |val|. |i|
+// must be positive and at most 31. It is treated as secret. |tbl| must be
+// aligned to 32 bytes.
 void rsaz_1024_gather5_avx2(BN_ULONG val[40], const BN_ULONG tbl[32 * 18],
                             int i);
 

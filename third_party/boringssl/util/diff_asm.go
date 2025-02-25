@@ -1,16 +1,18 @@
-/* Copyright (c) 2016, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// Copyright 2016 The BoringSSL Authors
+//
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+// SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+// OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+// CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+//go:build ignore
 
 package main
 
@@ -37,9 +39,13 @@ func mapName(path string) string {
 	}
 	switch pathSlash {
 	case "crypto/aes/asm/vpaes-armv7.pl",
-		"crypto/cipher_extra/asm/aes128gcmsiv-x86_64.pl",
-		"crypto/cipher_extra/asm/chacha20_poly1305_x86_64.pl",
+		"crypto/bn/asm/bn-armv8.pl",
+		"crypto/cipher/asm/aes128gcmsiv-x86_64.pl",
+		"crypto/cipher/asm/chacha20_poly1305_armv8.pl",
+		"crypto/cipher/asm/chacha20_poly1305_x86_64.pl",
+		"crypto/ec/asm/p256_beeu-armv8-asm.pl",
 		"crypto/ec/asm/p256_beeu-x86_64-asm.pl",
+		"crypto/modes/asm/aesv8-gcm-armv8.pl",
 		"crypto/modes/asm/ghash-neon-armv8.pl",
 		"crypto/modes/asm/ghash-ssse3-x86.pl",
 		"crypto/modes/asm/ghash-ssse3-x86_64.pl",
@@ -47,6 +53,8 @@ func mapName(path string) string {
 		return ""
 	case "crypto/ec/asm/p256-x86_64-asm.pl":
 		return filepath.FromSlash("crypto/ec/asm/ecp_nistz256-x86_64.pl")
+	case "crypto/ec/asm/p256-armv8-asm.pl":
+		return filepath.FromSlash("crypto/ec/asm/ecp_nistz256-armv8.pl")
 	}
 	return path
 }

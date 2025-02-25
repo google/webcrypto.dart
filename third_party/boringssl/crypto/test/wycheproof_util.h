@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Google Inc.
+/* Copyright 2018 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -51,8 +51,8 @@ const EVP_MD *GetWycheproofDigest(FileTest *t, const char *key,
 
 // GetWycheproofCurve returns a curve using the Wycheproof name, or nullptr on
 // error.
-bssl::UniquePtr<EC_GROUP> GetWycheproofCurve(FileTest *t, const char *key,
-                                             bool instruction);
+const EC_GROUP *GetWycheproofCurve(FileTest *t, const char *key,
+                                   bool instruction);
 
 // GetWycheproofBIGNUM returns a BIGNUM in the Wycheproof format, or nullptr on
 // error.

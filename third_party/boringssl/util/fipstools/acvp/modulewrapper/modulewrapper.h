@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, Google Inc.
+/* Copyright 2021 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -48,6 +48,13 @@ Span<const Span<const uint8_t>> ParseArgsFromFd(int fd, RequestBuffer *buffer);
 
 // WriteReplyToFd writes a reply to the given file descriptor.
 bool WriteReplyToFd(int fd, const std::vector<Span<const uint8_t>> &spans);
+
+// WriteReplyToBuffer writes a reply to an internal buffer that may be flushed
+// with |FlushBuffer|.
+bool WriteReplyToBuffer(const std::vector<Span<const uint8_t>> &spans);
+
+// FlushBuffer writes the buffer that |WriteReplyToBuffer| fills, to |fd|.
+bool FlushBuffer(int fd);
 
 // ReplyCallback is the type of a callback that writes a reply to an ACVP
 // request.

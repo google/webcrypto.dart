@@ -1,4 +1,4 @@
-// Copyright (c) 2017, Google Inc.
+// Copyright 2017 The BoringSSL Authors
 //
 // Permission to use, copy, modify, and/or distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -10,7 +10,7 @@
 // SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-// CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 // inject_hash parses an archive containing a file object file. It finds a FIPS
 // module inside that object, calculates its hash and replaces the default hash
@@ -27,7 +27,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -78,7 +77,7 @@ func do(outPath, oInput string, arInput string) error {
 		}
 		perm = fi.Mode()
 
-		if objectBytes, err = ioutil.ReadFile(oInput); err != nil {
+		if objectBytes, err = os.ReadFile(oInput); err != nil {
 			return err
 		}
 		isStatic = strings.HasSuffix(oInput, ".o")
@@ -243,9 +242,12 @@ func do(outPath, oInput string, arInput string) error {
 		return errors.New("found two occurrences of uninitialised hash value in object file")
 	}
 
+	if _, exists := os.LookupEnv("BORINGSSL_FIPS_SHOW_HASH"); exists {
+		fmt.Printf("Module hash: %x\n", calculated)
+	}
 	copy(objectBytes[offset:], calculated)
 
-	return ioutil.WriteFile(outPath, objectBytes, perm & 0777)
+	return os.WriteFile(outPath, objectBytes, perm&0777)
 }
 
 func main() {

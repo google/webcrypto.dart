@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Google Inc.
+/* Copyright 2014 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,8 +19,8 @@
 #include <string.h>
 
 #include <algorithm>
-#include <memory>
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,11 +32,13 @@
 #include "internal.h"
 
 
+namespace {
+
 DEFINE_LHASH_OF(char)
 
 static std::unique_ptr<char[]> RandString(void) {
   unsigned len = 1 + (rand() % 3);
-  std::unique_ptr<char[]> ret(new char[len + 1]);
+  auto ret = std::make_unique<char[]>(len + 1);
 
   for (unsigned i = 0; i < len; i++) {
     ret[i] = '0' + (rand() & 7);
@@ -86,12 +88,13 @@ TEST(LHashTest, Basic) {
       }
       std::sort(expected.begin(), expected.end());
 
-      lh_char_doall_arg(lh.get(),
-                        [](char *ptr, void *arg) {
-                          ValueList *out = reinterpret_cast<ValueList *>(arg);
-                          out->push_back(ptr);
-                        },
-                        &actual);
+      lh_char_doall_arg(
+          lh.get(),
+          [](char *ptr, void *arg) {
+            ValueList *out = reinterpret_cast<ValueList *>(arg);
+            out->push_back(ptr);
+          },
+          &actual);
       std::sort(actual.begin(), actual.end());
       EXPECT_EQ(expected, actual);
     }
@@ -141,3 +144,5 @@ TEST(LHashTest, Basic) {
     }
   }
 }
+
+}  // namespace

@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, Google Inc.
+/* Copyright 2021 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -28,10 +28,7 @@ extern "C" {
 struct blake2b_state_st {
   uint64_t h[8];
   uint64_t t_low, t_high;
-  union {
-    uint8_t bytes[BLAKE2B_CBLOCK];
-    uint64_t words[16];
-  } block;
+  uint8_t block[BLAKE2B_CBLOCK];
   size_t block_used;
 };
 

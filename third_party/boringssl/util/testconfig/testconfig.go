@@ -1,4 +1,4 @@
-/* Copyright (c) 2020, Google Inc.
+/* Copyright 2020 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -23,6 +23,7 @@ type Test struct {
 	Cmd     []string `json:"cmd"`
 	Env     []string `json:"env"`
 	SkipSDE bool     `json:"skip_sde"`
+	Shard   bool     `json:"shard"`
 }
 
 func ParseTestConfig(filename string) ([]Test, error) {

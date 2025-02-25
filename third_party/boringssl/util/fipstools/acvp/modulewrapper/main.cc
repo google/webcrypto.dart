@@ -1,4 +1,4 @@
-/* Copyright (c) 2021, Google Inc.
+/* Copyright 2021 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -12,10 +12,12 @@
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
+#include <inttypes.h>
 #include <stdio.h>
-#include <string>
 #include <string.h>
 #include <unistd.h>
+#include <string>
+#include <string_view>
 
 #include <openssl/crypto.h>
 #include <openssl/span.h>
@@ -33,12 +35,38 @@ int main(int argc, char **argv) {
     puts("ARM (32-bit)");
 #elif defined(OPENSSL_AARCH64)
     puts("aarch64 (64-bit)");
-#elif defined(OPENSSL_PPC64LE)
-    puts("PPC64LE (64-bit)");
 #else
 #error "FIPS build not supported on this architecture"
 #endif
 
+    if (!FIPS_mode()) {
+      printf("Module not in FIPS mode\n");
+      abort();
+    }
+    printf("Module is in FIPS mode\n");
+
+    const uint32_t module_version = FIPS_version();
+    if (module_version == 0) {
+      printf("No module version set\n");
+      abort();
+    }
+    printf("Module: '%s', version: %" PRIu32 " hash:\n", FIPS_module_name(),
+           module_version);
+
+#if !defined(BORINGSSL_FIPS)
+    // |module_version| will be zero, so the non-FIPS build will never get
+    // this far.
+    printf("Non zero module version in non-FIPS build - should not happen!\n");
+    abort();
+#elif defined(OPENSSL_ASAN)
+    printf("(not available when compiled for ASAN)");
+#else
+    const uint8_t *module_hash = FIPS_module_hash();
+    for (size_t i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+      printf("%02x", module_hash[i]);
+    }
+    printf("\n");
+#endif
     printf("Hardware acceleration enabled: %s\n",
            CRYPTO_has_asm() ? "yes" : "no");
 
@@ -48,10 +76,14 @@ int main(int argc, char **argv) {
     return 4;
   }
 
+  // modulewrapper buffers responses to the greatest degree allowed in order to
+  // fully exercise the async handling in acvptool.
   std::unique_ptr<bssl::acvp::RequestBuffer> buffer =
       bssl::acvp::RequestBuffer::New();
   const bssl::acvp::ReplyCallback write_reply = std::bind(
       bssl::acvp::WriteReplyToFd, STDOUT_FILENO, std::placeholders::_1);
+  const bssl::acvp::ReplyCallback buffer_reply =
+      std::bind(bssl::acvp::WriteReplyToBuffer, std::placeholders::_1);
 
   for (;;) {
     const bssl::Span<const bssl::Span<const uint8_t>> args =
@@ -60,16 +92,23 @@ int main(int argc, char **argv) {
       return 1;
     }
 
+    auto name = bssl::BytesAsStringView(args[0]);
+    if (name == "flush") {
+      if (!bssl::acvp::FlushBuffer(STDOUT_FILENO)) {
+        abort();
+      }
+      continue;
+    }
+
     const bssl::acvp::Handler handler = bssl::acvp::FindHandler(args);
     if (!handler) {
       return 2;
     }
 
-    if (!handler(args.subspan(1).data(), write_reply)) {
-      const std::string name(reinterpret_cast<const char *>(args[0].data()),
-                             args[0].size());
-      fprintf(stderr, "\'%s\' operation failed.\n", name.c_str());
+    auto &reply_callback = name == "getConfig" ? write_reply : buffer_reply;
+    if (!handler(args.subspan(1).data(), reply_callback)) {
+      fprintf(stderr, "\'%s\' operation failed.\n", std::string(name).c_str());
       return 3;
     }
   }
-};
+}

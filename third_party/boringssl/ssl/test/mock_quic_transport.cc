@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, Google Inc.
+/* Copyright 2019 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,8 +16,9 @@
 
 #include <openssl/span.h>
 
+#include <algorithm>
+#include <climits>
 #include <cstring>
-#include <limits>
 
 MockQuicTransport::MockQuicTransport(bssl::UniquePtr<BIO> bio, SSL *ssl)
     : bio_(std::move(bio)),
@@ -51,11 +52,8 @@ bool ReadAll(BIO *bio, bssl::Span<uint8_t> out) {
   size_t len = out.size();
   uint8_t *buf = out.data();
   while (len > 0) {
-    int chunk_len = std::numeric_limits<int>::max();
-    if (len <= static_cast<unsigned int>(std::numeric_limits<int>::max())) {
-      chunk_len = len;
-    }
-    int ret = BIO_read(bio, buf, chunk_len);
+    size_t chunk_len = std::min(len, size_t{INT_MAX});
+    int ret = BIO_read(bio, buf, static_cast<int>(chunk_len));
     if (ret <= 0) {
       return false;
     }
@@ -114,7 +112,7 @@ bool MockQuicTransport::ReadHeader(uint8_t *out_type,
         // If we receive early data records without any early data keys, skip
         // the record. This means early data was rejected.
         std::vector<uint8_t> discard(remaining_bytes);
-        if (!ReadAll(bio_.get(), bssl::MakeSpan(discard))) {
+        if (!ReadAll(bio_.get(), bssl::Span(discard))) {
           return false;
         }
         continue;
@@ -136,7 +134,7 @@ bool MockQuicTransport::ReadHeader(uint8_t *out_type,
       return false;
     }
     remaining_bytes -= secret.size();
-    if (!ReadAll(bio_.get(), bssl::MakeSpan(read_secret))) {
+    if (!ReadAll(bio_.get(), bssl::Span(read_secret))) {
       fprintf(stderr, "Error reading record secret.\n");
       return false;
     }
@@ -163,7 +161,7 @@ bool MockQuicTransport::ReadHandshake() {
   }
 
   std::vector<uint8_t> buf(len);
-  if (!ReadAll(bio_.get(), bssl::MakeSpan(buf))) {
+  if (!ReadAll(bio_.get(), bssl::Span(buf))) {
     return false;
   }
   return SSL_provide_quic_data(ssl_, level, buf.data(), buf.size());
@@ -201,7 +199,7 @@ int MockQuicTransport::ReadApplicationData(uint8_t *out, size_t max_out) {
     }
 
     std::vector<uint8_t> buf(len);
-    if (!ReadAll(bio_.get(), bssl::MakeSpan(buf))) {
+    if (!ReadAll(bio_.get(), bssl::Span(buf))) {
       return -1;
     }
     if (SSL_provide_quic_data(ssl_, level, buf.data(), buf.size()) != 1) {
@@ -227,7 +225,7 @@ int MockQuicTransport::ReadApplicationData(uint8_t *out, size_t max_out) {
     buf = pending_app_data_.data();
   }
   app_data_offset_ = 0;
-  if (!ReadAll(bio_.get(), bssl::MakeSpan(buf, len))) {
+  if (!ReadAll(bio_.get(), bssl::Span(buf, len))) {
     return -1;
   }
   if (len > max_out) {

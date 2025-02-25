@@ -1,58 +1,11 @@
-/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
- * All rights reserved.
+/*
+ * Copyright 1995-2016 The OpenSSL Project Authors. All Rights Reserved.
  *
- * This package is an SSL implementation written
- * by Eric Young (eay@cryptsoft.com).
- * The implementation was written so as to conform with Netscapes SSL.
- *
- * This library is free for commercial and non-commercial use as long as
- * the following conditions are aheared to.  The following conditions
- * apply to all code found in this distribution, be it the RC4, RSA,
- * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
- * included with this distribution is covered by the same copyright terms
- * except that the holder is Tim Hudson (tjh@cryptsoft.com).
- *
- * Copyright remains Eric Young's, and as such any Copyright notices in
- * the code are not to be removed.
- * If this package is used in a product, Eric Young should be given attribution
- * as the author of the parts of the library used.
- * This can be in the form of a textual message at program startup or
- * in documentation (online or textual) provided with the package.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *    "This product includes cryptographic software written by
- *     Eric Young (eay@cryptsoft.com)"
- *    The word 'cryptographic' can be left out if the rouines from the library
- *    being used are not cryptographic related :-).
- * 4. If you include any Windows specific code (or a derivative thereof) from
- *    the apps directory (application code) you must include an acknowledgement:
- *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
- *
- * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * The licence and distribution terms for any publically available version or
- * derivative of this code cannot be changed.  i.e. this code cannot simply be
- * copied and put under another distribution licence
- * [including the GNU Public Licence.] */
+ * Licensed under the OpenSSL license (the "License").  You may not use
+ * this file except in compliance with the License.  You can obtain a copy
+ * in the file LICENSE in the source distribution or at
+ * https://www.openssl.org/source/license.html
+ */
 
 #ifndef OPENSSL_HEADER_CIPHER_H
 #define OPENSSL_HEADER_CIPHER_H
@@ -214,26 +167,6 @@ OPENSSL_EXPORT int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, uint8_t *out,
 OPENSSL_EXPORT int EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, uint8_t *out,
                                        int *out_len);
 
-// EVP_Cipher performs a one-shot encryption/decryption operation for non-AEAD
-// ciphers. No partial blocks are maintained between calls. However, any
-// internal cipher state is still updated. For CBC-mode ciphers, the IV is
-// updated to the final ciphertext block. For stream ciphers, the stream is
-// advanced past the bytes used. It returns one on success and zero otherwise.
-//
-// WARNING: This function behaves completely differently on AEAD ciphers, such
-// as |EVP_aes_128_gcm|. Rather than being a one-shot operation, it behaves like
-// |EVP_CipherUpdate| or |EVP_CipherFinal_ex|, depending on whether |in| is
-// NULL. It also instead returns the number of bytes written or -1 on error.
-// This behavior is deprecated. Use |EVP_CipherUpdate| or |EVP_CipherFinal_ex|
-// instead.
-//
-// TODO(davidben): The normal ciphers currently never fail, even if, e.g.,
-// |in_len| is not a multiple of the block size for CBC-mode decryption. The
-// input just gets rounded up while the output gets truncated. This should
-// either be officially documented or fail.
-OPENSSL_EXPORT int EVP_Cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
-                              const uint8_t *in, size_t in_len);
-
 // EVP_CipherUpdate calls either |EVP_EncryptUpdate| or |EVP_DecryptUpdate|
 // depending on how |ctx| has been setup.
 OPENSSL_EXPORT int EVP_CipherUpdate(EVP_CIPHER_CTX *ctx, uint8_t *out,
@@ -361,6 +294,12 @@ OPENSSL_EXPORT int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
 #define EVP_CIPH_GCM_MODE 0x6
 #define EVP_CIPH_XTS_MODE 0x7
 
+// The following values are never returned from |EVP_CIPHER_mode| and are
+// included only to make it easier to compile code with BoringSSL.
+#define EVP_CIPH_CCM_MODE 0x8
+#define EVP_CIPH_OCB_MODE 0x9
+#define EVP_CIPH_WRAP_MODE 0xa
+
 
 // Cipher flags (for |EVP_CIPHER_flags|).
 
@@ -432,6 +371,30 @@ OPENSSL_EXPORT int EVP_EncryptFinal(EVP_CIPHER_CTX *ctx, uint8_t *out,
 OPENSSL_EXPORT int EVP_DecryptFinal(EVP_CIPHER_CTX *ctx, uint8_t *out,
                                     int *out_len);
 
+// EVP_Cipher historically exposed an internal implementation detail of |ctx|
+// and should not be used. Use |EVP_CipherUpdate| and |EVP_CipherFinal_ex|
+// instead.
+//
+// If |ctx|'s cipher does not have the |EVP_CIPH_FLAG_CUSTOM_CIPHER| flag, it
+// encrypts or decrypts |in_len| bytes from |in| and writes the resulting
+// |in_len| bytes to |out|. It returns one on success and zero on error.
+// |in_len| must be a multiple of the cipher's block size, or the behavior is
+// undefined.
+//
+// TODO(davidben): Rather than being undefined (it'll often round the length up
+// and likely read past the buffer), just fail the operation.
+//
+// If |ctx|'s cipher has the |EVP_CIPH_FLAG_CUSTOM_CIPHER| flag, it runs in one
+// of two modes: If |in| is non-NULL, it behaves like |EVP_CipherUpdate|. If
+// |in| is NULL, it behaves like |EVP_CipherFinal_ex|. In both cases, it returns
+// |*out_len| on success and -1 on error.
+//
+// WARNING: The two possible calling conventions of this function signal errors
+// incompatibly. In the first, zero indicates an error. In the second, zero
+// indicates success with zero bytes of output.
+OPENSSL_EXPORT int EVP_Cipher(EVP_CIPHER_CTX *ctx, uint8_t *out,
+                              const uint8_t *in, size_t in_len);
+
 // EVP_add_cipher_alias does nothing and returns one.
 OPENSSL_EXPORT int EVP_add_cipher_alias(const char *a, const char *b);
 
@@ -445,6 +408,12 @@ OPENSSL_EXPORT const EVP_CIPHER *EVP_get_cipherbyname(const char *name);
 // These AEADs are deprecated AES-GCM implementations that set
 // |EVP_CIPH_FLAG_CUSTOM_CIPHER|. Use |EVP_aead_aes_128_gcm| and
 // |EVP_aead_aes_256_gcm| instead.
+//
+// WARNING: Although these APIs allow streaming an individual AES-GCM operation,
+// this is not secure. Until calling |EVP_DecryptFinal_ex|, the tag has not yet
+// been checked and output released by |EVP_DecryptUpdate| is unauthenticated
+// and easily manipulated by attackers. Callers must buffer the output and may
+// not act on it until the entire operation is complete.
 OPENSSL_EXPORT const EVP_CIPHER *EVP_aes_128_gcm(void);
 OPENSSL_EXPORT const EVP_CIPHER *EVP_aes_256_gcm(void);
 
@@ -496,9 +465,6 @@ OPENSSL_EXPORT const EVP_CIPHER *EVP_cast5_cbc(void);
 
 // The following flags do nothing and are included only to make it easier to
 // compile code with BoringSSL.
-#define EVP_CIPH_CCM_MODE (-1)
-#define EVP_CIPH_OCB_MODE (-2)
-#define EVP_CIPH_WRAP_MODE (-3)
 #define EVP_CIPHER_CTX_FLAG_WRAP_ALLOW 0
 
 // EVP_CIPHER_CTX_set_flags does nothing.
@@ -529,6 +495,7 @@ OPENSSL_EXPORT void EVP_CIPHER_CTX_set_flags(const EVP_CIPHER_CTX *ctx,
 #define EVP_CTRL_AEAD_SET_MAC_KEY 0x17
 // EVP_CTRL_GCM_SET_IV_INV sets the GCM invocation field, decrypt only
 #define EVP_CTRL_GCM_SET_IV_INV 0x18
+#define EVP_CTRL_GET_IVLEN 0x19
 
 // The following constants are unused.
 #define EVP_GCM_TLS_FIXED_IV_LEN 4
@@ -587,6 +554,9 @@ struct evp_cipher_ctx_st {
   int final_used;
 
   uint8_t final[EVP_MAX_BLOCK_LENGTH];  // possible final block
+
+  // Has this structure been rendered unusable by a failure.
+  int poisoned;
 } /* EVP_CIPHER_CTX */;
 
 typedef struct evp_cipher_info_st {

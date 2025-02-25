@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Google Inc.
+/* Copyright 2018 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -56,6 +56,7 @@ struct TestState {
   unsigned private_key_retries = 0;
   bool got_new_session = false;
   bssl::UniquePtr<SSL_SESSION> new_session;
+  bool async_ticket_decrypt_ready = false;
   bool ticket_decrypt_done = false;
   bool alpn_select_done = false;
   bool early_callback_ready = false;
@@ -68,6 +69,7 @@ struct TestState {
   int explicit_renegotiates = 0;
   std::function<bool(const SSL_CLIENT_HELLO*)> get_handshake_hints_cb;
   int last_message_received = -1;
+  int selected_credential = -1;
 };
 
 bool SetTestState(SSL *ssl, std::unique_ptr<TestState> state);

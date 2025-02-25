@@ -16,6 +16,7 @@ import (
 	"crypto/sha512"
 	"crypto/x509"
 	"hash"
+	"slices"
 
 	"golang.org/x/crypto/chacha20poly1305"
 )
@@ -28,8 +29,8 @@ type keyAgreement interface {
 	// In the case that the key agreement protocol doesn't use a
 	// ServerKeyExchange message, generateServerKeyExchange can return nil,
 	// nil.
-	generateServerKeyExchange(*Config, *Certificate, *clientHelloMsg, *serverHelloMsg, uint16) (*serverKeyExchangeMsg, error)
-	processClientKeyExchange(*Config, *Certificate, *clientKeyExchangeMsg, uint16) ([]byte, error)
+	generateServerKeyExchange(*Config, *Credential, *clientHelloMsg, *serverHelloMsg, uint16) (*serverKeyExchangeMsg, error)
+	processClientKeyExchange(*Config, *Credential, *clientKeyExchangeMsg, uint16) ([]byte, error)
 
 	// On the client side, the next two methods are called in order.
 
@@ -84,7 +85,7 @@ type cipherSuite struct {
 	ka     func(version uint16) keyAgreement
 	// flags is a bitmask of the suite* values, above.
 	flags  int
-	cipher func(key, iv []byte, isRead bool) interface{}
+	cipher func(key, iv []byte, isRead bool) any
 	mac    func(version uint16, macKey []byte) macFunction
 	aead   func(version uint16, key, fixedNonce []byte) *tlsAead
 }
@@ -127,11 +128,6 @@ var cipherSuites = []*cipherSuite{
 	{TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA, 32, 20, ivLenAES, ecdhePSKKA, suiteECDHE | suitePSK, cipherAES, macSHA1, nil},
 	{TLS_PSK_WITH_AES_128_CBC_SHA, 16, 20, ivLenAES, pskKA, suitePSK, cipherAES, macSHA1, nil},
 	{TLS_PSK_WITH_AES_256_CBC_SHA, 32, 20, ivLenAES, pskKA, suitePSK, cipherAES, macSHA1, nil},
-	{TLS_RSA_WITH_NULL_SHA, 0, 20, noIV, rsaKA, 0, cipherNull, macSHA1, nil},
-}
-
-func noIV(vers uint16) int {
-	return 0
 }
 
 func ivLenChaCha20Poly1305(vers uint16) int {
@@ -155,24 +151,41 @@ func ivLen3DES(vers uint16) int {
 
 type nullCipher struct{}
 
-func cipherNull(key, iv []byte, isRead bool) interface{} {
+func cipherNull(key, iv []byte, isRead bool) any {
 	return nullCipher{}
 }
 
-func cipher3DES(key, iv []byte, isRead bool) interface{} {
-	block, _ := des.NewTripleDESCipher(key)
-	if isRead {
-		return cipher.NewCBCDecrypter(block, iv)
-	}
-	return cipher.NewCBCEncrypter(block, iv)
+type cbcMode struct {
+	cipher.BlockMode
+	new func(iv []byte) cipher.BlockMode
 }
 
-func cipherAES(key, iv []byte, isRead bool) interface{} {
+func (c *cbcMode) SetIV(iv []byte) {
+	c.BlockMode = c.new(iv)
+}
+
+func cipher3DES(key, iv []byte, isRead bool) any {
+	c := &cbcMode{}
+	block, _ := des.NewTripleDESCipher(key)
+	if isRead {
+		c.new = func(iv []byte) cipher.BlockMode { return cipher.NewCBCDecrypter(block, iv) }
+	} else {
+		c.new = func(iv []byte) cipher.BlockMode { return cipher.NewCBCEncrypter(block, iv) }
+	}
+	c.SetIV(iv)
+	return c
+}
+
+func cipherAES(key, iv []byte, isRead bool) any {
+	c := &cbcMode{}
 	block, _ := aes.NewCipher(key)
 	if isRead {
-		return cipher.NewCBCDecrypter(block, iv)
+		c.new = func(iv []byte) cipher.BlockMode { return cipher.NewCBCDecrypter(block, iv) }
+	} else {
+		c.new = func(iv []byte) cipher.BlockMode { return cipher.NewCBCEncrypter(block, iv) }
 	}
-	return cipher.NewCBCEncrypter(block, iv)
+	c.SetIV(iv)
+	return c
 }
 
 // macSHA1 returns a macFunction for the given protocol version.
@@ -343,11 +356,9 @@ func ecdhePSKKA(version uint16) keyAgreement {
 
 // mutualCipherSuite returns a cipherSuite given a list of supported
 // ciphersuites and the id requested by the peer.
-func mutualCipherSuite(have []uint16, want uint16) *cipherSuite {
-	for _, id := range have {
-		if id == want {
-			return cipherSuiteFromID(id)
-		}
+func mutualCipherSuite(have []uint16, id uint16) *cipherSuite {
+	if slices.Contains(have, id) {
+		return cipherSuiteFromID(id)
 	}
 	return nil
 }
@@ -364,7 +375,6 @@ func cipherSuiteFromID(id uint16) *cipherSuite {
 // A list of the possible cipher suite ids. Taken from
 // http://www.iana.org/assignments/tls-parameters/tls-parameters.xml
 const (
-	TLS_RSA_WITH_NULL_SHA                         uint16 = 0x0002
 	TLS_RSA_WITH_3DES_EDE_CBC_SHA                 uint16 = 0x000a
 	TLS_RSA_WITH_AES_128_CBC_SHA                  uint16 = 0x002f
 	TLS_RSA_WITH_AES_256_CBC_SHA                  uint16 = 0x0035

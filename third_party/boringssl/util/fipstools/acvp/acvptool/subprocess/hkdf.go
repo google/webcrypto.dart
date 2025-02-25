@@ -1,4 +1,4 @@
-// Copyright (c) 2021, Google Inc.
+// Copyright 2021 The BoringSSL Authors
 //
 // Permission to use, copy, modify, and/or distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -19,11 +19,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"strings"
 )
 
 // The following structures reflect the JSON of ACVP KAS KDF tests. See
-// https://pages.nist.gov/ACVP/draft-hammett-acvp-kas-kdf-twostep.html
+// https://pages.nist.gov/ACVP/draft-hammett-acvp-kas-kdf-hkdf.html
 
 type hkdfTestVectorSet struct {
 	Groups []hkdfTestGroup `json:"testGroups"`
@@ -46,33 +45,21 @@ type hkdfTest struct {
 
 type hkdfConfiguration struct {
 	Type               string `json:"kdfType"`
-	AdditionalNonce    bool   `json:"requiresAdditionalNoncePair"`
 	OutputBits         uint32 `json:"l"`
+	HashName           string `json:"hmacAlg"`
 	FixedInfoPattern   string `json:"fixedInfoPattern"`
 	FixedInputEncoding string `json:"fixedInfoEncoding"`
-	KDFMode            string `json:"kdfMode"`
-	MACMode            string `json:"macMode"`
-	CounterLocation    string `json:"counterLocation"`
-	CounterBits        uint   `json:"counterLen"`
 }
 
 func (c *hkdfConfiguration) extract() (outBytes uint32, hashName string, err error) {
-	if c.Type != "twoStep" ||
-		c.AdditionalNonce ||
+	if c.Type != "hkdf" ||
 		c.FixedInfoPattern != "uPartyInfo||vPartyInfo" ||
 		c.FixedInputEncoding != "concatenation" ||
-		c.KDFMode != "feedback" ||
-		c.CounterLocation != "after fixed data" ||
-		c.CounterBits != 8 ||
 		c.OutputBits%8 != 0 {
-		return 0, "", fmt.Errorf("KAS-KDF not configured for HKDF: %#v", c)
+		return 0, "", fmt.Errorf("KDA not configured for HKDF: %#v", c)
 	}
 
-	if !strings.HasPrefix(c.MACMode, "HMAC-") {
-		return 0, "", fmt.Errorf("MAC mode %q does't start with 'HMAC-'", c.MACMode)
-	}
-
-	return c.OutputBits / 8, c.MACMode[5:], nil
+	return c.OutputBits / 8, c.HashName, nil
 }
 
 type hkdfParameters struct {
@@ -129,7 +116,7 @@ type hkdfTestResponse struct {
 
 type hkdf struct{}
 
-func (k *hkdf) Process(vectorSet []byte, m Transactable) (interface{}, error) {
+func (k *hkdf) Process(vectorSet []byte, m Transactable) (any, error) {
 	var parsed hkdfTestVectorSet
 	if err := json.Unmarshal(vectorSet, &parsed); err != nil {
 		return nil, err
@@ -137,6 +124,7 @@ func (k *hkdf) Process(vectorSet []byte, m Transactable) (interface{}, error) {
 
 	var respGroups []hkdfTestGroupResponse
 	for _, group := range parsed.Groups {
+		group := group
 		groupResp := hkdfTestGroupResponse{ID: group.ID}
 
 		var isValidationTest bool
@@ -155,6 +143,7 @@ func (k *hkdf) Process(vectorSet []byte, m Transactable) (interface{}, error) {
 		}
 
 		for _, test := range group.Tests {
+			test := test
 			testResp := hkdfTestResponse{ID: test.ID}
 
 			key, salt, err := test.Params.extract()
@@ -182,21 +171,29 @@ func (k *hkdf) Process(vectorSet []byte, m Transactable) (interface{}, error) {
 			info = append(info, uData...)
 			info = append(info, vData...)
 
-			resp, err := m.Transact("HKDF/"+hashName, 1, key, salt, info, uint32le(outBytes))
-			if err != nil {
-				return nil, fmt.Errorf("HKDF operation failed: %s", err)
-			}
+			m.TransactAsync("HKDF/"+hashName, 1, [][]byte{key, salt, info, uint32le(outBytes)}, func(result [][]byte) error {
+				if len(result[0]) != int(outBytes) {
+					return fmt.Errorf("HKDF operation resulted in %d bytes but wanted %d", len(result[0]), outBytes)
+				}
+				if isValidationTest {
+					passed := bytes.Equal(expected, result[0])
+					testResp.Passed = &passed
+				} else {
+					testResp.KeyOut = hex.EncodeToString(result[0])
+				}
 
-			if isValidationTest {
-				passed := bytes.Equal(expected, resp[0])
-				testResp.Passed = &passed
-			} else {
-				testResp.KeyOut = hex.EncodeToString(resp[0])
-			}
-
-			groupResp.Tests = append(groupResp.Tests, testResp)
+				groupResp.Tests = append(groupResp.Tests, testResp)
+				return nil
+			})
 		}
-		respGroups = append(respGroups, groupResp)
+
+		m.Barrier(func() {
+			respGroups = append(respGroups, groupResp)
+		})
+	}
+
+	if err := m.Flush(); err != nil {
+		return nil, err
 	}
 
 	return respGroups, nil

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Google Inc.
+/* Copyright 2014 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -110,8 +110,6 @@ int main(int argc, char **argv) {
 #else
   signal(SIGPIPE, SIG_IGN);
 #endif
-
-  CRYPTO_library_init();
 
   int starting_arg = 1;
   tool_func_t tool = nullptr;

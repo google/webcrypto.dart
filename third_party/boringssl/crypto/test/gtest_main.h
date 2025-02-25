@@ -1,4 +1,4 @@
-/* Copyright (c) 2017, Google Inc.
+/* Copyright 2017 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -31,13 +31,15 @@ OPENSSL_MSVC_PRAGMA(warning(pop))
 #include <signal.h>
 #endif
 
+#include "../internal.h"
+
 
 BSSL_NAMESPACE_BEGIN
 
-class ErrorTestEventListener : public testing::EmptyTestEventListener {
+class TestEventListener : public testing::EmptyTestEventListener {
  public:
-  ErrorTestEventListener() {}
-  ~ErrorTestEventListener() override {}
+  TestEventListener() {}
+  ~TestEventListener() override {}
 
   void OnTestEnd(const testing::TestInfo &test_info) override {
     if (test_info.result()->Failed()) {
@@ -48,14 +50,19 @@ class ErrorTestEventListener : public testing::EmptyTestEventListener {
       // error queue without printing.
       ERR_clear_error();
     }
+
+    // Malloc failure testing is quadratic in the number of mallocs. Running
+    // multiple tests sequentially thus scales badly. Reset the malloc counter
+    // between tests. This way we will test, each test with the first allocation
+    // failing, then the second, and so on, until the test with the most
+    // allocations runs out.
+    OPENSSL_reset_malloc_counter_for_testing();
   }
 };
 
 // SetupGoogleTest should be called by the test runner after
 // testing::InitGoogleTest has been called and before RUN_ALL_TESTS.
 inline void SetupGoogleTest() {
-  CRYPTO_library_init();
-
 #if defined(OPENSSL_WINDOWS)
   // Initialize Winsock.
   WORD wsa_version = MAKEWORD(2, 2);
@@ -75,8 +82,7 @@ inline void SetupGoogleTest() {
   signal(SIGPIPE, SIG_IGN);
 #endif
 
-  testing::UnitTest::GetInstance()->listeners().Append(
-      new ErrorTestEventListener);
+  testing::UnitTest::GetInstance()->listeners().Append(new TestEventListener);
 }
 
 BSSL_NAMESPACE_END

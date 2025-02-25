@@ -1,4 +1,4 @@
-/* Copyright (c) 2015, Google Inc.
+/* Copyright 2015 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -20,12 +20,14 @@
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <openssl/err.h>
+#include <openssl/mem.h>
 
 #include "../internal.h"
 #include "./test_util.h"
@@ -56,11 +58,11 @@ static const char *FindDelimiter(const char *str) {
 // leading and trailing whitespace removed.
 static std::string StripSpace(const char *str, size_t len) {
   // Remove leading space.
-  while (len > 0 && isspace(*str)) {
+  while (len > 0 && OPENSSL_isspace(*str)) {
     str++;
     len--;
   }
-  while (len > 0 && isspace(str[len - 1])) {
+  while (len > 0 && OPENSSL_isspace(str[len - 1])) {
     len--;
   }
   return std::string(str, len);
@@ -96,7 +98,7 @@ FileTest::ReadResult FileTest::ReadNext() {
   ClearTest();
 
   static const size_t kBufLen = 8192 * 4;
-  std::unique_ptr<char[]> buf(new char[kBufLen]);
+  auto buf = std::make_unique<char[]>(kBufLen);
 
   bool in_instruction_block = false;
   is_at_new_instruction_block_ = false;
@@ -377,7 +379,8 @@ class FileLineReader : public FileTest::LineReader {
       return FileTest::kReadError;
     }
 
-    if (fgets(out, len, file_) == nullptr) {
+    len = std::min(len, size_t{INT_MAX});
+    if (fgets(out, static_cast<int>(len), file_) == nullptr) {
       return feof(file_) ? FileTest::kReadEOF : FileTest::kReadError;
     }
 
@@ -406,8 +409,7 @@ int FileTestMain(FileTestFunc run_test, void *arg, const char *path) {
 }
 
 int FileTestMain(const FileTest::Options &opts) {
-  std::unique_ptr<FileLineReader> reader(
-      new FileLineReader(opts.path));
+  auto reader = std::make_unique<FileLineReader>(opts.path);
   if (!reader->is_open()) {
     fprintf(stderr, "Could not open file %s: %s.\n", opts.path,
             strerror(errno));

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015, Google Inc.
+/* Copyright 2015 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -89,7 +89,7 @@ static void TestKeyWrap(FileTest *t) {
   ASSERT_EQ(0, AES_set_encrypt_key(key.data(), 8 * key.size(), &aes_key));
 
   // Test with implicit IV.
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[ciphertext.size()]);
+  auto buf = std::make_unique<uint8_t[]>(ciphertext.size());
   int len = AES_wrap_key(&aes_key, nullptr /* iv */, buf.get(),
                          plaintext.data(), plaintext.size());
   ASSERT_GE(len, 0);
@@ -106,7 +106,7 @@ static void TestKeyWrap(FileTest *t) {
   ASSERT_EQ(0, AES_set_decrypt_key(key.data(), 8 * key.size(), &aes_key));
 
   // Test with implicit IV.
-  buf.reset(new uint8_t[plaintext.size()]);
+  buf = std::make_unique<uint8_t[]>(plaintext.size());
   len = AES_unwrap_key(&aes_key, nullptr /* iv */, buf.get(), ciphertext.data(),
                        ciphertext.size());
   ASSERT_GE(len, 0);
@@ -133,7 +133,7 @@ static void TestKeyWrapWithPadding(FileTest *t) {
   // Test encryption.
   AES_KEY aes_key;
   ASSERT_EQ(0, AES_set_encrypt_key(key.data(), 8 * key.size(), &aes_key));
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[plaintext.size() + 15]);
+  auto buf = std::make_unique<uint8_t[]>(plaintext.size() + 15);
   size_t len;
   ASSERT_TRUE(AES_wrap_key_padded(&aes_key, buf.get(), &len,
                                   plaintext.size() + 15, plaintext.data(),
@@ -142,7 +142,7 @@ static void TestKeyWrapWithPadding(FileTest *t) {
 
   // Test decryption
   ASSERT_EQ(0, AES_set_decrypt_key(key.data(), 8 * key.size(), &aes_key));
-  buf.reset(new uint8_t[ciphertext.size() - 8]);
+  buf = std::make_unique<uint8_t[]>(ciphertext.size() - 8);
   ASSERT_TRUE(AES_unwrap_key_padded(&aes_key, buf.get(), &len,
                                     ciphertext.size() - 8, ciphertext.data(),
                                     ciphertext.size()));
@@ -289,7 +289,7 @@ TEST(AESTest, ABI) {
     }
 
     if (bsaes_capable()) {
-      vpaes_set_encrypt_key(kKey, bits, &key);
+      ASSERT_EQ(vpaes_set_encrypt_key(kKey, bits, &key), 0);
       CHECK_ABI(vpaes_encrypt_key_to_bsaes, &key, &key);
       for (size_t blocks : block_counts) {
         SCOPED_TRACE(blocks);
@@ -298,7 +298,7 @@ TEST(AESTest, ABI) {
         }
       }
 
-      vpaes_set_decrypt_key(kKey, bits, &key);
+      ASSERT_EQ(vpaes_set_decrypt_key(kKey, bits, &key), 0);
       CHECK_ABI(vpaes_decrypt_key_to_bsaes, &key, &key);
       for (size_t blocks : block_counts) {
         SCOPED_TRACE(blocks);
@@ -308,7 +308,7 @@ TEST(AESTest, ABI) {
     }
 
     if (vpaes_capable()) {
-      CHECK_ABI(vpaes_set_encrypt_key, kKey, bits, &key);
+      ASSERT_EQ(CHECK_ABI(vpaes_set_encrypt_key, kKey, bits, &key), 0);
       CHECK_ABI(vpaes_encrypt, block, block, &key);
       for (size_t blocks : block_counts) {
         SCOPED_TRACE(blocks);
@@ -316,12 +316,10 @@ TEST(AESTest, ABI) {
         CHECK_ABI(vpaes_cbc_encrypt, buf, buf, AES_BLOCK_SIZE * blocks, &key,
                   block, AES_ENCRYPT);
 #endif
-#if defined(VPAES_CTR32)
         CHECK_ABI(vpaes_ctr32_encrypt_blocks, buf, buf, blocks, &key, block);
-#endif
       }
 
-      CHECK_ABI(vpaes_set_decrypt_key, kKey, bits, &key);
+      ASSERT_EQ(CHECK_ABI(vpaes_set_decrypt_key, kKey, bits, &key), 0);
       CHECK_ABI(vpaes_decrypt, block, block, &key);
 #if defined(VPAES_CBC)
       for (size_t blocks : block_counts) {
@@ -333,7 +331,7 @@ TEST(AESTest, ABI) {
     }
 
     if (hwaes_capable()) {
-      CHECK_ABI(aes_hw_set_encrypt_key, kKey, bits, &key);
+      ASSERT_EQ(CHECK_ABI_SEH(aes_hw_set_encrypt_key, kKey, bits, &key), 0);
       CHECK_ABI(aes_hw_encrypt, block, block, &key);
       for (size_t blocks : block_counts) {
         SCOPED_TRACE(blocks);
@@ -346,7 +344,21 @@ TEST(AESTest, ABI) {
 #endif
       }
 
-      CHECK_ABI(aes_hw_set_decrypt_key, kKey, bits, &key);
+#if defined(OPENSSL_X86) || defined(OPENSSL_X86_64)
+      ASSERT_EQ(CHECK_ABI_SEH(aes_hw_set_encrypt_key_base, kKey, bits, &key), 0);
+      if (aes_hw_set_encrypt_key_alt_capable()) {
+        AES_KEY alt;
+        ASSERT_EQ(CHECK_ABI_SEH(aes_hw_set_encrypt_key_alt, kKey, bits, &alt),
+                  0);
+        EXPECT_EQ(alt.rounds, key.rounds);
+        for (unsigned i = 0; i <= alt.rounds; i++) {
+          EXPECT_EQ(alt.rd_key[i], key.rd_key[i]);
+        }
+      }
+      CHECK_ABI_SEH(aes_hw_encrypt_key_to_decrypt_key, &key);
+#else
+      ASSERT_EQ(CHECK_ABI_SEH(aes_hw_set_decrypt_key, kKey, bits, &key), 0);
+#endif
       CHECK_ABI(aes_hw_decrypt, block, block, &key);
       for (size_t blocks : block_counts) {
         SCOPED_TRACE(blocks);

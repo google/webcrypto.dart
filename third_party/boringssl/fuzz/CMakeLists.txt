@@ -1,33 +1,20 @@
-include_directories(../include)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-prototypes")
-
-macro(fuzzer name)
-  add_executable(${name} ${name}.cc)
-  add_dependencies(${name} global_target)
-  target_link_libraries(${name} crypto ${ARGN})
+# TODO(crbug.com/42290412): Flatten this build up a layer. Between
+# crbug.com/42290128, crbug.com/42290508 and crbug.com/42290554, there is enough
+# churn that we've left it alone for now.
+foreach(fuzzer ${FUZZ_SOURCES})
+  cmake_path(GET fuzzer STEM name)
+  add_executable(${name} ../${fuzzer})
+  target_compile_options(${name} PRIVATE "-Wno-missing-prototypes")
+  target_link_libraries(${name} crypto ssl pki)
   if(LIBFUZZER_FROM_DEPS)
     set_target_properties(${name} PROPERTIES LINK_FLAGS "-fsanitize=fuzzer-no-link")
     target_link_libraries(${name} Fuzzer)
   else()
     set_target_properties(${name} PROPERTIES LINK_FLAGS "-fsanitize=fuzzer")
   endif()
-endmacro()
-
-fuzzer(arm_cpuinfo)
-fuzzer(bn_mod_exp)
-fuzzer(bn_div)
-fuzzer(privkey)
-fuzzer(cert)
-fuzzer(spki)
-fuzzer(pkcs8)
-fuzzer(pkcs12)
-fuzzer(read_pem)
-fuzzer(server ssl)
-fuzzer(client ssl)
-fuzzer(dtls_server ssl)
-fuzzer(dtls_client ssl)
-fuzzer(ssl_ctx_api ssl)
-fuzzer(session ssl)
-fuzzer(decode_client_hello_inner ssl)
-fuzzer(der_roundtrip)
+  set_target_properties(
+    ${name}
+    PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES)
+endforeach()

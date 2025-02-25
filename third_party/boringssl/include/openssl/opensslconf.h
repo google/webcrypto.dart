@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Google Inc.
+/* Copyright 2014 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -18,6 +18,7 @@
 #ifndef OPENSSL_HEADER_OPENSSLCONF_H
 #define OPENSSL_HEADER_OPENSSLCONF_H
 
+/* Keep in sync with the list in rust/bssl-sys/build.rs */
 
 #define OPENSSL_NO_ASYNC
 #define OPENSSL_NO_BF
@@ -59,6 +60,7 @@
 #define OPENSSL_NO_SM3
 #define OPENSSL_NO_SM4
 #define OPENSSL_NO_SRP
+#define OPENSSL_NO_SSL_TRACE
 #define OPENSSL_NO_SSL2
 #define OPENSSL_NO_SSL3
 #define OPENSSL_NO_SSL3_METHOD

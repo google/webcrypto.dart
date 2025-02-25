@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Google Inc.
+/* Copyright 2014 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -115,7 +115,7 @@ static bool SumFile(std::string *out_hex, const EVP_MD *md,
   }
 
   static const size_t kBufSize = 8192;
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[kBufSize]);
+  auto buf = std::make_unique<uint8_t[]>(kBufSize);
 
   bssl::ScopedEVP_MD_CTX ctx;
   if (!EVP_DigestInit_ex(ctx.get(), md, NULL)) {

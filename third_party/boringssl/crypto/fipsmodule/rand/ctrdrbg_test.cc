@@ -1,4 +1,4 @@
-/* Copyright (c) 2017, Google Inc.
+/* Copyright 2017 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -63,13 +63,11 @@ TEST(CTRDRBGTest, Basic) {
 TEST(CTRDRBGTest, Allocated) {
   const uint8_t kSeed[CTR_DRBG_ENTROPY_LEN] = {0};
 
-  CTR_DRBG_STATE *allocated = CTR_DRBG_new(kSeed, nullptr, 0);
+  bssl::UniquePtr<CTR_DRBG_STATE> allocated(CTR_DRBG_new(kSeed, nullptr, 0));
   ASSERT_TRUE(allocated);
-  CTR_DRBG_free(allocated);
 
-  allocated = CTR_DRBG_new(kSeed, nullptr, 1<<20);
+  allocated.reset(CTR_DRBG_new(kSeed, nullptr, 1<<20));
   ASSERT_FALSE(allocated);
-  CTR_DRBG_free(allocated);
 }
 
 TEST(CTRDRBGTest, Large) {
@@ -78,7 +76,7 @@ TEST(CTRDRBGTest, Large) {
   CTR_DRBG_STATE drbg;
   ASSERT_TRUE(CTR_DRBG_init(&drbg, kSeed, nullptr, 0));
 
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[CTR_DRBG_MAX_GENERATE_LENGTH]);
+  auto buf = std::make_unique<uint8_t[]>(CTR_DRBG_MAX_GENERATE_LENGTH);
   ASSERT_TRUE(CTR_DRBG_generate(&drbg, buf.get(), CTR_DRBG_MAX_GENERATE_LENGTH,
                                 nullptr, 0));
 

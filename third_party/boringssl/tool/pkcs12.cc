@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Google Inc.
+/* Copyright 2014 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -72,7 +72,7 @@ bool DoPKCS12(const std::vector<std::string> &args) {
   }
   const size_t size = st.st_size;
 
-  std::unique_ptr<uint8_t[]> contents(new uint8_t[size]);
+  auto contents = std::make_unique<uint8_t[]>(size);
   size_t off = 0;
   while (off < size) {
     size_t bytes_read;

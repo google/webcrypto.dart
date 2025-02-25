@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Google Inc.
+/* Copyright 2018 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -32,25 +32,26 @@ static void TestStateExFree(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
   delete ((TestState *)ptr);
 }
 
-static void init_once() {
-  g_state_index = SSL_get_ex_new_index(0, NULL, NULL, NULL, TestStateExFree);
-  if (g_state_index < 0) {
-    abort();
-  }
+static bool InitGlobals() {
+  CRYPTO_once(&g_once, [] {
+    g_state_index =
+        SSL_get_ex_new_index(0, nullptr, nullptr, nullptr, TestStateExFree);
+  });
+  return g_state_index >= 0;
 }
 
 struct timeval *GetClock() {
-  CRYPTO_once(&g_once, init_once);
   return &g_clock;
 }
 
 void AdvanceClock(unsigned seconds) {
-  CRYPTO_once(&g_once, init_once);
   g_clock.tv_sec += seconds;
 }
 
 bool SetTestState(SSL *ssl, std::unique_ptr<TestState> state) {
-  CRYPTO_once(&g_once, init_once);
+  if (!InitGlobals()) {
+    return false;
+  }
   // |SSL_set_ex_data| takes ownership of |state| only on success.
   if (SSL_set_ex_data(ssl, g_state_index, state.get()) == 1) {
     state.release();
@@ -60,8 +61,10 @@ bool SetTestState(SSL *ssl, std::unique_ptr<TestState> state) {
 }
 
 TestState *GetTestState(const SSL *ssl) {
-  CRYPTO_once(&g_once, init_once);
-  return (TestState *)SSL_get_ex_data(ssl, g_state_index);
+  if (!InitGlobals()) {
+    return nullptr;
+  }
+  return static_cast<TestState *>(SSL_get_ex_data(ssl, g_state_index));
 }
 
 static void ssl_ctx_add_session(SSL_SESSION *session, void *void_param) {
@@ -148,34 +151,30 @@ bool TestState::Serialize(CBB *cbb) const {
 
 std::unique_ptr<TestState> TestState::Deserialize(CBS *cbs, SSL_CTX *ctx) {
   CBS in, pending_session, text;
-  std::unique_ptr<TestState> out_state(new TestState());
+  auto state = std::make_unique<TestState>();
   uint16_t version;
   constexpr uint16_t kVersion = 0;
   uint64_t sec, usec;
-  if (!CBS_get_u24_length_prefixed(cbs, &in) ||
-      !CBS_get_u16(&in, &version) ||
+  if (!CBS_get_u24_length_prefixed(cbs, &in) ||  //
+      !CBS_get_u16(&in, &version) ||             //
       version > kVersion ||
       !CBS_get_u24_length_prefixed(&in, &pending_session) ||
-      !CBS_get_u16_length_prefixed(&in, &text)) {
+      !CBS_get_u16_length_prefixed(&in, &text) ||
+      !CBS_get_asn1_uint64(&in, &sec) ||   //
+      !CBS_get_asn1_uint64(&in, &usec) ||  //
+      usec >= 1000000) {
     return nullptr;
   }
   if (CBS_len(&pending_session)) {
-    out_state->pending_session = SSL_SESSION_parse(
+    state->pending_session = SSL_SESSION_parse(
         &pending_session, ctx->x509_method, ctx->pool);
-    if (!out_state->pending_session) {
+    if (!state->pending_session) {
       return nullptr;
     }
   }
-  out_state->msg_callback_text = std::string(
+  state->msg_callback_text = std::string(
       reinterpret_cast<const char *>(CBS_data(&text)), CBS_len(&text));
-  // TODO(2020-05-01): Make this unconditional & merge into above.
-  if (CBS_len(&in) > 0) {
-    if (!CBS_get_asn1_uint64(&in, &sec) ||
-        !CBS_get_asn1_uint64(&in, &usec)) {
-      return nullptr;
-    }
-    g_clock.tv_sec = sec;
-    g_clock.tv_usec = usec;
-  }
-  return out_state;
+  g_clock.tv_sec = sec;
+  g_clock.tv_usec = usec;
+  return state;
 }

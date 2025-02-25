@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Google Inc.
+/* Copyright 2014 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -639,6 +639,7 @@ static void TestPEMCRLs(const char *pem) {
   bssl::UniquePtr<BIO> bio(BIO_new_mem_buf(pem, strlen(pem)));
   ASSERT_TRUE(bio);
   bssl::UniquePtr<STACK_OF(X509_CRL)> crls(sk_X509_CRL_new_null());
+  ASSERT_TRUE(crls);
 
   ASSERT_TRUE(PKCS7_get_PEM_CRLs(crls.get(), bio.get()));
   ASSERT_EQ(1u, sk_X509_CRL_num(crls.get()));

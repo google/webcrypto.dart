@@ -1,4 +1,4 @@
-/* Copyright (c) 2016, Google Inc.
+/* Copyright 2016 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -56,6 +56,10 @@ TEST(ObjTest, TestBasic) {
   };
   CBS_init(&cbs, kUnknownDER, sizeof(kUnknownDER));
   ASSERT_EQ(NID_undef, OBJ_cbs2nid(&cbs));
+
+  EXPECT_EQ(NID_undef, OBJ_sn2nid("UNDEF"));
+  EXPECT_EQ(NID_undef, OBJ_ln2nid("undefined"));
+  EXPECT_EQ(OBJ_get_undef(), OBJ_nid2obj(NID_undef));
 }
 
 TEST(ObjTest, TestSignatureAlgorithms) {

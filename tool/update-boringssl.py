@@ -91,7 +91,7 @@ def get_latest_revision():
     """ Fetch the latest commit hash from the BoringSSL repository """
     response = requests.get(f'{BORINGSSL_REPOSITORY}/+log/master?format=JSON')
     print(f"Response status code: {response.status_code}")
-    print(f"Response text: {response.text}")
+    #print(f"Response text: {response.text}")
 
     if response.status_code == 200:
         # Check if response text is empty

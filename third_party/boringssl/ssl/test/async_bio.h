@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Google Inc.
+/* Copyright 2014 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -35,9 +35,6 @@ void AsyncBioAllowRead(BIO *bio, size_t count);
 
 // AsyncBioAllowWrite increments |bio|'s write quota by |count|.
 void AsyncBioAllowWrite(BIO *bio, size_t count);
-
-// AsyncBioEnforceWriteQuota configures where |bio| enforces its write quota.
-void AsyncBioEnforceWriteQuota(BIO *bio, bool enforce);
 
 
 #endif  // HEADER_ASYNC_BIO

@@ -1,16 +1,18 @@
-/* Copyright (c) 2015, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+// Copyright 2015 The BoringSSL Authors
+//
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+// SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+// OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+// CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+//go:build ignore
 
 package main
 
@@ -46,6 +48,7 @@ var (
 	mallocTest      = flag.Int64("malloc-test", -1, "If non-negative, run each test with each malloc in turn failing from the given number onwards.")
 	mallocTestDebug = flag.Bool("malloc-test-debug", false, "If true, ask each test to abort rather than fail a malloc. This can be used with a specific value for --malloc-test to identity the malloc failing that is causing problems.")
 	simulateARMCPUs = flag.Bool("simulate-arm-cpus", simulateARMCPUsDefault(), "If true, runs tests simulating different ARM CPUs.")
+	qemuBinary      = flag.String("qemu", "", "Optional, absolute path to a binary location for QEMU runtime.")
 )
 
 func simulateARMCPUsDefault() bool {
@@ -92,9 +95,9 @@ var sdeCPUs = []string{
 	"clx", // Cascade Lake
 	"cpx", // Cooper Lake
 	"icx", // Ice Lake server
-	"knl", // Knights landing
-	"knm", // Knights mill
 	"tgl", // Tiger Lake
+	"adl", // Alder Lake
+	"spr", // Sapphire Rapids
 }
 
 var armCPUs = []string{
@@ -145,6 +148,13 @@ func sdeOf(cpu, path string, args ...string) *exec.Cmd {
 	return exec.Command(*sdePath, sdeArgs...)
 }
 
+func qemuOf(path string, args ...string) *exec.Cmd {
+	// The QEMU binary becomes the program to run, and the previous test program
+	// to run instead becomes an additional argument to the QEMU binary.
+	args = append([]string{path}, args...)
+	return exec.Command(*qemuBinary, args...)
+}
+
 var (
 	errMoreMallocs = errors.New("child process did not exhaust all allocation calls")
 	errTestSkipped = errors.New("test was skipped")
@@ -161,6 +171,7 @@ func runTestOnce(test test, mallocNumToFail int64) (passed bool, err error) {
 		// detected.
 		args = append(args, "--no_unwind_tests")
 	}
+
 	var cmd *exec.Cmd
 	if *useValgrind {
 		cmd = valgrindOf(false, prog, args...)
@@ -170,6 +181,8 @@ func runTestOnce(test test, mallocNumToFail int64) (passed bool, err error) {
 		cmd = gdbOf(prog, args...)
 	} else if *useSDE {
 		cmd = sdeOf(test.cpu, prog, args...)
+	} else if *qemuBinary != "" {
+		cmd = qemuOf(prog, args...)
 	} else {
 		cmd = exec.Command(prog, args...)
 	}
@@ -308,12 +321,7 @@ func (t test) envMsg() string {
 }
 
 func (t test) getGTestShards() ([]test, error) {
-	if *numWorkers == 1 || len(t.Cmd) != 1 {
-		return []test{t}, nil
-	}
-
-	// Only shard the three GTest-based tests.
-	if t.Cmd[0] != "crypto/crypto_test" && t.Cmd[0] != "ssl/ssl_test" && t.Cmd[0] != "decrepit/decrepit_test" {
+	if *numWorkers == 1 || !t.Shard {
 		return []test{t}, nil
 	}
 
@@ -388,10 +396,12 @@ func main() {
 
 	testOutput := testresult.NewResults()
 	var failed, skipped []test
+	var total int
 	for testResult := range results {
 		test := testResult.Test
 		args := test.Cmd
 
+		total++
 		if testResult.Error == errTestSkipped {
 			fmt.Printf("%s\n", test.longName())
 			fmt.Printf("%s was skipped\n", args[0])
@@ -401,15 +411,15 @@ func main() {
 			fmt.Printf("%s\n", test.longName())
 			fmt.Printf("%s failed to complete: %s\n", args[0], testResult.Error)
 			failed = append(failed, test)
-			testOutput.AddResult(test.longName(), "CRASH")
+			testOutput.AddResult(test.longName(), "CRASH", testResult.Error)
 		} else if !testResult.Passed {
 			fmt.Printf("%s\n", test.longName())
 			fmt.Printf("%s failed to print PASS on the last line.\n", args[0])
 			failed = append(failed, test)
-			testOutput.AddResult(test.longName(), "FAIL")
+			testOutput.AddResult(test.longName(), "FAIL", nil)
 		} else {
 			fmt.Printf("%s\n", test.shortName())
-			testOutput.AddResult(test.longName(), "PASS")
+			testOutput.AddResult(test.longName(), "PASS", nil)
 		}
 	}
 
@@ -420,19 +430,19 @@ func main() {
 	}
 
 	if len(skipped) > 0 {
-		fmt.Printf("\n%d of %d tests were skipped:\n", len(skipped), len(testCases))
+		fmt.Printf("\n%d of %d tests were skipped:\n", len(skipped), total)
 		for _, test := range skipped {
 			fmt.Printf("\t%s\n", test.shortName())
 		}
 	}
 
 	if len(failed) > 0 {
-		fmt.Printf("\n%d of %d tests failed:\n", len(failed), len(testCases))
+		fmt.Printf("\n%d of %d tests failed:\n", len(failed), total)
 		for _, test := range failed {
 			fmt.Printf("\t%s\n", test.shortName())
 		}
 		os.Exit(1)
 	}
 
-	fmt.Printf("\nAll tests passed!\n")
+	fmt.Printf("All unit tests passed!\n")
 }

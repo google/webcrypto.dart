@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# Copyright (c) 2019, Google Inc.
+# Copyright 2019 The BoringSSL Authors
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -100,7 +100,7 @@ sub process_rows {
 
 	&mov("eax", $rows);
 &set_label("loop_row_$call_counter");
-	&movdqa("xmm4", &QWP(0, $Htable));
+	&movdqu("xmm4", &QWP(0, $Htable));
 	&lea($Htable, &DWP(16, $Htable));
 
 	# Right-shift xmm2 and xmm3 by 8 bytes.

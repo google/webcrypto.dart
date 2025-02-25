@@ -37,14 +37,30 @@ To upload a change, push it to the special `refs/for/master` target:
 
     git push origin HEAD:refs/for/master
 
-The output will then give you a link to the change. Add `agl@google.com` and
-`davidben@google.com` as reviewers.
+The output will then give you a link to the change. Add `agl@google.com`,
+`davidben@google.com`, and `bbe@google.com` as reviewers.
 
 Pushing a commit with the same Change-Id as an existing change will upload a new
 version of it. (Use the `git rebase` or `git commit --amend` commands.)
 
 For more detailed instructions, see the
 [Gerrit User Guide](https://gerrit-review.googlesource.com/Documentation/intro-user.html).
+
+### Copyright headers
+New files contributed directly to BoringSSL should use the following copyright
+header, where `YEAR` is the year the file was added:
+
+    Copyright YEAR The BoringSSL Authors
+
+To list individual contributors, we maintain an [AUTHORS](./AUTHORS) file at the
+top level of the project. See [this documentation](https://opensource.google/documentation/reference/releasing/authors)
+for more details. If you wish to be added, you are welcome to add yourself as
+part of your contribution, or request that we add you.
+
+We started the AUTHORS file after the project began, and after receiving many
+valuable contributions. To avoid being presumptuous, we did not proactively list
+all past contributors. If you previously made a contribution, you are likewise
+welcome to send us a patch to be added, or request that we add you.
 
 ### The small print
 Contributions made by corporations are covered by a different agreement than

@@ -1,4 +1,4 @@
-/* Copyright (c) 2016, Google Inc.
+/* Copyright 2016 The BoringSSL Authors
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -231,7 +231,7 @@ static bool GetString(std::string *out, CBS *cbs) {
     return false;
   }
 
-  out->assign(reinterpret_cast<const char *>(CBS_data(&str)), CBS_len(&str));
+  *out = bssl::BytesAsStringView(str);
   return true;
 }
 
@@ -410,18 +410,25 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *buf, size_t len) {
         SSL_CTX_set_tlsext_ticket_keys(ctx, keys.data(), keys.size());
       },
       [](SSL_CTX *ctx, CBS *cbs) {
-        std::vector<int> curves;
-        if (!GetVector(&curves, cbs)) {
+        std::vector<int> groups;
+        if (!GetVector(&groups, cbs)) {
           return;
         }
-        SSL_CTX_set1_curves(ctx, curves.data(), curves.size());
+        SSL_CTX_set1_groups(ctx, groups.data(), groups.size());
       },
       [](SSL_CTX *ctx, CBS *cbs) {
-        std::string curves;
-        if (!GetString(&curves, cbs)) {
+        std::vector<uint16_t> groups;
+        if (!GetVector(&groups, cbs)) {
           return;
         }
-        SSL_CTX_set1_curves_list(ctx, curves.c_str());
+        SSL_CTX_set1_group_ids(ctx, groups.data(), groups.size());
+      },
+      [](SSL_CTX *ctx, CBS *cbs) {
+        std::string groups;
+        if (!GetString(&groups, cbs)) {
+          return;
+        }
+        SSL_CTX_set1_groups_list(ctx, groups.c_str());
       },
       [](SSL_CTX *ctx, CBS *cbs) {
         SSL_CTX_enable_signed_cert_timestamps(ctx);
