@@ -66,9 +66,9 @@ Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>>
     ),
     _usagesDeriveBits,
   );
-  return createKeyPair(
-    _EcdhPrivateKeyImpl(pair.privateKey),
-    _EcdhPublicKeyImpl(pair.publicKey),
+  return (
+    privateKey: _EcdhPrivateKeyImpl(pair.privateKey),
+    publicKey: _EcdhPublicKeyImpl(pair.publicKey),
   );
 }
 

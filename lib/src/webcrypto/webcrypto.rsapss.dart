@@ -223,7 +223,7 @@ final class RsaPssPrivateKey {
     final privateKey = RsaPssPrivateKey(privateKeyImpl);
     final publicKey = RsaPssPublicKey(publicKeyImpl);
 
-    return createKeyPair(privateKey, publicKey);
+    return (privateKey: privateKey, publicKey: publicKey);
   }
 
   /// Sign [data] with this RSASSA-PSS private key.

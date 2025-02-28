@@ -50,7 +50,7 @@ final class EcdsaPrivateKey {
     final privateKey = EcdsaPrivateKey(privateKeyImpl);
     final publicKey = EcdsaPublicKey(publicKeyImpl);
 
-    return createKeyPair(privateKey, publicKey);
+    return (privateKey: privateKey, publicKey: publicKey);
   }
 
   /// TODO: Document that this returns the raw signature format specified

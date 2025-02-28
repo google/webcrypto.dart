@@ -17,16 +17,7 @@ import '../utils/utils.dart';
 import '../utils/testrunner.dart';
 import '../utils/detected_runtime.dart';
 
-class _KeyPair<S extends EcdhPrivateKey, T extends EcdhPublicKey>
-    implements KeyPair<S, T> {
-  @override
-  final S privateKey;
-
-  @override
-  final T publicKey;
-
-  _KeyPair({required this.privateKey, required this.publicKey});
-}
+typedef KeyPair<S, T> = ({S privateKey, T publicKey});
 
 final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   algorithm: 'ECDH',
@@ -58,7 +49,7 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
     final b = await EcdhPrivateKey.generateKey(curveFromJson(
       generateKeyPairParams,
     ));
-    return _KeyPair(
+    return (
       privateKey: a.privateKey,
       publicKey: b.publicKey,
     );

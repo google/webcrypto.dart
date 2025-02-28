@@ -351,9 +351,9 @@ KeyPair<_EvpPKey, _EvpPKey> _generateEcKeyPair(
     final pubKey = _EvpPKey();
     _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(pubKey, ecPub));
 
-    return createKeyPair(
-      privKey,
-      pubKey,
+    return (
+      privateKey: privKey,
+      publicKey: pubKey,
     );
   });
 }
