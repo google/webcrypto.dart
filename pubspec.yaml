@@ -13,7 +13,7 @@
 # limitations under the License.
 
 name: webcrypto
-version: 0.5.8
+version: 0.6.0
 description: Cross-platform implementation of Web Cryptography APIs for Flutter.
 repository: https://github.com/google/webcrypto.dart
 

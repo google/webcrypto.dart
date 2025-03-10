@@ -1,3 +1,6 @@
+# 0.6.0
+* Replaced KeyPair class with typedef KeyPair<T, S> and refactored key pair creation methods to use named parameters.
+
 # 0.5.8
 * All classes previously annotated `@sealed` are now `final`!
 * Migrate from Gradle Imperative Apply to [Gradle Plugin DSL](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply).
