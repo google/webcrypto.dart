@@ -16,4 +16,5 @@ part of 'impl_interface.dart';
 
 abstract interface class RandomImpl {
   void fillRandomBytes(TypedData destination);
+  String randomUUID();
 }

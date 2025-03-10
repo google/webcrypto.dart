@@ -64,6 +64,9 @@ extension type JSCrypto(JSObject _) implements JSObject {
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
   external JSTypedArray getRandomValues(JSTypedArray array);
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
+  external JSString randomUUID();
 }
 
 /// The `window.crypto.subtle` object.
@@ -398,6 +401,10 @@ TypedData getRandomValues(TypedData array) {
   }
 
   return array;
+}
+
+String randomUUID() {
+  return window.crypto.randomUUID().toDart;
 }
 
 Future<ByteBuffer> decrypt(

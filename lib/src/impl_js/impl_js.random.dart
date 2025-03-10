@@ -32,4 +32,18 @@ final class _RandomImpl implements RandomImpl {
       throw _translateJavaScriptException();
     }
   }
+
+  @override
+  String randomUUID() {
+    try {
+      return subtle.randomUUID();
+    } on Error catch (e) {
+      final errorName = e.toString();
+      if (errorName != 'JavaScriptError') {
+        rethrow;
+      }
+
+      throw _translateJavaScriptException();
+    }
+  }
 }
