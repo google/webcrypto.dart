@@ -213,8 +213,6 @@ typedef DeriveBitsFn<T> = Future<List<int>> Function(
   Map<String, dynamic> deriveParams,
 );
 
-typedef KeyPair<S, T> = ({S privateKey, T publicKey});
-
 @sealed
 class TestRunner<PrivateKey, PublicKey> {
   final String algorithm;

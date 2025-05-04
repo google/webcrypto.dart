@@ -17,8 +17,6 @@ import '../utils/utils.dart';
 import '../utils/testrunner.dart';
 import '../utils/detected_runtime.dart';
 
-typedef KeyPair<S, T> = ({S privateKey, T publicKey});
-
 final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   algorithm: 'ECDH',
   importPrivateRawKey: null, // not supported
