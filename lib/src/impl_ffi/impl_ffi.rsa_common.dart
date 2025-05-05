@@ -257,7 +257,7 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
 
     final e = scope.createBN();
     _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
-    
+
     _checkOpIsOne(await _RSA_generate_key_ex(
       privRSA,
       modulusLength,
