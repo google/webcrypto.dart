@@ -48,3 +48,18 @@ void fillRandomBytes(
 
   webCryptImpl.random.fillRandomBytes(destination);
 }
+
+/// Generate a cryptographically random UUID.
+///
+/// **Example**
+/// ```dart
+/// import 'package:webcrypto/webcrypto.dart';
+///
+/// // Generate a random UUID.
+/// void main() {
+///   final uuid = randomUUID();
+///   print(uuid);
+/// }
+///
+/// ```
+String randomUUID() => webCryptImpl.random.randomUUID();

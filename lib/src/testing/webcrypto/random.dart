@@ -24,6 +24,14 @@ void isNotAllZero(TypedData data) {
   check(data.buffer.asUint8List().any((b) => b != 0));
 }
 
+void isValidUUID(String uuid) {
+  check(uuid.length == 36);
+  check(uuid[8] == '-');
+  check(uuid[13] == '-');
+  check(uuid[18] == '-');
+  check(uuid[23] == '-');
+}
+
 void main() => tests().runTests();
 
 /// Tests, exported for use in `../run_all_tests.dart`.
@@ -81,6 +89,17 @@ List<({String name, Future<void> Function() test})> tests() {
     isAllZero(data);
     fillRandomBytes(data);
     isNotAllZero(data);
+  });
+
+  test('randomUUID: 100 UUIDs', () async {
+    final uuids = <String>{};
+    for (var i = 0; i < 100; i++) {
+      final uuid = randomUUID();
+      isValidUUID(uuid);
+      check(uuids.add(uuid));
+    }
+
+    check(uuids.length == 100);
   });
 
   return tests;
