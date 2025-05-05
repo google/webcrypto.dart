@@ -229,10 +229,10 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
   });
 }
 
-KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
+Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
   int modulusLength,
   BigInt publicExponent,
-) {
+) async {
   // Sanity check for the modulusLength
   if (modulusLength < 256 || modulusLength > 16384) {
     throw UnsupportedError(
@@ -251,13 +251,14 @@ KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
     throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
   }
 
-  return _Scope.sync((scope) {
+  return _Scope.async((scope) async {
     // Generate private RSA key
     final privRSA = scope.createRSA();
 
     final e = scope.createBN();
     _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
-    _checkOpIsOne(ssl.RSA_generate_key_ex(
+    
+    _checkOpIsOne(await _RSA_generate_key_ex(
       privRSA,
       modulusLength,
       e,
@@ -284,3 +285,20 @@ KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
     );
   });
 }
+
+/// Helper function to run `ssl.RSA_generate_key_ex` in an [Isolate]
+/// using [Isolate.run].
+///
+/// Using this auxiliary function to wrap the call should reduce the risk that
+/// unnecessary variables are copied into the closure passed to [Isolate.run].
+// ignore: non_constant_identifier_names
+Future<int> _RSA_generate_key_ex(
+  ffi.Pointer<RSA> rsa,
+  int bits,
+  ffi.Pointer<BIGNUM> e,
+  ffi.Pointer<BN_GENCB> cb,
+) async =>
+    await Isolate.run(
+      () => ssl.RSA_generate_key_ex(rsa, bits, e, cb),
+      debugName: 'RSA_generate_key_ex',
+    );
