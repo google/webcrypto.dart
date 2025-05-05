@@ -51,9 +51,9 @@ Future<KeyPair<RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl>>
   // Validate and get hash function
   final h = _HashImpl.fromHash(hash);
   final keys = _generateRsaKeyPair(modulusLength, publicExponent);
-  return createKeyPair(
-    _RsaPssPrivateKeyImpl(keys.privateKey, h),
-    _RsaPssPublicKeyImpl(keys.publicKey, h),
+  return (
+    privateKey: _RsaPssPrivateKeyImpl(keys.privateKey, h),
+    publicKey: _RsaPssPublicKeyImpl(keys.publicKey, h),
   );
 }
 

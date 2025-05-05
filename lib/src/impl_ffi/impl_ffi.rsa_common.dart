@@ -278,9 +278,9 @@ KeyPair<_EvpPKey, _EvpPKey> _generateRsaKeyPair(
     final pubKey = _EvpPKey();
     _checkOp(ssl.EVP_PKEY_set1_RSA.invoke(pubKey, pubRSA) == 1);
 
-    return createKeyPair(
-      privKey,
-      pubKey,
+    return (
+      privateKey: privKey,
+      publicKey: pubKey,
     );
   });
 }

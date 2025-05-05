@@ -60,9 +60,9 @@ Future<KeyPair<EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl>>
     ),
     _usagesSignVerify,
   );
-  return createKeyPair(
-    _EcdsaPrivateKeyImpl(pair.privateKey),
-    _EcdsaPublicKeyImpl(pair.publicKey),
+  return (
+    privateKey: _EcdsaPrivateKeyImpl(pair.privateKey),
+    publicKey: _EcdsaPublicKeyImpl(pair.publicKey),
   );
 }
 

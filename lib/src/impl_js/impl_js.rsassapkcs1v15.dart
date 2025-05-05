@@ -57,9 +57,9 @@ Future<KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>>
     ),
     _usagesSignVerify,
   );
-  return createKeyPair(
-    _RsaSsaPkcs1V15PrivateKeyImpl(pair.privateKey),
-    _RsaSsaPkcs1V15PublicKeyImpl(pair.publicKey),
+  return (
+    privateKey: _RsaSsaPkcs1V15PrivateKeyImpl(pair.privateKey),
+    publicKey: _RsaSsaPkcs1V15PublicKeyImpl(pair.publicKey),
   );
 }
 

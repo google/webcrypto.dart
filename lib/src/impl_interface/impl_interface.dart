@@ -34,20 +34,7 @@ part 'impl_interface.digest.dart';
 part 'impl_interface.random.dart';
 
 /// A key-pair as returned from key generation.
-class KeyPair<S, T> {
-  KeyPair._(this.privateKey, this.publicKey); // keep the constructor private.
-
-  /// Private key for [publicKey].
-  final S privateKey;
-
-  /// Public key matching [privateKey].
-  final T publicKey;
-}
-
-/// Factory method to create KeyPair instance
-KeyPair<S, T> createKeyPair<S, T>(S privateKey, T publicKey) {
-  return KeyPair._(privateKey, publicKey);
-}
+typedef KeyPair<T, S> = ({T privateKey, S publicKey});
 
 /// Elliptic curves supported by ECDSA and ECDH.
 ///

@@ -193,7 +193,7 @@ final class EcdhPrivateKey {
     final privateKey = EcdhPrivateKey(privateKeyImpl);
     final publicKey = EcdhPublicKey(publicKeyImpl);
 
-    return createKeyPair(privateKey, publicKey);
+    return (privateKey: privateKey, publicKey: publicKey);
   }
 
   /// Derive a shared secret from two ECDH key pairs using the private key from one pair

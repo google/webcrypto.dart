@@ -213,16 +213,6 @@ typedef DeriveBitsFn<T> = Future<List<int>> Function(
   Map<String, dynamic> deriveParams,
 );
 
-class _KeyPair<S, T> implements KeyPair<S, T> {
-  @override
-  final S privateKey;
-
-  @override
-  final T publicKey;
-
-  _KeyPair({required this.privateKey, required this.publicKey});
-}
-
 @sealed
 class TestRunner<PrivateKey, PublicKey> {
   final String algorithm;
@@ -402,7 +392,7 @@ class TestRunner<PrivateKey, PublicKey> {
       exportPrivateJsonWebKey: exportPrivateJsonWebKey,
       generateKeyPair: (params) async {
         final k = await generateKey(params);
-        return _KeyPair(privateKey: k, publicKey: k);
+        return (privateKey: k, publicKey: k);
       },
       signBytes: signBytes,
       signStream: signStream,
@@ -867,9 +857,10 @@ void _runTests<PrivateKey, PublicKey>(
     } else {
       test('create derivedBits', () async {
         derivedBits = await r._deriveBits(
-          _KeyPair(
-              privateKey: privateKey as PrivateKey,
-              publicKey: publicKey as PublicKey),
+          (
+            privateKey: privateKey as PrivateKey,
+            publicKey: publicKey as PublicKey
+          ),
           c.derivedLength!,
           c.deriveParams!,
         );
@@ -878,9 +869,10 @@ void _runTests<PrivateKey, PublicKey>(
 
     test('validated derivedBits', () async {
       final derived = await r._deriveBits(
-        _KeyPair(
-            privateKey: privateKey as PrivateKey,
-            publicKey: publicKey as PublicKey),
+        (
+          privateKey: privateKey as PrivateKey,
+          publicKey: publicKey as PublicKey
+        ),
         c.derivedLength!,
         c.deriveParams!,
       );
@@ -983,9 +975,10 @@ void _runTests<PrivateKey, PublicKey>(
     }
     if (r._deriveBits != null) {
       final derived = await r._deriveBits(
-        _KeyPair(
-            privateKey: privateKey as PrivateKey,
-            publicKey: publicKey as PublicKey),
+        (
+          privateKey: privateKey as PrivateKey,
+          publicKey: publicKey as PublicKey
+        ),
         c.derivedLength!,
         c.deriveParams!,
       );
@@ -1009,9 +1002,10 @@ void _runTests<PrivateKey, PublicKey>(
     }
     if (r._deriveBits != null) {
       final derived = await r._deriveBits(
-        _KeyPair(
-            privateKey: privateKey as PrivateKey,
-            publicKey: publicKey as PublicKey),
+        (
+          privateKey: privateKey as PrivateKey,
+          publicKey: publicKey as PublicKey
+        ),
         c.derivedLength!,
         c.deriveParams!,
       );
@@ -1363,9 +1357,10 @@ void _runTests<PrivateKey, PublicKey>(
   if (r._deriveBits != null) {
     test('deriveBits', () async {
       final derived = await r._deriveBits(
-        _KeyPair(
-            privateKey: privateKey as PrivateKey,
-            publicKey: publicKey as PublicKey),
+        (
+          privateKey: privateKey as PrivateKey,
+          publicKey: publicKey as PublicKey
+        ),
         c.derivedLength!,
         c.deriveParams!,
       );

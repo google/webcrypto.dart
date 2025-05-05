@@ -231,7 +231,7 @@ final class RsaOaepPrivateKey {
     final privateKey = RsaOaepPrivateKey(privateKeyImpl);
     final publicKey = RsaOaepPublicKey(publicKeyImpl);
 
-    return createKeyPair(privateKey, publicKey);
+    return (privateKey: privateKey, publicKey: publicKey);
   }
 
   /// Decrypt [data] encrypted with [RsaOaepPublicKey.encryptBytes] from the

@@ -259,7 +259,7 @@ final class RsassaPkcs1V15PrivateKey {
     final privateKey = RsassaPkcs1V15PrivateKey(privateKeyImpl);
     final publicKey = RsassaPkcs1V15PublicKey(publicKeyImpl);
 
-    return createKeyPair(privateKey, publicKey);
+    return (privateKey: privateKey, publicKey: publicKey);
   }
 
   /// Sign [data] with this RSASSA-PKCS1-v1_5 private key.
