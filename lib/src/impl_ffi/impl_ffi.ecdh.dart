@@ -38,7 +38,7 @@ Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>>
     ecdhPrivateKey_generateKey(
   EllipticCurve curve,
 ) async {
-  final p = _generateEcKeyPair(curve);
+  final p = await _generateEcKeyPair(curve);
   return (
     privateKey: _EcdhPrivateKeyImpl(p.privateKey),
     publicKey: _EcdhPublicKeyImpl(p.publicKey),

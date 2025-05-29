@@ -327,15 +327,15 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
   });
 }
 
-KeyPair<_EvpPKey, _EvpPKey> _generateEcKeyPair(
+Future<KeyPair<_EvpPKey, _EvpPKey>> _generateEcKeyPair(
   EllipticCurve curve,
-) {
-  return _Scope.sync((scope) {
+) async {
+  return _Scope.async((scope) async {
     final ecPriv = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
     _checkOp(ecPriv.address != 0, fallback: 'internal failure to use curve');
     scope.defer(() => ssl.EC_KEY_free(ecPriv));
 
-    _checkOpIsOne(ssl.EC_KEY_generate_key(ecPriv));
+    _checkOpIsOne(await _EC_generate_key(ecPriv));
 
     final privKey = _EvpPKey();
     _checkOpIsOne(ssl.EVP_PKEY_set1_EC_KEY.invoke(privKey, ecPriv));
@@ -357,3 +357,17 @@ KeyPair<_EvpPKey, _EvpPKey> _generateEcKeyPair(
     );
   });
 }
+
+/// Helper function to run `ssl.EC_KEY_generate_key` in an [Isolate]
+/// using [Isolate.run].
+///
+/// Using this auxiliary function to wrap the call should reduce the risk that
+/// unnecessary variables are copied into the closure passed to [Isolate.run].
+// ignore: non_constant_identifier_names
+Future<int> _EC_generate_key(
+  ffi.Pointer<EC_KEY> key,
+) async =>
+    await Isolate.run(
+      () => ssl.EC_KEY_generate_key(key),
+      debugName: 'EC_KEY_generate_key',
+    );
