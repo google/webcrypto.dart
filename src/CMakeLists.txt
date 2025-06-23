@@ -21,7 +21,7 @@
 #
 # This script is very similar to platform specific build scripts.
 
-cmake_minimum_required(VERSION 3.6.0)
+cmake_minimum_required(VERSION 3.10.0)
 project(webcrypto)
 
 enable_language(ASM)
