@@ -18,49 +18,21 @@
 # Remember to bump BORINGSSL_REVISION.
 
 import os
-import os.path
-import shutil
-import subprocess
 import sys
+import json
+import shutil
 import tempfile
+import subprocess
 
 TOOL_PATH = os.path.dirname(os.path.realpath(__file__))
 ROOT_PATH = os.path.dirname(TOOL_PATH)
-
 BORINGSSL_REPOSITORY = 'https://boringssl.googlesource.com/boringssl'
-BORINGSSL_REVISION = 'a6d321b11fa80496b7c8ae6405468c212d4f5c87'
+BORINGSSL_REVISION = '78b48c1f2a973ff0a4ed18b9618d533101bd4144'
 
-
-def cleanup():
-    """ Remove boringssl sources and generated files """
-    paths = [
-        os.path.join(ROOT_PATH, 'third_party', 'boringssl'),
-        os.path.join(ROOT_PATH, 'darwin', 'third_party', 'boringssl')
-    ]
-    for p in paths:
-        if os.path.exists(p):
-            shutil.rmtree(p)
-        mkdirp(p)
-
-
-def git_clone(target):
-    """ Clone BoringSSL into target/src """
-    src = os.path.join(target, 'src')
-    mkdirp(src)
-    subprocess.check_call(
-        ['git', 'clone', BORINGSSL_REPOSITORY, src],
-    )
-    subprocess.check_call(
-        ['git', 'checkout', '--detach', BORINGSSL_REVISION],
-        cwd=src,
-    )
-
-
-# Files from BoringSSL that should always be retained
 FILES_TO_RETAIN = [
-    'src/README.md',
-    'src/LICENSE',
-    'src/INCORPORATING.md',
+    'README.md',
+    'LICENSE',
+    'INCORPORATING.md',
 ]
 
 BORINGSSL_FOLDER_README = """# Incorporation of BoringSSL in `package:webcrypto`
@@ -125,173 +97,150 @@ FAKE_DARWIN_SOURCE_HEADER = """/*
 """
 
 
-class BoringSSLGenerator(object):
-    """
-        Generator for src/util/generate_build_files.py from BoringSSL.
-
-        This simply stores the variables, so we easily access them in function.
-    """
-
-    def WriteFiles(self, file_sets, asm_outputs):
-        """
-            WriteFiles will be called by generate_build_files.main(..)
-
-            Parameters
-            ----------
-            file_sets : dict
-                A dict mapping from targets to list of files.
-            asm_outputs : list
-                A list of nested tuples on the form:
-                    ((os, arch), list_of_files)
-                for each operating system and architecture.
-
-            All file paths are relative to root the BoringSSL repository.
-        """
-        self.file_sets = file_sets
-        self.asm_outputs = asm_outputs
-
-
-def writeFile(path_relative_root, contents):
-    with open(os.path.join(ROOT_PATH, path_relative_root), 'w') as f:
-        f.write(contents)
-
-
-def writeSourcesCmake(g):
-    """
-        Write third_party/boringssl/sources.cmake
-    """
-    def define(variable, files):
-        """ Define variable in sources.cmake to hold files """
-        s = ''
-        s += '\nset(' + variable + '\n'
-        s += '\n'.join((
-            '  ${BORINGSSL_ROOT}' + f for f in sorted(files)
-        ))
-        s += '\n)\n'
-        return s
-
-    # Define sources for libcrypto
-    sources_cmake = ''
-    sources_cmake += SOURCES_CMAKE_HEADER
-    sources_cmake += define('crypto_sources', g.file_sets['crypto'])
-
-    # Define and sources various ASM files used by libcrypto
-    for ((osname, arch), asm_files) in g.asm_outputs:
-        name = 'crypto_sources_%s_%s' % (osname, arch)
-        sources_cmake += define(name, asm_files)
-
-    # Write third_party/boringssl/sources.cmake
-    p = os.path.join('third_party', 'boringssl', 'sources.cmake')
-    writeFile(p, sources_cmake)
-
-
-def copySourceFiles(g, boringssl_clone):
-    """
-        Copy source files into third_party/boringssl/
-    """
-    files_to_copy = []
-    # Copy libcrypto sources
-    files_to_copy += g.file_sets['crypto']
-    # Copy public headers
-    files_to_copy += g.file_sets['crypto_headers']
-    # Copy internal headers (otherwise, we can't build)
-    files_to_copy += g.file_sets['crypto_internal_headers']
-    # Copy fips_fragments (otherwise, we can't build)
-    files_to_copy += g.file_sets['fips_fragments']
-    # Copy various ASM files used by libcrypto
-    for ((osname, arch), asm_files) in g.asm_outputs:
-        files_to_copy += asm_files
-    # Copy static files
-    files_to_copy += FILES_TO_RETAIN
-
-    for f in sorted(set(files_to_copy)):
-        src = os.path.join(boringssl_clone, f)
-        dst = os.path.join(ROOT_PATH, 'third_party', 'boringssl', f)
-        mkdirp(os.path.dirname(dst))
-        shutil.copy(src, dst)
-
-
-def writeFakeDarwinSource(g):
-    """
-        Write fake-source files that each #include "../..." the original source
-        file for darwin/
-    """
-    for f in sorted(set(g.file_sets['crypto'])):
-        target = os.path.join(ROOT_PATH, 'darwin', 'third_party', 'boringssl', f)
-        original = os.path.join(ROOT_PATH, 'third_party', 'boringssl', f)
-        rel = os.path.relpath(original, os.path.dirname(target))
-        mkdirp(os.path.dirname(target))
-        contents = ''
-        contents += FAKE_DARWIN_SOURCE_HEADER
-        contents += '\n'
-        contents += '#include "'+rel+'"\n'
-        writeFile(os.path.join('darwin', 'third_party', 'boringssl', f), contents)
-
-
-def generate(boringssl_clone):
-    # Change directory into boringssl_clone because generate_build_files.py
-    # expects to run from this location
-    os.chdir(boringssl_clone)
-
-    # Import src/util/generate_build_files.py
-    sys.path.append(os.path.join(boringssl_clone, 'src', 'util'))
-    import generate_build_files
-
-    g = BoringSSLGenerator()
-    generate_build_files.EMBED_TEST_DATA = False
-    generate_build_files.main([g])
-
-    # Write third_party/boringssl/sources.cmake
-    writeSourcesCmake(g)
-
-    # Copy source files into third_party/boringssl/
-    copySourceFiles(g, boringssl_clone)
-
-    # Write fake-source files for darwin/ which use #include "../..." to include
-    # the original source file. This is necessary because webcrypto.podspec
-    # cannot reference sources not under the darwin/ folder.
-    # But the C-preprocessor can still include them :D
-    writeFakeDarwinSource(g)
-
-    # Add a README.md to the third_party/boringssl/ folder
-    readmePath = os.path.join('third_party', 'boringssl', 'README.md')
-    writeFile(readmePath, BORINGSSL_FOLDER_README)
-
-    # Copy LICENSE file for BoringSSL into third_party/boringssl/LICENSE
-    # because all files in this folder are copied or generated from BoringSSL.
-    LICENSE_src = os.path.join(boringssl_clone, 'src', 'LICENSE')
-    LICENSE_dst = os.path.join(
-        ROOT_PATH, 'third_party', 'boringssl', 'LICENSE')
-    shutil.copy(LICENSE_src, LICENSE_dst)
-
 
 def mkdirp(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
+def cleanup():
+    for sub in ['third_party/boringssl', 'darwin/third_party/boringssl']:
+        p = os.path.join(ROOT_PATH, sub)
+        if os.path.exists(p):
+            shutil.rmtree(p)
+        mkdirp(p)
+
+def git_clone(tmpdir):
+    """Clone BoringSSL into tmpdir/src at the pinned revision."""
+    target = os.path.join(tmpdir, 'src')
+    mkdirp(target)
+    subprocess.check_call(['git', 'clone', BORINGSSL_REPOSITORY, target])
+    subprocess.check_call(
+        ['git', 'checkout', '--detach', BORINGSSL_REVISION],
+        cwd=target
+    )
+    return target
+
+def load_sources_json(src_root):
+    """Load the pre-generated gen/sources.json file."""
+    path = os.path.join(src_root, 'gen', 'sources.json')
+    with open(path, 'r') as f:
+        return json.load(f)
+
+def write_sources_cmake(sources, asms):
+    """Emit third_party/boringssl/sources.cmake with two variables."""
+    def define(var, files):
+        out = f'\nset({var}\n'
+        for f in sorted(files):
+            out += f'  ${{BORINGSSL_ROOT}}{f}\n'
+        out += ')\n'
+        return out
+
+    cm = SOURCES_CMAKE_HEADER
+    cm += define('crypto_sources', sources)
+    cm += define('crypto_asm_sources', asms)
+
+    dest = os.path.join(ROOT_PATH, 'third_party', 'boringssl', 'sources.cmake')
+    with open(dest, 'w') as f:
+        f.write(cm)
+
+def copy_sources(sources, internal_hdrs, asms, src_root):
+    dest_root = os.path.join(ROOT_PATH, 'third_party', 'boringssl')
+
+    # 1) public headers
+    shutil.copytree(
+        os.path.join(src_root, 'include'),
+        os.path.join(dest_root, 'include')
+    )
+
+    # 2) all .cc sources
+    for f in sources:
+        src = os.path.join(src_root, f)
+        dst = os.path.join(dest_root, f)
+        mkdirp(os.path.dirname(dst))
+        shutil.copy(src, dst)
+
+    # 3) internal headers (e.g. fipsmodule/*.h)
+    for h in internal_hdrs:
+        src = os.path.join(src_root, h)
+        dst = os.path.join(dest_root, h)
+        mkdirp(os.path.dirname(dst))
+        shutil.copy(src, dst)
+
+    # 4) ASM slices
+    for a in asms:
+        src = os.path.join(src_root, a)
+        dst = os.path.join(dest_root, a)
+        mkdirp(os.path.dirname(dst))
+        shutil.copy(src, dst)
+
+    # 5) always-retain root files
+    for f in FILES_TO_RETAIN:
+        src = os.path.join(src_root, f)
+        dst = os.path.join(dest_root, f)
+        shutil.copy(src, dst)
+
+def write_fake_darwin(sources):
+    """Under darwin/, create tiny wrappers that #include the real .cc files."""
+    for f in sources:
+        if not f.endswith('.cc'):
+            continue
+        orig = os.path.join(ROOT_PATH, 'third_party', 'boringssl', f)
+        tgt  = os.path.join(ROOT_PATH, 'darwin', 'third_party', 'boringssl', f)
+        mkdirp(os.path.dirname(tgt))
+        contents = FAKE_DARWIN_SOURCE_HEADER
+        rel = os.path.relpath(orig, os.path.dirname(tgt))
+        with open(tgt, 'w') as w:
+            w.write(contents)
+            w.write(f'#include "{rel}"\n')
 
 def main():
-    if shutil.which('go') is None:
-        print('Could not find "go" on $PATH')
-        return 1
     if shutil.which('git') is None:
-        print('Could not find "git" on $PATH')
-        return 1
-    if shutil.which('perl') is None:
-        print('Could not find "perl" on $PATH')
-        return 1
-    try:
-        print('Updating third_party/boringssl/')
-        tmp = tempfile.mkdtemp(prefix='update-boringssl-')
-        cleanup()
-        git_clone(tmp)
-        generate(tmp)
-        print('Updated to BoringSSL revision: ' + BORINGSSL_REVISION)
-        return 0
-    finally:
-        shutil.rmtree(tmp)
-        return 1
+        print('Error: git not on PATH', file=sys.stderr)
+        sys.exit(1)
 
+    tmp = tempfile.mkdtemp(prefix='update-boringssl-')
+    try:
+        print('Cleaning up old boringssl/')
+        cleanup()
+
+        print('Cloning BoringSSL @', BORINGSSL_REVISION)
+        src_root = git_clone(tmp)
+
+        print('Loading gen/sources.json')
+        data = load_sources_json(src_root)
+
+        crypto = data['crypto']['srcs']
+        bcm    = data['bcm']['srcs']
+
+        # internal headers for build
+        crypto_int = data['crypto'].get('internal_hdrs', [])
+        bcm_int    = data['bcm'].get('internal_hdrs', [])
+        internal_hdrs = crypto_int + bcm_int
+
+        # ASM slices
+        crypto_asm = data['crypto'].get('asm', [])
+        bcm_asm    = data['bcm'].get('asm', [])
+        asms = crypto_asm + bcm_asm
+
+        sources = crypto + bcm
+
+        print(f'Writing {len(sources)} .cc files, '
+              f'{len(internal_hdrs)} internal headers, and '
+              f'{len(asms)} ASM entries')
+
+        write_sources_cmake(sources, asms)
+        copy_sources(sources, internal_hdrs, asms, src_root)
+        write_fake_darwin(sources)
+
+        # top-level README
+        readme_dst = os.path.join(ROOT_PATH, 'third_party', 'boringssl', 'README.md')
+        with open(readme_dst, 'w') as f:
+            f.write(BORINGSSL_FOLDER_README)
+
+        print('✅ Updated to BoringSSL revision', BORINGSSL_REVISION)
+
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()

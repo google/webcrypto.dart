@@ -24,6 +24,10 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(webcrypto)
 
+# Set C++ standard to C++17 for BoringSSL compatibility
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 enable_language(ASM)
 
 # Set as required by ../third_party/boringssl/sources.cmake included below
@@ -106,6 +110,7 @@ if(MSVC)
       "C4267" # conversion from 'size_t' to 'int', possible loss of data
       "C4706" # assignment within conditional expression
       "C4141"
+      "C4201" # nonstandard extension used: nameless struct/union
       )
   string(REPLACE "C" " -wd" MSVC_DISABLED_WARNINGS_STR
                             ${MSVC_DISABLED_WARNINGS_LIST})
@@ -130,6 +135,8 @@ if(WIN32)
   add_definitions(-DNOMINMAX)
   # Allow use of fopen.
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  # Ensure proper Windows entropy sources
+  add_definitions(-DBORINGSSL_UNSAFE_DETERMINISTIC_MODE=0)
 endif()
 
 add_library(
@@ -150,7 +157,7 @@ target_include_directories(
 
   PRIVATE
 
-  ../third_party/boringssl/src/include/
+  ../third_party/boringssl/include/
 )
 
 set_target_properties(
