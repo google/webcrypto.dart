@@ -24,7 +24,7 @@
 # or OpenSSL that might be linked into the final application, because we only
 # expose the `webcrypto_lookup_symbol` symbol.
 #
-# On most platforms, like Android, the the BoringSSL sources and `webcrypto.c`
+# On most platforms, like Android, the BoringSSL sources and `webcrypto.c`
 # is compiled to a dynamic library `webcrypto.so`, in this case symbol conflicts
 # is unlikely (if loaded correctly).
 #
