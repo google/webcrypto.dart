@@ -216,7 +216,7 @@ final class JsonWebKey {
 /// See also "oth" in [RFC 7518 Section 6.3.2.7].
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
-/// [2]: https://tools.ietf.org/html/rfc7518#section-6.3.2.7
+/// [2]: https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2.7
 final class RsaOtherPrimesInfo {
   String r;
   String d;
