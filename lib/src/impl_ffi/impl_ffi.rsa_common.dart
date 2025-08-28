@@ -202,7 +202,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
     ssl.RSA_get0_key(rsa, ffi.nullptr, ffi.nullptr, d);
 
     // p, q, dp, dq, qi is optional in:
-    // //  https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2
+    // // https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2
     // but explicitly required when exporting in Web Crypto.
     final p = scope<ffi.Pointer<BIGNUM>>();
     final q = scope<ffi.Pointer<BIGNUM>>();
