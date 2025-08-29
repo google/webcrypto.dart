@@ -32,8 +32,8 @@ part of 'webcrypto.dart';
 /// {@macro AesCbcSecretKey-encryptBytes/decryptBytes:example}
 ///
 /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
-/// [2]: https://tools.ietf.org/html/rfc2315#section-10.3
-/// [3]: https://tools.ietf.org/html/rfc7517
+/// [2]: https://www.rfc-editor.org/rfc/rfc2315#section-10.3
+/// [3]: https://www.rfc-editor.org/rfc/rfc7517
 final class AesCbcSecretKey {
   final AesCbcSecretKeyImpl _impl;
 
@@ -106,7 +106,7 @@ final class AesCbcSecretKey {
   /// print(jsonEncode(keyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]:https://www.rfc-editor.org/rfc/rfc7517
   // TODO: Decide if we want restrictions on "use" property" (we probably have it on web, if we don't strip it)
   // TODO: Decide if we want place restrictions on key_ops
   static Future<AesCbcSecretKey> importJsonWebKey(
@@ -150,7 +150,7 @@ final class AesCbcSecretKey {
   ///
   /// {@template AesCbcSecretKey-encrypt:padding}
   /// Encrypted output is always padded in PKCS#7 mode, as described in
-  /// [RFC 2315 Section 10.3 step 2](https://tools.ietf.org/html/rfc2315#section-10.3).
+  /// [RFC 2315 Section 10.3 step 2] https://www.rfc-editor.org/rfc/rfc2315#section-10.3).
   /// This padding is stripped when the message is decrypted.
   /// {@endtemplate}
   ///
@@ -237,7 +237,7 @@ final class AesCbcSecretKey {
   /// {@template AesCbcSecretKey-decrypt:padding}
   /// The encrypted [data] is always assumed to be padded in PKCS#7 mode,
   /// as described in
-  /// [RFC 2315 Section 10.3 step 2](https://tools.ietf.org/html/rfc2315#section-10.3).
+  /// [RFC 2315 Section 10.3 step 2]( https://www.rfc-editor.org/rfc/rfc2315#section-10.3).
   /// This padding is stripped from the decrypted return value.
   /// The [encryptBytes] and [encryptStream] methods always apply this padding.
   /// {@endtemplate}
@@ -304,6 +304,6 @@ final class AesCbcSecretKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]:https://www.rfc-editor.org/rfc/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
