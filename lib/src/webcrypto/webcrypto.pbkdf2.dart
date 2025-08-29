@@ -48,7 +48,7 @@ part of 'webcrypto.dart';
 /// ```
 /// {@endtemplate}
 ///
-/// [1]: https://tools.ietf.org/html/rfc8018
+/// [1]:https://www.rfc-editor.org/rfc/rfc8018
 // TODO: Rewrite all RFC links to use https://www.rfc-editor.org/rfc/rfcXXXX
 
 final class Pbkdf2SecretKey {
@@ -87,7 +87,7 @@ final class Pbkdf2SecretKey {
   ///
   /// {@macro Pbkdf2SecretKey:example}
   ///
-  /// [1]: https://tools.ietf.org/html/rfc8018
+  /// [1]: https://www.rfc-editor.org/rfc/rfc8018
   Future<Uint8List> deriveBits(
     int length,
     Hash hash,
