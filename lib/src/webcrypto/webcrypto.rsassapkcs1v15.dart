@@ -55,9 +55,9 @@ part of 'webcrypto.dart';
 /// ```
 /// {@endtemplate}
 ///
-/// [1]: https://tools.ietf.org/html/rfc3447
-/// [2]: https://tools.ietf.org/html/rfc5208
-/// [3]: https://tools.ietf.org/html/rfc7517
+/// [1]: https://www.rfc-editor.org/rfc/rfc3447
+/// [2]: https://www.rfc-editor.org/rfc/rfc5208
+/// [3]: https://www.rfc-editor.org/rfc/rfc7517
 final class RsassaPkcs1V15PrivateKey {
   final RsaSsaPkcs1V15PrivateKeyImpl _impl;
 
@@ -101,7 +101,7 @@ final class RsassaPkcs1V15PrivateKey {
   /// print(PemCodec(PemLabel.privateKey).encode(rawKeyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5208
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5208
   static Future<RsassaPkcs1V15PrivateKey> importPkcs8Key(
     List<int> keyData,
     Hash hash,
@@ -162,7 +162,7 @@ final class RsassaPkcs1V15PrivateKey {
   /// before the JWK is passed to the browser.
   /// {@endtemplate}
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   static Future<RsassaPkcs1V15PrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
@@ -357,7 +357,7 @@ final class RsassaPkcs1V15PrivateKey {
   /// print(PemCodec(PemLabel.privateKey).encode(rawPrivateKey));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5208
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5208
   Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
   /// Export RSASSA-PKCS1-v1_5 private key in [JSON Web Key][1] format.
@@ -388,7 +388,7 @@ final class RsassaPkcs1V15PrivateKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
@@ -408,9 +408,9 @@ final class RsassaPkcs1V15PrivateKey {
 ///
 /// {@macro RSASSA-PKCS1-v1_5-Example:generate-sign-verify}
 ///
-/// [1]: https://tools.ietf.org/html/rfc3447
-/// [2]: https://tools.ietf.org/html/rfc5280
-/// [3]: https://tools.ietf.org/html/rfc7517
+/// [1]: https://www.rfc-editor.org/rfc/rfc3447
+/// [2]: https://www.rfc-editor.org/rfc/rfc5280
+/// [3]: https://www.rfc-editor.org/rfc/rfc7517
 final class RsassaPkcs1V15PublicKey {
   final RsaSsaPkcs1V15PublicKeyImpl _impl;
 
@@ -452,7 +452,7 @@ final class RsassaPkcs1V15PublicKey {
   /// print(PemCodec(PemLabel.publicKey).encode(rawKeyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5280
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5280
   static Future<RsassaPkcs1V15PublicKey> importSpkiKey(
     List<int> keyData,
     Hash hash,
@@ -495,7 +495,7 @@ final class RsassaPkcs1V15PublicKey {
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   static Future<RsassaPkcs1V15PublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
@@ -599,7 +599,7 @@ final class RsassaPkcs1V15PublicKey {
   /// print(PemCodec(PemLabel.publicKey).encode(rawPublicKey));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5280
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5280
   Future<Uint8List> exportSpkiKey() => _impl.exportSpkiKey();
 
   /// Export RSASSA-PKCS1-v1_5 public key in [JSON Web Key][1] format.
@@ -627,6 +627,6 @@ final class RsassaPkcs1V15PublicKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
