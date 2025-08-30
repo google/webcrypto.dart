@@ -104,7 +104,7 @@ int AES_wrap_key(const AES_KEY *key, const uint8_t *iv, uint8_t *out,
 }
 
 // aes_unwrap_key_inner performs steps one and two from
-// https://tools.ietf.org/html/rfc3394#section-2.2.2
+// https://www.rfc-editor.org/rfc/rfc3394#section-2.2.2
 static int aes_unwrap_key_inner(const AES_KEY *key, uint8_t *out,
                                 uint8_t out_iv[8], const uint8_t *in,
                                 size_t in_len) {
@@ -158,12 +158,12 @@ int AES_unwrap_key(const AES_KEY *key, const uint8_t *iv, uint8_t *out,
 }
 
 // kPaddingConstant is used in Key Wrap with Padding. See
-// https://tools.ietf.org/html/rfc5649#section-3
+// https://www.rfc-editor.org/rfc/rfc5649#section-3
 static const uint8_t kPaddingConstant[4] = {0xa6, 0x59, 0x59, 0xa6};
 
 int AES_wrap_key_padded(const AES_KEY *key, uint8_t *out, size_t *out_len,
                         size_t max_out, const uint8_t *in, size_t in_len) {
-  // See https://tools.ietf.org/html/rfc5649#section-4.1
+  // See https://www.rfc-editor.org/rfc/rfc5649#section-4.1
   const uint64_t in_len64 = in_len;
   const size_t padded_len = (in_len + 7) & ~7;
   *out_len = 0;

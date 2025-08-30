@@ -18,7 +18,7 @@
 
 #include "../internal.h"
 
-// https://tools.ietf.org/html/rfc7693#section-2.6
+// https://www.rfc-editor.org/rfc/rfc7693#section-2.6
 static const uint64_t kIV[8] = {
     UINT64_C(0x6a09e667f3bcc908), UINT64_C(0xbb67ae8584caa73b),
     UINT64_C(0x3c6ef372fe94f82b), UINT64_C(0xa54ff53a5f1d36f1),
@@ -26,7 +26,7 @@ static const uint64_t kIV[8] = {
     UINT64_C(0x1f83d9abfb41bd6b), UINT64_C(0x5be0cd19137e2179),
 };
 
-// https://tools.ietf.org/html/rfc7693#section-2.7
+// https://www.rfc-editor.org/rfc/rfc7693#section-2.7
 static const uint8_t kSigma[10 * 16] = {
     // clang-format off
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
@@ -42,7 +42,7 @@ static const uint8_t kSigma[10 * 16] = {
     // clang-format on
 };
 
-// https://tools.ietf.org/html/rfc7693#section-3.1
+// https://www.rfc-editor.org/rfc/rfc7693#section-3.1
 static void blake2b_mix(uint64_t v[16], int a, int b, int c, int d, uint64_t x,
                         uint64_t y) {
   v[a] = v[a] + v[b] + x;
@@ -59,7 +59,7 @@ static void blake2b_transform(
     BLAKE2B_CTX *b2b,
     const uint64_t block_words[BLAKE2B_CBLOCK / sizeof(uint64_t)],
     size_t num_bytes, int is_final_block) {
-  // https://tools.ietf.org/html/rfc7693#section-3.2
+  // https://www.rfc-editor.org/rfc/rfc7693#section-3.2
   uint64_t v[16];
   static_assert(sizeof(v) == sizeof(b2b->h) + sizeof(kIV), "");
   OPENSSL_memcpy(v, b2b->h, sizeof(b2b->h));
@@ -100,7 +100,7 @@ void BLAKE2B256_Init(BLAKE2B_CTX *b2b) {
   static_assert(sizeof(kIV) == sizeof(b2b->h), "");
   OPENSSL_memcpy(&b2b->h, kIV, sizeof(kIV));
 
-  // https://tools.ietf.org/html/rfc7693#section-2.5
+  // https://www.rfc-editor.org/rfc/rfc7693#section-2.5
   b2b->h[0] ^= 0x01010000 | BLAKE2B256_DIGEST_LENGTH;
 }
 
