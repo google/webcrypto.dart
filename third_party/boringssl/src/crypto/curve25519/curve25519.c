@@ -1937,7 +1937,7 @@ int ED25519_verify(const uint8_t *message, size_t message_len,
   uint8_t scopy[32];
   OPENSSL_memcpy(scopy, signature + 32, 32);
 
-  // https://tools.ietf.org/html/rfc8032#section-5.1.7 requires that s be in
+  // https://www.rfc-editor.org/rfc/rfc8032#section-5.1.7 requires that s be in
   // the range [0, order) in order to prevent signature malleability.
 
   // kOrder is the order of Curve25519 in little-endian form.
