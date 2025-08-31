@@ -1,4 +1,4 @@
-Cross-Platform Web Cryptography Implemenation
+Cross-Platform Web Cryptography Implementation
 =============================================
 This package provides a cross-platform implementation of the
 [Web Cryptograph API][webcrypto-spec].
