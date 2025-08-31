@@ -489,7 +489,7 @@ int _numBitsToBytes(int numberOfBits) =>
     (numberOfBits ~/ 8) + ((7 + (numberOfBits % 8)) ~/ 8);
 
 /// Decode url-safe base64 witout padding as specified in
-/// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
+/// [RFC 7515 Section 2](https://www.rfc-editor.org/rfc/rfc7515#section-2)
 ///
 /// Throw [FormatException] mentioning JWK property [prop] on failure.
 Uint8List _jwkDecodeBase64UrlNoPadding(String unpadded, String prop) {
@@ -508,7 +508,7 @@ Uint8List _jwkDecodeBase64UrlNoPadding(String unpadded, String prop) {
 }
 
 /// Encode url-safe base64 witout padding as specified in
-/// [RFC 7515 Section 2](https://tools.ietf.org/html/rfc7515#section-2)
+/// [RFC 7515 Section 2](https://www.rfc-editor.org/rfc/rfc7515#section-2)
 String _jwkEncodeBase64UrlNoPadding(List<int> data) {
   final padded = base64Url.encode(data);
   final i = padded.indexOf('=');
