@@ -115,7 +115,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
       checkJwk(jwk.d != null, 'd');
       final d = readBN(jwk.d!, 'd');
       // If present properties p,q,dp,dq,qi enable optional optimizations, see:
-      // https://tools.ietf.org/html/rfc7518#section-6.3.2
+      // https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2
       // However, these are required by Chromes Web Crypto implementation:
       // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#82
       // They are also required by Web Crypto implementation in Firefox:
@@ -202,7 +202,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
     ssl.RSA_get0_key(rsa, ffi.nullptr, ffi.nullptr, d);
 
     // p, q, dp, dq, qi is optional in:
-    // // https://tools.ietf.org/html/rfc7518#section-6.3.2
+    // // https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2
     // but explicitly required when exporting in Web Crypto.
     final p = scope<ffi.Pointer<BIGNUM>>();
     final q = scope<ffi.Pointer<BIGNUM>>();
