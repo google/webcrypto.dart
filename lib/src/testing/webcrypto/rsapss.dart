@@ -125,7 +125,7 @@ final _testData = [
   /// [2]: https://opensource.apple.com/source/CommonCrypto/CommonCrypto-60165.120.1/lib/CommonRSACryptor.c.auto.html
   /// [3]: https://opensource.apple.com/source/xnu/xnu-4570.41.2/EXTERNAL_HEADERS/corecrypto/ccrsa.h.auto.html
   /// [4]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
-  /// [5]: https://tools.ietf.org/html/rfc3447
+  /// [5]: https://www.rfc-editor.org/rfc/rfc3447
   /// [6]: https://tools.ietf.org/html/rfc3447#section-9.1
   /// [7]: https://bugs.webkit.org/show_bug.cgi?id=216750
   ...(nullOnSafari(_testDataWithLongSaltLength) ?? <Map>[]),
