@@ -86,3 +86,7 @@ set_target_properties(
   C_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN 1
 )
+
+# Add 16 KB page size compatibility
+target_link_options(webcrypto PRIVATE "-Wl,-z,max-page-size=16384")
+target_link_options(webcrypto PRIVATE "-Wl,-z,common-page-size=16384")
