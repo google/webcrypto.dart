@@ -33,7 +33,7 @@ developers to harden their applications against accidental misuse of keys.
 
 If we wanted to support this feature we would introduce a `KeyUsages` enum, and
 allow all key import and generation methods to accept a set of usages, as well
-as an `extractable` bit. Various key opertions would then throw
+as an `extractable` bit. Various key operations would then throw
 `UnsupportedError` if the key capabilities is violated.
 
 This is not an unreasonable API design. However, this feature can also be
@@ -102,7 +102,7 @@ This also equivalent to decrypting the key and then importing the key.
 
 Similar to `deriveKey` this is useful when limiting a key to specific usages to
 prevent a key from accidentally being misused. If we wanted to support this
-feature we would also be introducing intermediate objets similar to the design
+feature we would also be introducing intermediate objects similar to the design
 outlined for `deriveKey`. Instead these would be `WrapKeyOptions` and
 `UnwrapKeyOptions<T>`, and keys that can be wrapped would have methods for
 creating these options with different encapsulated key-formats.
