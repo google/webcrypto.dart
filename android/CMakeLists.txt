@@ -36,6 +36,12 @@ include(
 # https://boringssl.googlesource.com/boringssl/+/HEAD/BUILDING.md#binary-size
 add_definitions(-DOPENSSL_SMALL)
 
+# Add 16KB page size support
+# This ensures the library is compatible with 16KB page size systems
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-z,max-page-size=16384")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-z,max-page-size=16384")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+
 # TODO: Enable link time optimization
 #       Requires fixing https://github.com/google/webcrypto.dart/issues/80
 # set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -flto")
@@ -86,7 +92,3 @@ set_target_properties(
   C_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN 1
 )
-
-# Add 16 KB page size compatibility
-target_link_options(webcrypto PRIVATE "-Wl,-z,max-page-size=16384")
-target_link_options(webcrypto PRIVATE "-Wl,-z,common-page-size=16384")
