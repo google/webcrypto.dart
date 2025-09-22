@@ -36,11 +36,10 @@ include(
 # https://boringssl.googlesource.com/boringssl/+/HEAD/BUILDING.md#binary-size
 add_definitions(-DOPENSSL_SMALL)
 
-# Add 16KB page size support
+# Add 16KB page size support using Android NDK r27 official method
 # This ensures the library is compatible with 16KB page size systems
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-z,max-page-size=16384")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-z,max-page-size=16384")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+# Reference: https://developer.android.com/guide/practices/page-sizes#compile-r27
+set(ANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES ON)
 
 # TODO: Enable link time optimization
 #       Requires fixing https://github.com/google/webcrypto.dart/issues/80
