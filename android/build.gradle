@@ -27,7 +27,7 @@ apply plugin: 'kotlin-android'
 android {
     namespace 'dev.google.webcrypto'
 
-    compileSdkVersion 31
+    compileSdkVersion 36
 
     // We depend on cmake for the native parts.
     externalNativeBuild {
