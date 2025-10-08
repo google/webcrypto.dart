@@ -195,7 +195,7 @@ jobs:
       - name: Run flutter test integration_test/webcrypto_test.dart -d android
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 28
+          api-level: 36
           working-directory: ./example
           script: flutter test integration_test/webcrypto_test.dart -d android
   linux-coverage:
