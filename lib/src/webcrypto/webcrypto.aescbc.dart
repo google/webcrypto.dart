@@ -237,7 +237,7 @@ final class AesCbcSecretKey {
   /// {@template AesCbcSecretKey-decrypt:padding}
   /// The encrypted [data] is always assumed to be padded in PKCS#7 mode,
   /// as described in
-  /// [RFC 2315 Section 10.3 step 2]( https://www.rfc-editor.org/rfc/rfc2315#section-10.3).
+  /// [RFC 2315 Section 10.3 step 2](https://www.rfc-editor.org/rfc/rfc2315#section-10.3).
   /// This padding is stripped from the decrypted return value.
   /// The [encryptBytes] and [encryptStream] methods always apply this padding.
   /// {@endtemplate}
