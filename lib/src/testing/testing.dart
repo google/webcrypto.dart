@@ -36,17 +36,17 @@ import 'webcrypto/digest.dart' as digest;
 /// Test runners from all test files except `digest.dart` and
 /// `random.dart`, which do not use [TestRunner].
 final _testRunners = <TestRunner>[
-  // aescbc.runner,
-  // aesctr.runner,
-  // aesgcm.runner,
-  // ecdh.runner,
-  // ecdsa.runner,
-  // hkdf.runner,
-  // hmac.runner,
-  // pbkdf2.runner,
-  // rsaoaep.runner,
-  // rsapss.runner,
-  // rsassapkcs1v15.runner,
+  aescbc.runner,
+  aesctr.runner,
+  aesgcm.runner,
+  ecdh.runner,
+  ecdsa.runner,
+  hkdf.runner,
+  hmac.runner,
+  pbkdf2.runner,
+  rsaoaep.runner,
+  rsapss.runner,
+  rsassapkcs1v15.runner,
   ed25519.runner,
   x25519.runner,
 ];
