@@ -26,10 +26,12 @@ part 'impl_interface.pbkdf2.dart';
 part 'impl_interface.aesgcm.dart';
 part 'impl_interface.ecdh.dart';
 part 'impl_interface.ecdsa.dart';
+part 'impl_interface.ed25519.dart';
 part 'impl_interface.rsaoaep.dart';
 part 'impl_interface.hkdf.dart';
 part 'impl_interface.rsapss.dart';
 part 'impl_interface.rsassapkcs1v15.dart';
+part 'impl_interface.x25519.dart';
 part 'impl_interface.digest.dart';
 part 'impl_interface.random.dart';
 
@@ -92,6 +94,8 @@ abstract interface class WebCryptoImpl {
   StaticEcdhPublicKeyImpl get ecdhPublicKey;
   StaticEcdsaPrivateKeyImpl get ecdsaPrivateKey;
   StaticEcdsaPublicKeyImpl get ecdsaPublicKey;
+  StaticEd25519PrivateKeyImpl get ed25519PrivateKey;
+  StaticEd25519PublicKeyImpl get ed25519PublicKey;
   StaticRsaOaepPrivateKeyImpl get rsaOaepPrivateKey;
   StaticRsaOaepPublicKeyImpl get rsaOaepPublicKey;
   StaticHkdfSecretKeyImpl get hkdfSecretKey;
@@ -99,6 +103,8 @@ abstract interface class WebCryptoImpl {
   StaticRsaPssPublicKeyImpl get rsaPssPublicKey;
   StaticRsaSsaPkcs1v15PrivateKeyImpl get rsaSsaPkcs1v15PrivateKey;
   StaticRsaSsaPkcs1v15PublicKeyImpl get rsaSsaPkcs1v15PublicKey;
+  StaticX25519PrivateKeyImpl get x25519PrivateKey;
+  StaticX25519PublicKeyImpl get x25519PublicKey;
   HashImpl get sha1;
   HashImpl get sha256;
   HashImpl get sha384;

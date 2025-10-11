@@ -35,8 +35,10 @@ part 'impl_ffi.aescbc.dart';
 part 'impl_ffi.aesctr.dart';
 part 'impl_ffi.aesgcm.dart';
 part 'impl_ffi.digest.dart';
+part 'impl_ffi.crv25519.dart';
 part 'impl_ffi.ecdh.dart';
 part 'impl_ffi.ecdsa.dart';
+part 'impl_ffi.ed25519.dart';
 part 'impl_ffi.hkdf.dart';
 part 'impl_ffi.hmac.dart';
 part 'impl_ffi.pbkdf2.dart';
@@ -45,6 +47,7 @@ part 'impl_ffi.rsaoaep.dart';
 part 'impl_ffi.rsapss.dart';
 part 'impl_ffi.rsassapkcs1v15.dart';
 part 'impl_ffi.utils.dart';
+part 'impl_ffi.x25519.dart';
 part 'impl_ffi.rsa_common.dart';
 part 'impl_ffi.ec_common.dart';
 part 'impl_ffi.aes_common.dart';
@@ -82,6 +85,12 @@ final class _WebCryptoImpl implements WebCryptoImpl {
   final ecdsaPublicKey = const _StaticEcdsaPublicKeyImpl();
 
   @override
+  final ed25519PrivateKey = const _StaticEd25519PrivateKeyImpl();
+
+  @override
+  final ed25519PublicKey = const _StaticEd25519PublicKeyImpl();
+
+  @override
   final rsaOaepPrivateKey = const _StaticRsaOaepPrivateKeyImpl();
 
   @override
@@ -101,6 +110,12 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final rsaSsaPkcs1v15PublicKey = const _StaticRsaSsaPkcs1V15PublicKeyImpl();
+
+  @override
+  final x25519PrivateKey = const _StaticX25519PrivateKeyImpl();
+
+  @override
+  final x25519PublicKey = const _StaticX25519PublicKeyImpl();
 
   @override
   final sha1 = const _Sha1();
