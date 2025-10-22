@@ -195,9 +195,8 @@ jobs:
       - name: Run flutter test integration_test/webcrypto_test.dart -d android (x86_64, API 33)
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 33
+          api-level: 36
           arch: x86_64
-          target: google_apis
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot
           working-directory: ./example
           script: flutter test integration_test/webcrypto_test.dart -d android
