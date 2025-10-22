@@ -197,6 +197,7 @@ jobs:
         with:
           api-level: 36
           arch: x86_64
+          target: google_apis
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot
           working-directory: ./example
           script: flutter test integration_test/webcrypto_test.dart -d android
