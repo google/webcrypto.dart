@@ -196,6 +196,9 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
+          # TODO: switch back to default once this is issue resolved:
+          # https://issuetracker.google.com/issues/432143095
+          target: google_apis
           working-directory: ./example
           script: flutter test integration_test/webcrypto_test.dart -d android
   linux-coverage:
