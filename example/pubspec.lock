@@ -519,7 +519,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.5.7"
+    version: "0.6.0"
   webdriver:
     dependency: transitive
     description:

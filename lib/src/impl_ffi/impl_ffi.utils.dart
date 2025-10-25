@@ -67,6 +67,24 @@ extension<T, A1> on T Function(ffi.Pointer<EVP_PKEY>, A1) {
 
 /// Extension of native function that takes a [EVP_PKEY], making it easy to call
 /// using a wrapped [_EvpPKey].
+extension<T, A1, A2> on T Function(ffi.Pointer<EVP_PKEY>, A1, A2) {
+  /// Invoke this function with unwrapped [key].
+  T invoke(
+    _EvpPKey key,
+    A1 arg1,
+    A2 arg2,
+  ) =>
+      key.use(
+        (pkey) => this(
+          pkey,
+          arg1,
+          arg2,
+        ),
+      );
+}
+
+/// Extension of native function that takes a [EVP_PKEY], making it easy to call
+/// using a wrapped [_EvpPKey].
 extension<T, A1> on T Function(A1, ffi.Pointer<EVP_PKEY>) {
   /// Invoke this function with unwrapped [key].
   T invoke(A1 arg1, _EvpPKey key) => key.use((pkey) => this(arg1, pkey));
@@ -516,4 +534,30 @@ String _jwkEncodeBase64UrlNoPadding(List<int> data) {
     return padded;
   }
   return padded.substring(0, i);
+}
+
+/// Gets the raw private [key] bytes.
+Uint8List _getRawPrivateKey(_EvpPKey key) {
+  return _Scope.sync((scope) {
+    final len = scope<ffi.Size>();
+    _checkOpIsOne(
+      ssl.EVP_PKEY_get_raw_private_key.invoke(key, ffi.nullptr, len),
+    );
+    final out = scope<ffi.Uint8>(len.value);
+    _checkOpIsOne(ssl.EVP_PKEY_get_raw_private_key.invoke(key, out, len));
+    return out.copy(len.value);
+  });
+}
+
+/// Gets the public [key] bytes.
+Uint8List _getRawPublicKey(_EvpPKey key) {
+  return _Scope.sync((scope) {
+    final len = scope<ffi.Size>();
+    _checkOpIsOne(
+      ssl.EVP_PKEY_get_raw_public_key.invoke(key, ffi.nullptr, len),
+    );
+    final out = scope<ffi.Uint8>(len.value);
+    _checkOpIsOne(ssl.EVP_PKEY_get_raw_public_key.invoke(key, out, len));
+    return out.copy(len.value);
+  });
 }

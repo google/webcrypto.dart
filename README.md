@@ -34,9 +34,11 @@ Future<void> main() async {
  * RSASSA-PKCS1-v1_5 (sign/verify)
  * RSA-PSS (sign/verify)
  * ECDSA (sign/verify)
+ * EdDSA (Ed25519) (sign/verify)
  * RSA-OAEP	(encrypt/decrypt)
  * AES-CTR, AES-CBC, AES-GCM (encrypt/decrypt)
  * ECDH (deriveBits)
+ * X25519 (deriveBits)
  * HKDF (deriveBits)
  * PBKDF2	(deriveBits)
  * BoringSSL, Chrome and Firefox implementations pass the same test cases.
