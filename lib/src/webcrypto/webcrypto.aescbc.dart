@@ -32,8 +32,8 @@ part of 'webcrypto.dart';
 /// {@macro AesCbcSecretKey-encryptBytes/decryptBytes:example}
 ///
 /// [1]:https://csrc.nist.gov/publications/detail/sp/800-38a/final
-/// [2]:https://www.rfc-editor.org/rfc/rfc2315#section-10.3
-/// [3]:https://www.rfc-editor.org/tfc/rfc7517
+/// [2]:https://tools.ietf.org/html/rfc2315#section-10.3
+/// [3]:https://tools.ietf.org/html/rfc7517
 final class AesCbcSecretKey {
   final AesCbcSecretKeyImpl _impl;
 
