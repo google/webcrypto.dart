@@ -78,6 +78,9 @@ target_include_directories(
   ../third_party/boringssl/src/include/
 )
 
+# Enforce a 16KB maximum page size for ELF load segments.
+target_link_options(webcrypto PRIVATE "-Wl,--max-page-size=0x4000")
+
 set_target_properties(
   webcrypto
 
