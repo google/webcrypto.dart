@@ -50,31 +50,31 @@ include(
 add_definitions(-DOPENSSL_SMALL)
 
 # Logic from CMakeLists.txt in BoringSSL
-if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
   set(ARCH "x86_64")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "amd64")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "amd64")
   set(ARCH "x86_64")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "AMD64")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64")
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(ARCH "x86_64")
   else()
     set(ARCH "x86")
   endif()
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86")
   set(ARCH "x86")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i386")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386")
   set(ARCH "x86")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
   set(ARCH "x86")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "aarch64")
   set(ARCH "aarch64")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
   set(ARCH "aarch64")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64e")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64e")
   set(ARCH "aarch64")
-elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm*")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "^arm*")
   set(ARCH "arm")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "ppc64le")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le")
   set(ARCH "ppc64le")
 else()
   set(ARCH "generic")
@@ -101,6 +101,7 @@ if(MSVC)
   set(MSVC_DISABLED_WARNINGS_LIST
       "C4100" # 'exarg' : unreferenced formal parameter
       "C4127" # conditional expression is constant
+      "C4132" # const object should be initialized
       "C4244" # 'function' : conversion from 'int' to 'uint8_t',
               # possible loss of data
       "C4267" # conversion from 'size_t' to 'int', possible loss of data
