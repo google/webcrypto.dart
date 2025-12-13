@@ -82,7 +82,10 @@ final class HmacSecretKey {
     // https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
     if (length != null && length > keyData.length * 8) {
       throw ArgumentError.value(
-          length, 'length', 'must be less than number of bits in keyData');
+        length,
+        'length',
+        'must be less than number of bits in keyData',
+      );
     }
     if (length != null && length <= (keyData.length - 1) * 8) {
       throw ArgumentError.value(
@@ -172,8 +175,10 @@ final class HmacSecretKey {
       );
     }*/
 
-    final impl =
-        await webCryptImpl.hmacSecretKey.importJsonWebKey(jwk, hash._impl);
+    final impl = await webCryptImpl.hmacSecretKey.importJsonWebKey(
+      jwk,
+      hash._impl,
+    );
 
     return HmacSecretKey._(impl);
   }
@@ -196,8 +201,10 @@ final class HmacSecretKey {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }
 
-    final impl = await webCryptImpl.hmacSecretKey
-        .generateKey(hash._impl, length: length);
+    final impl = await webCryptImpl.hmacSecretKey.generateKey(
+      hash._impl,
+      length: length,
+    );
 
     return HmacSecretKey._(impl);
   }

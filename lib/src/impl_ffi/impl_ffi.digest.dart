@@ -22,7 +22,8 @@ abstract class _HashImpl implements HashImpl {
       return hash;
     }
     throw AssertionError(
-        'Custom implementations of HashImpl are not supported.');
+      'Custom implementations of HashImpl are not supported.',
+    );
   }
 
   @protected

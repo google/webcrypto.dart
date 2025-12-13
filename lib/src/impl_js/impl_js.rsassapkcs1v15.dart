@@ -22,29 +22,33 @@ Future<RsaSsaPkcs1V15PrivateKeyImpl> rsassaPkcs1V15PrivateKey_importPkcs8Key(
   List<int> keyData,
   HashImpl hash,
 ) async {
-  return _RsaSsaPkcs1V15PrivateKeyImpl(await _importKey(
-    'pkcs8',
-    keyData,
-    _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
-    _usagesSign,
-    'private',
-  ));
+  return _RsaSsaPkcs1V15PrivateKeyImpl(
+    await _importKey(
+      'pkcs8',
+      keyData,
+      _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
+      _usagesSign,
+      'private',
+    ),
+  );
 }
 
 Future<RsaSsaPkcs1V15PrivateKeyImpl> rsassaPkcs1V15PrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash,
 ) async {
-  return _RsaSsaPkcs1V15PrivateKeyImpl(await _importJsonWebKey(
-    jwk,
-    _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
-    _usagesSign,
-    'private',
-  ));
+  return _RsaSsaPkcs1V15PrivateKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
+      _usagesSign,
+      'private',
+    ),
+  );
 }
 
 Future<KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>>
-    rsassaPkcs1V15PrivateKey_generateKey(
+rsassaPkcs1V15PrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
   HashImpl hash,
@@ -67,25 +71,29 @@ Future<RsaSsaPkcs1V15PublicKeyImpl> rsassaPkcs1V15PublicKey_importSpkiKey(
   List<int> keyData,
   HashImpl hash,
 ) async {
-  return _RsaSsaPkcs1V15PublicKeyImpl(await _importKey(
-    'spki',
-    keyData,
-    _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
-    _usagesVerify,
-    'public',
-  ));
+  return _RsaSsaPkcs1V15PublicKeyImpl(
+    await _importKey(
+      'spki',
+      keyData,
+      _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
+      _usagesVerify,
+      'public',
+    ),
+  );
 }
 
 Future<RsaSsaPkcs1V15PublicKeyImpl> rsassaPkcs1V15PublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash,
 ) async {
-  return _RsaSsaPkcs1V15PublicKeyImpl(await _importJsonWebKey(
-    jwk,
-    _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
-    _usagesVerify,
-    'public',
-  ));
+  return _RsaSsaPkcs1V15PublicKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      _rsassaPkcs1V15Algorithm.update(hash: _getHashAlgorithm(hash)),
+      _usagesVerify,
+      'public',
+    ),
+  );
 }
 
 final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
@@ -94,23 +102,29 @@ final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
 
   @override
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importPkcs8Key(
-      List<int> keyData, HashImpl hash) async {
+    List<int> keyData,
+    HashImpl hash,
+  ) async {
     return await rsassaPkcs1V15PrivateKey_importPkcs8Key(keyData, hash);
   }
 
   @override
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash) async {
+    Map<String, dynamic> jwk,
+    HashImpl hash,
+  ) async {
     return await rsassaPkcs1V15PrivateKey_importJsonWebKey(jwk, hash);
   }
 
   @override
   Future<(RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl)>
-      generateKey(
-          int modulusLength, BigInt publicExponent, HashImpl hash) async {
+  generateKey(int modulusLength, BigInt publicExponent, HashImpl hash) async {
     final KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>
-        pair = await rsassaPkcs1V15PrivateKey_generateKey(
-            modulusLength, publicExponent, hash);
+    pair = await rsassaPkcs1V15PrivateKey_generateKey(
+      modulusLength,
+      publicExponent,
+      hash,
+    );
 
     return (pair.privateKey, pair.publicKey);
   }
@@ -148,13 +162,17 @@ final class _StaticRsaSsaPkcs1V15PublicKeyImpl
 
   @override
   Future<RsaSsaPkcs1V15PublicKeyImpl> importSpkiKey(
-      List<int> keyData, HashImpl hash) async {
+    List<int> keyData,
+    HashImpl hash,
+  ) async {
     return await rsassaPkcs1V15PublicKey_importSpkiKey(keyData, hash);
   }
 
   @override
   Future<RsaSsaPkcs1V15PublicKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash) async {
+    Map<String, dynamic> jwk,
+    HashImpl hash,
+  ) async {
     return await rsassaPkcs1V15PublicKey_importJsonWebKey(jwk, hash);
   }
 }

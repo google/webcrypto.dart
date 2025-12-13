@@ -97,8 +97,10 @@ final class EcdhPrivateKey {
     List<int> keyData,
     EllipticCurve curve,
   ) async {
-    final impl =
-        await webCryptImpl.ecdhPrivateKey.importPkcs8Key(keyData, curve);
+    final impl = await webCryptImpl.ecdhPrivateKey.importPkcs8Key(
+      keyData,
+      curve,
+    );
     return EcdhPrivateKey._(impl);
   }
 
@@ -187,8 +189,8 @@ final class EcdhPrivateKey {
   static Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> generateKey(
     EllipticCurve curve,
   ) async {
-    final (privateKeyImpl, publicKeyImpl) =
-        await webCryptImpl.ecdhPrivateKey.generateKey(curve);
+    final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.ecdhPrivateKey
+        .generateKey(curve);
 
     final privateKey = EcdhPrivateKey(privateKeyImpl);
     final publicKey = EcdhPublicKey(publicKeyImpl);

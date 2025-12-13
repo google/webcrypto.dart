@@ -105,7 +105,8 @@ final class AesCtrSecretKey {
   ///
   /// [1]: https://tools.ietf.org/html/rfc7517
   static Future<AesCtrSecretKey> importJsonWebKey(
-      Map<String, dynamic> jwk) async {
+    Map<String, dynamic> jwk,
+  ) async {
     final impl = await webCryptImpl.aesCtrSecretKey.importJsonWebKey(jwk);
     return AesCtrSecretKey._(impl);
   }
@@ -186,8 +187,7 @@ final class AesCtrSecretKey {
     List<int> data,
     List<int> counter,
     int length,
-  ) =>
-      _impl.encryptBytes(data, counter, length);
+  ) => _impl.encryptBytes(data, counter, length);
 
   /// Encrypt [data] with this [AesCtrSecretKey] using AES in _Counter mode_,
   /// as specified in [NIST SP800-38A][1].
@@ -243,8 +243,7 @@ final class AesCtrSecretKey {
     Stream<List<int>> data,
     List<int> counter,
     int length,
-  ) =>
-      _impl.encryptStream(data, counter, length);
+  ) => _impl.encryptStream(data, counter, length);
 
   /// Decrypt [data] with this [AesCtrSecretKey] using AES in _Counter mode_,
   /// as specified in [NIST SP800-38A][1].
@@ -266,8 +265,7 @@ final class AesCtrSecretKey {
     List<int> data,
     List<int> counter,
     int length,
-  ) =>
-      _impl.decryptBytes(data, counter, length);
+  ) => _impl.decryptBytes(data, counter, length);
 
   /// Decrypt [data] with this [AesCtrSecretKey] using AES in _Counter mode_,
   /// as specified in [NIST SP800-38A][1].
@@ -283,8 +281,7 @@ final class AesCtrSecretKey {
     Stream<List<int>> data,
     List<int> counter,
     int length,
-  ) =>
-      _impl.decryptStream(data, counter, length);
+  ) => _impl.decryptStream(data, counter, length);
 
   /// Export [AesCtrSecretKey] as raw bytes.
   ///

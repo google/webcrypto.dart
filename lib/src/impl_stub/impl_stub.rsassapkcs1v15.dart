@@ -22,24 +22,18 @@ final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importPkcs8Key(
     List<int> keyData,
     HashImpl hash,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     HashImpl hash,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<(RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl)>
-      generateKey(
-    int modulusLength,
-    BigInt publicExponent,
-    HashImpl hash,
-  ) =>
-          throw UnimplementedError('Not implemented');
+  generateKey(int modulusLength, BigInt publicExponent, HashImpl hash) =>
+      throw UnimplementedError('Not implemented');
 }
 
 final class _StaticRsaSsaPkcs1V15PublicKeyImpl
@@ -50,13 +44,11 @@ final class _StaticRsaSsaPkcs1V15PublicKeyImpl
   Future<RsaSsaPkcs1V15PublicKeyImpl> importSpkiKey(
     List<int> keyData,
     HashImpl hash,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<RsaSsaPkcs1V15PublicKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     HashImpl hash,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 }

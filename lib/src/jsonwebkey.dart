@@ -89,7 +89,9 @@ final class JsonWebKey {
       if (json['key_ops'] is! List ||
           (json['key_ops'] as List).any((e) => e is! String)) {
         throw FormatException(
-            'JWK entry "key_ops" must be a list of strings', json);
+          'JWK entry "key_ops" must be a list of strings',
+          json,
+        );
       }
       key_ops = (json['key_ops'] as List).map((e) => e as String).toList();
     }
@@ -222,11 +224,7 @@ final class RsaOtherPrimesInfo {
   String d;
   String t;
 
-  RsaOtherPrimesInfo({
-    required this.r,
-    required this.d,
-    required this.t,
-  });
+  RsaOtherPrimesInfo({required this.r, required this.d, required this.t});
 
   static RsaOtherPrimesInfo fromJson(Map json) {
     for (final k in ['r', 'd', 't']) {
@@ -242,10 +240,6 @@ final class RsaOtherPrimesInfo {
   }
 
   Map<String, Object> toJson() {
-    return <String, Object>{
-      'r': r,
-      'd': d,
-      't': t,
-    };
+    return <String, Object>{'r': r, 'd': d, 't': t};
   }
 }

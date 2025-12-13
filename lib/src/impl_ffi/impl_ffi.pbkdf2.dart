@@ -17,7 +17,8 @@
 part of 'impl_ffi.dart';
 
 Future<Pbkdf2SecretKeyImpl> pbkdf2SecretKey_importRawKey(
-    List<int> keyData) async {
+  List<int> keyData,
+) async {
   return _Pbkdf2SecretKeyImpl(Uint8List.fromList(keyData));
 }
 
@@ -56,31 +57,36 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
     // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/pbkdf2.cc#75
     if (length % 8 != 0) {
       throw operationError(
-          'The length for PBKDF2 must be a multiple of 8 bits');
+        'The length for PBKDF2 must be a multiple of 8 bits',
+      );
     }
     if (length == 0) {
       throw operationError(
-          'A length of zero is not allowed Pbkdf2SecretKey.deriveBits');
+        'A length of zero is not allowed Pbkdf2SecretKey.deriveBits',
+      );
     }
     if (iterations <= 0) {
       throw operationError(
-          'Iterations <= 0 is not allowed for Pbkdf2SecretKey.deriveBits');
+        'Iterations <= 0 is not allowed for Pbkdf2SecretKey.deriveBits',
+      );
     }
 
     final lengthInBytes = length ~/ 8;
 
     return _Scope.async((scope) async {
       final out = scope<ffi.Uint8>(lengthInBytes);
-      _checkOpIsOne(await _PKCS5_PBKDF2_HMAC(
-        scope.dataAsPointer(_key),
-        _key.length,
-        scope.dataAsPointer(salt),
-        salt.length,
-        iterations,
-        md,
-        lengthInBytes,
-        out,
-      ));
+      _checkOpIsOne(
+        await _PKCS5_PBKDF2_HMAC(
+          scope.dataAsPointer(_key),
+          _key.length,
+          scope.dataAsPointer(salt),
+          salt.length,
+          iterations,
+          md,
+          lengthInBytes,
+          out,
+        ),
+      );
       return out.copy(lengthInBytes);
     });
   }
@@ -103,17 +109,16 @@ Future<int> _PKCS5_PBKDF2_HMAC(
   ffi.Pointer<EVP_MD> md,
   int lengthInBytes,
   ffi.Pointer<ffi.Uint8> out,
-) async =>
-    await Isolate.run(
-      () => ssl.PKCS5_PBKDF2_HMAC(
-        key,
-        keyLength,
-        salt,
-        saltLength,
-        iterations,
-        md,
-        lengthInBytes,
-        out,
-      ),
-      debugName: 'PKCS5_PBKDF2_HMAC',
-    );
+) async => await Isolate.run(
+  () => ssl.PKCS5_PBKDF2_HMAC(
+    key,
+    keyLength,
+    salt,
+    saltLength,
+    iterations,
+    md,
+    lengthInBytes,
+    out,
+  ),
+  debugName: 'PKCS5_PBKDF2_HMAC',
+);

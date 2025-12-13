@@ -20,19 +20,26 @@ final class _StaticRsaOaepPrivateKeyImpl
 
   @override
   Future<RsaOaepPrivateKeyImpl> importPkcs8Key(
-      List<int> keyData, HashImpl hash) {
+    List<int> keyData,
+    HashImpl hash,
+  ) {
     throw UnimplementedError('Not implemented');
   }
 
   @override
   Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash) {
+    Map<String, dynamic> jwk,
+    HashImpl hash,
+  ) {
     throw UnimplementedError('Not implemented');
   }
 
   @override
   Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
-      int modulusLength, BigInt publicExponent, HashImpl hash) {
+    int modulusLength,
+    BigInt publicExponent,
+    HashImpl hash,
+  ) {
     throw UnimplementedError('Not implemented');
   }
 }
@@ -41,10 +48,7 @@ final class _StaticRsaOaepPublicKeyImpl implements StaticRsaOaepPublicKeyImpl {
   const _StaticRsaOaepPublicKeyImpl();
 
   @override
-  Future<RsaOaepPublicKeyImpl> importSpkiKey(
-    List<int> keyData,
-    HashImpl hash,
-  ) {
+  Future<RsaOaepPublicKeyImpl> importSpkiKey(List<int> keyData, HashImpl hash) {
     throw UnimplementedError('Not implemented');
   }
 

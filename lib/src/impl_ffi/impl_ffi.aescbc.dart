@@ -22,10 +22,7 @@ Future<AesCbcSecretKeyImpl> aesCbc_importRawKey(List<int> keyData) async =>
 Future<AesCbcSecretKeyImpl> aesCbc_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async =>
-    _AesCbcSecretKeyImpl(_aesImportJwkKey(
-      jwk,
-      expectedJwkAlgSuffix: 'CBC',
-    ));
+    _AesCbcSecretKeyImpl(_aesImportJwkKey(jwk, expectedJwkAlgSuffix: 'CBC'));
 
 Future<AesCbcSecretKeyImpl> aesCbc_generateKey(int length) async =>
     _AesCbcSecretKeyImpl(_aesGenerateKey(length));
@@ -38,8 +35,9 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
 ) {
   return _Scope.stream((scope) async* {
     assert(key.length == 16 || key.length == 32);
-    final cipher =
-        key.length == 16 ? ssl.EVP_aes_128_cbc() : ssl.EVP_aes_256_cbc();
+    final cipher = key.length == 16
+        ? ssl.EVP_aes_128_cbc()
+        : ssl.EVP_aes_256_cbc();
     const blockSize = AES_BLOCK_SIZE;
 
     final ivSize = ssl.EVP_CIPHER_iv_length(cipher);
@@ -48,14 +46,16 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
     }
 
     final ctx = scope.createEVP_CIPHER_CTX();
-    _checkOpIsOne(ssl.EVP_CipherInit_ex(
-      ctx,
-      cipher,
-      ffi.nullptr,
-      scope.dataAsPointer(key),
-      scope.dataAsPointer(iv),
-      encrypt ? 1 : 0,
-    ));
+    _checkOpIsOne(
+      ssl.EVP_CipherInit_ex(
+        ctx,
+        cipher,
+        ffi.nullptr,
+        scope.dataAsPointer(key),
+        scope.dataAsPointer(iv),
+        encrypt ? 1 : 0,
+      ),
+    );
 
     const bufSize = 4096;
 

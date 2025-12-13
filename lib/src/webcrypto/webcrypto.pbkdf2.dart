@@ -93,6 +93,5 @@ final class Pbkdf2SecretKey {
     Hash hash,
     List<int> salt,
     int iterations,
-  ) =>
-      _impl.deriveBits(length, hash._impl, salt, iterations);
+  ) => _impl.deriveBits(length, hash._impl, salt, iterations);
 }

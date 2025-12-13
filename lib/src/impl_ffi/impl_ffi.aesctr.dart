@@ -22,10 +22,7 @@ Future<AesCtrSecretKeyImpl> aesCtr_importRawKey(List<int> keyData) async =>
 Future<AesCtrSecretKeyImpl> aesCtr_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async =>
-    _AesCtrSecretKeyImpl(_aesImportJwkKey(
-      jwk,
-      expectedJwkAlgSuffix: 'CTR',
-    ));
+    _AesCtrSecretKeyImpl(_aesImportJwkKey(jwk, expectedJwkAlgSuffix: 'CTR'));
 
 Future<AesCtrSecretKeyImpl> aesCtr_generateKey(int length) async =>
     _AesCtrSecretKeyImpl(_aesGenerateKey(length));
@@ -65,8 +62,9 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
   return _Scope.stream((scope) async* {
     assert(counter.length == 16);
     assert(key.length == 16 || key.length == 32);
-    final cipher =
-        key.length == 16 ? ssl.EVP_aes_128_ctr() : ssl.EVP_aes_256_ctr();
+    final cipher = key.length == 16
+        ? ssl.EVP_aes_128_ctr()
+        : ssl.EVP_aes_256_ctr();
     const blockSize = AES_BLOCK_SIZE;
 
     // Find the number of possible counter values, as the counter may not be
@@ -93,14 +91,16 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
     var bytes_after_wraparound = ctr * BigInt.from(blockSize);
 
     final ctx = scope.createEVP_CIPHER_CTX();
-    _checkOpIsOne(ssl.EVP_CipherInit_ex(
-      ctx,
-      cipher,
-      ffi.nullptr,
-      scope.dataAsPointer(key),
-      scope.dataAsPointer(counter),
-      encrypt ? 1 : 0,
-    ));
+    _checkOpIsOne(
+      ssl.EVP_CipherInit_ex(
+        ctx,
+        cipher,
+        ffi.nullptr,
+        scope.dataAsPointer(key),
+        scope.dataAsPointer(counter),
+        encrypt ? 1 : 0,
+      ),
+    );
 
     const bufSize = 4096;
 
@@ -143,13 +143,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
           final N = math.min(M, bufSize);
           inData.setAll(0, data.skip(offset + i).take(N));
 
-          _checkOpIsOne(ssl.EVP_CipherUpdate(
-            ctx,
-            outBuf,
-            outLen,
-            inBuf,
-            N,
-          ));
+          _checkOpIsOne(ssl.EVP_CipherUpdate(ctx, outBuf, outLen, inBuf, N));
           if (outLen.value > 0) {
             yield outData.sublist(0, outLen.value);
           }
@@ -177,14 +171,16 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
           }
 
           // Re-initialize the cipher context with counter wrapped around.
-          _checkOpIsOne(ssl.EVP_CipherInit_ex(
-            ctx,
-            cipher,
-            ffi.nullptr,
-            scope.dataAsPointer(key),
-            counterWrappedAround,
-            encrypt ? 1 : 0,
-          ));
+          _checkOpIsOne(
+            ssl.EVP_CipherInit_ex(
+              ctx,
+              cipher,
+              ffi.nullptr,
+              scope.dataAsPointer(key),
+              counterWrappedAround,
+              encrypt ? 1 : 0,
+            ),
+          );
 
           // Update state
           isBeforeWrapAround = false;
@@ -209,9 +205,7 @@ final class _StaticAesCtrSecretKeyImpl implements StaticAesCtrSecretKeyImpl {
   }
 
   @override
-  Future<AesCtrSecretKeyImpl> importJsonWebKey(
-    Map<String, dynamic> jwk,
-  ) async {
+  Future<AesCtrSecretKeyImpl> importJsonWebKey(Map<String, dynamic> jwk) async {
     return await aesCtr_importJsonWebKey(jwk);
   }
 
@@ -230,10 +224,7 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     return 'Instance of \'AesCtrSecretKey\'';
   }
 
-  void _checkArguments(
-    List<int> counter,
-    int length,
-  ) {
+  void _checkArguments(List<int> counter, int length) {
     if (counter.length != 16) {
       throw ArgumentError.value(counter, 'counter', 'must be 16 bytes');
     }
@@ -249,11 +240,9 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     int length,
   ) async {
     _checkArguments(counter, length);
-    return await _bufferStream(decryptStream(
-      Stream.value(data),
-      counter,
-      length,
-    ));
+    return await _bufferStream(
+      decryptStream(Stream.value(data), counter, length),
+    );
   }
 
   @override
@@ -273,11 +262,9 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     int length,
   ) async {
     _checkArguments(counter, length);
-    return await _bufferStream(encryptStream(
-      Stream.value(data),
-      counter,
-      length,
-    ));
+    return await _bufferStream(
+      encryptStream(Stream.value(data), counter, length),
+    );
   }
 
   @override

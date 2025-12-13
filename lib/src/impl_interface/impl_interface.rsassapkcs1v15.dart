@@ -16,11 +16,15 @@ part of 'impl_interface.dart';
 
 abstract interface class StaticRsaSsaPkcs1v15PrivateKeyImpl {
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importPkcs8Key(
-      List<int> keyData, HashImpl hash);
+    List<int> keyData,
+    HashImpl hash,
+  );
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash);
+    Map<String, dynamic> jwk,
+    HashImpl hash,
+  );
   Future<(RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl)>
-      generateKey(int modulusLength, BigInt publicExponent, HashImpl hash);
+  generateKey(int modulusLength, BigInt publicExponent, HashImpl hash);
 }
 
 abstract interface class RsaSsaPkcs1V15PrivateKeyImpl {
@@ -32,9 +36,13 @@ abstract interface class RsaSsaPkcs1V15PrivateKeyImpl {
 
 abstract interface class StaticRsaSsaPkcs1v15PublicKeyImpl {
   Future<RsaSsaPkcs1V15PublicKeyImpl> importSpkiKey(
-      List<int> keyData, HashImpl hash);
+    List<int> keyData,
+    HashImpl hash,
+  );
   Future<RsaSsaPkcs1V15PublicKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash);
+    Map<String, dynamic> jwk,
+    HashImpl hash,
+  );
 }
 
 abstract interface class RsaSsaPkcs1V15PublicKeyImpl {

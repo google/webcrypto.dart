@@ -65,7 +65,7 @@ void main() async {
     deriveParams: {
       'hash': hashToJson(Hash.sha256),
       'salt': bytesToJson(List.generate(42, (i) => (i + i) % 256)),
-      'iterations': 2000
+      'iterations': 2000,
     },
     minDeriveLength: 256,
     maxDeriveLength: 256,
@@ -90,8 +90,8 @@ final _testData = [
     "deriveParams": {
       "hash": "sha-384",
       "salt": "AAIEBggKDA4QEhQWGBocHiA=",
-      "iterations": 2
-    }
+      "iterations": 2,
+    },
   },
   {
     "name": "SHA-384/2/512 generated on chrome/linux at 2020-01-26T20:46:17",
@@ -103,8 +103,8 @@ final _testData = [
     "deriveParams": {
       "hash": "sha-384",
       "salt": "AAIEBggKDA4QEhQWGBocHiA=",
-      "iterations": 2
-    }
+      "iterations": 2,
+    },
   },
   {
     "name": "SHA-384/2/512 generated on firefox/linux at 2020-01-26T20:46:22",
@@ -116,8 +116,8 @@ final _testData = [
     "deriveParams": {
       "hash": "sha-384",
       "salt": "AAIEBggKDA4QEhQWGBocHiA=",
-      "iterations": 2
-    }
+      "iterations": 2,
+    },
   },
   {
     "name":
@@ -131,8 +131,8 @@ final _testData = [
       "hash": "sha-256",
       "salt":
           "AAIEBggKDA4QEhQWGBocHiAiJCYoKiwuMDI0Njg6PD5AQkRGSEpMTlBSVFZYWlxeYGJkZmhqbG5wcnR2eHp8foCChA==",
-      "iterations": 200
-    }
+      "iterations": 200,
+    },
   },
   {
     "name": "SHA-256/200/2048 generated on chrome/linux at 2020-01-26T20:51:28",
@@ -145,8 +145,8 @@ final _testData = [
       "hash": "sha-256",
       "salt":
           "AAIEBggKDA4QEhQWGBocHiAiJCYoKiwuMDI0Njg6PD5AQkRGSEpMTlBSVFZYWlxeYGJkZmhqbG5wcnR2eHp8foCChA==",
-      "iterations": 200
-    }
+      "iterations": 200,
+    },
   },
   {
     "name":
@@ -160,8 +160,8 @@ final _testData = [
       "hash": "sha-256",
       "salt":
           "AAIEBggKDA4QEhQWGBocHiAiJCYoKiwuMDI0Njg6PD5AQkRGSEpMTlBSVFZYWlxeYGJkZmhqbG5wcnR2eHp8foCChA==",
-      "iterations": 200
-    }
+      "iterations": 200,
+    },
   },
   {
     "name":
@@ -174,8 +174,8 @@ final _testData = [
     "deriveParams": {
       "hash": "sha-256",
       "salt": "AAIEBggKDA4QEhQWGBocHiAiJCYoKiwuMDI0Njg6PD5AQkRGSEpMTlBS",
-      "iterations": 2000
-    }
+      "iterations": 2000,
+    },
   },
   {
     "name": "SHA-256/2000/256 generated on chrome/linux at 2020-01-26T20:53:37",
@@ -187,8 +187,8 @@ final _testData = [
     "deriveParams": {
       "hash": "sha-256",
       "salt": "AAIEBggKDA4QEhQWGBocHiAiJCYoKiwuMDI0Njg6PD5AQkRGSEpMTlBS",
-      "iterations": 2000
-    }
+      "iterations": 2000,
+    },
   },
   {
     "name":
@@ -201,7 +201,7 @@ final _testData = [
     "deriveParams": {
       "hash": "sha-256",
       "salt": "AAIEBggKDA4QEhQWGBocHiAiJCYoKiwuMDI0Njg6PD5AQkRGSEpMTlBS",
-      "iterations": 2000
-    }
+      "iterations": 2000,
+    },
   },
 ];

@@ -26,9 +26,8 @@ final runner = TestRunner.symmetric<AesGcmSecretKey>(
   importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       AesGcmSecretKey.importJsonWebKey(jsonWebKeyData),
   exportPrivateJsonWebKey: (key) => key.exportJsonWebKey(),
-  generateKey: (generateKeyPairParams) => AesGcmSecretKey.generateKey(
-    generateKeyPairParams['length'],
-  ),
+  generateKey: (generateKeyPairParams) =>
+      AesGcmSecretKey.generateKey(generateKeyPairParams['length']),
   encryptBytes: (key, data, encryptParams) => key.encryptBytes(
     data,
     bytesFromJson(encryptParams, 'iv')!,
@@ -76,14 +75,14 @@ final _testData = [
       "kty": "oct",
       "use": "enc",
       "alg": "A128GCM",
-      "k": "3nle6RpFx77jwrksoNUb1Q"
+      "k": "3nle6RpFx77jwrksoNUb1Q",
     },
     "plaintext":
         "dWx0cmljZXMKcG9zdWVyZSBjdWJpbGlhIEN1cmFlOyBBbGlxdWFtIHF1aXMgaGVuZHJlcml0IGxhY3VzLgo=",
     "ciphertext":
         "4FNVScf36O/F5uUwqA7qSKbDAhCDHaxdvYZmpViAbEY2GE2kYS18TFRVhfbY82T2JHfqOhIuMStKtHPOkmaB3pThaKK84ARXFj0xIL0b",
     "importKeyParams": {},
-    "encryptDecryptParams": {"iv": "AAEECRAZJDFAUWR5kKnE4Q=="}
+    "encryptDecryptParams": {"iv": "AAEECRAZJDFAUWR5kKnE4Q=="},
   },
   {
     "name": "A128GCM/iv-only generated chrome/linux at 2020-01-21T22:52:35",
@@ -91,12 +90,12 @@ final _testData = [
     "privateJsonWebKeyData": {
       "kty": "oct",
       "alg": "A128GCM",
-      "k": "oZGrqgGz6HAh13f4M-4nFw"
+      "k": "oZGrqgGz6HAh13f4M-4nFw",
     },
     "plaintext": "c3QgbHVjdHVzLCB2ZWwgcGxhY2VyYQ==",
     "ciphertext": "/kdRoLGkAENcOsCcaBKevK+7dk+4WEQKiYFcsLIwq/IrxrpnZWA=",
     "importKeyParams": {},
-    "encryptDecryptParams": {"iv": "AAEECRAZJDFAUWR5kKnE4Q=="}
+    "encryptDecryptParams": {"iv": "AAEECRAZJDFAUWR5kKnE4Q=="},
   },
   {
     "name": "A128GCM/iv-only generated firefox/linux at 2020-01-21T22:52:41",
@@ -104,12 +103,12 @@ final _testData = [
     "privateJsonWebKeyData": {
       "kty": "oct",
       "alg": "A128GCM",
-      "k": "M1Y_cmVtV_58CgQeZ35lIQ"
+      "k": "M1Y_cmVtV_58CgQeZ35lIQ",
     },
     "plaintext": "ZW5lYW4gbWFsZXN1YWRhIHVybmEgbm9uIA==",
     "ciphertext": "NggIpWUaQI3KtEbTba5eL4iytpEsP2Et7wEM4GwG+gqxz13BQdENxlU=",
     "importKeyParams": {},
-    "encryptDecryptParams": {"iv": "AAEECRAZJDFAUWR5kKnE4Q=="}
+    "encryptDecryptParams": {"iv": "AAEECRAZJDFAUWR5kKnE4Q=="},
   },
   {
     "name": "A128GCM/ad/64 generated on boringssl/linux at 2020-01-21T22:57:47",
@@ -118,7 +117,7 @@ final _testData = [
       "kty": "oct",
       "use": "enc",
       "alg": "A128GCM",
-      "k": "vK_zU373WhzeojGh-qTDeQ"
+      "k": "vK_zU373WhzeojGh-qTDeQ",
     },
     "plaintext": "cmFlc2VudCBwcmV0aXVtIG4=",
     "ciphertext": "nelv0lgfowMjxTivj6R+MY8wpgejuOmZMVmlOFiFglov",
@@ -126,8 +125,8 @@ final _testData = [
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
       "additionalData": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=",
-      "tagLength": 64
-    }
+      "tagLength": 64,
+    },
   },
   {
     "name": "A128GCM/ad/64 generated on chrome/linux at 2020-01-21T22:57:56",
@@ -135,7 +134,7 @@ final _testData = [
     "privateJsonWebKeyData": {
       "kty": "oct",
       "alg": "A128GCM",
-      "k": "iPtcYDUi2Te9S1ysudhq3w"
+      "k": "iPtcYDUi2Te9S1ysudhq3w",
     },
     "plaintext":
         "cnRhIGVyYXQuIFZlc3RpYnVsdW0gaW4gcG9ydHRpdG9yIHRlbGx1cy4KQWVuZWFuIGRpY3R1bSBkYXA=",
@@ -145,8 +144,8 @@ final _testData = [
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
       "additionalData": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=",
-      "tagLength": 64
-    }
+      "tagLength": 64,
+    },
   },
   {
     "name": "A128GCM/ad/64 generated on firefox/linux at 2020-01-21T22:58:03",
@@ -154,7 +153,7 @@ final _testData = [
     "privateJsonWebKeyData": {
       "kty": "oct",
       "alg": "A128GCM",
-      "k": "QROjT6fk9NlF5im-libUqw"
+      "k": "QROjT6fk9NlF5im-libUqw",
     },
     "plaintext": "dHVyCmFsaXF1ZXQsIGRvbG9yIA==",
     "ciphertext": "eE4yhoSZIoIaTIn30tRZdONgB1SixHisBgVeBUWR7MllYSg=",
@@ -162,8 +161,8 @@ final _testData = [
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
       "additionalData": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=",
-      "tagLength": 64
-    }
+      "tagLength": 64,
+    },
   },
   {
     "name": "A256GCM/ad/32 generated on boringssl/linux at 2020-01-21T22:59:19",
@@ -172,7 +171,7 @@ final _testData = [
       "kty": "oct",
       "use": "enc",
       "alg": "A256GCM",
-      "k": "uIfV8fgL3cR69VFEZBwFVKZYAEWRGl3k6JlT6mGAd1o"
+      "k": "uIfV8fgL3cR69VFEZBwFVKZYAEWRGl3k6JlT6mGAd1o",
     },
     "plaintext": "bnNlY3RldHVyCmFsaXF1ZXQsIGRvbG9yIGF1Z3VlIG1vbGVzdGk=",
     "ciphertext":
@@ -181,8 +180,8 @@ final _testData = [
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
       "additionalData": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=",
-      "tagLength": 32
-    }
+      "tagLength": 32,
+    },
   },
   {
     "name": "A256GCM/ad/32 generated on chrome/linux at 2020-01-21T22:59:28",
@@ -190,7 +189,7 @@ final _testData = [
     "privateJsonWebKeyData": {
       "kty": "oct",
       "alg": "A256GCM",
-      "k": "P2GOjX4WcWt4NwlMhR4G7OLHWJQGDrTB37Igc4A-RTo"
+      "k": "P2GOjX4WcWt4NwlMhR4G7OLHWJQGDrTB37Igc4A-RTo",
     },
     "plaintext": "ZG9sb3IgYW50ZSBzaXQgYW1ldCBzYXBpZW4uIFN1c3BlbmRpc3NlIHJo",
     "ciphertext":
@@ -199,8 +198,8 @@ final _testData = [
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
       "additionalData": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=",
-      "tagLength": 32
-    }
+      "tagLength": 32,
+    },
   },
   {
     "name": "A256GCM/ad/32 generated on firefox/linux at 2020-01-21T22:59:34",
@@ -208,7 +207,7 @@ final _testData = [
     "privateJsonWebKeyData": {
       "kty": "oct",
       "alg": "A256GCM",
-      "k": "gJMT676kwkWxVBe6Hq1RW4q27ek79VZOIZr4OSe0kmk"
+      "k": "gJMT676kwkWxVBe6Hq1RW4q27ek79VZOIZr4OSe0kmk",
     },
     "plaintext":
         "bSBlZmZpY2l0dXIgcmlzdXMsIG5lYyBncmF2aWRhIHB1cnVzIGNvbmd1ZSBzZWQuIEFlbmVhbiBxdWlzIG5p",
@@ -218,7 +217,7 @@ final _testData = [
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
       "additionalData": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=",
-      "tagLength": 32
-    }
-  }
+      "tagLength": 32,
+    },
+  },
 ];

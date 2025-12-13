@@ -78,25 +78,27 @@ Future<HmacSecretKeyImpl> hmacSecretKey_generateKey(
   final keyData = Uint8List((length / 8).ceil());
   fillRandomBytes(keyData);
 
-  return _HmacSecretKeyImpl(
-    _asUint8ListZeroedToBitLength(keyData, length),
-    h,
-  );
+  return _HmacSecretKeyImpl(_asUint8ListZeroedToBitLength(keyData, length), h);
 }
 
 final class _StaticHmacSecretKeyImpl implements StaticHmacSecretKeyImpl {
   const _StaticHmacSecretKeyImpl();
 
   @override
-  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, HashImpl hash,
-      {int? length}) {
+  Future<HmacSecretKeyImpl> importRawKey(
+    List<int> keyData,
+    HashImpl hash, {
+    int? length,
+  }) {
     return hmacSecretKey_importRawKey(keyData, hash, length: length);
   }
 
   @override
   Future<HmacSecretKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash,
-      {int? length}) {
+    Map<String, dynamic> jwk,
+    HashImpl hash, {
+    int? length,
+  }) {
     return hmacSecretKey_importJsonWebKey(jwk, hash, length: length);
   }
 
@@ -124,13 +126,15 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
   Future<Uint8List> signStream(Stream<List<int>> data) {
     return _Scope.async((scope) async {
       final ctx = scope.create(ssl.HMAC_CTX_new, ssl.HMAC_CTX_free);
-      _checkOpIsOne(ssl.HMAC_Init_ex(
-        ctx,
-        scope.dataAsPointer(_keyData),
-        _keyData.length,
-        _hash._md,
-        ffi.nullptr,
-      ));
+      _checkOpIsOne(
+        ssl.HMAC_Init_ex(
+          ctx,
+          scope.dataAsPointer(_keyData),
+          _keyData.length,
+          _hash._md,
+          ffi.nullptr,
+        ),
+      );
 
       await _streamToUpdate(data, ctx, ssl.HMAC_Update);
 

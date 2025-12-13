@@ -42,7 +42,7 @@ String get libraryFileName {
 ///
 /// Returns `null` if it could not be found.
 Pointer<T> Function<T extends NativeType>(String symbolName)?
-    lookupLibraryInDotDartTool() {
+lookupLibraryInDotDartTool() {
   final dotDartTool = _findDotDartTool();
   if (dotDartTool == null) {
     return null;
@@ -78,8 +78,9 @@ Uri? _findDotDartTool() {
 
   // Traverse up until we see a `.dart_tool/package_config.json` file.
   do {
-    if (File.fromUri(root.resolve('.dart_tool/package_config.json'))
-        .existsSync()) {
+    if (File.fromUri(
+      root.resolve('.dart_tool/package_config.json'),
+    ).existsSync()) {
       return root.resolve('.dart_tool/');
     }
   } while (root != (root = root.resolve('..')));
@@ -90,8 +91,9 @@ Uri? _findDotDartTool() {
 
   // Traverse up until we see a `.dart_tool/package_config.json` file.
   do {
-    if (File.fromUri(root.resolve('.dart_tool/package_config.json'))
-        .existsSync()) {
+    if (File.fromUri(
+      root.resolve('.dart_tool/package_config.json'),
+    ).existsSync()) {
       return root.resolve('.dart_tool/');
     }
   } while (root != (root = root.resolve('..')));

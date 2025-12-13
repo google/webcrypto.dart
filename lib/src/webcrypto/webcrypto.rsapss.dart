@@ -110,8 +110,10 @@ final class RsaPssPrivateKey {
     List<int> keyData,
     Hash hash,
   ) async {
-    final impl =
-        await webCryptImpl.rsaPssPrivateKey.importPkcs8Key(keyData, hash._impl);
+    final impl = await webCryptImpl.rsaPssPrivateKey.importPkcs8Key(
+      keyData,
+      hash._impl,
+    );
     return RsaPssPrivateKey._(impl);
   }
 
@@ -159,8 +161,10 @@ final class RsaPssPrivateKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) async {
-    final impl =
-        await webCryptImpl.rsaPssPrivateKey.importJsonWebKey(jwk, hash._impl);
+    final impl = await webCryptImpl.rsaPssPrivateKey.importJsonWebKey(
+      jwk,
+      hash._impl,
+    );
     return RsaPssPrivateKey._(impl);
   }
 
@@ -476,8 +480,10 @@ final class RsaPssPublicKey {
     List<int> keyData,
     Hash hash,
   ) async {
-    final impl =
-        await webCryptImpl.rsaPssPublicKey.importSpkiKey(keyData, hash._impl);
+    final impl = await webCryptImpl.rsaPssPublicKey.importSpkiKey(
+      keyData,
+      hash._impl,
+    );
     return RsaPssPublicKey._(impl);
   }
 
@@ -519,8 +525,10 @@ final class RsaPssPublicKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) async {
-    final impl =
-        await webCryptImpl.rsaPssPublicKey.importJsonWebKey(jwk, hash._impl);
+    final impl = await webCryptImpl.rsaPssPublicKey.importJsonWebKey(
+      jwk,
+      hash._impl,
+    );
     return RsaPssPublicKey._(impl);
   }
 
@@ -569,8 +577,7 @@ final class RsaPssPublicKey {
     List<int> signature,
     List<int> data,
     int saltLength,
-  ) =>
-      _impl.verifyBytes(signature, data, saltLength);
+  ) => _impl.verifyBytes(signature, data, saltLength);
 
   /// Verify [signature] of [data] using this RSASSA-PSS public key.
   ///
@@ -616,8 +623,7 @@ final class RsaPssPublicKey {
     List<int> signature,
     Stream<List<int>> data,
     int saltLength,
-  ) =>
-      _impl.verifyStream(signature, data, saltLength);
+  ) => _impl.verifyStream(signature, data, saltLength);
 
   /// Export RSASSA-PSS public key in SPKI format.
   ///
