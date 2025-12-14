@@ -19,18 +19,20 @@ final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
 
   @override
   Future<EcdhPrivateKeyImpl> importPkcs8Key(
-          List<int> keyData, EllipticCurve curve) =>
-      throw UnimplementedError('Not implemented');
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<EcdhPrivateKeyImpl> importJsonWebKey(
-          Map<String, dynamic> jwk, EllipticCurve curve) =>
-      throw UnimplementedError('Not implemented');
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(
-          EllipticCurve curve) =>
-      throw UnimplementedError('Not implemented');
+    EllipticCurve curve,
+  ) => throw UnimplementedError('Not implemented');
 }
 
 final class _StaticEcdhPublicKeyImpl implements StaticEcdhPublicKeyImpl {
@@ -38,16 +40,19 @@ final class _StaticEcdhPublicKeyImpl implements StaticEcdhPublicKeyImpl {
 
   @override
   Future<EcdhPublicKeyImpl> importRawKey(
-          List<int> keyData, EllipticCurve curve) =>
-      throw UnimplementedError('Not implemented');
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<EcdhPublicKeyImpl> importSpkiKey(
-          List<int> keyData, EllipticCurve curve) =>
-      throw UnimplementedError('Not implemented');
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<EcdhPublicKeyImpl> importJsonWebKey(
-          Map<String, dynamic> jwk, EllipticCurve curve) =>
-      throw UnimplementedError('Not implemented');
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  ) => throw UnimplementedError('Not implemented');
 }

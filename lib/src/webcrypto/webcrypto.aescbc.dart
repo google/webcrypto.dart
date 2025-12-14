@@ -110,7 +110,8 @@ final class AesCbcSecretKey {
   // TODO: Decide if we want restrictions on "use" property" (we probably have it on web, if we don't strip it)
   // TODO: Decide if we want place restrictions on key_ops
   static Future<AesCbcSecretKey> importJsonWebKey(
-      Map<String, dynamic> jwk) async {
+    Map<String, dynamic> jwk,
+  ) async {
     final impl = await webCryptImpl.aesCbcSecretKey.importJsonWebKey(jwk);
     return AesCbcSecretKey._(impl);
   }

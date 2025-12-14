@@ -21,21 +21,18 @@ final class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
   Future<EcdsaPrivateKeyImpl> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<EcdsaPrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<(EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl)> generateKey(
     EllipticCurve curve,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 }
 
 final class _StaticEcdsaPublicKeyImpl implements StaticEcdsaPublicKeyImpl {
@@ -45,20 +42,17 @@ final class _StaticEcdsaPublicKeyImpl implements StaticEcdsaPublicKeyImpl {
   Future<EcdsaPublicKeyImpl> importRawKey(
     List<int> keyData,
     EllipticCurve curve,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<EcdsaPublicKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 
   @override
   Future<EcdsaPublicKeyImpl> importSpkiKey(
     List<int> keyData,
     EllipticCurve curve,
-  ) =>
-      throw UnimplementedError('Not implemented');
+  ) => throw UnimplementedError('Not implemented');
 }

@@ -24,8 +24,9 @@ class _EvpPKey implements ffi.Finalizable {
   /// will prioritize freeing them.
   static const _externalSizeEstimate = 4096;
 
-  static final _finalizer =
-      ffi.NativeFinalizer(ssl.addresses.EVP_PKEY_free.cast());
+  static final _finalizer = ffi.NativeFinalizer(
+    ssl.addresses.EVP_PKEY_free.cast(),
+  );
 
   final ffi.Pointer<EVP_PKEY> _pkey;
 
@@ -74,23 +75,11 @@ extension<T, A1> on T Function(A1, ffi.Pointer<EVP_PKEY>) {
 
 /// Extension of native function that takes a [EVP_PKEY], making it easy to call
 /// using a wrapped [_EvpPKey].
-extension<T, A1, A2, A3, A4> on T Function(
-    A1, A2, A3, A4, ffi.Pointer<EVP_PKEY>) {
+extension<T, A1, A2, A3, A4>
+    on T Function(A1, A2, A3, A4, ffi.Pointer<EVP_PKEY>) {
   /// Invoke this function with unwrapped [key].
-  T invoke(
-    A1 arg1,
-    A2 arg2,
-    A3 arg3,
-    A4 arg4,
-    _EvpPKey key,
-  ) =>
-      key.use((pkey) => this(
-            arg1,
-            arg2,
-            arg3,
-            arg4,
-            pkey,
-          ));
+  T invoke(A1 arg1, A2 arg2, A3 arg3, A4 arg4, _EvpPKey key) =>
+      key.use((pkey) => this(arg1, arg2, arg3, arg4, pkey));
 }
 
 /// Throw [OperationError] if [condition] is `false`.
@@ -383,15 +372,12 @@ Future<Uint8List> _signStream(
 }) {
   return _Scope.async((scope) async {
     final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
-    final pctx =
-        config != null ? scope<ffi.Pointer<EVP_PKEY_CTX>>() : ffi.nullptr;
-    _checkOpIsOne(ssl.EVP_DigestSignInit.invoke(
-      ctx,
-      pctx,
-      md,
-      ffi.nullptr,
-      key,
-    ));
+    final pctx = config != null
+        ? scope<ffi.Pointer<EVP_PKEY_CTX>>()
+        : ffi.nullptr;
+    _checkOpIsOne(
+      ssl.EVP_DigestSignInit.invoke(ctx, pctx, md, ffi.nullptr, key),
+    );
     if (config != null) {
       config(pctx.value);
     }
@@ -422,15 +408,12 @@ Future<bool> _verifyStream(
   return _Scope.async((scope) async {
     // Create and initialize verification context
     final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
-    final pctx =
-        config != null ? scope<ffi.Pointer<EVP_PKEY_CTX>>() : ffi.nullptr;
-    _checkOpIsOne(ssl.EVP_DigestVerifyInit.invoke(
-      ctx,
-      pctx,
-      md,
-      ffi.nullptr,
-      key,
-    ));
+    final pctx = config != null
+        ? scope<ffi.Pointer<EVP_PKEY_CTX>>()
+        : ffi.nullptr;
+    _checkOpIsOne(
+      ssl.EVP_DigestVerifyInit.invoke(ctx, pctx, md, ffi.nullptr, key),
+    );
     if (config != null) {
       config(pctx.value);
     }

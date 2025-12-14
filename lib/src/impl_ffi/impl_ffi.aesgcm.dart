@@ -22,10 +22,7 @@ Future<AesGcmSecretKeyImpl> aesGcm_importRawKey(List<int> keyData) async =>
 Future<AesGcmSecretKeyImpl> aesGcm_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async =>
-    _AesGcmSecretKeyImpl(_aesImportJwkKey(
-      jwk,
-      expectedJwkAlgSuffix: 'GCM',
-    ));
+    _AesGcmSecretKeyImpl(_aesImportJwkKey(jwk, expectedJwkAlgSuffix: 'GCM'));
 
 Future<AesGcmSecretKeyImpl> aesGcm_generateKey(int length) async =>
     _AesGcmSecretKeyImpl(_aesGenerateKey(length));
@@ -78,34 +75,38 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
       final outLen = scope<ffi.Size>();
       final maxOut = data.length + ssl.EVP_AEAD_max_overhead(aead);
       final out = scope<ffi.Uint8>(maxOut);
-      _checkOpIsOne(ssl.EVP_AEAD_CTX_seal(
-        ctx,
-        out,
-        outLen,
-        maxOut,
-        scope.dataAsPointer(iv),
-        iv.length,
-        scope.dataAsPointer(data),
-        data.length,
-        scope.dataAsPointer(additionalData_),
-        additionalData_.length,
-      ));
+      _checkOpIsOne(
+        ssl.EVP_AEAD_CTX_seal(
+          ctx,
+          out,
+          outLen,
+          maxOut,
+          scope.dataAsPointer(iv),
+          iv.length,
+          scope.dataAsPointer(data),
+          data.length,
+          scope.dataAsPointer(additionalData_),
+          additionalData_.length,
+        ),
+      );
       return out.copy(outLen.value);
     } else {
       final outLen = scope<ffi.Size>();
       final out = scope<ffi.Uint8>(data.length);
-      _checkOpIsOne(ssl.EVP_AEAD_CTX_open(
-        ctx,
-        out,
-        outLen,
-        data.length,
-        scope.dataAsPointer(iv),
-        iv.length,
-        scope.dataAsPointer(data),
-        data.length,
-        scope.dataAsPointer(additionalData_),
-        additionalData_.length,
-      ));
+      _checkOpIsOne(
+        ssl.EVP_AEAD_CTX_open(
+          ctx,
+          out,
+          outLen,
+          data.length,
+          scope.dataAsPointer(iv),
+          iv.length,
+          scope.dataAsPointer(data),
+          data.length,
+          scope.dataAsPointer(additionalData_),
+          additionalData_.length,
+        ),
+      );
       return out.copy(outLen.value);
     }
   });
@@ -145,15 +146,14 @@ final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
     List<int> iv, {
     List<int>? additionalData,
     int? tagLength = 128,
-  }) async =>
-      _aesGcmEncryptDecrypt(
-        _key,
-        data,
-        iv,
-        additionalData,
-        tagLength ?? 128,
-        false,
-      );
+  }) async => _aesGcmEncryptDecrypt(
+    _key,
+    data,
+    iv,
+    additionalData,
+    tagLength ?? 128,
+    false,
+  );
 
   @override
   Future<Uint8List> encryptBytes(
@@ -161,15 +161,14 @@ final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
     List<int> iv, {
     List<int>? additionalData,
     int? tagLength = 128,
-  }) async =>
-      _aesGcmEncryptDecrypt(
-        _key,
-        data,
-        iv,
-        additionalData,
-        tagLength ?? 128,
-        true,
-      );
+  }) async => _aesGcmEncryptDecrypt(
+    _key,
+    data,
+    iv,
+    additionalData,
+    tagLength ?? 128,
+    true,
+  );
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>

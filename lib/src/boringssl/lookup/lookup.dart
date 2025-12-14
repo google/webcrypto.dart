@@ -75,7 +75,7 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
 }();
 
 final Pointer<T> Function<T extends NativeType>(String symbolName)
-    _cachedLookup = lookup;
+_cachedLookup = lookup;
 
 /// Gives access to BoringSSL symbols.
 final BoringSsl ssl = BoringSsl.fromLookup(_cachedLookup);

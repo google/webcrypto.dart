@@ -22,35 +22,39 @@ Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importPkcs8Key(
   List<int> keyData,
   HashImpl hash,
 ) async {
-  return _RsaOaepPrivateKeyImpl(await _importKey(
-    'pkcs8',
-    keyData,
-    subtle.Algorithm(
-      name: _rsaOaepAlgorithmName,
-      hash: _getHashAlgorithm(hash),
+  return _RsaOaepPrivateKeyImpl(
+    await _importKey(
+      'pkcs8',
+      keyData,
+      subtle.Algorithm(
+        name: _rsaOaepAlgorithmName,
+        hash: _getHashAlgorithm(hash),
+      ),
+      _usagesDecrypt,
+      'private',
     ),
-    _usagesDecrypt,
-    'private',
-  ));
+  );
 }
 
 Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash,
 ) async {
-  return _RsaOaepPrivateKeyImpl(await _importJsonWebKey(
-    jwk,
-    subtle.Algorithm(
-      name: _rsaOaepAlgorithmName,
-      hash: _getHashAlgorithm(hash),
+  return _RsaOaepPrivateKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      subtle.Algorithm(
+        name: _rsaOaepAlgorithmName,
+        hash: _getHashAlgorithm(hash),
+      ),
+      _usagesDecrypt,
+      'private',
     ),
-    _usagesDecrypt,
-    'private',
-  ));
+  );
 }
 
 Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
-    rsaOaepPrivateKey_generateKey(
+rsaOaepPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
   HashImpl hash,
@@ -74,31 +78,35 @@ Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importSpkiKey(
   List<int> keyData,
   HashImpl hash,
 ) async {
-  return _RsaOaepPublicKeyImpl(await _importKey(
-    'spki',
-    keyData,
-    subtle.Algorithm(
-      name: _rsaOaepAlgorithmName,
-      hash: _getHashAlgorithm(hash),
+  return _RsaOaepPublicKeyImpl(
+    await _importKey(
+      'spki',
+      keyData,
+      subtle.Algorithm(
+        name: _rsaOaepAlgorithmName,
+        hash: _getHashAlgorithm(hash),
+      ),
+      _usagesEncrypt,
+      'public',
     ),
-    _usagesEncrypt,
-    'public',
-  ));
+  );
 }
 
 Future<RsaOaepPublicKeyImpl> rsaOaepPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash,
 ) async {
-  return _RsaOaepPublicKeyImpl(await _importJsonWebKey(
-    jwk,
-    subtle.Algorithm(
-      name: _rsaOaepAlgorithmName,
-      hash: _getHashAlgorithm(hash),
+  return _RsaOaepPublicKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      subtle.Algorithm(
+        name: _rsaOaepAlgorithmName,
+        hash: _getHashAlgorithm(hash),
+      ),
+      _usagesEncrypt,
+      'public',
     ),
-    _usagesEncrypt,
-    'public',
-  ));
+  );
 }
 
 final class _StaticRsaOaepPrivateKeyImpl
@@ -107,22 +115,32 @@ final class _StaticRsaOaepPrivateKeyImpl
 
   @override
   Future<RsaOaepPrivateKeyImpl> importPkcs8Key(
-      List<int> keyData, HashImpl hash) {
+    List<int> keyData,
+    HashImpl hash,
+  ) {
     return rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
   }
 
   @override
   Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash) {
+    Map<String, dynamic> jwk,
+    HashImpl hash,
+  ) {
     return rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
   }
 
   @override
   Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
-      int modulusLength, BigInt publicExponent, HashImpl hash) async {
+    int modulusLength,
+    BigInt publicExponent,
+    HashImpl hash,
+  ) async {
     final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair =
         await rsaOaepPrivateKey_generateKey(
-            modulusLength, publicExponent, hash);
+          modulusLength,
+          publicExponent,
+          hash,
+        );
 
     return (keyPair.privateKey, keyPair.publicKey);
   }
@@ -172,7 +190,9 @@ final class _StaticRsaOaepPublicKeyImpl implements StaticRsaOaepPublicKeyImpl {
 
   @override
   Future<RsaOaepPublicKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash) {
+    Map<String, dynamic> jwk,
+    HashImpl hash,
+  ) {
     return rsaOaepPublicKey_importJsonWebKey(jwk, hash);
   }
 }

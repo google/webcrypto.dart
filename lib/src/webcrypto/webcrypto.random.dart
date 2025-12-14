@@ -42,8 +42,11 @@ void fillRandomBytes(
   // This limitation is given in the Web Cryptography Specification, see:
   // https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues
   if (destination.lengthInBytes > 65536) {
-    throw ArgumentError.value(destination, 'destination',
-        'array of more than 65536 bytes is not allowed');
+    throw ArgumentError.value(
+      destination,
+      'destination',
+      'array of more than 65536 bytes is not allowed',
+    );
   }
 
   webCryptImpl.random.fillRandomBytes(destination);

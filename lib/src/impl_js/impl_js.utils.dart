@@ -25,7 +25,7 @@ Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
 
 /// Convert [publicExponent] to [Uint8List].
 Uint8List _publicExponentAsBuffer(BigInt publicExponent) {
-// Limit publicExponent allow-listed as in chromium:
+  // Limit publicExponent allow-listed as in chromium:
   // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
   if (publicExponent != BigInt.from(3) &&
       publicExponent != BigInt.from(65537)) {
@@ -95,8 +95,10 @@ Object _translateDomException(
       );
   }
   // Unknown exception, we cannot handle this case.
-  return AssertionError('Unexpected exception from web cryptography'
-      '"${e.name}", message: $message');
+  return AssertionError(
+    'Unexpected exception from web cryptography'
+    '"${e.name}", message: $message',
+  );
 }
 
 /// Convert [Error] to [UnknownError].
@@ -113,7 +115,8 @@ final class UnknownError extends Error {
   UnknownError._();
 
   @override
-  String toString() => 'UnknownError: Browser threw JavaScriptError. '
+  String toString() =>
+      'UnknownError: Browser threw JavaScriptError. '
       'Note: This version of package:webcrypto cannot distinguish between error types from the browser. '
       'See: https://github.com/google/webcrypto.dart/issues/182';
 }
@@ -193,7 +196,10 @@ Future<subtle.JSCryptoKey> _importKey(
     );
     if (k.type != expectedType) {
       throw ArgumentError.value(
-          keyData, 'keyData', 'must be a "$expectedType" key');
+        keyData,
+        'keyData',
+        'must be a "$expectedType" key',
+      );
     }
     return k;
   });
@@ -206,11 +212,7 @@ Future<Uint8List> _sign(
   List<int> data,
 ) {
   return _handleDomException(() async {
-    final result = await subtle.sign(
-      algorithm,
-      key,
-      Uint8List.fromList(data),
-    );
+    final result = await subtle.sign(algorithm, key, Uint8List.fromList(data));
     return result.asUint8List();
   });
 }
@@ -272,20 +274,13 @@ Future<Uint8List> _deriveBits(
   bool invalidAccessErrorIsArgumentError = false,
 }) {
   return _handleDomException(() async {
-    final result = await subtle.deriveBits(
-      algorithm,
-      key,
-      length,
-    );
+    final result = await subtle.deriveBits(algorithm, key, length);
     return result.asUint8List();
   }, invalidAccessErrorIsArgumentError: invalidAccessErrorIsArgumentError);
 }
 
 /// Adapt `crypto.subtle.export` to Dart types.
-Future<Uint8List> _exportKey(
-  String format,
-  subtle.JSCryptoKey key,
-) {
+Future<Uint8List> _exportKey(String format, subtle.JSCryptoKey key) {
   return _handleDomException(() async {
     final result = await subtle.exportKey(format, key);
     return result.asUint8List();
@@ -298,10 +293,7 @@ Future<Map<String, Object>> _exportJsonWebKey(
   // TODO: Add expected 'use' the way we have it in the FFI implementation
 ) {
   return _handleDomException(() async {
-    final jwk = await subtle.exportJsonWebKey(
-      'jwk',
-      key,
-    );
+    final jwk = await subtle.exportJsonWebKey('jwk', key);
     // Remove 'key_ops' and 'ext' as this library doesn't allow configuration of
     // _usages_ or _extractable_.
     // Notice, that we also strip these in [_importJsonWebKey].

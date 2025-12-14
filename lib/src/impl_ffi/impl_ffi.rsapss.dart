@@ -43,7 +43,7 @@ Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importJsonWebKey(
 }
 
 Future<KeyPair<RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl>>
-    rsaPssPrivateKey_generateKey(
+rsaPssPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
   HashImpl hash,
@@ -73,8 +73,12 @@ Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importJsonWebKey(
   // Validate and get hash function
   final h = _HashImpl.fromHash(hash);
   return _RsaPssPublicKeyImpl(
-    _importJwkRsaPrivateOrPublicKey(JsonWebKey.fromJson(jwk),
-        isPrivateKey: false, expectedUse: 'sig', expectedAlg: h.rsaPssJwkAlg),
+    _importJwkRsaPrivateOrPublicKey(
+      JsonWebKey.fromJson(jwk),
+      isPrivateKey: false,
+      expectedUse: 'sig',
+      expectedAlg: h.rsaPssJwkAlg,
+    ),
     h,
   );
 }
@@ -137,20 +141,28 @@ final class _RsaPssPrivateKeyImpl implements RsaPssPrivateKeyImpl {
       );
     }
 
-    return _signStream(_key, _hash._md, data, config: (ctx) {
-      _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
-        ctx,
-        RSA_PKCS1_PSS_PADDING,
-      ));
-      _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(ctx, saltLength));
-      _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, _hash._md));
-    });
+    return _signStream(
+      _key,
+      _hash._md,
+      data,
+      config: (ctx) {
+        _checkOpIsOne(
+          ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PSS_PADDING),
+        );
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(ctx, saltLength));
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, _hash._md));
+      },
+    );
   }
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
-      _exportJwkRsaPrivateOrPublicKey(_key,
-          isPrivateKey: true, jwkUse: 'sig', jwkAlg: _hash.rsaPssJwkAlg);
+      _exportJwkRsaPrivateOrPublicKey(
+        _key,
+        isPrivateKey: true,
+        jwkUse: 'sig',
+        jwkAlg: _hash.rsaPssJwkAlg,
+      );
 
   @override
   Future<Uint8List> exportPkcs8Key() async => _exportPkcs8Key(_key);
@@ -192,8 +204,7 @@ final class _RsaPssPublicKeyImpl implements RsaPssPublicKeyImpl {
     List<int> signature,
     List<int> data,
     int saltLength,
-  ) =>
-      verifyStream(signature, Stream.value(data), saltLength);
+  ) => verifyStream(signature, Stream.value(data), saltLength);
 
   @override
   Future<bool> verifyStream(
@@ -209,20 +220,29 @@ final class _RsaPssPublicKeyImpl implements RsaPssPublicKeyImpl {
       );
     }
 
-    return _verifyStream(_key, _hash._md, signature, data, config: (ctx) {
-      _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
-        ctx,
-        RSA_PKCS1_PSS_PADDING,
-      ));
-      _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(ctx, saltLength));
-      _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, _hash._md));
-    });
+    return _verifyStream(
+      _key,
+      _hash._md,
+      signature,
+      data,
+      config: (ctx) {
+        _checkOpIsOne(
+          ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PSS_PADDING),
+        );
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_pss_saltlen(ctx, saltLength));
+        _checkDataIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, _hash._md));
+      },
+    );
   }
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
-      _exportJwkRsaPrivateOrPublicKey(_key,
-          isPrivateKey: false, jwkUse: 'sig', jwkAlg: _hash.rsaPssJwkAlg);
+      _exportJwkRsaPrivateOrPublicKey(
+        _key,
+        isPrivateKey: false,
+        jwkUse: 'sig',
+        jwkAlg: _hash.rsaPssJwkAlg,
+      );
 
   @override
   Future<Uint8List> exportSpkiKey() async => _exportSpkiKey(_key);

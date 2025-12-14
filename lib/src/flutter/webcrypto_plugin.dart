@@ -48,9 +48,11 @@ class WebcryptoPlugin {
     switch (call.method) {
       default:
         throw PlatformException(
-            code: 'Unimplemented',
-            details: "The webcrypto plugin for web doesn't implement "
-                "the method '${call.method}'");
+          code: 'Unimplemented',
+          details:
+              "The webcrypto plugin for web doesn't implement "
+              "the method '${call.method}'",
+        );
     }
   }
 }

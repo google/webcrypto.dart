@@ -22,37 +22,39 @@ Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPrivateKeyImpl(await _importKey(
-    'pkcs8',
-    keyData,
-    subtle.Algorithm(
-      name: _ecdsaAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdsaPrivateKeyImpl(
+    await _importKey(
+      'pkcs8',
+      keyData,
+      subtle.Algorithm(
+        name: _ecdsaAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      _usagesSign,
+      'private',
     ),
-    _usagesSign,
-    'private',
-  ));
+  );
 }
 
 Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPrivateKeyImpl(await _importJsonWebKey(
-    jwk,
-    subtle.Algorithm(
-      name: _ecdsaAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdsaPrivateKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      subtle.Algorithm(
+        name: _ecdsaAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      _usagesSign,
+      'private',
     ),
-    _usagesSign,
-    'private',
-  ));
+  );
 }
 
 Future<KeyPair<EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl>>
-    ecdsaPrivateKey_generateKey(
-  EllipticCurve curve,
-) async {
+ecdsaPrivateKey_generateKey(EllipticCurve curve) async {
   final pair = await _generateKeyPair(
     subtle.Algorithm(
       name: _ecdsaAlgorithmName,
@@ -70,47 +72,53 @@ Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importRawKey(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPublicKeyImpl(await _importKey(
-    'raw',
-    keyData,
-    subtle.Algorithm(
-      name: _ecdsaAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdsaPublicKeyImpl(
+    await _importKey(
+      'raw',
+      keyData,
+      subtle.Algorithm(
+        name: _ecdsaAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      _usagesVerify,
+      'public',
     ),
-    _usagesVerify,
-    'public',
-  ));
+  );
 }
 
 Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importSpkiKey(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPublicKeyImpl(await _importKey(
-    'spki',
-    keyData,
-    subtle.Algorithm(
-      name: _ecdsaAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdsaPublicKeyImpl(
+    await _importKey(
+      'spki',
+      keyData,
+      subtle.Algorithm(
+        name: _ecdsaAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      _usagesVerify,
+      'public',
     ),
-    _usagesVerify,
-    'public',
-  ));
+  );
 }
 
 Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async {
-  return _EcdsaPublicKeyImpl(await _importJsonWebKey(
-    jwk,
-    subtle.Algorithm(
-      name: _ecdsaAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdsaPublicKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      subtle.Algorithm(
+        name: _ecdsaAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      _usagesVerify,
+      'public',
     ),
-    _usagesVerify,
-    'public',
-  ));
+  );
 }
 
 final class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
@@ -120,15 +128,13 @@ final class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
   Future<EcdsaPrivateKeyImpl> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
-  ) =>
-      ecdsaPrivateKey_importPkcs8Key(keyData, curve);
+  ) => ecdsaPrivateKey_importPkcs8Key(keyData, curve);
 
   @override
   Future<EcdsaPrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) =>
-      ecdsaPrivateKey_importJsonWebKey(jwk, curve);
+  ) => ecdsaPrivateKey_importJsonWebKey(jwk, curve);
 
   @override
   Future<(EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl)> generateKey(
@@ -185,22 +191,19 @@ final class _StaticEcdsaPublicKeyImpl implements StaticEcdsaPublicKeyImpl {
   Future<EcdsaPublicKeyImpl> importRawKey(
     List<int> keyData,
     EllipticCurve curve,
-  ) =>
-      ecdsaPublicKey_importRawKey(keyData, curve);
+  ) => ecdsaPublicKey_importRawKey(keyData, curve);
 
   @override
   Future<EcdsaPublicKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) =>
-      ecdsaPublicKey_importJsonWebKey(jwk, curve);
+  ) => ecdsaPublicKey_importJsonWebKey(jwk, curve);
 
   @override
   Future<EcdsaPublicKeyImpl> importSpkiKey(
     List<int> keyData,
     EllipticCurve curve,
-  ) =>
-      ecdsaPublicKey_importSpkiKey(keyData, curve);
+  ) => ecdsaPublicKey_importSpkiKey(keyData, curve);
 }
 
 final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
@@ -214,7 +217,10 @@ final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
 
   @override
   Future<bool> verifyBytes(
-      List<int> signature, List<int> data, HashImpl hash) async {
+    List<int> signature,
+    List<int> data,
+    HashImpl hash,
+  ) async {
     return await _verify(
       subtle.Algorithm(
         name: _ecdsaAlgorithmName,
