@@ -56,19 +56,21 @@ final class AesCbcSecretKey {
   /// import 'dart:typed_data' show Uint8List;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// final rawKey = Uint8List(16);
-  /// fillRandomBytes(rawKey);
+  /// Future<void> main() async {
+  ///   final rawKey = Uint8List(16);
+  ///   fillRandomBytes(rawKey);
   ///
-  /// final k = await AesCbcSecretKey.importRawKey(rawKey);
+  ///   final k = await AesCbcSecretKey.importRawKey(rawKey);
   ///
-  /// // Use a unique IV for each message.
-  /// final iv = Uint8List(16);
-  /// fillRandomBytes(iv);
+  ///   // Use a unique IV for each message.
+  ///   final iv = Uint8List(16);
+  ///   fillRandomBytes(iv);
   ///
-  /// // Encrypt a message
-  /// final c = await k.encryptBytes(utf8.encode('hello world'), iv);
+  ///   // Encrypt a message
+  ///   final c = await k.encryptBytes(utf8.encode('hello world'), iv);
   ///
-  /// print(utf8.decode(await k.decryptBytes(c, iv))); // hello world
+  ///   print(utf8.decode(await k.decryptBytes(c, iv))); // hello world
+  /// }
   /// ```
   static Future<AesCbcSecretKey> importRawKey(List<int> keyData) async {
     final impl = await webCryptImpl.aesCbcSecretKey.importRawKey(keyData);
@@ -95,15 +97,17 @@ final class AesCbcSecretKey {
   /// import 'dart:convert' show jsonEncode, jsonDecode;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // JSON Web Key as a string containing JSON.
-  /// final jwk = '{"kty": "oct", "alg": "A256CBC", "k": ...}';
+  /// Future<void> main() async {
+  ///   // JSON Web Key as a string containing JSON.
+  ///   final jwk = '{"kty": "oct", "alg": "A256CBC", "k": "Y0ztPO2iDca0H0iM6y0_s0ztPO2iDca0H0iM6y0_s0w"}';
   ///
-  /// // Import secret key from decoded JSON.
-  /// final key = await AesCbcSecretKey.importJsonWebKey(jsonDecode(jwk));
+  ///   // Import secret key from decoded JSON.
+  ///   final key = await AesCbcSecretKey.importJsonWebKey(jsonDecode(jwk));
   ///
-  /// // Export the key (print it in same format as it was given).
-  /// Map<String, dynamic> keyData = await key.exportJsonWebKey();
-  /// print(jsonEncode(keyData));
+  ///   // Export the key (print it in same format as it was given).
+  ///   Map<String, dynamic> keyData = await key.exportJsonWebKey();
+  ///   print(jsonEncode(keyData));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517
@@ -129,8 +133,10 @@ final class AesCbcSecretKey {
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random AES-CBC secret key for AES-256.
-  /// final key = await AesCbcSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-CBC secret key for AES-256.
+  ///   final key = await AesCbcSecretKey.generateKey(256);
+  /// }
   /// ```
   static Future<AesCbcSecretKey> generateKey(int length) async {
     final impl = await webCryptImpl.aesCbcSecretKey.generateKey(length);
@@ -162,18 +168,20 @@ final class AesCbcSecretKey {
   /// import 'dart:typed_data' show Uint8List;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random AES-CBC secret key for AES-256.
-  /// final k = await AesCbcSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-CBC secret key for AES-256.
+  ///   final k = await AesCbcSecretKey.generateKey(256);
   ///
-  /// // Use a unique IV for each message.
-  /// final iv = Uint8List(16);
-  /// fillRandomBytes(iv);
+  ///   // Use a unique IV for each message.
+  ///   final iv = Uint8List(16);
+  ///   fillRandomBytes(iv);
   ///
-  /// // Encrypt a message
-  /// final c = await k.encryptBytes(utf8.encode('hello world'), iv);
+  ///   // Encrypt a message
+  ///   final c = await k.encryptBytes(utf8.encode('hello world'), iv);
   ///
-  /// // Decrypt message (requires the same iv)
-  /// print(utf8.decode(await k.decryptBytes(c, iv))); // hello world
+  ///   // Decrypt message (requires the same iv)
+  ///   print(utf8.decode(await k.decryptBytes(c, iv))); // hello world
+  /// }
   /// ```
   /// {@endtemplate}
   ///
@@ -197,28 +205,32 @@ final class AesCbcSecretKey {
   /// import 'package:async/async.dart' show collectBytes;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random AES-CBC secret key for AES-256.
-  /// final k = await AesCbcSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-CBC secret key for AES-256.
+  ///   final k = await AesCbcSecretKey.generateKey(256);
   ///
-  /// // Use a unique IV for each message.
-  /// final iv = Uint8List(16);
-  /// fillRandomBytes(iv);
+  ///   // Use a unique IV for each message.
+  ///   final iv = Uint8List(16);
+  ///   fillRandomBytes(iv);
   ///
-  /// // Encrypt a message from file and write to file
-  /// final inputFile = File('message.txt');
-  /// final encryptedFile = File('encrypted-message.binary');
-  /// final c = await k.encryptStream(
-  ///   inputFile.openRead(),
-  ///   iv,
-  /// ).pipe(encryptedFile.openWrite());
+  ///   // Encrypt a message from file and write to file
+  ///   final inputFile = File('message.txt');
+  ///   await inputFile.writeAsString('hello world');
+  ///   final encryptedFile = File('encrypted-message.binary');
+  ///   await k.encryptStream(
+  ///     inputFile.openRead(),
+  ///     iv,
+  ///   ).pipe(encryptedFile.openWrite());
   ///
-  /// // Decrypt message (requires the same iv)
-  /// final decryptedBytes = await collectBytes(k.decryptStream(
-  ///   encryptedFile.openRead(),
-  ///   iv, // same iv as used for encryption
-  /// ));
-  /// // decryptedBytes should be equal to contents of inputFile
-  /// assert(utf8.decode(decryptedBytes) == inputFile.readAsStringSync());
+  ///   // Decrypt message (requires the same iv)
+  ///   final decryptedBytes = await collectBytes(k.decryptStream(
+  ///     encryptedFile.openRead(),
+  ///     iv, // same iv as used for encryption
+  ///   ));
+  ///   // decryptedBytes should be equal to contents of inputFile
+  ///   // assert(utf8.decode(decryptedBytes) == inputFile.readAsStringSync());
+  ///   print(utf8.decode(decryptedBytes));
+  /// }
   /// ```
   /// {@endtemplate}
   ///
@@ -269,18 +281,21 @@ final class AesCbcSecretKey {
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
+  /// import 'dart:convert' show base64;
   ///
-  /// // Generate a new random AES-256 secret key.
-  /// final key = await AesCbcSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-256 secret key.
+  ///   final key = await AesCbcSecretKey.generateKey(256);
   ///
-  /// // Extract the secret key.
-  /// final secretBytes = await key.exportRawKey();
+  ///   // Extract the secret key.
+  ///   final secretBytes = await key.exportRawKey();
   ///
-  /// // Print the key as base64
-  /// print(base64.encode(secretBytes));
+  ///   // Print the key as base64
+  ///   print(base64.encode(secretBytes));
   ///
-  /// // If we wanted to we could import the key as follows:
-  /// // key = await AesCbcSecretKey.importRawKey(secretBytes);
+  ///   // If we wanted to we could import the key as follows:
+  ///   // key = await AesCbcSecretKey.importRawKey(secretBytes);
+  /// }
   /// ```
   Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
@@ -293,16 +308,18 @@ final class AesCbcSecretKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode;
   ///
-  /// // Generate a new random AES-256 secret key.
-  /// final key = await AesCbcSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-256 secret key.
+  ///   final key = await AesCbcSecretKey.generateKey(256);
   ///
-  /// // Export the secret key.
-  /// final jwk = await key.exportJsonWebKey();
+  ///   // Export the secret key.
+  ///   final jwk = await key.exportJsonWebKey();
   ///
-  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `jsonEncode` from `dart:convert`, this will print something like:
-  /// // {"kty": "oct", "alg": "A256CBC", "k": ...}
-  /// print(jsonEncode(jwk));
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`, this will print something like:
+  ///   // {"kty": "oct", "alg": "A256CBC", "k": ...}
+  ///   print(jsonEncode(jwk));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517

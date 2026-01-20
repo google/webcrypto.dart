@@ -33,30 +33,32 @@ part of 'webcrypto.dart';
 /// import 'dart:convert' show utf8;
 /// import 'package:webcrypto/webcrypto.dart';
 ///
-/// // Generate a public / private key-pair.
-/// final keyPair = await RsaOaepPrivateKey.generateKey(
-///   4096,
-///   BigInt.from(65537),
-///   Hash.sha256,
-/// );
+/// Future<void> main() async {
+///   // Generate a public / private key-pair.
+///   final keyPair = await RsaOaepPrivateKey.generateKey(
+///     4096,
+///     BigInt.from(65537),
+///     Hash.sha256,
+///   );
 ///
-/// // Generate a 256 bit symmetric key
-/// final secretKeyToBeShared = await AesGcmSecretKey.generateKey(256);
+///   // Generate a 256 bit symmetric key
+///   final secretKeyToBeShared = await AesGcmSecretKey.generateKey(256);
 ///
-/// // Using publicKey Bob can encrypt secretKeyToBeShared, such that it can
-/// // only be decrypted with the private key.
-/// final encryptedRawKey = await keyPair.publicKey.encryptBytes(
-///   await secretKeyToBeShared.exportRawKey(),
-///   label: 'shared-key',
-/// );
+///   // Using publicKey Bob can encrypt secretKeyToBeShared, such that it can
+///   // only be decrypted with the private key.
+///   final encryptedRawKey = await keyPair.publicKey.encryptBytes(
+///     await secretKeyToBeShared.exportRawKey(),
+///     label: utf8.encode('shared-key'),
+///   );
 ///
-/// // Given privateKey and encryptedRawKey Alice can decrypt the shared key.
-/// final sharedRawSecretKey = await keypair.privateKey.decryptBytes(
-///   encryptedRawKey,
-///   label: 'shared-key',
-/// );
-/// final sharedSecretKey = await AesGcmSecretKey.importRaw(sharedRawSecretKey);
-/// // Now both Alice and Bob share a secret key.
+///   // Given privateKey and encryptedRawKey Alice can decrypt the shared key.
+///   final sharedRawSecretKey = await keyPair.privateKey.decryptBytes(
+///     encryptedRawKey,
+///     label: utf8.encode('shared-key'),
+///   );
+///   final sharedSecretKey = await AesGcmSecretKey.importRawKey(sharedRawSecretKey);
+///   // Now both Alice and Bob share a secret key.
+/// }
 /// ```
 /// {@endtemplate}
 ///
@@ -94,23 +96,25 @@ final class RsaOaepPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Read key data from PEM encoded block. This will remove the
-  /// // '----BEGIN...' padding, decode base64 and return encoded bytes.
-  /// List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
-  ///   -----BEGIN PRIVATE KEY-----
-  ///   MIGEAgEAMBAGByqG...
-  ///   -----END PRIVATE KEY-----
-  /// """);
+  /// Future<void> main() async {
+  ///   // Read key data from PEM encoded block. This will remove the
+  ///   // '----BEGIN...' padding, decode base64 and return encoded bytes.
+  ///   List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
+  ///     -----BEGIN PRIVATE KEY-----
+  ///     MIGEAgEAMBAGByqG...
+  ///     -----END PRIVATE KEY-----
+  ///   """);
   ///
-  /// // Import private key from binary PEM decoded data.
-  /// final privateKey = await RsaOaepPrivateKey.importPkcs8Key(
-  ///   keyData,
-  ///   Hash.sha256,
-  /// );
+  ///   // Import private key from binary PEM decoded data.
+  ///   final privateKey = await RsaOaepPrivateKey.importPkcs8Key(
+  ///     keyData,
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the key again (print it in same format as it was given).
-  /// List<int> rawKeyData = await privateKey.exportPkcs8Key();
-  /// print(PemCodec(PemLabel.privateKey).encode(rawKeyData));
+  ///   // Export the key again (print it in same format as it was given).
+  ///   List<int> rawKeyData = await privateKey.exportPkcs8Key();
+  ///   print(PemCodec(PemLabel.privateKey).encode(rawKeyData));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5208
@@ -148,18 +152,20 @@ final class RsaOaepPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode, jsonDecode;
   ///
-  /// // JSON Web Key as a string containing JSON.
-  /// final jwk = '{"kty": "RSA", "alg": "RSA-OAEP-256", ...}';
+  /// Future<void> main() async {
+  ///   // JSON Web Key as a string containing JSON.
+  ///   final jwk = '{"kty": "RSA", "alg": "RSA-OAEP-256", "n": "...", "e": "AQAB", "d": "...", "p": "...", "q": "...", "dp": "...", "dq": "...", "qi": "..."}';
   ///
-  /// // Import private key from decoded JSON.
-  /// final privateKey = await RsaOaepPrivateKey.importJsonWebKey(
-  ///   jsonDecode(jwk),
-  ///   Hash.sha256, // Must match the hash used the JWK key "alg"
-  /// );
+  ///   // Import private key from decoded JSON.
+  ///   final privateKey = await RsaOaepPrivateKey.importJsonWebKey(
+  ///     jsonDecode(jwk),
+  ///     Hash.sha256, // Must match the hash used the JWK key "alg"
+  ///   );
   ///
-  /// // Export the key (print it in same format as it was given).
-  /// Map<String, dynamic> keyData = await privateKey.exportJsonWebKey();
-  /// print(jsonEncode(keyData));
+  ///   // Export the key (print it in same format as it was given).
+  ///   Map<String, dynamic> keyData = await privateKey.exportJsonWebKey();
+  ///   print(jsonEncode(keyData));
+  /// }
   /// ```
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
@@ -186,43 +192,45 @@ final class RsaOaepPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaOaepPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaOaepPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export public, so Bob can use it
-  /// final spkiPublicKey = await keyPair.publicKey.exportSpkiKey();
-  /// final pemPublicKey = PemCodec(PemLabel.publicKey).encode(spkiPublicKey);
-  /// print(pemPublicKey); // print key in PEM format: -----BEGIN PUBLIC KEY....
-  /// // Alice sends pemPublicKey to Bob
+  ///   // Export public, so Bob can use it
+  ///   final spkiPublicKey = await keyPair.publicKey.exportSpkiKey();
+  ///   final pemPublicKey = PemCodec(PemLabel.publicKey).encode(spkiPublicKey);
+  ///   print(pemPublicKey); // print key in PEM format: -----BEGIN PUBLIC KEY....
+  ///   // Alice sends pemPublicKey to Bob
   ///
-  /// // Bob can generate a 256 bit symmetric secret key
-  /// final secretKeyToBeShared = await AesGcmSecretKey.generateKey(256);
+  ///   // Bob can generate a 256 bit symmetric secret key
+  ///   final secretKeyToBeShared = await AesGcmSecretKey.generateKey(256);
   ///
-  /// // Using publicKey Bob can encrypt secretKeyToBeShared, such that it can
-  /// // only be decrypted with the private key.
-  /// final publicKey = RsaOaepPublicKey.importSpki(
-  ///   PemCodec(PemLabel.publicKey).decode(pemPublicKey),
-  ///   Hash.sha256,
-  /// )
-  /// final encryptedRawKey = await publicKey.encryptBytes(
-  ///   await secretKeyToBeShared.exportRawKey(),
-  ///   label: 'shared-key',
-  /// );
-  /// // Bob sends Alice: encryptedRawKey
+  ///   // Using publicKey Bob can encrypt secretKeyToBeShared, such that it can
+  ///   // only be decrypted with the private key.
+  ///   final publicKey = await RsaOaepPublicKey.importSpkiKey(
+  ///     PemCodec(PemLabel.publicKey).decode(pemPublicKey),
+  ///     Hash.sha256,
+  ///   );
+  ///   final encryptedRawKey = await publicKey.encryptBytes(
+  ///     await secretKeyToBeShared.exportRawKey(),
+  ///     label: utf8.encode('shared-key'),
+  ///   );
+  ///   // Bob sends Alice: encryptedRawKey
   ///
-  /// // Given privateKey and encryptedRawKey Alice can decrypt the shared key.
-  /// final sharedRawSecretKey = await keypair.privateKey.decryptBytes(
-  ///   encryptedRawKey,
-  ///   label: 'shared-key',
-  /// );
-  /// final sharedSecretKey = await AesGcmSecretKey.importRaw(
-  ///   sharedRawSecretKey,
-  /// );
-  /// // Now both Alice and Bob share a secret key.
+  ///   // Given privateKey and encryptedRawKey Alice can decrypt the shared key.
+  ///   final sharedRawSecretKey = await keyPair.privateKey.decryptBytes(
+  ///     encryptedRawKey,
+  ///     label: utf8.encode('shared-key'),
+  ///   );
+  ///   final sharedSecretKey = await AesGcmSecretKey.importRawKey(
+  ///     sharedRawSecretKey,
+  ///   );
+  ///   // Now both Alice and Bob share a secret key.
+  /// }
   /// ```
   static Future<KeyPair<RsaOaepPrivateKey, RsaOaepPublicKey>> generateKey(
     int modulusLength,
@@ -251,32 +259,34 @@ final class RsaOaepPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaOaepPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
-  /// // Alice sends keyPair.publicKey to Bob
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaOaepPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
+  ///   // Alice sends keyPair.publicKey to Bob
   ///
-  /// // Bob can generate a 256 bit symmetric secret key
-  /// final secretKeyToBeShared = await AesGcmSecretKey.generateKey(256);
+  ///   // Bob can generate a 256 bit symmetric secret key
+  ///   final secretKeyToBeShared = await AesGcmSecretKey.generateKey(256);
   ///
-  /// // Using the public key Bob can encrypt secretKeyToBeShared, such that it
-  /// // can only be decrypted with the private key.
-  /// final encryptedRawKey = await keyPair.publicKey.encryptBytes(
-  ///   await secretKeyToBeShared.exportRawKey(),
-  /// );
-  /// // Bob sends Alice: encryptedRawKey
+  ///   // Using the public key Bob can encrypt secretKeyToBeShared, such that it
+  ///   // can only be decrypted with the private key.
+  ///   final encryptedRawKey = await keyPair.publicKey.encryptBytes(
+  ///     await secretKeyToBeShared.exportRawKey(),
+  ///   );
+  ///   // Bob sends Alice: encryptedRawKey
   ///
-  /// // Given privateKey and encryptedRawKey Alice can decrypt the shared key.
-  /// final sharedRawSecretKey = await keypair.privateKey.decryptBytes(
-  ///   encryptedRawKey,
-  /// );
-  /// final sharedSecretKey = await AesGcmSecretKey.importRaw(
-  ///   sharedRawSecretKey,
-  /// );
-  /// // Now both Alice and Bob share a secret key.
+  ///   // Given privateKey and encryptedRawKey Alice can decrypt the shared key.
+  ///   final sharedRawSecretKey = await keyPair.privateKey.decryptBytes(
+  ///     encryptedRawKey,
+  ///   );
+  ///   final sharedSecretKey = await AesGcmSecretKey.importRawKey(
+  ///     sharedRawSecretKey,
+  ///   );
+  ///   // Now both Alice and Bob share a secret key.
+  /// }
   /// ```
   Future<Uint8List> decryptBytes(List<int> data, {List<int>? label}) =>
       _impl.decryptBytes(data, label: label);
@@ -291,20 +301,22 @@ final class RsaOaepPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaOaepPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaOaepPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the private key.
-  /// final rawPrivateKey = await keypair.privateKey.exportPkcs8Key();
+  ///   // Export the private key.
+  ///   final rawPrivateKey = await keyPair.privateKey.exportPkcs8Key();
   ///
-  /// // Private keys are often encoded as PEM.
-  /// // This encodes the key in base64 and wraps it with:
-  /// // '-----BEGIN PRIVATE KEY----'...
-  /// print(PemCodec(PemLabel.privateKey).encode(rawPrivateKey));
+  ///   // Private keys are often encoded as PEM.
+  ///   // This encodes the key in base64 and wraps it with:
+  ///   // '-----BEGIN PRIVATE KEY----'...
+  ///   print(PemCodec(PemLabel.privateKey).encode(rawPrivateKey));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5208
@@ -319,20 +331,22 @@ final class RsaOaepPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode;
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaOaepPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaOaepPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the private key.
-  /// final jwk = await keypair.privateKey.exportJsonWebKey();
+  ///   // Export the private key.
+  ///   final jwk = await keyPair.privateKey.exportJsonWebKey();
   ///
-  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `jsonEncode` from `dart:convert`, this will print something like:
-  /// // {"kty": "RSA", "alg": "RSA-OAEP-256", ...}
-  /// print(jsonEncode(jwk));
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`, this will print something like:
+  ///   // {"kty": "RSA", "alg": "RSA-OAEP-256", ...}
+  ///   print(jsonEncode(jwk));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517
@@ -380,23 +394,25 @@ final class RsaOaepPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Read key data from PEM encoded block. This will remove the
-  /// // '----BEGIN...' padding, decode base64 and return encoded bytes.
-  /// List<int> keyData = PemCodec(PemLabel.publicKey).decode("""
-  ///   -----BEGIN PUBLIC KEY-----
-  ///   MIGEAgEAMBAGByqG...
-  ///   -----END PUBLIC KEY-----
-  /// """);
+  /// Future<void> main() async {
+  ///   // Read key data from PEM encoded block. This will remove the
+  ///   // '----BEGIN...' padding, decode base64 and return encoded bytes.
+  ///   List<int> keyData = PemCodec(PemLabel.publicKey).decode("""
+  ///     -----BEGIN PUBLIC KEY-----
+  ///     MIGEAgEAMBAGByqG...
+  ///     -----END PUBLIC KEY-----
+  ///   """);
   ///
-  /// // Import public key from binary PEM decoded data.
-  /// final publicKey = await RsaOaepPublicKey.importSpkiKey(
-  ///   keyData,
-  ///   Hash.sha256,
-  /// );
+  ///   // Import public key from binary PEM decoded data.
+  ///   final publicKey = await RsaOaepPublicKey.importSpkiKey(
+  ///     keyData,
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the key again (print it in same format as it was given).
-  /// List<int> rawKeyData = await publicKey.exportSpkiKey();
-  /// print(PemCodec(PemLabel.publicKey).encode(rawKeyData));
+  ///   // Export the key again (print it in same format as it was given).
+  ///   List<int> rawKeyData = await publicKey.exportSpkiKey();
+  ///   print(PemCodec(PemLabel.publicKey).encode(rawKeyData));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5280
@@ -428,18 +444,20 @@ final class RsaOaepPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode, jsonDecode;
   ///
-  /// // JSON Web Key as a string containing JSON.
-  /// final jwk = '{"kty": "RSA", "alg": "RSA-OAEP-256", ...}';
+  /// Future<void> main() async {
+  ///   // JSON Web Key as a string containing JSON.
+  ///   final jwk = '{"kty": "RSA", "alg": "RSA-OAEP-256", "n": "...", "e": "AQAB"}';
   ///
-  /// // Import public key from decoded JSON.
-  /// final publicKey = await RsaOaepPublicKey.importJsonWebKey(
-  ///   jsonDecode(jwk),
-  ///   Hash.sha256, // Must match the hash used the JWK key "alg"
-  /// );
+  ///   // Import public key from decoded JSON.
+  ///   final publicKey = await RsaOaepPublicKey.importJsonWebKey(
+  ///     jsonDecode(jwk),
+  ///     Hash.sha256, // Must match the hash used the JWK key "alg"
+  ///   );
   ///
-  /// // Export the key (print it in same format as it was given).
-  /// Map<String, dynamic> keyData = await publicKey.exportJsonWebKey();
-  /// print(jsonEncode(keyData));
+  ///   // Export the key (print it in same format as it was given).
+  ///   Map<String, dynamic> keyData = await publicKey.exportJsonWebKey();
+  ///   print(jsonEncode(keyData));
+  /// }
   /// ```
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
@@ -484,34 +502,36 @@ final class RsaOaepPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaOaepPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
-  /// // Alice sends keyPair.publicKey to Bob
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaOaepPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
+  ///   // Alice sends keyPair.publicKey to Bob
   ///
-  /// // Bob can generate a 256 bit symmetric secret key
-  /// final secretKeyToBeShared = await AesGcmSecretKey.generateKey(256);
+  ///   // Bob can generate a 256 bit symmetric secret key
+  ///   final secretKeyToBeShared = await AesGcmSecretKey.generateKey(256);
   ///
-  /// // Using the public key Bob can encrypt secretKeyToBeShared, such that it
-  /// // can only be decrypted with the private key.
-  /// final encryptedRawKey = await keyPair.publicKey.encryptBytes(
-  ///   await secretKeyToBeShared.exportRawKey(),
-  ///   label: 'shared-key-exchange',
-  /// );
-  /// // Bob sends Alice: encryptedRawKey
+  ///   // Using the public key Bob can encrypt secretKeyToBeShared, such that it
+  ///   // can only be decrypted with the private key.
+  ///   final encryptedRawKey = await keyPair.publicKey.encryptBytes(
+  ///     await secretKeyToBeShared.exportRawKey(),
+  ///     label: utf8.encode('shared-key-exchange'),
+  ///   );
+  ///   // Bob sends Alice: encryptedRawKey
   ///
-  /// // Given privateKey and encryptedRawKey Alice can decrypt the shared key.
-  /// final sharedRawSecretKey = await keypair.privateKey.decryptBytes(
-  ///   encryptedRawKey,
-  ///   label: 'shared-key-exchange',
-  /// );
-  /// final sharedSecretKey = await AesGcmSecretKey.importRaw(
-  ///   sharedRawSecretKey,
-  /// );
-  /// // Now both Alice and Bob share a secret key.
+  ///   // Given privateKey and encryptedRawKey Alice can decrypt the shared key.
+  ///   final sharedRawSecretKey = await keyPair.privateKey.decryptBytes(
+  ///     encryptedRawKey,
+  ///     label: utf8.encode('shared-key-exchange'),
+  ///   );
+  ///   final sharedSecretKey = await AesGcmSecretKey.importRawKey(
+  ///     sharedRawSecretKey,
+  ///   );
+  ///   // Now both Alice and Bob share a secret key.
+  /// }
   /// ```
   ///
   /// [1]: https://www.shoup.net/papers/iso-2_1.pdf
@@ -535,20 +555,22 @@ final class RsaOaepPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaOaepPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaOaepPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the public key.
-  /// final rawPublicKey = await keyPair.publicKey.exportSpkiKey();
+  ///   // Export the public key.
+  ///   final rawPublicKey = await keyPair.publicKey.exportSpkiKey();
   ///
-  /// // Public keys are often encoded as PEM.
-  /// // This encode the key in base64 and wraps it with:
-  /// // '-----BEGIN PUBLIC KEY-----'...
-  /// print(PemCodec(PemLabel.publicKey).encode(rawPublicKey));
+  ///   // Public keys are often encoded as PEM.
+  ///   // This encode the key in base64 and wraps it with:
+  ///   // '-----BEGIN PUBLIC KEY-----'...
+  ///   print(PemCodec(PemLabel.publicKey).encode(rawPublicKey));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5280
@@ -563,20 +585,22 @@ final class RsaOaepPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode;
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaOaepPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaOaepPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the public key.
-  /// final jwk = await keypair.publicKey.exportJsonWebKey();
+  ///   // Export the public key.
+  ///   final jwk = await keyPair.publicKey.exportJsonWebKey();
   ///
-  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `jsonEncode` from `dart:convert`, this will print something like:
-  /// // {"kty": "RSA", "alg": "RSA-OAEP-256", ...}
-  /// print(jsonEncode(jwk));
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`, this will print something like:
+  ///   // {"kty": "RSA", "alg": "RSA-OAEP-256", ...}
+  ///   print(jsonEncode(jwk));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517

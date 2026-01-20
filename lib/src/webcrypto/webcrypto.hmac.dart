@@ -65,13 +65,15 @@ final class HmacSecretKey {
   ///
   /// **Example**
   /// ```dart
-  /// import 'dart:convert' show utf8;
+  /// import 'dart:convert' show utf8, base64;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// final key = await HmacSecretKey.importRawKey(
-  ///   base64.decode('WzIxLDg0LDEwMCw5OSwxMCwxMDUsMjIsODAsMTkwLDExNiwyMDMsMjQ5XQ=='),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   final key = await HmacSecretKey.importRawKey(
+  ///     base64.decode('WzIxLDg0LDEwMCw5OSwxMCwxMDUsMjIsODAsMTkwLDExNiwyMDMsMjQ5XQ=='),
+  ///     Hash.sha256,
+  ///   );
+  /// }
   /// ```
   static Future<HmacSecretKey> importRawKey(
     List<int> keyData,
@@ -129,18 +131,20 @@ final class HmacSecretKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode, jsonDecode;
   ///
-  /// // JSON Web Key as a string containing JSON.
-  /// final jwk = '{"kty": "oct", "alg": "HS256", "k": ...}';
+  /// Future<void> main() async {
+  ///   // JSON Web Key as a string containing JSON.
+  ///   final jwk = '{"kty": "oct", "alg": "HS256", "k": "Y0ztPO2iDca0H0iM6y0_s0ztPO2iDca0H0iM6y0_s0w"}';
   ///
-  /// // Import secret key from decoded JSON.
-  /// final key = await HmacSecretKey.importJsonWebKey(
-  ///   jsonDecode(jwk),
-  ///   Hash.sha256, // Must match the hash used the JWK key "alg"
-  /// );
+  ///   // Import secret key from decoded JSON.
+  ///   final key = await HmacSecretKey.importJsonWebKey(
+  ///     jsonDecode(jwk),
+  ///     Hash.sha256, // Must match the hash used the JWK key "alg"
+  ///   );
   ///
-  /// // Export the key (print it in same format as it was given).
-  /// Map<String, dynamic> keyData = await key.exportJsonWebKey();
-  /// print(jsonEncode(keyData));
+  ///   // Export the key (print it in same format as it was given).
+  ///   Map<String, dynamic> keyData = await key.exportJsonWebKey();
+  ///   print(jsonEncode(keyData));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517
@@ -193,8 +197,10 @@ final class HmacSecretKey {
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random HMAC secret key.
-  /// final key = await HmacSecretKey.generate(Hash.sha256);
+  /// Future<void> main() async {
+  ///   // Generate a new random HMAC secret key.
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
+  /// }
   /// ```
   static Future<HmacSecretKey> generateKey(Hash hash, {int? length}) async {
     if (length != null && length <= 0) {
@@ -219,16 +225,18 @@ final class HmacSecretKey {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate an HmacSecretKey.
-  /// final key = await HmacSecretKey.generateKey(Hash.sha256);
+  /// Future<void> main() async {
+  ///   // Generate an HmacSecretKey.
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   ///
-  /// String stringToSign = 'example-string-to-signed';
+  ///   String stringToSign = 'example-string-to-signed';
   ///
-  /// // Compute signature.
-  /// final signature = await key.signBytes(utf8.encode(stringToSign));
+  ///   // Compute signature.
+  ///   final signature = await key.signBytes(utf8.encode(stringToSign));
   ///
-  /// // Print as base64
-  /// print(base64.encode(signature));
+  ///   // Print as base64
+  ///   print(base64.encode(signature));
+  /// }
   /// ```
   ///
   /// {@template HMAC-sign:do-not-validate-using-sign}
@@ -252,18 +260,20 @@ final class HmacSecretKey {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate an HmacSecretKey.
-  /// final key = await HmacSecretKey.generateKey(Hash.sha256);
+  /// Future<void> main() async {
+  ///   // Generate an HmacSecretKey.
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   ///
-  /// String stringToSign = 'example-string-to-signed';
+  ///   String stringToSign = 'example-string-to-signed';
   ///
-  /// // Compute signature.
-  /// final signature = await key.signStream(Stream.fromIterable([
-  ///   utf8.encode(stringToSign),
-  /// ]));
+  ///   // Compute signature.
+  ///   final signature = await key.signStream(Stream.fromIterable([
+  ///     utf8.encode(stringToSign),
+  ///   ]));
   ///
-  /// // Print as base64
-  /// print(base64.encode(signature));
+  ///   // Print as base64
+  ///   print(base64.encode(signature));
+  /// }
   /// ```
   ///
   /// {@macro HMAC-sign:do-not-validate-using-sign}
@@ -289,20 +299,22 @@ final class HmacSecretKey {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate an HmacSecretKey.
-  /// final key = await HmacSecretKey.generateKey(Hash.sha256);
+  /// Future<void> main() async {
+  ///   // Generate an HmacSecretKey.
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   ///
-  /// String stringToSign = 'example-string-to-signed';
+  ///   String stringToSign = 'example-string-to-signed';
   ///
-  /// // Compute signature.
-  /// final signature = await key.signBytes(utf8.encode(stringToSign));
+  ///   // Compute signature.
+  ///   final signature = await key.signBytes(utf8.encode(stringToSign));
   ///
-  /// // Verify signature.
-  /// final result = await key.verifyBytes(
-  ///   signature,
-  ///   utf8.encode(stringToSign),
-  /// );
-  /// assert(result == true, 'this signature should be valid');
+  ///   // Verify signature.
+  ///   final result = await key.verifyBytes(
+  ///     signature,
+  ///     utf8.encode(stringToSign),
+  ///   );
+  ///   assert(result == true, 'this signature should be valid');
+  /// }
   /// ```
   Future<bool> verifyBytes(List<int> signature, List<int> data) =>
       _impl.verifyBytes(signature, data);
@@ -320,21 +332,23 @@ final class HmacSecretKey {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate an HmacSecretKey.
-  /// final key = await HmacSecretKey.generateKey(Hash.sha256);
+  /// Future<void> main() async {
+  ///   // Generate an HmacSecretKey.
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   ///
-  /// String stringToSign = 'example-string-to-signed';
+  ///   String stringToSign = 'example-string-to-signed';
   ///
-  /// // Compute signature.
-  /// final signature = await key.signBytes(Stream.fromIterable([
-  ///   utf8.encode(stringToSign),
-  /// ]));
+  ///   // Compute signature.
+  ///   final signature = await key.signStream(Stream.fromIterable([
+  ///     utf8.encode(stringToSign),
+  ///   ]));
   ///
-  /// // Verify signature.
-  /// final result = await key.verifyStream(signature, Stream.fromIterable([
-  ///   utf8.encode(stringToSign),
-  /// ]));
-  /// assert(result == true, 'this signature should be valid');
+  ///   // Verify signature.
+  ///   final result = await key.verifyStream(signature, Stream.fromIterable([
+  ///     utf8.encode(stringToSign),
+  ///   ]));
+  ///   assert(result == true, 'this signature should be valid');
+  /// }
   /// ```
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) =>
       _impl.verifyStream(signature, data);
@@ -347,18 +361,21 @@ final class HmacSecretKey {
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
+  /// import 'dart:convert' show base64;
   ///
-  /// // Generate a new random HMAC secret key.
-  /// final key = await HmacSecretKey.generate(Hash.sha256);
+  /// Future<void> main() async {
+  ///   // Generate a new random HMAC secret key.
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   ///
-  /// // Extract the secret key.
-  /// final secretBytes = await key.exportRawKey();
+  ///   // Extract the secret key.
+  ///   final secretBytes = await key.exportRawKey();
   ///
-  /// // Print the key as base64
-  /// print(base64.encode(secretBytes));
+  ///   // Print the key as base64
+  ///   print(base64.encode(secretBytes));
   ///
-  /// // If we wanted to we could import the key as follows:
-  /// // key = await HmacSecretKey.importRawKey(secretBytes, Hash.sha256);
+  ///   // If we wanted to we could import the key as follows:
+  ///   // key = await HmacSecretKey.importRawKey(secretBytes, Hash.sha256);
+  /// }
   /// ```
   Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
@@ -371,16 +388,18 @@ final class HmacSecretKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode;
   ///
-  /// // Generate a new random HMAC secret key.
-  /// final key = await HmacSecretKey.generate(Hash.sha256);
+  /// Future<void> main() async {
+  ///   // Generate a new random HMAC secret key.
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   ///
-  /// // Export the secret key.
-  /// final jwk = await key.exportJsonWebKey();
+  ///   // Export the secret key.
+  ///   final jwk = await key.exportJsonWebKey();
   ///
-  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `jsonEncode` from `dart:convert`, this will print something like:
-  /// // {"kty": "oct", "alg": "HS256", "k": ...}
-  /// print(jsonEncode(jwk));
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`, this will print something like:
+  ///   // {"kty": "oct", "alg": "HS256", "k": ...}
+  ///   print(jsonEncode(jwk));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517

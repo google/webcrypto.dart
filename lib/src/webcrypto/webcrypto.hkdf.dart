@@ -28,22 +28,24 @@ part of 'webcrypto.dart';
 /// import 'dart:convert' show utf8, base64;
 /// import 'package:webcrypto/webcrypto.dart';
 ///
-/// // Provide a password to be used for key derivation
-/// final key = await HkdfSecretKey.importRawKey(utf8.decode(
-///   'my-password-in-plain-text',
-/// ));
+/// Future<void> main() async {
+///   // Provide a password to be used for key derivation
+///   final key = await HkdfSecretKey.importRawKey(utf8.decode(
+///     'my-password-in-plain-text',
+///   ));
 ///
-/// // Derive a key from password
-/// final derivedKey = await HkdfSecretKey.deriveBits(
-///   256, // number of bits to derive.
-///   Hash.sha256,
-///   utf8.decode('unique salt'),
-///   utf8.decode('creating derivedKey in example'),
-/// );
+///   // Derive a key from password
+///   final derivedKey = await HkdfSecretKey.deriveBits(
+///     256, // number of bits to derive.
+///     Hash.sha256,
+///     utf8.decode('unique salt'),
+///     utf8.decode('creating derivedKey in example'),
+///   );
 ///
-/// // Print the derived key, this could also be used as basis for other new
-/// // symmetric cryptographic keys.
-/// print(base64.encode(derivedKey));
+///   // Print the derived key, this could also be used as basis for other new
+///   // symmetric cryptographic keys.
+///   print(base64.encode(derivedKey));
+/// }
 /// ```
 /// {@endtemplate}
 ///

@@ -32,31 +32,33 @@ part of 'webcrypto.dart';
 /// import 'dart:convert' show utf8;
 /// import 'package:webcrypto/webcrypto.dart';
 ///
-/// // Generate a key-pair.
-/// final keyPair = await RsaPssPrivateKey.generateKey(
-///   4096,
-///   BigInt.from(65537),
-///   Hash.sha256,
-/// );
+/// Future<void> main() async {
+///   // Generate a key-pair.
+///   final keyPair = await RsaPssPrivateKey.generateKey(
+///     4096,
+///     BigInt.from(65537),
+///     Hash.sha256,
+///   );
 ///
-/// // Use the same saltLength for signing and verifying
-/// const saltLength = 256 / 8;
+///   // Use the same saltLength for signing and verifying
+///   const saltLength = 256 / 8;
 ///
-/// // Using privateKey Bob can sign a message for Alice.
-/// final message = 'Hi Alice';
-/// final signature = await keyPair.privateKey.signBytes(
-///   utf8.encode(message),
-///   saltLength,
-/// );
+///   // Using privateKey Bob can sign a message for Alice.
+///   final message = 'Hi Alice';
+///   final signature = await keyPair.privateKey.signBytes(
+///     utf8.encode(message),
+///     saltLength.round(),
+///   );
 ///
-/// // Given publicKey and signature Alice can verify the message from Bob.
-/// final isValid = await keypair.publicKey.verifyBytes(
-///   signature,
-///   utf8.encode(message),
-///   saltLength,
-/// );
-/// if (isValid) {
-///   print('Authentic message from Bob: $message');
+///   // Given publicKey and signature Alice can verify the message from Bob.
+///   final isValid = await keyPair.publicKey.verifyBytes(
+///     signature,
+///     utf8.encode(message),
+///     saltLength.round(),
+///   );
+///   if (isValid) {
+///     print('Authentic message from Bob: \$message');
+///   }
 /// }
 /// ```
 /// {@endtemplate}
@@ -86,23 +88,25 @@ final class RsaPssPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Read key data from PEM encoded block. This will remove the
-  /// // '----BEGIN...' padding, decode base64 and return encoded bytes.
-  /// List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
-  ///   -----BEGIN PRIVATE KEY-----
-  ///   MIGEAgEAMBAGByqG...
-  ///   -----END PRIVATE KEY-----
-  /// """);
+  /// Future<void> main() async {
+  ///   // Read key data from PEM encoded block. This will remove the
+  ///   // '----BEGIN...' padding, decode base64 and return encoded bytes.
+  ///   List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
+  ///     -----BEGIN PRIVATE KEY-----
+  ///     MIGEAgEAMBAGByqG...
+  ///     -----END PRIVATE KEY-----
+  ///   """);
   ///
-  /// // Import private key from binary PEM decoded data.
-  /// final privateKey = await RsaPssPrivateKey.importPkcs8Key(
-  ///   keyData,
-  ///   Hash.sha256,
-  /// );
+  ///   // Import private key from binary PEM decoded data.
+  ///   final privateKey = await RsaPssPrivateKey.importPkcs8Key(
+  ///     keyData,
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the key again (print it in same format as it was given).
-  /// List<int> rawKeyData = await privateKey.exportPkcs8Key();
-  /// print(PemCodec(PemLabel.privateKey).encode(rawKeyData));
+  ///   // Export the key again (print it in same format as it was given).
+  ///   List<int> rawKeyData = await privateKey.exportPkcs8Key();
+  ///   print(PemCodec(PemLabel.privateKey).encode(rawKeyData));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5208
@@ -140,18 +144,20 @@ final class RsaPssPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode, jsonDecode;
   ///
-  /// // JSON Web Key as a string containing JSON.
-  /// final jwk = '{"kty": "RSA", "alg": "PS256", ...}';
+  /// Future<void> main() async {
+  ///   // JSON Web Key as a string containing JSON.
+  ///   final jwk = '{"kty": "RSA", "alg": "PS256", "n": "...", "e": "AQAB", "d": "...", "p": "...", "q": "...", "dp": "...", "dq": "...", "qi": "..."}';
   ///
-  /// // Import private key from decoded JSON.
-  /// final privateKey = await RsaPssPrivateKey.importJsonWebKey(
-  ///   jsonDecode(jwk),
-  ///   Hash.sha256, // Must match the hash used the JWK key "alg"
-  /// );
+  ///   // Import private key from decoded JSON.
+  ///   final privateKey = await RsaPssPrivateKey.importJsonWebKey(
+  ///     jsonDecode(jwk),
+  ///     Hash.sha256, // Must match the hash used the JWK key "alg"
+  ///   );
   ///
-  /// // Export the key (print it in same format as it was given).
-  /// Map<String, dynamic> keyData = await privateKey.exportJsonWebKey();
-  /// print(jsonEncode(keyData));
+  ///   // Export the key (print it in same format as it was given).
+  ///   Map<String, dynamic> keyData = await privateKey.exportJsonWebKey();
+  ///   print(jsonEncode(keyData));
+  /// }
   /// ```
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
@@ -178,42 +184,44 @@ final class RsaPssPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaPssPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaPssPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export public, so Alice can use it later.
-  /// final spkiPublicKey = await keyPair.publicKey.exportSpkiKey();
-  /// final pemPublicKey = PemCodec(PemLabel.publicKey).encode(spkiPublicKey);
-  /// print(pemPublicKey); // print key in PEM format: -----BEGIN PUBLIC KEY....
+  ///   // Export public, so Alice can use it later.
+  ///   final spkiPublicKey = await keyPair.publicKey.exportSpkiKey();
+  ///   final pemPublicKey = PemCodec(PemLabel.publicKey).encode(spkiPublicKey);
+  ///   print(pemPublicKey); // print key in PEM format: -----BEGIN PUBLIC KEY....
   ///
-  /// // Use the same saltLength for signing and verifying
-  /// const saltLength = 256 / 8;
+  ///   // Use the same saltLength for signing and verifying
+  ///   const saltLength = 256 / 8;
   ///
-  /// // Sign a message for Alice.
-  /// final message = 'Hi Alice';
-  /// final signature = await keyPair.privateKey.signBytes(
-  ///   utf8.encode(message),
-  ///   saltLength,
-  /// );
+  ///   // Sign a message for Alice.
+  ///   final message = 'Hi Alice';
+  ///   final signature = await keyPair.privateKey.signBytes(
+  ///     utf8.encode(message),
+  ///     saltLength.round(),
+  ///   );
   ///
-  /// // On the other side of the world, Alice has written down the pemPublicKey
-  /// // on a trusted piece of paper, but receives the message and signature
-  /// // from an untrusted source (thus, desires to verify the signature).
-  /// final publicKey = await RsaPssPublicKey.importSpkiKey(
-  ///   PemCodec(PemLabel.publicKey).decode(pemPublicKey),
-  ///   Hash.sha256,
-  /// );
-  /// final isValid = await publicKey.verifyBytes(
-  ///   signature,
-  ///   utf8.encode(message),
-  ///   saltLength,
-  /// );
-  /// if (isValid) {
-  ///   print('Authentic message from Bob: $message');
+  ///   // On the other side of the world, Alice has written down the pemPublicKey
+  ///   // on a trusted piece of paper, but receives the message and signature
+  ///   // from an untrusted source (thus, desires to verify the signature).
+  ///   final publicKey = await RsaPssPublicKey.importSpkiKey(
+  ///     PemCodec(PemLabel.publicKey).decode(pemPublicKey),
+  ///     Hash.sha256,
+  ///   );
+  ///   final isValid = await publicKey.verifyBytes(
+  ///     signature,
+  ///     utf8.encode(message),
+  ///     saltLength.round(),
+  ///   );
+  ///   if (isValid) {
+  ///     print('Authentic message from Bob: \$message');
+  ///   }
   /// }
   /// ```
   static Future<KeyPair<RsaPssPrivateKey, RsaPssPublicKey>> generateKey(
@@ -251,33 +259,35 @@ final class RsaPssPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Read prviate key data from PEM encoded block. This will remove the
-  /// // '----BEGIN...' padding, decode base64 and return encoded bytes.
-  /// List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
-  ///   -----BEGIN PRIVATE KEY-----
-  ///   MIGEAgEAMBAGByqG...
-  ///   -----END PRIVATE KEY-----
-  /// """);
+  /// Future<void> main() async {
+  ///   // Read prviate key data from PEM encoded block. This will remove the
+  ///   // '----BEGIN...' padding, decode base64 and return encoded bytes.
+  ///   List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
+  ///     -----BEGIN PRIVATE KEY-----
+  ///     MIGEAgEAMBAGByqG...
+  ///     -----END PRIVATE KEY-----
+  ///   """);
   ///
-  /// // Import private key from binary PEM decoded data.
-  /// final privatKey = await RsaPssPrivateKey.importPkcs8Key(
-  ///   keyData,
-  ///   Hash.sha256,
-  /// );
+  ///   // Import private key from binary PEM decoded data.
+  ///   final privateKey = await RsaPssPrivateKey.importPkcs8Key(
+  ///     keyData,
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Use the same salt for signing and verifying.
-  /// // In this case we're using the length of the hash function, divided by 8
-  /// // to as saltLength must be specified in bytes.
-  /// const saltLength = 256 / 8;
+  ///   // Use the same salt for signing and verifying.
+  ///   // In this case we're using the length of the hash function, divided by 8
+  ///   // to as saltLength must be specified in bytes.
+  ///   const saltLength = 256 / 8;
   ///
-  /// // Create a signature for UTF-8 encoded message
-  /// final message = 'hello world';
-  /// final signature = await privateKey.signBytes(
-  ///   utf8.encode(message),
-  ///   saltLength,
-  /// );
+  ///   // Create a signature for UTF-8 encoded message
+  ///   final message = 'hello world';
+  ///   final signature = await privateKey.signBytes(
+  ///     utf8.encode(message),
+  ///     saltLength.round(),
+  ///   );
   ///
-  /// print('signature: ${base64.encode(signature)}');
+  ///   print('signature: \${base64.encode(signature)}');
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc3447#section-9.1
@@ -326,32 +336,34 @@ final class RsaPssPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Read prviate key data from PEM encoded block. This will remove the
-  /// // '----BEGIN...' padding, decode base64 and return encoded bytes.
-  /// List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
-  ///   -----BEGIN PRIVATE KEY-----
-  ///   MIGEAgEAMBAGByqG...
-  ///   -----END PRIVATE KEY-----
-  /// """);
+  /// Future<void> main() async {
+  ///   // Read private key data from PEM encoded block. This will remove the
+  ///   // '----BEGIN...' padding, decode base64 and return encoded bytes.
+  ///   List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
+  ///     -----BEGIN PRIVATE KEY-----
+  ///     MIGEAgEAMBAGByqG...
+  ///     -----END PRIVATE KEY-----
+  ///   """);
   ///
-  /// // Import private key from binary PEM decoded data.
-  /// final privatKey = await RsaPssPrivateKey.importPkcs8Key(
-  ///   keyData,
-  ///   Hash.sha256,
-  /// );
+  ///   // Import private key from binary PEM decoded data.
+  ///   final privateKey = await RsaPssPrivateKey.importPkcs8Key(
+  ///     keyData,
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Use the same salt for signing and verifying.
-  /// // In this case we're using the length of the hash function, divided by 8
-  /// // to as saltLength must be specified in bytes.
-  /// const saltLength = 256 / 8;
+  ///   // Use the same salt for signing and verifying.
+  ///   // In this case we're using the length of the hash function, divided by 8
+  ///   // to as saltLength must be specified in bytes.
+  ///   const saltLength = 256 / 8;
   ///
-  /// // Create a signature for message read directly from file.
-  /// final signature = await privateKey.signStream(
-  ///   File('message.txt').openRead(),
-  ///   saltLength,
-  /// );
+  ///   // Create a signature for message read directly from file.
+  ///   final signature = await privateKey.signStream(
+  ///     File('message.txt').openRead(),
+  ///     saltLength.round(),
+  ///   );
   ///
-  /// print('signature: ${base64.encode(signature)}');
+  ///   print('signature: \${base64.encode(signature)}');
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc3447#section-9.1
@@ -397,20 +409,22 @@ final class RsaPssPrivateKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode;
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaPssPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaPssPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the private key.
-  /// final jwk = await keypair.privateKey.exportJsonWebKey();
+  ///   // Export the private key.
+  ///   final jwk = await keyPair.privateKey.exportJsonWebKey();
   ///
-  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `jsonEncode` from `dart:convert`, this will print something like:
-  /// // {"kty": "RSA", "alg": "PS256", ...}
-  /// print(jsonEncode(jwk));
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`, this will print something like:
+  ///   // {"kty": "RSA", "alg": "PS256", ...}
+  ///   print(jsonEncode(jwk));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517
@@ -456,23 +470,25 @@ final class RsaPssPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Read key data from PEM encoded block. This will remove the
-  /// // '----BEGIN...' padding, decode base64 and return encoded bytes.
-  /// List<int> keyData = PemCodec(PemLabel.publicKey).decode("""
-  ///   -----BEGIN PUBLIC KEY-----
-  ///   MIGEAgEAMBAGByqG...
-  ///   -----END PUBLIC KEY-----
-  /// """);
+  /// Future<void> main() async {
+  ///   // Read key data from PEM encoded block. This will remove the
+  ///   // '----BEGIN...' padding, decode base64 and return encoded bytes.
+  ///   List<int> keyData = PemCodec(PemLabel.publicKey).decode("""
+  ///     -----BEGIN PUBLIC KEY-----
+  ///     MIGEAgEAMBAGByqG...
+  ///     -----END PUBLIC KEY-----
+  ///   """);
   ///
-  /// // Import public key from binary PEM decoded data.
-  /// final publicKey = await RsaPssPublicKey.importSpkiKey(
-  ///   keyData,
-  ///   Hash.sha256,
-  /// );
+  ///   // Import public key from binary PEM decoded data.
+  ///   final publicKey = await RsaPssPublicKey.importSpkiKey(
+  ///     keyData,
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the key again (print it in same format as it was given).
-  /// List<int> rawKeyData = await publicKey.exportSpkiKey();
-  /// print(PemCodec(PemLabel.publicKey).encode(rawKeyData));
+  ///   // Export the key again (print it in same format as it was given).
+  ///   List<int> rawKeyData = await publicKey.exportSpkiKey();
+  ///   print(PemCodec(PemLabel.publicKey).encode(rawKeyData));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5280
@@ -504,18 +520,20 @@ final class RsaPssPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode, jsonDecode;
   ///
-  /// // JSON Web Key as a string containing JSON.
-  /// final jwk = '{"kty": "RSA", "alg": "PS256", ...}';
+  /// Future<void> main() async {
+  ///   // JSON Web Key as a string containing JSON.
+  ///   final jwk = '{"kty": "RSA", "alg": "PS256", "n": "...", "e": "AQAB"}';
   ///
-  /// // Import public key from decoded JSON.
-  /// final publicKey = await RsaPssPublicKey.importJsonWebKey(
-  ///   jsonDecode(jwk),
-  ///   Hash.sha256, // Must match the hash used the JWK key "alg"
-  /// );
+  ///   // Import public key from decoded JSON.
+  ///   final publicKey = await RsaPssPublicKey.importJsonWebKey(
+  ///     jsonDecode(jwk),
+  ///     Hash.sha256, // Must match the hash used the JWK key "alg"
+  ///   );
   ///
-  /// // Export the key (print it in same format as it was given).
-  /// Map<String, dynamic> keyData = await publicKey.exportJsonWebKey();
-  /// print(jsonEncode(keyData));
+  ///   // Export the key (print it in same format as it was given).
+  ///   Map<String, dynamic> keyData = await publicKey.exportJsonWebKey();
+  ///   print(jsonEncode(keyData));
+  /// }
   /// ```
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
@@ -546,31 +564,33 @@ final class RsaPssPublicKey {
   /// import 'dart:convert' show utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaPssPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaPssPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Use the same salt for signing and verifying.
-  /// const saltLength = 256 / 8;
+  ///   // Use the same salt for signing and verifying.
+  ///   const saltLength = 256 / 8;
   ///
-  /// // Using privateKey Bob can sign a message for Alice.
-  /// final message = 'Hi Alice';
-  /// final signature = await keyPair.privateKey.signBytes(
-  ///   utf8.encode(message),
-  ///   saltLength,
-  /// );
+  ///   // Using privateKey Bob can sign a message for Alice.
+  ///   final message = 'Hi Alice';
+  ///   final signature = await keyPair.privateKey.signBytes(
+  ///     utf8.encode(message),
+  ///     saltLength.round(),
+  ///   );
   ///
-  /// // Given publicKey and signature Alice can verify the message from Bob.
-  /// final isValid = await keypair.publicKey.verifyBytes(
-  ///   signature,
-  ///   utf8.encode(message),
-  ///   saltLength,
-  /// );
-  /// if (isValid) {
-  ///   print('Authentic message from Bob: $message');
+  ///   // Given publicKey and signature Alice can verify the message from Bob.
+  ///   final isValid = await keyPair.publicKey.verifyBytes(
+  ///     signature,
+  ///     utf8.encode(message),
+  ///     saltLength.round(),
+  ///   );
+  ///   if (isValid) {
+  ///     print('Authentic message from Bob: \$message');
+  ///   }
   /// }
   /// ```
   Future<bool> verifyBytes(
@@ -593,30 +613,32 @@ final class RsaPssPublicKey {
   /// import 'dart:io' show File;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaPssPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaPssPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Use the same salt for signing and verifying.
-  /// const saltLength = 256 / 8;
+  ///   // Use the same salt for signing and verifying.
+  ///   const saltLength = 256 / 8;
   ///
-  /// // Using privateKey Bob can sign a message for Alice.
-  /// final signature = await keyPair.privateKey.signStream(
-  ///   File('message.txt').openRead(), // read directly from file
-  ///   saltLength,
-  /// );
+  ///   // Using privateKey Bob can sign a message for Alice.
+  ///   final signature = await keyPair.privateKey.signStream(
+  ///     File('message.txt').openRead(), // read directly from file
+  ///     saltLength.round(),
+  ///   );
   ///
-  /// // Given publicKey and signature Alice can verify the message from Bob.
-  /// final isValid = await keypair.publicKey.verifyStream(
-  ///   signature,
-  ///   File('message.txt').openRead(), // read directly from file
-  ///   saltLength,
-  /// );
-  /// if (isValid) {
-  ///   print('Authentic message from Bob: $message');
+  ///   // Given publicKey and signature Alice can verify the message from Bob.
+  ///   final isValid = await keyPair.publicKey.verifyStream(
+  ///     signature,
+  ///     File('message.txt').openRead(), // read directly from file
+  ///     saltLength.round(),
+  ///   );
+  ///   if (isValid) {
+  ///     print('Authentic message from Bob: \$message');
+  ///   }
   /// }
   /// ```
   Future<bool> verifyStream(
@@ -635,20 +657,22 @@ final class RsaPssPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'package:pem/pem.dart';
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaPssPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaPssPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the public key.
-  /// final rawPublicKey = await keyPair.publicKey.exportSpkiKey();
+  ///   // Export the public key.
+  ///   final rawPublicKey = await keyPair.publicKey.exportSpkiKey();
   ///
-  /// // Public keys are often encoded as PEM.
-  /// // This encode the key in base64 and wraps it with:
-  /// // '-----BEGIN PUBLIC KEY-----'...
-  /// print(PemCodec(PemLabel.publicKey).encode(rawPublicKey));
+  ///   // Public keys are often encoded as PEM.
+  ///   // This encode the key in base64 and wraps it with:
+  ///   // '-----BEGIN PUBLIC KEY-----'...
+  ///   print(PemCodec(PemLabel.publicKey).encode(rawPublicKey));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5280
@@ -663,20 +687,22 @@ final class RsaPssPublicKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode;
   ///
-  /// // Generate a key-pair.
-  /// final keyPair = await RsaPssPrivateKey.generateKey(
-  ///   4096,
-  ///   BigInt.from(65537),
-  ///   Hash.sha256,
-  /// );
+  /// Future<void> main() async {
+  ///   // Generate a key-pair.
+  ///   final keyPair = await RsaPssPrivateKey.generateKey(
+  ///     4096,
+  ///     BigInt.from(65537),
+  ///     Hash.sha256,
+  ///   );
   ///
-  /// // Export the public key.
-  /// final jwk = await keypair.publicKey.exportJsonWebKey();
+  ///   // Export the public key.
+  ///   final jwk = await keyPair.publicKey.exportJsonWebKey();
   ///
-  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `jsonEncode` from `dart:convert`, this will print something like:
-  /// // {"kty": "RSA", "alg": "PS256", ...}
-  /// print(jsonEncode(jwk));
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`, this will print something like:
+  ///   // {"kty": "RSA", "alg": "PS256", ...}
+  ///   print(jsonEncode(jwk));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517

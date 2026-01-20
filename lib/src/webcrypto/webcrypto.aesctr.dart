@@ -47,25 +47,27 @@ final class AesCtrSecretKey {
   /// import 'dart:typed_data' show Uint8List;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// final rawKey = Uint8List(16);
-  /// fillRandomBytes(rawKey);
+  /// Future<void> main() async {
+  ///   final rawKey = Uint8List(16);
+  ///   fillRandomBytes(rawKey);
   ///
-  /// // Import key from raw bytes
-  /// final k = await AesCtrSecretKey.importRawKey(rawKey);
+  ///   // Import key from raw bytes
+  ///   final k = await AesCtrSecretKey.importRawKey(rawKey);
   ///
-  /// // Use a unique counter for each message.
-  /// final ctr = Uint8List(16); // always 16 bytes
-  /// fillRandomBytes(ctr);
+  ///   // Use a unique counter for each message.
+  ///   final ctr = Uint8List(16); // always 16 bytes
+  ///   fillRandomBytes(ctr);
   ///
-  /// // Length of the counter, the N'th right most bits of ctr are incremented
-  /// // for each block, the left most 128 - N bits are used as static nonce.
-  /// final N = 64;
+  ///   // Length of the counter, the N'th right most bits of ctr are incremented
+  ///   // for each block, the left most 128 - N bits are used as static nonce.
+  ///   final N = 64;
   ///
-  /// // Encrypt a message
-  /// final c = await k.encryptBytes(utf8.encode('hello world'), ctr, N);
+  ///   // Encrypt a message
+  ///   final c = await k.encryptBytes(utf8.encode('hello world'), ctr, N);
   ///
-  /// // Decrypt message (requires the same counter ctr and length N)
-  /// print(utf8.decode(await k.decryptBytes(c, ctr, N))); // hello world
+  ///   // Decrypt message (requires the same counter ctr and length N)
+  ///   print(utf8.decode(await k.decryptBytes(c, ctr, N))); // hello world
+  /// }
   /// ```
   static Future<AesCtrSecretKey> importRawKey(List<int> keyData) async {
     final impl = await webCryptImpl.aesCtrSecretKey.importRawKey(keyData);
@@ -92,15 +94,17 @@ final class AesCtrSecretKey {
   /// import 'dart:convert' show jsonEncode, jsonDecode;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // JSON Web Key as a string containing JSON.
-  /// final jwk = '{"kty": "oct", "alg": "A256CTR", "k": ...}';
+  /// Future<void> main() async {
+  ///   // JSON Web Key as a string containing JSON.
+  ///   final jwk = '{"kty": "oct", "alg": "A256CTR", "k": "Y0ztPO2iDca0H0iM6y0_s0ztPO2iDca0H0iM6y0_s0w"}';
   ///
-  /// // Import secret key from decoded JSON.
-  /// final key = await AesCtrSecretKey.importJsonWebKey(jsonDecode(jwk));
+  ///   // Import secret key from decoded JSON.
+  ///   final key = await AesCtrSecretKey.importJsonWebKey(jsonDecode(jwk));
   ///
-  /// // Export the key (print it in same format as it was given).
-  /// Map<String, dynamic> keyData = await key.exportJsonWebKey();
-  /// print(jsonEncode(keyData));
+  ///   // Export the key (print it in same format as it was given).
+  ///   Map<String, dynamic> keyData = await key.exportJsonWebKey();
+  ///   print(jsonEncode(keyData));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517
@@ -124,8 +128,10 @@ final class AesCtrSecretKey {
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random AES-CTR secret key for AES-256.
-  /// final key = await AesCtrSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-CTR secret key for AES-256.
+  ///   final key = await AesCtrSecretKey.generateKey(256);
+  /// }
   /// ```
   static Future<AesCtrSecretKey> generateKey(int length) async {
     final impl = await webCryptImpl.aesCtrSecretKey.generateKey(length);
@@ -153,23 +159,25 @@ final class AesCtrSecretKey {
   /// import 'dart:typed_data' show Uint8List;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random AES-CTR secret key for AES-256.
-  /// final k = await AesCtrSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-CTR secret key for AES-256.
+  ///   final k = await AesCtrSecretKey.generateKey(256);
   ///
-  /// // Use a unique counter for each message.
-  /// final ctr = Uint8List(16); // always 16 bytes
-  /// fillRandomBytes(ctr);
+  ///   // Use a unique counter for each message.
+  ///   final ctr = Uint8List(16); // always 16 bytes
+  ///   fillRandomBytes(ctr);
   ///
-  /// // Length of the counter, the N'th right most bits of ctr are incremented
-  /// // for each block, the left most 128 - N bits are used as static nonce.
-  /// // Thus, messages must be less than 2^64 * 16 bytes.
-  /// final N = 64;
+  ///   // Length of the counter, the N'th right most bits of ctr are incremented
+  ///   // for each block, the left most 128 - N bits are used as static nonce.
+  ///   // Thus, messages must be less than 2^64 * 16 bytes.
+  ///   final N = 64;
   ///
-  /// // Encrypt a message
-  /// final c = await k.encryptBytes(utf8.encode('hello world'), ctr, N);
+  ///   // Encrypt a message
+  ///   final c = await k.encryptBytes(utf8.encode('hello world'), ctr, N);
   ///
-  /// // Decrypt message (requires the same counter ctr and length N)
-  /// print(utf8.decode(await k.decryptBytes(c, ctr, N))); // hello world
+  ///   // Decrypt message (requires the same counter ctr and length N)
+  ///   print(utf8.decode(await k.decryptBytes(c, ctr, N))); // hello world
+  /// }
   /// ```
   /// {@endtemplate}
   ///
@@ -203,36 +211,40 @@ final class AesCtrSecretKey {
   /// import 'package:async/async.dart' show collectBytes;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Generate a new random AES-CTR secret key for AES-256.
-  /// final k = await AesCtrSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-CTR secret key for AES-256.
+  ///   final k = await AesCtrSecretKey.generateKey(256);
   ///
-  /// // Use a unique counter for each message.
-  /// final ctr = Uint8List(16); // always 16 bytes
-  /// fillRandomBytes(ctr);
+  ///   // Use a unique counter for each message.
+  ///   final ctr = Uint8List(16); // always 16 bytes
+  ///   fillRandomBytes(ctr);
   ///
-  /// // Length of the counter, the N'th right most bits of ctr are incremented
-  /// // for each block, the left most 128 - N bits are used as static nonce.
-  /// // Thus, messages must be less than 2^64 * 16 bytes.
-  /// final N = 64;
+  ///   // Length of the counter, the N'th right most bits of ctr are incremented
+  ///   // for each block, the left most 128 - N bits are used as static nonce.
+  ///   // Thus, messages must be less than 2^64 * 16 bytes.
+  ///   final N = 64;
   ///
-  /// // Encrypt a message from file and write to file
-  /// final inputFile = File('message.txt');
-  /// final encryptedFile = File('encrypted-message.binary');
-  /// final c = await k.encryptStream(
-  ///   inputFile.openRead(),
-  ///   ctr,
-  ///   N,
-  /// ).pipe(encryptedFile.openWrite());
+  ///   // Encrypt a message from file and write to file
+  ///   final inputFile = File('message.txt');
+  ///   await inputFile.writeAsString('hello world');
+  ///   final encryptedFile = File('encrypted-message.binary');
+  ///   await k.encryptStream(
+  ///     inputFile.openRead(),
+  ///     ctr,
+  ///     N,
+  ///   ).pipe(encryptedFile.openWrite());
   ///
   ///
-  /// // Decrypt message (requires the same counter ctr and length N)
-  /// final decryptedBytes = await collectBytes(k.decryptStream(
-  ///   encryptedFile.openRead(),
-  ///   ctr, // same ctr as used for encryption
-  ///   N, // same N as used for encryption
-  /// ));
-  /// // decryptedBytes should be equal to contents of inputFile
-  /// assert(utf8.decode(decryptedBytes) == inputFile.readAsStringSync());
+  ///   // Decrypt message (requires the same counter ctr and length N)
+  ///   final decryptedBytes = await collectBytes(k.decryptStream(
+  ///     encryptedFile.openRead(),
+  ///     ctr, // same ctr as used for encryption
+  ///     N, // same N as used for encryption
+  ///   ));
+  ///   // decryptedBytes should be equal to contents of inputFile
+  ///   // assert(utf8.decode(decryptedBytes) == inputFile.readAsStringSync());
+  ///   print(utf8.decode(decryptedBytes));
+  /// }
   /// ```
   /// {@endtemplate}
   ///
@@ -290,18 +302,21 @@ final class AesCtrSecretKey {
   /// **Example**
   /// ```dart
   /// import 'package:webcrypto/webcrypto.dart';
+  /// import 'dart:convert' show base64;
   ///
-  /// // Generate a new random AES-256 secret key.
-  /// final key = await AesCtrSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-256 secret key.
+  ///   final key = await AesCtrSecretKey.generateKey(256);
   ///
-  /// // Extract the secret key.
-  /// final secretBytes = await key.exportRawKey();
+  ///   // Extract the secret key.
+  ///   final secretBytes = await key.exportRawKey();
   ///
-  /// // Print the key as base64
-  /// print(base64.encode(secretBytes));
+  ///   // Print the key as base64
+  ///   print(base64.encode(secretBytes));
   ///
-  /// // If we wanted to we could import the key as follows:
-  /// // key = await AesCtrSecretKey.importRawKey(secretBytes);
+  ///   // If we wanted to we could import the key as follows:
+  ///   // key = await AesCtrSecretKey.importRawKey(secretBytes);
+  /// }
   /// ```
   Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
@@ -314,16 +329,18 @@ final class AesCtrSecretKey {
   /// import 'package:webcrypto/webcrypto.dart';
   /// import 'dart:convert' show jsonEncode;
   ///
-  /// // Generate a new random AES-256 secret key.
-  /// final key = await AesCtrSecretKey.generate(256);
+  /// Future<void> main() async {
+  ///   // Generate a new random AES-256 secret key.
+  ///   final key = await AesCtrSecretKey.generateKey(256);
   ///
-  /// // Export the secret key.
-  /// final jwk = await key.exportJsonWebKey();
+  ///   // Export the secret key.
+  ///   final jwk = await key.exportJsonWebKey();
   ///
-  /// // The Map returned by `exportJsonWebKey()` can be converted to JSON with
-  /// // `jsonEncode` from `dart:convert`, this will print something like:
-  /// // {"kty": "oct", "alg": "A256CTR", "k": ...}
-  /// print(jsonEncode(jwk));
+  ///   // The Map returned by `exportJsonWebKey()` can be converted to JSON with
+  ///   // `jsonEncode` from `dart:convert`, this will print something like:
+  ///   // {"kty": "oct", "alg": "A256CTR", "k": ...}
+  ///   print(jsonEncode(jwk));
+  /// }
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc7517

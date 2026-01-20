@@ -70,16 +70,18 @@ final class EcdhPrivateKey {
   /// import 'package:pem/pem.dart';
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Read key data from a PEM encoded block. This will remove the
-  /// // the padding, decode base64 and return the encoded bytes.
-  /// List<int> keyData = PemCodec(PemLabel.privateKey).decode('''
-  ///   -----BEGIN PRIVATE KEY-----
-  ///   MIGHAgEAMBMGByqGSM4.....
-  ///   -----END PRIVATE KEY-----
+  /// Future<void> main() async {
+  ///   // Read key data from a PEM encoded block. This will remove the
+  ///   // the padding, decode base64 and return the encoded bytes.
+  ///   // Sample P-256 private key.
+  ///   List<int> keyData = PemCodec(PemLabel.privateKey).decode('''
+  ///     -----BEGIN PRIVATE KEY-----
+  ///     MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgYY/bM/GkKkXyT+rM
+  ///     HuX+aC2s7n+L/F9X7M2I2/9Q8nehRANCAAQW7urj+lFz0F7cK5n8+C9q6v/9/6+1
+  ///     9/6+19/6+19/6+19/6+19/6+19/6+19/6+19/6+19/6+19/6+19/6+0=
+  ///     -----END PRIVATE KEY-----
   ///   ''');
   ///
-  ///
-  /// Future<void> main() async {
   ///   // Import the Private Key from a Binary PEM decoded data.
   ///   final privateKey = await EcdhPrivateKey.importPkcs8Key(
   ///     keyData,

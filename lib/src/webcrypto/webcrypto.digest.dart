@@ -61,20 +61,23 @@ abstract final class Hash {
   /// import 'dart:convert' show base64;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Pick a file to hash.
-  /// String fileToHash = '/etc/passwd';
+  /// Future<void> main() async {
+  ///   // Pick a file to hash.
+  ///   final fileToHash = File('example.txt');
+  ///   await fileToHash.writeAsString('hello world');
   ///
-  /// // Compute hash of fileToHash with sha-256
-  /// List<int> hash;
-  /// final stream = File(fileToHash).openRead();
-  /// try {
-  ///   hash = await Hash.sha256.digestStream(stream);
-  /// } finally {
-  ///   await stream.close(); // always close the stream
+  ///   // Compute hash of fileToHash with sha-256
+  ///   List<int> hash;
+  ///   final stream = fileToHash.openRead();
+  ///   try {
+  ///     hash = await Hash.sha256.digestStream(stream);
+  ///   } finally {
+  ///     await stream.close(); // always close the stream
+  ///   }
+  ///
+  ///   // Print the base64 encoded hash
+  ///   print(base64.encode(hash));
   /// }
-  ///
-  /// // Print the base64 encoded hash
-  /// print(base64.encode(hash));
   /// ```
   Future<Uint8List> digestStream(Stream<List<int>> data) =>
       _impl.digestStream(data);
@@ -89,14 +92,16 @@ abstract final class Hash {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Convert 'hello world' to a byte array
-  /// final bytesToHash = utf8.encode('hello world');
+  /// Future<void> main() async {
+  ///   // Convert 'hello world' to a byte array
+  ///   final bytesToHash = utf8.encode('hello world');
   ///
-  /// // Compute hash of bytesToHash with sha-256
-  /// List<int> hash = await Hash.sha256.digestBytes(bytesToHash);
+  ///   // Compute hash of bytesToHash with sha-256
+  ///   List<int> hash = await Hash.sha256.digestBytes(bytesToHash);
   ///
-  /// // Print the base64 encoded hash
-  /// print(base64.encode(hash));
+  ///   // Print the base64 encoded hash
+  ///   print(base64.encode(hash));
+  /// }
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
@@ -109,14 +114,16 @@ abstract final class Hash {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Convert 'hello world' to a byte array
-  /// final bytesToHash = utf8.encode('hello world');
+  /// Future<void> main() async {
+  ///   // Convert 'hello world' to a byte array
+  ///   final bytesToHash = utf8.encode('hello world');
   ///
-  /// // Compute hash of bytesToHash with sha-256
-  /// List<int> hash = await Hash.sha256.digestBytes(bytesToHash);
+  ///   // Compute hash of bytesToHash with sha-256
+  ///   List<int> hash = await Hash.sha256.digestBytes(bytesToHash);
   ///
-  /// // Print the base64 encoded hash
-  /// print(base64.encode(hash));
+  ///   // Print the base64 encoded hash
+  ///   print(base64.encode(hash));
+  /// }
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
@@ -129,14 +136,16 @@ abstract final class Hash {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Convert 'hello world' to a byte array
-  /// final bytesToHash = utf8.encode('hello world');
+  /// Future<void> main() async {
+  ///   // Convert 'hello world' to a byte array
+  ///   final bytesToHash = utf8.encode('hello world');
   ///
-  /// // Compute hash of bytesToHash with sha-384
-  /// List<int> hash = await Hash.sha384.digestBytes(bytesToHash);
+  ///   // Compute hash of bytesToHash with sha-384
+  ///   List<int> hash = await Hash.sha384.digestBytes(bytesToHash);
   ///
-  /// // Print the base64 encoded hash
-  /// print(base64.encode(hash));
+  ///   // Print the base64 encoded hash
+  ///   print(base64.encode(hash));
+  /// }
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
@@ -149,14 +158,16 @@ abstract final class Hash {
   /// import 'dart:convert' show base64, utf8;
   /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// // Convert 'hello world' to a byte array
-  /// final bytesToHash = utf8.encode('hello world');
+  /// Future<void> main() async {
+  ///   // Convert 'hello world' to a byte array
+  ///   final bytesToHash = utf8.encode('hello world');
   ///
-  /// // Compute hash of bytesToHash with sha-512
-  /// List<int> hash = await Hash.sha512.digestBytes(bytesToHash);
+  ///   // Compute hash of bytesToHash with sha-512
+  ///   List<int> hash = await Hash.sha512.digestBytes(bytesToHash);
   ///
-  /// // Print the base64 encoded hash
-  /// print(base64.encode(hash));
+  ///   // Print the base64 encoded hash
+  ///   print(base64.encode(hash));
+  /// }
   /// ```
   ///
   /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
