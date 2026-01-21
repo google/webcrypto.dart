@@ -215,9 +215,9 @@ final class EcdhPrivateKey {
   // null for length (in this primitive). However, you can always know the right
   // length from the curve. Note p512 can provide up to: 528 bits!!!
   //
-  // See: https://tools.ietf.org/html/rfc6090#section-4
+  // See: https://www.rfc-editor.org/rfc/rfc6090#section-4
   // Notice that this is not uniformly distributed, see also:
-  // https://tools.ietf.org/html/rfc6090#appendix-B
+  // https://www.rfc-editor.org/rfc/rfc6090#appendix-B
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
     final publicKeyImpl = publicKey._impl;
 

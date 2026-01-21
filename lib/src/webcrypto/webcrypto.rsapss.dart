@@ -61,9 +61,9 @@ part of 'webcrypto.dart';
 /// ```
 /// {@endtemplate}
 ///
-/// [1]: https://tools.ietf.org/html/rfc3447
-/// [2]: https://tools.ietf.org/html/rfc5208
-/// [3]: https://tools.ietf.org/html/rfc7517
+/// [1]: https://www.rfc-editor.org/rfc/rfc3447
+/// [2]: https://www.rfc-editor.org/rfc/rfc5208
+/// [3]: https://www.rfc-editor.org/rfc/rfc7517
 final class RsaPssPrivateKey {
   final RsaPssPrivateKeyImpl _impl;
 
@@ -105,7 +105,7 @@ final class RsaPssPrivateKey {
   /// print(PemCodec(PemLabel.privateKey).encode(rawKeyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5208
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5208
   static Future<RsaPssPrivateKey> importPkcs8Key(
     List<int> keyData,
     Hash hash,
@@ -156,7 +156,7 @@ final class RsaPssPrivateKey {
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   static Future<RsaPssPrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
@@ -280,7 +280,7 @@ final class RsaPssPrivateKey {
   /// print('signature: ${base64.encode(signature)}');
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc3447#section-9.1
+  /// [1]: https://www.rfc-editor.org/rfc/rfc3447#section-9.1
   /// [2]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
   ///
   // Notes on saltLength for maintainers:
@@ -354,7 +354,7 @@ final class RsaPssPrivateKey {
   /// print('signature: ${base64.encode(signature)}');
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc3447#section-9.1
+  /// [1]: https://www.rfc-editor.org/rfc/rfc3447#section-9.1
   /// [2]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
   Future<Uint8List> signStream(Stream<List<int>> data, int saltLength) =>
       _impl.signStream(data, saltLength);
@@ -385,7 +385,7 @@ final class RsaPssPrivateKey {
   /// print(PemCodec(PemLabel.privateKey).encode(rawPrivateKey));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5208
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5208
   Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
   /// Export RSASSA-PSS private key in [JSON Web Key][1] format.
@@ -413,7 +413,7 @@ final class RsaPssPrivateKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
@@ -431,9 +431,9 @@ final class RsaPssPrivateKey {
 ///
 /// {@macro RSASSA-PSS-Example:generate-sign-verify}
 ///
-/// [1]: https://tools.ietf.org/html/rfc3447
-/// [2]: https://tools.ietf.org/html/rfc5280
-/// [3]: https://tools.ietf.org/html/rfc7517
+/// [1]: https://www.rfc-editor.org/rfc/rfc3447
+/// [2]: https://www.rfc-editor.org/rfc/rfc5280
+/// [3]: https://www.rfc-editor.org/rfc/rfc7517
 final class RsaPssPublicKey {
   final RsaPssPublicKeyImpl _impl;
 
@@ -475,7 +475,7 @@ final class RsaPssPublicKey {
   /// print(PemCodec(PemLabel.publicKey).encode(rawKeyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5280
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5280
   static Future<RsaPssPublicKey> importSpkiKey(
     List<int> keyData,
     Hash hash,
@@ -520,7 +520,7 @@ final class RsaPssPublicKey {
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   static Future<RsaPssPublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
@@ -651,7 +651,7 @@ final class RsaPssPublicKey {
   /// print(PemCodec(PemLabel.publicKey).encode(rawPublicKey));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5280
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5280
   Future<Uint8List> exportSpkiKey() => _impl.exportSpkiKey();
 
   /// Export RSASSA-PSS public key in [JSON Web Key][1] format.
@@ -679,6 +679,6 @@ final class RsaPssPublicKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
