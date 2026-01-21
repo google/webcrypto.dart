@@ -69,9 +69,9 @@ part of 'webcrypto.dart';
 /// encrypt/decrypt larger messages.
 /// {@endtemplate}
 ///
-/// [1]: https://tools.ietf.org/html/rfc3447
-/// [2]: https://tools.ietf.org/html/rfc5208
-/// [3]: https://tools.ietf.org/html/rfc7517
+/// [1]: https://datatracker.ietf.org/doc/html/rfc3447
+/// [2]: https://datatracker.ietf.org/doc/html/rfc5208
+/// [3]: https://datatracker.ietf.org/doc/html/rfc7517
 final class RsaOaepPrivateKey {
   final RsaOaepPrivateKeyImpl _impl;
 
@@ -113,7 +113,7 @@ final class RsaOaepPrivateKey {
   /// print(PemCodec(PemLabel.privateKey).encode(rawKeyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5208
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc5208
   static Future<RsaOaepPrivateKey> importPkcs8Key(
     List<int> keyData,
     Hash hash,
@@ -164,7 +164,7 @@ final class RsaOaepPrivateKey {
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc7517
   static Future<RsaOaepPrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
@@ -307,7 +307,7 @@ final class RsaOaepPrivateKey {
   /// print(PemCodec(PemLabel.privateKey).encode(rawPrivateKey));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5208
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc5208
   Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
   /// Export RSAES-OAEP private key in [JSON Web Key][1] format.
@@ -335,7 +335,7 @@ final class RsaOaepPrivateKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
@@ -355,9 +355,9 @@ final class RsaOaepPrivateKey {
 ///
 /// {@macro RSAES-OAEP-message-size-limit}
 ///
-/// [1]: https://tools.ietf.org/html/rfc3447
-/// [2]: https://tools.ietf.org/html/rfc5280
-/// [3]: https://tools.ietf.org/html/rfc7517
+/// [1]: https://datatracker.ietf.org/doc/html/rfc3447
+/// [2]: https://datatracker.ietf.org/doc/html/rfc5280
+/// [3]: https://datatracker.ietf.org/doc/html/rfc7517
 final class RsaOaepPublicKey {
   final RsaOaepPublicKeyImpl _impl;
 
@@ -399,7 +399,7 @@ final class RsaOaepPublicKey {
   /// print(PemCodec(PemLabel.publicKey).encode(rawKeyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5280
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc5280
   static Future<RsaOaepPublicKey> importSpkiKey(
     List<int> keyData,
     Hash hash,
@@ -444,7 +444,7 @@ final class RsaOaepPublicKey {
   ///
   /// {@macro RSA-importJsonWebKey:use-key_ops}
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc7517
   static Future<RsaOaepPublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     Hash hash,
@@ -551,7 +551,7 @@ final class RsaOaepPublicKey {
   /// print(PemCodec(PemLabel.publicKey).encode(rawPublicKey));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc5280
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc5280
   Future<Uint8List> exportSpkiKey() => _impl.exportSpkiKey();
 
   /// Export RSAES-OAEP public key in [JSON Web Key][1] format.
@@ -579,6 +579,6 @@ final class RsaOaepPublicKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://datatracker.ietf.org/doc/html/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
