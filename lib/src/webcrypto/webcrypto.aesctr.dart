@@ -96,7 +96,7 @@ final class AesCtrSecretKey {
   ///
   /// Future<void> main() async {
   ///   // JSON Web Key as a string containing JSON.
-  ///   final jwk = '{"kty": "oct", "alg": "A256CTR", "k": "Y0ztPO2iDca0H0iM6y0_s0ztPO2iDca0H0iM6y0_s0w"}';
+  ///   final jwk = '{"kty": "oct", "alg": "A256CTR", "k": "..."}';
   ///
   ///   // Import secret key from decoded JSON.
   ///   final key = await AesCtrSecretKey.importJsonWebKey(jsonDecode(jwk));
