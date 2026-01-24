@@ -76,9 +76,7 @@ final class EcdhPrivateKey {
   ///   // Sample P-256 private key.
   ///   List<int> keyData = PemCodec(PemLabel.privateKey).decode('''
   ///     -----BEGIN PRIVATE KEY-----
-  ///     MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgYY/bM/GkKkXyT+rM
-  ///     HuX+aC2s7n+L/F9X7M2I2/9Q8nehRANCAAQW7urj+lFz0F7cK5n8+C9q6v/9/6+1
-  ///     9/6+19/6+19/6+19/6+19/6+19/6+19/6+19/6+19/6+19/6+19/6+0=
+  ///     <Enter your own private Key>
   ///     -----END PRIVATE KEY-----
   ///   ''');
   ///
