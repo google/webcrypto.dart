@@ -28,6 +28,7 @@ android {
     namespace 'dev.google.webcrypto'
 
     compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     // We depend on cmake for the native parts.
     externalNativeBuild {
