@@ -119,9 +119,6 @@ endif()
 if(WIN32)
   # Windows/MSVC option from CMakeLists.txt in BoringSSL
   # Use NASM on Windows.
-  if(NOT CMAKE_ASM_NASM_COMPILER)
-    find_program(CMAKE_ASM_NASM_COMPILER NAMES nasm nasm.exe PATHS "$ENV{USERPROFILE}/scoop/shims" "$ENV{USERPROFILE}/scoop/apps/nasm/current" "C:/Users/yatin/scoop/shims")
-  endif()
   enable_language(ASM_NASM)
   set(OPENSSL_NASM TRUE)
   set(CMAKE_ASM_NASM_FLAGS "${CMAKE_ASM_NASM_FLAGS} -gcv8")
