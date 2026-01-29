@@ -164,24 +164,6 @@ git_clone_boringssl() {
     echo "$target"
 }
 
-# Function to load sources.json
-load_sources_json() {
-    local src_root="$1"
-    local sources_json="$src_root/gen/sources.json"
-    
-    if [ ! -f "$sources_json" ]; then
-        log_error "sources.json not found at $sources_json"
-        exit 1
-    fi
-    
-    if command -v jq &> /dev/null; then
-        cat "$sources_json"
-    else
-        log_warning "jq not found, using basic JSON parsing"
-        cat "$sources_json"
-    fi
-}
-
 # Function to write sources.cmake
 write_sources_cmake() {
     local sources="$1"
@@ -426,11 +408,12 @@ main() {
     
     # Check if update is needed
     if [ "$current_revision" = "$TARGET_REVISION" ]; then
-        log_info "No update needed - already at revision $TARGET_REVISION"
-        return 0
+        log_info "Already at revision $TARGET_REVISION - verifying with git diff"
+        # Don't abort - continue to verify the files are actually correct
+        # Running the update will be a no-op if truly at the right revision
+    else
+        log_info "Update needed: $current_revision -> $TARGET_REVISION"
     fi
-    
-    log_info "Update needed: $current_revision -> $TARGET_REVISION"
     
     # If dry-run mode, just report the status
     if [ "$DRY_RUN" = true ]; then

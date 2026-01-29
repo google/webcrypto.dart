@@ -326,9 +326,11 @@ extension on _Scope {
   }
 
   ffi.Pointer<CBB> createCBB([int sizeHint = 4096]) {
-    // CBB is opaque, so we need to allocate a fixed-size buffer
-    // We can use CBB_init with a reasonable buffer size for the CBB structure
-    final cbb = allocate<ffi.Uint8>(256).cast<CBB>();
+    // Get the actual size of CBB structure from native code
+    // This ensures we allocate exactly the right amount of memory
+    // regardless of platform (32-bit, 64-bit, ARM, x86, etc.)
+    final cbbSize = ssl.webcrypto_get_CBB_size();
+    final cbb = allocate<ffi.Uint8>(cbbSize).cast<CBB>();
     ssl.CBB_zero(cbb);
     _checkOp(ssl.CBB_init(cbb, sizeHint) == 1, fallback: 'allocation failure');
     defer(() => ssl.CBB_cleanup(cbb));

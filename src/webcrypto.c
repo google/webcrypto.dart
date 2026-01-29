@@ -22,3 +22,10 @@
 WEBCRYPTO_EXPORT void* webcrypto_lookup_symbol(int32_t index) {
   return _webcrypto_symbol_table[index];
 }
+
+// Helper function to get the actual size of CBB structure
+// This allows Dart FFI to allocate the correct amount of memory
+// without hardcoding platform-specific sizes
+WEBCRYPTO_EXPORT size_t webcrypto_get_CBB_size(void) {
+  return sizeof(CBB);
+}
