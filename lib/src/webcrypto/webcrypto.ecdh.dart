@@ -206,6 +206,10 @@ final class EcdhPrivateKey {
   /// two parties.
   ///
   /// [length] specifies the length of the derived secret in bits.
+  /// The maximum length that can be derived depends on the elliptic curve:
+  ///  * [EllipticCurve.p256] can derive up to 256 bits.
+  ///  * [EllipticCurve.p384] can derive up to 384 bits.
+  ///  * [EllipticCurve.p521] can derive up to 528 bits.
   /// [publicKey] is [EcdhPublicKey] from the other party's ECDH key pair.
   ///
   /// Returns a [Uint8List] containing the derived shared secret.

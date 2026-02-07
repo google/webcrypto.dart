@@ -310,6 +310,73 @@ void main() {
       );
     });
   });
+  group('ECDH deriveBits', () {
+    test('P-256 allows maximum deriveBits length', () async {
+      final aliceKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+      final bobKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+
+      final secret = await aliceKeyPair.privateKey.deriveBits(
+        256,
+        bobKeyPair.publicKey,
+      );
+
+      expect(secret.length, equals(32));
+    });
+
+    test('P-256 rejects deriveBits larger than maximum', () async {
+      final aliceKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+      final bobKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+
+      expect(
+        aliceKeyPair.privateKey.deriveBits(257, bobKeyPair.publicKey),
+        throwsA(anyOf(isA<subtle.JSDomException>(), isA<Error>())),
+      );
+    });
+
+    test('P-384 allows maximum deriveBits length', () async {
+      final aliceKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p384);
+      final bobKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p384);
+
+      final secret = await aliceKeyPair.privateKey.deriveBits(
+        384,
+        bobKeyPair.publicKey,
+      );
+
+      expect(secret.length, equals(48));
+    });
+
+    test('P-384 rejects deriveBits larger than maximum', () async {
+      final aliceKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p384);
+      final bobKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p384);
+
+      expect(
+        aliceKeyPair.privateKey.deriveBits(385, bobKeyPair.publicKey),
+        throwsA(anyOf(isA<subtle.JSDomException>(), isA<Error>())),
+      );
+    });
+
+    test('P-521 allows maximum deriveBits length', () async {
+      final aliceKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p521);
+      final bobKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p521);
+
+      final secret = await aliceKeyPair.privateKey.deriveBits(
+        528,
+        bobKeyPair.publicKey,
+      );
+
+      expect(secret.length, equals(66));
+    });
+
+    test('P-521 rejects deriveBits larger than maximum', () async {
+      final aliceKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p521);
+      final bobKeyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p521);
+
+      expect(
+        aliceKeyPair.privateKey.deriveBits(529, bobKeyPair.publicKey),
+        throwsA(anyOf(isA<subtle.JSDomException>(), isA<Error>())),
+      );
+    });
+  });
 }
 
 extension on JSArray<JSString> {
