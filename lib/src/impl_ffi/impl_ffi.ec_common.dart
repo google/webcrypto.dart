@@ -89,8 +89,14 @@ void _validateEllipticCurveKey(_EvpPKey key, EllipticCurve curve) {
 
 _EvpPKey _importPkcs8EcPrivateKey(List<int> keyData, EllipticCurve curve) {
   return _Scope.sync((scope) {
-    final k = ssl.EVP_parse_private_key(scope.createCBS(keyData));
-    _checkData(k.address != 0, fallback: 'unable to parse key');
+    final cbs = scope.createCBS(keyData);
+    final k = ssl.EVP_parse_private_key(cbs);
+
+    _checkData(
+      k.address != 0 && cbs.ref.len == 0,
+      fallback: 'unable to parse key',
+    );
+
     final key = _EvpPKey.wrap(k);
     _validateEllipticCurveKey(key, curve);
     return key;
@@ -99,13 +105,15 @@ _EvpPKey _importPkcs8EcPrivateKey(List<int> keyData, EllipticCurve curve) {
 
 _EvpPKey _importSpkiEcPublicKey(List<int> keyData, EllipticCurve curve) {
   return _Scope.sync((scope) {
-    // TODO: When calling EVP_parse_public_key it might wise to check that CBS_len(cbs) == 0 is true afterwards
-    // otherwise it might be that all of the contents of the key was not consumed and we should throw
-    // a FormatException. Notice that this the case for private/public keys, and RSA keys.
-    final k = ssl.EVP_parse_public_key(scope.createCBS(keyData));
-    _checkData(k.address != 0, fallback: 'unable to parse key');
-    final key = _EvpPKey.wrap(k);
+    final cbs = scope.createCBS(keyData);
+    final k = ssl.EVP_parse_public_key(cbs);
 
+    _checkData(
+      k.address != 0 && cbs.ref.len == 0,
+      fallback: 'unable to parse key',
+    );
+
+    final key = _EvpPKey.wrap(k);
     _validateEllipticCurveKey(key, curve);
 
     return key;
