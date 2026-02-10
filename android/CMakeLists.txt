@@ -41,6 +41,10 @@ add_definitions(-DOPENSSL_SMALL)
 # set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -flto")
 # set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto")
 
+# Add 16KB page size support required by Google Play Store (Android 15+)
+# See: https://developer.android.com/guide/practices/page-sizes
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+
 # Android ABIs, see also:
 # https://developer.android.com/ndk/guides/abis
 if(ANDROID_ABI STREQUAL "armeabi-v7a")
