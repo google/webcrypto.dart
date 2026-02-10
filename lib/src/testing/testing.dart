@@ -26,6 +26,8 @@ import 'webcrypto/pbkdf2.dart' as pbkdf2;
 import 'webcrypto/rsaoaep.dart' as rsaoaep;
 import 'webcrypto/rsapss.dart' as rsapss;
 import 'webcrypto/rsassapkcs1v15.dart' as rsassapkcs1v15;
+import 'webcrypto/x25519.dart' as x25519;
+import 'webcrypto/ed25519.dart' as ed25519;
 
 // Other test files, that don't use TestRunner
 import 'webcrypto/random.dart' as random;
@@ -45,6 +47,8 @@ final _testRunners = <TestRunner>[
   rsaoaep.runner,
   rsapss.runner,
   rsassapkcs1v15.runner,
+  ed25519.runner,
+  x25519.runner,
 ];
 
 /// Utility function that runs all tests using [testFn].
