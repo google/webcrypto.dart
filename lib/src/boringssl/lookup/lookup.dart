@@ -26,8 +26,67 @@ import 'utils.dart';
 
 export 'symbols.generated.dart' show Sym;
 
-/// Dynamically load `webcrypto_lookup_symbol` function.
-final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
+const _nativeAssetId = 'package:webcrypto/webcrypto.dart';
+
+typedef _VoidLookup = Pointer<Void> Function(String symbolName);
+
+bool _nativeAssetsAvailable = true;
+
+@Native<Pointer<Void> Function(Int32)>(
+  symbol: 'webcrypto_lookup_symbol',
+  assetId: _nativeAssetId,
+)
+external Pointer<Void> _nativeWebcryptoLookupSymbol(int index);
+
+/// Resolve a lookup function either from native assets or fall back to dynamic
+/// libraries built by the legacy setup flow.
+final Pointer<T> Function<T extends NativeType>(String symbolName) lookup =
+    _resolveLookup();
+
+Pointer<T> Function<T extends NativeType>(String symbolName) _resolveLookup() {
+  final nativeLookup = _createNativeAssetLookup();
+  _VoidLookup? legacyLookup;
+
+  _VoidLookup ensureLegacy() => legacyLookup ??= _createLegacyLookup();
+
+  if (nativeLookup != null) {
+    return <T extends NativeType>(String symbolName) {
+      if (_nativeAssetsAvailable) {
+        try {
+          return nativeLookup(symbolName).cast<T>();
+        } on Object {
+          _nativeAssetsAvailable = false;
+        }
+      }
+      final fallback = ensureLegacy();
+      return fallback(symbolName).cast<T>();
+    };
+  }
+
+  _nativeAssetsAvailable = false;
+  final fallback = ensureLegacy();
+  return <T extends NativeType>(String symbolName) =>
+      fallback(symbolName).cast<T>();
+}
+
+_VoidLookup? _createNativeAssetLookup() {
+  if (!_shouldAttemptNativeAssets()) {
+    return null;
+  }
+
+  try {
+    _nativeWebcryptoLookupSymbol(Sym.BN_bin2bn.index);
+  } on Object {
+    return null;
+  }
+
+  return (String symbolName) {
+    final sym = symFromString(symbolName);
+    return _nativeWebcryptoLookupSymbol(sym.index);
+  };
+}
+
+_VoidLookup _createLegacyLookup() {
   try {
     late DynamicLibrary library;
     if (Platform.isAndroid || Platform.isLinux) {
@@ -36,11 +95,10 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
       library = DynamicLibrary.open('webcrypto.dll');
     } else {
       library = DynamicLibrary.executable();
-      // If current executable doesn't provide the symbol, then we're
       if (!library.providesSymbol('webcrypto_lookup_symbol')) {
-        final lookup = lookupLibraryInDotDartTool();
-        if (lookup != null) {
-          return lookup;
+        final toolLookup = lookupLibraryInDotDartTool();
+        if (toolLookup != null) {
+          return (String symbolName) => toolLookup<Void>(symbolName);
         }
         throw UnsupportedError(
           'package:webcrypto could not find required symbols in executable. '
@@ -51,19 +109,15 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
       }
     }
 
-    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
     final webcrypto = WebCrypto(library);
-    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
+    final webcryptoLookup = webcrypto.webcrypto_lookup_symbol;
 
-    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    Pointer<T> lookup<T extends NativeType>(String s) =>
-        webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
-
-    return lookup;
+    return (String symbolName) =>
+        webcryptoLookup(symFromString(symbolName).index);
   } on ArgumentError {
-    final lookup = lookupLibraryInDotDartTool();
-    if (lookup != null) {
-      return lookup;
+    final toolLookup = lookupLibraryInDotDartTool();
+    if (toolLookup != null) {
+      return (String symbolName) => toolLookup<Void>(symbolName);
     }
 
     throw UnsupportedError(
@@ -72,7 +126,10 @@ final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
       'root project.',
     );
   }
-}();
+}
+
+bool _shouldAttemptNativeAssets() =>
+    Platform.isLinux || Platform.isMacOS || Platform.isWindows;
 
 final Pointer<T> Function<T extends NativeType>(String symbolName)
 _cachedLookup = lookup;
