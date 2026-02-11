@@ -63,6 +63,10 @@ class _TestCase {
   // Parameters for key import (always required)
   final Map<String, dynamic>? importKeyParams;
 
+  // If not `null`, then importing private or public key MUST throw
+  // an exception that contains this string.
+  final String? importKeyException;
+
   // Parameters for sign/verify (required, if there is a signature)
   final Map<String, dynamic>? signVerifyParams;
 
@@ -90,6 +94,7 @@ class _TestCase {
     this.signVerifyParams,
     this.encryptDecryptParams,
     this.deriveParams,
+    this.importKeyException,
   });
 
   factory _TestCase.fromJson(Map json) {
@@ -112,6 +117,7 @@ class _TestCase {
       derivedBits: _optionalBase64Decode(json['derivedBits']),
       derivedLength: json['derivedLength'] as int?,
       importKeyParams: _optionalStringMapDecode(json['importKeyParams']),
+      importKeyException: json['importKeyException'] as String?,
       signVerifyParams: _optionalStringMapDecode(json['signVerifyParams']),
       encryptDecryptParams: _optionalStringMapDecode(
         json['encryptDecryptParams'],
@@ -686,7 +692,14 @@ void _validateTestCase<PrivateKey, PublicKey>(
   check(c.importKeyParams != null);
   check((c.signVerifyParams != null) == (r._signBytes != null));
   check((c.encryptDecryptParams != null) == (r._encryptBytes != null));
-  check((c.deriveParams != null) == (r._deriveBits != null));
+
+  if (c.deriveParams != null) {
+    check((c.deriveParams != null) == (r._deriveBits != null));
+
+    if (r._deriveBits != null) {
+      check(c.derivedLength != null);
+    }
+  }
   if (c.signature != null) {
     check(r._signBytes != null);
   }
@@ -696,9 +709,6 @@ void _validateTestCase<PrivateKey, PublicKey>(
   if (c.derivedBits != null) {
     check(r._deriveBits != null);
   }
-  if (r._deriveBits != null) {
-    check(c.derivedLength != null);
-  }
 
   // Check that data matches the methods we have in the runner.
   check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
@@ -707,6 +717,30 @@ void _validateTestCase<PrivateKey, PublicKey>(
   check(r._importPublicRawKey != null || c.publicRawKeyData == null);
   check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
   check(r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
+
+  if (c.generateKeyParams != null) {
+    check(c.importKeyException == null,
+        'importKeyException must be null when generateKeyParams is provided');
+  }
+
+  if (c.importKeyException != null) {
+    check(c.plaintext == null,
+        'plaintext must be null when importKeyException is provided');
+    check(c.signature == null,
+        'signature must be null when importKeyException is provided');
+    check(c.ciphertext == null,
+        'ciphertext must be null when importKeyException is provided');
+    check(c.derivedBits == null,
+        'derivedBits must be null when importKeyException is provided');
+    check(c.derivedLength == null,
+        'derivedLength must be null when importKeyException is provided');
+    check(c.signVerifyParams == null,
+        'signVerifyParams must be null when importKeyException is provided');
+    check(c.encryptDecryptParams == null,
+        'encryptDecryptParams must be null when importKeyException is provided');
+    check(c.deriveParams == null,
+        'deriveParams must be null when importKeyException is provided');
+  }
 }
 
 void _runTests<PrivateKey, PublicKey>(
@@ -741,6 +775,30 @@ void _runTests<PrivateKey, PublicKey>(
       publicKey = pair.publicKey;
       privateKey = pair.privateKey;
     });
+  } else if (c.importKeyException != null) {
+    if (c.privatePkcs8KeyData != null) {
+      test('pkcs8 import exception', () async {
+        try {
+          await r._importPrivatePkcs8Key!(
+              c.privatePkcs8KeyData!, {'curve': 'p-521'});
+          check(false, 'Expected an exception for P-512 import');
+        } catch (e) {
+          check(e.toString().contains(c.importKeyException!));
+        }
+      });
+    }
+    if (c.privateJsonWebKeyData != null) {
+      test('jwk import exception', () async {
+        try {
+          await r._importPrivateJsonWebKey!(
+              c.privateJsonWebKeyData!, {'curve': 'p-521'});
+          check(false, 'Expected an exception for P-512 import');
+        } catch (e) {
+          check(e.toString().contains(c.importKeyException!));
+        }
+      });
+    }
+    return;
   } else {
     test('import key-pair', () async {
       // Get a privateKey
