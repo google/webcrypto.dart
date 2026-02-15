@@ -1,12 +1,12 @@
 Cross-Platform Web Cryptography Implementation
 =============================================
 This package provides a cross-platform implementation of the
-[Web Cryptograph API][webcrypto-spec].
+[Web Cryptography API][webcrypto-spec].
 
 **Disclaimer:** This is not an officially supported Google product.
 
-This packages provides an implementation of the
-[Web Cryptograph API][webcrypto-spec] across multiple platforms. Outside the
+This package provides an implementation of the
+[Web Cryptography API][webcrypto-spec] across multiple platforms. Outside the
 browser, this package features a native implementation embedding
 [BoringSSL][boringssl-src] using [`dart:ffi`][dart-ffi]. When used inside a
 web browser this package wraps the [`window.crypto`][window-crypto] APIs and
@@ -21,7 +21,7 @@ import 'package:webcrypto/webcrypto.dart';
 
 Future<void> main() async {
   final digest = await Hash.sha256.digestBytes(utf8.encode('Hello World'));
-  print(base.encode(digest));
+  print(base64.encode(digest));
 }
 ```
 
@@ -77,7 +77,7 @@ It is also possible to run tests with Flutter Web using
 
 ## Limitations
 This package has a few limitations compared to the
-[Web Cryptograph API][webcrypto-spec]. For a discussion of parity with
+[Web Cryptography API][webcrypto-spec]. For a discussion of parity with
 Web Cryptography APIs see `doc/webcrypto-parity.md`.
 
  * `deriveKey` is not supported, however, keys can always be created from
@@ -107,7 +107,7 @@ Chrome, Firefox and Safari.
 
 ## References
 
- * [Web Cryptograpy Specification][webcrypto-spec].
+ * [Web Cryptography Specification][webcrypto-spec].
  * [MDN Web Crypto API][webcrypto-mdn].
  * [Chromium Web Crypto Source][chrome-src].
  * [BoringSSL Source][boringssl-src].
