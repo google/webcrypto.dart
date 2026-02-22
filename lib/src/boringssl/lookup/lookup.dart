@@ -38,8 +38,8 @@ bool _nativeAssetsAvailable = true;
 )
 external Pointer<Void> _nativeWebcryptoLookupSymbol(int index);
 
-/// Resolve a lookup function either from native assets or fall back to dynamic
-/// libraries built by the legacy setup flow.
+/// Resolve lookup from native assets first, then fall back to the legacy
+/// runtime loading strategy used by `flutter pub run webcrypto:setup`.
 final Pointer<T> Function<T extends NativeType>(String symbolName) lookup =
     _resolveLookup();
 
