@@ -44,15 +44,22 @@ Uint8List bigIntToUint8ListBigInteger(BigInt integer) {
   throw UnimplementedError('Only supports 65537 and 3 for now');
 }
 
-/// The `window` object.
-@JS()
-external JSWindow get window;
+/// The global scope object.
+///
+/// Uses `globalThis` instead of `window` so that this works in both the main
+/// thread (`window`) and web workers (`self`/`DedicatedWorkerGlobalScope`),
+/// where `window` is undefined.
+@JS('globalThis')
+external JSGlobalScope get _globalScope;
 
-/// https://developer.mozilla.org/en-US/docs/Web/API/Window
-extension type JSWindow(JSObject _) implements JSObject {
+/// https://developer.mozilla.org/en-US/docs/Web/API/globalThis
+extension type JSGlobalScope(JSObject _) implements JSObject {
   /// https://developer.mozilla.org/en-US/docs/Web/API/crypto_property
   external JSCrypto get crypto;
 }
+
+/// Backward-compatible accessor — all call sites use `window.crypto`.
+JSGlobalScope get window => _globalScope;
 
 /// The `window.crypto` object.
 ///
