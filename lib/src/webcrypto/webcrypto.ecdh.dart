@@ -206,7 +206,7 @@ final class EcdhPrivateKey {
   /// two parties.
   ///
   /// [length] specifies the length of the derived secret in bits.
-  /// The maximum length that can be derived depends on the elliptic curve:
+  /// The maximum allowed [length] is determined by the elliptic curve:
   ///  * [EllipticCurve.p256] can derive up to 256 bits.
   ///  * [EllipticCurve.p384] can derive up to 384 bits.
   ///  * [EllipticCurve.p521] can derive up to 528 bits.
