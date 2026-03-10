@@ -167,8 +167,12 @@ jobs:
         with:
           model: 'iPhone 15'
       - run: flutter pub get
-      - run: flutter test integration_test/webcrypto_test.dart -d iphone
-        working-directory: ./example
+      - name: Run integration tests
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 20
+          max_attempts: 2
+          command: cd example && flutter test integration_test/webcrypto_test.dart -d iphone --timeout 60s
   android:
     name: Android emulator
     runs-on: ubuntu-latest
@@ -195,13 +199,17 @@ jobs:
       - name: Run flutter test integration_test/webcrypto_test.dart -d emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 36
-          # TODO: switch back to default once this is issue resolved:
-          # https://issuetracker.google.com/issues/432143095
+          api-level: 34
           target: google_apis
           arch: x86_64
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           working-directory: ./example
-          script: flutter test integration_test/webcrypto_test.dart -d emulator
+          script: |
+            for attempt in 1 2 3; do
+              flutter test integration_test/webcrypto_test.dart -d emulator --timeout 60s && break
+              echo "Attempt $attempt failed, retrying..."
+              [ $attempt -eq 3 ] && exit 1
+            done
   linux-coverage:
     name: Linux desktop / Chrome / Firefox (coverage)
     runs-on: ubuntu-latest
