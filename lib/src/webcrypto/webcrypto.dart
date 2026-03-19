@@ -18,7 +18,7 @@
 ///       expect that the contents of these streams is buffered when operating
 ///       in the browser.
 ///       This could be documented for each method or at library level.
-library webcrypto;
+library;
 
 import 'dart:convert';
 import 'dart:async';

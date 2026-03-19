@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library webcrypto.impl_stub;
-
 import 'dart:typed_data';
 
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';
