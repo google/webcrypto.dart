@@ -26,7 +26,7 @@
 /// Having the `web` annotation is important for correct platform detection by
 /// `pub.dev`, but since this package otherwise relies on _conditional imports_
 /// this plugin does nothing.
-library webcrypto_plugin;
+library;
 
 import 'dart:async';
 

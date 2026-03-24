@@ -18,7 +18,7 @@
 ///
 /// This file is generated from `src/symbols.yaml` using:
 /// `tool/generate_symbols_table.dart`
-library symbols.generated;
+library;
 
 /// BoringSSL symbols used in `package:webcrypto`.
 enum Sym {

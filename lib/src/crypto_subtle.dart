@@ -14,7 +14,7 @@
 
 /// This library attempts to expose the definitions necessary to use the
 /// browsers `window.crypto.subtle` APIs.
-library common;
+library;
 
 import 'dart:js_interop';
 import 'dart:typed_data';

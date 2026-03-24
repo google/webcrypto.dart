@@ -20,12 +20,14 @@ import 'package:convert/convert.dart' show hex;
 import 'package:webcrypto/webcrypto.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -50,17 +52,17 @@ class _MyAppState extends State<MyApp> {
               ),
               Text(
                 'input',
-                textScaleFactor: 1.2,
-                style: TextStyle(fontWeight: FontWeight.bold),
+                textScaler: const TextScaler.linear(1.2),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               _textEntry(),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Text(
                 'output',
-                textScaleFactor: 1.2,
-                style: TextStyle(fontWeight: FontWeight.bold),
+                textScaler: const TextScaler.linear(1.2),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text('$_output'),
+              Text(_output),
             ],
           ),
         ),

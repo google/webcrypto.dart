@@ -131,11 +131,14 @@ Future<T> _handleDomException<T>(
 }) async {
   try {
     return await fn();
-  } on subtle.JSDomException catch (e) {
-    throw _translateDomException(
-      e,
-      invalidAccessErrorIsArgumentError: invalidAccessErrorIsArgumentError,
-    );
+  } catch (e) {
+    if (e.isA<subtle.JSDomException>()) {
+      throw _translateDomException(
+        e as subtle.JSDomException,
+        invalidAccessErrorIsArgumentError: invalidAccessErrorIsArgumentError,
+      );
+    }
+    rethrow;
   }
 }
 
