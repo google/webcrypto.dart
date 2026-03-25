@@ -129,7 +129,11 @@ _VoidLookup _createLegacyLookup() {
 }
 
 bool _shouldAttemptNativeAssets() =>
-    Platform.isLinux || Platform.isMacOS || Platform.isWindows;
+    Platform.isAndroid ||
+    Platform.isIOS ||
+    Platform.isLinux ||
+    Platform.isMacOS ||
+    Platform.isWindows;
 
 final Pointer<T> Function<T extends NativeType>(String symbolName)
 _cachedLookup = lookup;

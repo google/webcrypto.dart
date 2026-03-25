@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:code_assets/code_assets.dart';
@@ -23,20 +22,10 @@ const _assetName = 'webcrypto.dart';
 
 Future<void> main(List<String> args) async {
   await build(args, (input, output) async {
-    final targetOs = input.config.code.targetOS;
-    if (!_hostSupports(targetOs)) {
+    // Skip build for non-code targets (e.g. web builds via flutter drive).
+    if (!input.config.buildCodeAssets) {
       stdout.writeln(
-        'webcrypto: skipping native asset build for unsupported target OS '
-        '$targetOs on host ${Platform.operatingSystem}.',
-      );
-      return;
-    }
-
-    final targetArch = input.config.code.targetArchitecture;
-    if (!_hostSupportsArchitecture(targetArch)) {
-      stdout.writeln(
-        'webcrypto: skipping native asset build for unsupported target '
-        'architecture $targetArch on host ${Abi.current()}.',
+        'webcrypto: skipping native asset build (code assets not requested).',
       );
       return;
     }
@@ -44,6 +33,11 @@ Future<void> main(List<String> args) async {
     final packageRoot = Directory.fromUri(input.packageRoot).uri;
     final installDir = input.outputDirectory.resolve('install/');
     final sourceDir = packageRoot.resolve('src/');
+
+    stdout.writeln(
+      'webcrypto: building native asset for '
+      '${input.config.code.targetOS}-${input.config.code.targetArchitecture}.',
+    );
 
     final builder = CMakeBuilder.create(
       name: 'webcrypto',
@@ -72,52 +66,59 @@ Future<void> main(List<String> args) async {
       );
     }
 
-    for (final dependency in [
-      packageRoot.resolve('src/CMakeLists.txt'),
-      packageRoot.resolve('src/webcrypto.c'),
-      packageRoot.resolve('src/webcrypto.h'),
-      packageRoot.resolve('src/symbols.generated.c'),
-      packageRoot.resolve('third_party/boringssl/sources.cmake'),
-    ]) {
-      output.dependencies.add(dependency);
-    }
+    output.dependencies.addAll(_buildDependencies(packageRoot));
   });
 }
 
-bool _hostSupports(OS target) {
-  switch (target) {
-    case OS.linux:
-      return Platform.isLinux;
-    case OS.macOS:
-      return Platform.isMacOS;
-    case OS.windows:
-      return Platform.isWindows;
-    default:
-      return false;
+final _buildDependencyExtensions = {
+  '.S',
+  '.asm',
+  '.c',
+  '.cc',
+  '.cmake',
+  '.cpp',
+  '.h',
+};
+
+Iterable<Uri> _buildDependencies(Uri packageRoot) sync* {
+  yield* _filesForBuild(
+    Directory.fromUri(packageRoot.resolve('src/')),
+    excludeDirectories: {'build'},
+  );
+  yield* _filesForBuild(
+    Directory.fromUri(packageRoot.resolve('third_party/boringssl/')),
+  );
+}
+
+Iterable<Uri> _filesForBuild(
+  Directory root, {
+  Set<String> excludeDirectories = const {},
+}) sync* {
+  if (!root.existsSync()) {
+    return;
+  }
+
+  for (final entity in root.listSync(recursive: true, followLinks: false)) {
+    if (entity is! File) {
+      continue;
+    }
+    final relativeSegments = entity.uri.pathSegments.skip(
+      root.uri.pathSegments.length,
+    );
+    if (relativeSegments.any(excludeDirectories.contains)) {
+      continue;
+    }
+    if (!_buildDependencyExtensions.contains(_extension(entity.uri.path))) {
+      continue;
+    }
+    yield entity.uri;
   }
 }
 
-bool _hostSupportsArchitecture(Architecture targetArch) {
-  switch (targetArch) {
-    case Architecture.arm64:
-      return const {
-        Abi.androidArm64,
-        Abi.fuchsiaArm64,
-        Abi.iosArm64,
-        Abi.linuxArm64,
-        Abi.macosArm64,
-        Abi.windowsArm64,
-      }.contains(Abi.current());
-    case Architecture.x64:
-      return const {
-        Abi.androidX64,
-        Abi.fuchsiaX64,
-        Abi.iosX64,
-        Abi.linuxX64,
-        Abi.macosX64,
-        Abi.windowsX64,
-      }.contains(Abi.current());
-    default:
-      return false;
+String _extension(String path) {
+  final dot = path.lastIndexOf('.');
+  if (dot == -1) {
+    return '';
   }
+  return path.substring(dot);
 }
