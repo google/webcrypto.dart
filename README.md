@@ -114,7 +114,7 @@ Chrome, Firefox and Safari.
  * [BoringSSL Documentation][boringssl-docs].
 
 
-[window-crypto]: webcrypto-mdn
+[window-crypto]: https://developer.mozilla.org/en-US/docs/Web/API/Window/crypto
 [webcrypto-spec]: https://www.w3.org/TR/WebCryptoAPI/
 [boringssl-src]: https://boringssl.googlesource.com/boringssl/
 [boringssl-docs]: https://commondatastorage.googleapis.com/chromium-boringssl-docs/headers.html
