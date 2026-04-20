@@ -104,6 +104,12 @@ Chrome, Firefox and Safari.
    _decryption_, _signing_ and _verification_ buffers the entire input, because
    `window.crypto` does not expose a streaming API. However, the native
    implementation using BoringSSL does support streaming.
+ * In browsers, operations backed by `window.crypto.subtle` require a secure
+   context. When loaded from an insecure context, `package:webcrypto` throws
+   `UnsupportedError` for those operations with guidance to use HTTPS or a
+   trustworthy local origin such as `localhost`. `fillRandomBytes()` continues
+   to work because it uses `window.crypto.getRandomValues()`, which browsers
+   expose outside secure contexts.
 
 ## References
 
