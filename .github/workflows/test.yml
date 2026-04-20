@@ -153,7 +153,7 @@ jobs:
   ios:
     name: iOS emulator (iPhone)
     runs-on: macos-14
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -199,17 +199,15 @@ jobs:
       - name: Run flutter test integration_test/webcrypto_test.dart -d emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34
+          api-level: 36
           target: google_apis
           arch: x86_64
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           working-directory: ./example
-          script: |
-            for attempt in 1 2 3; do
-              flutter test integration_test/webcrypto_test.dart -d emulator --timeout 60s && break
-              echo "Attempt $attempt failed, retrying..."
-              [ $attempt -eq 3 ] && exit 1
-            done
+          script: >-
+            flutter test integration_test/webcrypto_test.dart -d emulator --timeout 60s ||
+            flutter test integration_test/webcrypto_test.dart -d emulator --timeout 60s ||
+            flutter test integration_test/webcrypto_test.dart -d emulator --timeout 60s
   linux-coverage:
     name: Linux desktop / Chrome / Firefox (coverage)
     runs-on: ubuntu-latest
