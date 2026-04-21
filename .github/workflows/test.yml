@@ -43,14 +43,6 @@ jobs:
       - run: flutter test --platform chrome
       - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
         working-directory: ./example
-      - uses: nanasess/setup-chromedriver@v2
-      - name: Run integration_test with chromedriver
-        working-directory: ./example
-        run: |
-          xvfb-run ../tool/with-chromedriver.sh flutter drive \
-            --driver=test_driver/integration_test.dart \
-            --target=integration_test/webcrypto_test.dart \
-            -d chrome
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox
   macos-14:
     name: MacOS 14 desktop / Chrome / Firefox
@@ -137,15 +129,6 @@ jobs:
       #- run: flutter test --platform chrome --wasm
       - run: flutter test integration_test/webcrypto_test.dart -d windows
         working-directory: ./example
-      - uses: nanasess/setup-chromedriver@v2
-      - name: Run integration_test with chromedriver
-        working-directory: ./example
-        shell: bash
-        run: |
-          ../tool/with-chromedriver.sh flutter drive \
-            --driver=test_driver/integration_test.dart \
-            --target=integration_test/webcrypto_test.dart \
-            -d chrome
       - run: flutter pub run test -p vm,chrome,firefox
   ios:
     name: iOS emulator (iPhone)
