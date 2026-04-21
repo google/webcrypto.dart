@@ -41,7 +41,6 @@ jobs:
       - run: flutter pub run webcrypto:setup
       - run: flutter test
       - run: flutter test --platform chrome
-      - run: flutter test --platform chrome --wasm
       - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
         working-directory: ./example
       - uses: nanasess/setup-chromedriver@v2
@@ -70,7 +69,6 @@ jobs:
       - run: flutter pub run webcrypto:setup
       - run: flutter test
       - run: flutter test --platform chrome
-      - run: flutter test --platform chrome --wasm
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
       # TODO: Enable chromedriver testing on MacOS when it works reliably
@@ -107,7 +105,6 @@ jobs:
       - run: flutter pub run webcrypto:setup
       - run: flutter test
       - run: flutter test --platform chrome
-      - run: flutter test --platform chrome --wasm
       - run: flutter test integration_test/webcrypto_test.dart -d macos
         working-directory: ./example
       # TODO: Enable chromedriver testing on MacOS when it works reliably
@@ -208,6 +205,21 @@ jobs:
             flutter test integration_test/webcrypto_test.dart -d emulator --timeout 60s ||
             flutter test integration_test/webcrypto_test.dart -d emulator --timeout 60s ||
             flutter test integration_test/webcrypto_test.dart -d emulator --timeout 60s
+  linux-wasm:
+    name: Linux browser / Chrome (dart2wasm smoke)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Configure Flutter
+        run: |
+          flutter config --no-analytics
+      - run: flutter pub get
+      - run: xvfb-run flutter pub run test -p chrome -c dart2wasm test/crypto_subtle_test.dart
   linux-coverage:
     name: Linux desktop / Chrome / Firefox (coverage)
     runs-on: ubuntu-latest
