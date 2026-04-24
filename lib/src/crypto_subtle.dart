@@ -66,7 +66,8 @@ extension type JSCrypto(JSObject _) implements JSObject {
   @JS('subtle')
   external JSSubtleCrypto? get _subtleOrNull;
 
-  JSSubtleCrypto get subtle => _requireSubtleCrypto();
+  JSSubtleCrypto get subtle =>
+      requireSubtleCrypto(_subtleOrNull, window.isSecureContext);
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
   external JSTypedArray getRandomValues(JSTypedArray array);
@@ -77,13 +78,16 @@ const _webCryptoApiDocumentationUrl =
 const _secureContextsDocumentationUrl =
     'https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts';
 
-JSSubtleCrypto _requireSubtleCrypto() {
-  final subtle = window.crypto._subtleOrNull;
+@visibleForTesting
+JSSubtleCrypto requireSubtleCrypto(
+  JSSubtleCrypto? subtle,
+  bool isSecureContext,
+) {
   if (subtle != null) {
     return subtle;
   }
 
-  if (!window.isSecureContext) {
+  if (!isSecureContext) {
     throw UnsupportedError(
       'Browser Web Crypto APIs require a secure context. '
       'Load the page over HTTPS or a potentially trustworthy origin such as localhost. '
@@ -425,8 +429,7 @@ Future<ByteBuffer> decrypt(
   JSCryptoKey key,
   Uint8List data,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto
+  final value = await window.crypto.subtle
       .decrypt(algorithm.toJS, key, data.toJS)
       .toDart;
 
@@ -438,8 +441,7 @@ Future<ByteBuffer> encrypt(
   JSCryptoKey key,
   Uint8List data,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto
+  final value = await window.crypto.subtle
       .encrypt(algorithm.toJS, key, data.toJS)
       .toDart;
 
@@ -447,15 +449,13 @@ Future<ByteBuffer> encrypt(
 }
 
 Future<ByteBuffer> exportKey(String format, JSCryptoKey key) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto.exportKey(format, key).toDart;
+  final value = await window.crypto.subtle.exportKey(format, key).toDart;
 
   return value.toDart;
 }
 
 Future<JsonWebKey> exportJsonWebKey(String format, JSCryptoKey key) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto.exportJsonWebKey(format, key).toDart;
+  final value = await window.crypto.subtle.exportJsonWebKey(format, key).toDart;
 
   return value.toDart;
 }
@@ -465,8 +465,7 @@ Future<JSCryptoKey> generateKey(
   bool extractable,
   List<String> usages,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto
+  final value = await window.crypto.subtle
       .generateCryptoKey(algorithm.toJS, extractable, usages.toJS)
       .toDart;
 
@@ -478,8 +477,7 @@ Future<JSCryptoKeyPair> generateKeyPair(
   bool extractable,
   List<String> usages,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto
+  final value = await window.crypto.subtle
       .generateCryptoKeyPair(algorithm.toJS, extractable, usages.toJS)
       .toDart;
 
@@ -487,8 +485,7 @@ Future<JSCryptoKeyPair> generateKeyPair(
 }
 
 Future<ByteBuffer> digest(String algorithm, Uint8List data) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto.digest(algorithm, data.toJS).toDart;
+  final value = await window.crypto.subtle.digest(algorithm, data.toJS).toDart;
 
   return value.toDart;
 }
@@ -500,8 +497,7 @@ Future<JSCryptoKey> importKey(
   bool extractable,
   List<String> usages,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto
+  final value = await window.crypto.subtle
       .importKey(format, keyData.toJS, algorithm.toJS, extractable, usages.toJS)
       .toDart;
 
@@ -515,8 +511,7 @@ Future<JSCryptoKey> importJsonWebKey(
   bool extractable,
   List<String> usages,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto
+  final value = await window.crypto.subtle
       .importJsonWebKey(
         format,
         jwk.toJS,
@@ -534,8 +529,9 @@ Future<ByteBuffer> sign(
   JSCryptoKey key,
   Uint8List data,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto.sign(algorithm.toJS, key, data.toJS).toDart;
+  final value = await window.crypto.subtle
+      .sign(algorithm.toJS, key, data.toJS)
+      .toDart;
 
   return value.toDart;
 }
@@ -546,8 +542,7 @@ Future<bool> verify(
   Uint8List signature,
   Uint8List data,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto
+  final value = await window.crypto.subtle
       .verify(algorithm.toJS, key, signature.toJS, data.toJS)
       .toDart;
 
@@ -559,8 +554,7 @@ Future<ByteBuffer> deriveBits(
   JSCryptoKey key,
   int length,
 ) async {
-  final subtleCrypto = window.crypto.subtle;
-  final value = await subtleCrypto
+  final value = await window.crypto.subtle
       .deriveBits(algorithm.toJS, key, length)
       .toDart;
 

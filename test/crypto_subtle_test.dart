@@ -123,6 +123,32 @@ void main() {
       );
     });
 
+    test('subtle API throws secure-context guidance when unavailable', () {
+      expect(
+        () => subtle.requireSubtleCrypto(null, false),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('secure context'), contains('localhost')),
+          ),
+        ),
+      );
+    });
+
+    test('subtle API throws missing-API guidance in secure contexts', () {
+      expect(
+        () => subtle.requireSubtleCrypto(null, true),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('window.crypto.subtle'), contains('Web Crypto API')),
+          ),
+        ),
+      );
+    });
+
     test('getRandomValues: success', () {
       final data = Uint8List(16 * 1024);
       expect(data.every((e) => e == 0), isTrue);
@@ -168,11 +194,9 @@ void main() {
   });
 
   group('crypto.subtle', () {
-    final cryptoSubtle = subtle.window.crypto.subtle;
-
     test('generateCryptoKey: success', () async {
       expect(
-        await cryptoSubtle
+        await subtle.window.crypto.subtle
             .generateCryptoKey(
               const subtle.Algorithm(name: 'AES-GCM', length: 256).toJS,
               false,
@@ -192,7 +216,7 @@ void main() {
 
     test('generateCryptoKey: invalid keyUsages', () {
       expect(
-        () async => await cryptoSubtle
+        () async => await subtle.window.crypto.subtle
             .generateCryptoKey(
               const subtle.Algorithm(name: 'AES-GCM', length: 256).toJS,
               false,
@@ -211,7 +235,7 @@ void main() {
 
     test('generateCryptoKey: invalid algorithm', () {
       expect(
-        () async => await cryptoSubtle
+        () async => await subtle.window.crypto.subtle
             .generateCryptoKey(
               const subtle.Algorithm().toJS,
               false,
@@ -232,7 +256,7 @@ void main() {
 
     test('generateKeyPair: e65537', () async {
       expect(
-        await cryptoSubtle
+        await subtle.window.crypto.subtle
             .generateCryptoKeyPair(
               subtle.Algorithm(
                 name: 'RSA-OAEP',
@@ -272,7 +296,7 @@ void main() {
 
     test(testOn: 'chrome || firefox', 'generateKeyPair: e3', () async {
       expect(
-        await cryptoSubtle
+        await subtle.window.crypto.subtle
             .generateCryptoKeyPair(
               subtle.Algorithm(
                 name: 'RSA-OAEP',
@@ -312,7 +336,7 @@ void main() {
 
     test(testOn: 'safari', 'generateKeyPair: e3', () {
       expect(
-        () async => await cryptoSubtle
+        () async => await subtle.window.crypto.subtle
             .generateCryptoKeyPair(
               subtle.Algorithm(
                 name: 'RSA-OAEP',
