@@ -107,14 +107,12 @@ void main() {
   group('crypto', () {
     test('subtle API is available in secure contexts', () {
       if (subtle.window.isSecureContext) {
-        expect(subtle.window.crypto.subtleOrNull, isNotNull);
-        expect(() => subtle.requireSubtleCrypto(), returnsNormally);
+        expect(() => subtle.window.crypto.subtle, returnsNormally);
         return;
       }
 
-      expect(subtle.window.crypto.subtleOrNull, isNull);
       expect(
-        () => subtle.requireSubtleCrypto(),
+        () => subtle.window.crypto.subtle,
         throwsA(
           isA<UnsupportedError>().having(
             (e) => e.message,
@@ -170,7 +168,7 @@ void main() {
   });
 
   group('crypto.subtle', () {
-    final cryptoSubtle = subtle.requireSubtleCrypto();
+    final cryptoSubtle = subtle.window.crypto.subtle;
 
     test('generateCryptoKey: success', () async {
       expect(
