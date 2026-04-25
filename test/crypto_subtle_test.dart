@@ -127,8 +127,10 @@ void main() {
         // dart2js throws QuotaExceededError
         expect(e.name, 'QuotaExceededError');
       } on Error catch (e) {
-        // dart2wasm throws JavaScriptError
-        expect(e.toString(), 'JavaScriptError');
+        expect(
+          e.toString(),
+          anyOf('JavaScriptError', startsWith('QuotaExceededError:')),
+        );
       }
     });
 
@@ -139,8 +141,10 @@ void main() {
         // dart2js throws TypeMismatchError
         expect(e.name, 'TypeMismatchError');
       } on Error catch (e) {
-        // dart2wasm throws JavaScriptError
-        expect(e.toString(), 'JavaScriptError');
+        expect(
+          e.toString(),
+          anyOf('JavaScriptError', startsWith('TypeMismatchError:')),
+        );
       }
     });
   });

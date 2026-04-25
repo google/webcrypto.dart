@@ -143,7 +143,7 @@ final class HmacSecretKey {
   /// print(jsonEncode(keyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   static Future<HmacSecretKey> importJsonWebKey(
     // TODO: Determine if the "alg" property can be omitted, and update documentation accordingly
     //       also make tests covering cases where "alg" is omitted.
@@ -383,6 +383,6 @@ final class HmacSecretKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }

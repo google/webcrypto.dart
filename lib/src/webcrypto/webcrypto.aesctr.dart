@@ -27,7 +27,7 @@ part of 'webcrypto.dart';
 /// {@macro AesCtrSecretKey-encryptBytes/decryptBytes:example}
 ///
 /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
-/// [2]: https://tools.ietf.org/html/rfc7517
+/// [2]: https://www.rfc-editor.org/rfc/rfc7517
 final class AesCtrSecretKey {
   final AesCtrSecretKeyImpl _impl;
 
@@ -103,7 +103,7 @@ final class AesCtrSecretKey {
   /// print(jsonEncode(keyData));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   static Future<AesCtrSecretKey> importJsonWebKey(
     Map<String, dynamic> jwk,
   ) async {
@@ -326,6 +326,6 @@ final class AesCtrSecretKey {
   /// print(jsonEncode(jwk));
   /// ```
   ///
-  /// [1]: https://tools.ietf.org/html/rfc7517
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7517
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
