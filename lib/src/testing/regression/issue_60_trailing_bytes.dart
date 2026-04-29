@@ -19,8 +19,7 @@ import '../utils/utils.dart';
 
 void main() => tests().runTests();
 
-const _isWeb = bool.fromEnvironment('dart.library.js') ||
-    bool.fromEnvironment('dart.library.wasm');
+const _isWeb = bool.fromEnvironment('dart.library.js_util');
 
 const _ecPkcs8 = '''
     MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgYLo96dEstESlXmgZW
