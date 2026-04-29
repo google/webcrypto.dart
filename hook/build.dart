@@ -30,7 +30,7 @@ Future<void> main(List<String> args) async {
       return;
     }
 
-    final packageRoot = Directory.fromUri(input.packageRoot).uri;
+    final packageRoot = input.packageRoot;
     final installDir = input.outputDirectory.resolve('install/');
     final sourceDir = packageRoot.resolve('src/');
 
@@ -42,7 +42,6 @@ Future<void> main(List<String> args) async {
     final builder = CMakeBuilder.create(
       name: 'webcrypto',
       sourceDir: sourceDir,
-      buildLocal: true,
       defines: {
         'CMAKE_BUILD_TYPE': 'Release',
         'CMAKE_INSTALL_PREFIX': installDir.toFilePath(),
@@ -81,19 +80,13 @@ final _buildDependencyExtensions = {
 };
 
 Iterable<Uri> _buildDependencies(Uri packageRoot) sync* {
-  yield* _filesForBuild(
-    Directory.fromUri(packageRoot.resolve('src/')),
-    excludeDirectories: {'build'},
-  );
+  yield* _filesForBuild(Directory.fromUri(packageRoot.resolve('src/')));
   yield* _filesForBuild(
     Directory.fromUri(packageRoot.resolve('third_party/boringssl/')),
   );
 }
 
-Iterable<Uri> _filesForBuild(
-  Directory root, {
-  Set<String> excludeDirectories = const {},
-}) sync* {
+Iterable<Uri> _filesForBuild(Directory root) sync* {
   if (!root.existsSync()) {
     return;
   }
@@ -102,23 +95,9 @@ Iterable<Uri> _filesForBuild(
     if (entity is! File) {
       continue;
     }
-    final relativeSegments = entity.uri.pathSegments.skip(
-      root.uri.pathSegments.length,
-    );
-    if (relativeSegments.any(excludeDirectories.contains)) {
-      continue;
-    }
-    if (!_buildDependencyExtensions.contains(_extension(entity.uri.path))) {
+    if (!_buildDependencyExtensions.any(entity.uri.path.endsWith)) {
       continue;
     }
     yield entity.uri;
   }
-}
-
-String _extension(String path) {
-  final dot = path.lastIndexOf('.');
-  if (dot == -1) {
-    return '';
-  }
-  return path.substring(dot);
 }
