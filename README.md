@@ -49,31 +49,15 @@ Future<void> main() async {
 For a discussion of the API design of this package,
 see `doc/design-rationale-md`.
 
-## Use with `flutter test`
 
-Unlike most plugins it is possible to run code that uses `package:webcrypto`
-with `flutter test`. For this to work the native library must be built in the
-application folder where `flutter test` is called. This can be done with:
+## System dependencies
 
-```bash
-# Only necessary when package:webcrypto is used from 'flutter test'
-# This is not necessary for development with 'flutter run' and hot-reload
-$ flutter pub run webcrypto:setup
+When you have a dependency on `package:webcrypto`, it will use
+[hooks](https://dart.dev/tools/hooks) to build BoringSSL. Thus, your system
+must have:
 
-# Now it's possible to run tests that uses package:webcrypto
-$ flutter test test/my_test_file_using_webcrypto.dart
-```
-
-This requires:
- * `cmake`
+ * `cmake`, and,
  * a C compiler (like `gcc` or `clang`)
- * Linux or Mac.
-
-The native library will be stored in `.dart_tool/webcrypto/` which should
-_not_ be under source control.
-
-It is also possible to run tests with Flutter Web using
-`flutter test -p chrome`, this does not require any additional setup steps.
 
 ## Limitations
 This package has a few limitations compared to the
