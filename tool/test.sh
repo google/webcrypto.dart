@@ -26,7 +26,7 @@ section 'Running "flutter pub get"'
 flutter pub get
 
 section 'dart test (vm,chrome,firefox)'
-#xvfb-run dart test -p vm,chrome,firefox
+xvfb-run dart test -p vm,chrome,firefox
 
 cd "$DIR/../example"
 
