@@ -105,6 +105,50 @@ void main() {
   });
 
   group('crypto', () {
+    test('subtle API is available in secure contexts', () {
+      if (subtle.window.isSecureContext) {
+        expect(() => subtle.window.crypto.subtle, returnsNormally);
+        return;
+      }
+
+      expect(
+        () => subtle.window.crypto.subtle,
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            contains('secure context'),
+          ),
+        ),
+      );
+    });
+
+    test('subtle API throws secure-context guidance when unavailable', () {
+      expect(
+        () => subtle.requireSubtleCrypto(null, false),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('secure context'), contains('localhost')),
+          ),
+        ),
+      );
+    });
+
+    test('subtle API throws missing-API guidance in secure contexts', () {
+      expect(
+        () => subtle.requireSubtleCrypto(null, true),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('window.crypto.subtle'), contains('Web Crypto API')),
+          ),
+        ),
+      );
+    });
+
     test('getRandomValues: success', () {
       final data = Uint8List(16 * 1024);
       expect(data.every((e) => e == 0), isTrue);
