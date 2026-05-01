@@ -36,9 +36,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('SHA-1 Hashing'),
-        ),
+        appBar: AppBar(title: const Text('SHA-1 Hashing')),
         body: Container(
           padding: EdgeInsets.all(10),
           child: Column(
@@ -83,7 +81,7 @@ class _MyAppState extends State<MyApp> {
           icon: Icon(Icons.autorenew),
           tooltip: 'compute hash',
           onPressed: _refreshHash,
-        )
+        ),
       ],
     );
   }
