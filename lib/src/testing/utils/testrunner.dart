@@ -98,12 +98,14 @@ class _TestCase {
       generateKeyParams: _optionalStringMapDecode(json['generateKeyParams']),
       privateRawKeyData: _optionalBase64Decode(json['privateRawKeyData']),
       privatePkcs8KeyData: _optionalBase64Decode(json['privatePkcs8KeyData']),
-      privateJsonWebKeyData:
-          _optionalStringMapDecode(json['privateJsonWebKeyData']),
+      privateJsonWebKeyData: _optionalStringMapDecode(
+        json['privateJsonWebKeyData'],
+      ),
       publicRawKeyData: _optionalBase64Decode(json['publicRawKeyData']),
       publicSpkiKeyData: _optionalBase64Decode(json['publicSpkiKeyData']),
-      publicJsonWebKeyData:
-          _optionalStringMapDecode(json['publicJsonWebKeyData']),
+      publicJsonWebKeyData: _optionalStringMapDecode(
+        json['publicJsonWebKeyData'],
+      ),
       plaintext: _optionalBase64Decode(json['plaintext']),
       signature: _optionalBase64Decode(json['signature']),
       ciphertext: _optionalBase64Decode(json['ciphertext']),
@@ -111,8 +113,9 @@ class _TestCase {
       derivedLength: json['derivedLength'] as int?,
       importKeyParams: _optionalStringMapDecode(json['importKeyParams']),
       signVerifyParams: _optionalStringMapDecode(json['signVerifyParams']),
-      encryptDecryptParams:
-          _optionalStringMapDecode(json['encryptDecryptParams']),
+      encryptDecryptParams: _optionalStringMapDecode(
+        json['encryptDecryptParams'],
+      ),
       deriveParams: _optionalStringMapDecode(json['deriveParams']),
     );
   }
@@ -141,77 +144,82 @@ class _TestCase {
 }
 
 /// Function for importing pkcs8, spki, or raw key.
-typedef ImportKeyFn<T> = Future<T> Function(
-  List<int> keyData,
-  Map<String, dynamic> keyImportParams,
-);
+typedef ImportKeyFn<T> =
+    Future<T> Function(List<int> keyData, Map<String, dynamic> keyImportParams);
 
 /// Function for exporting pkcs8, spki or raw key.
 typedef ExportKeyFn<T> = Future<List<int>> Function(T key);
 
 /// Function for importing JWK key.
-typedef ImportJsonWebKeyKeyFn<T> = Future<T> Function(
-  Map<String, dynamic> jsonWebKeyData,
-  Map<String, dynamic> keyImportParams,
-);
+typedef ImportJsonWebKeyKeyFn<T> =
+    Future<T> Function(
+      Map<String, dynamic> jsonWebKeyData,
+      Map<String, dynamic> keyImportParams,
+    );
 
 /// Function for exporting JWK key.
 typedef ExportJsonWebKeyKeyFn<T> = Future<Map<String, dynamic>> Function(T key);
 
 /// Function for generating a key.
-typedef GenerateKeyFn<T> = Future<T> Function(
-  Map<String, dynamic> generateKeyPairParams,
-);
+typedef GenerateKeyFn<T> =
+    Future<T> Function(Map<String, dynamic> generateKeyPairParams);
 
 /// Function for signing [data] using [key].
-typedef SignBytesFn<T> = Future<List<int>> Function(
-  T key,
-  List<int> data,
-  Map<String, dynamic> signParams,
-);
+typedef SignBytesFn<T> =
+    Future<List<int>> Function(
+      T key,
+      List<int> data,
+      Map<String, dynamic> signParams,
+    );
 
 /// Function for signing [data] using [key].
-typedef SignStreamFn<T> = Future<List<int>> Function(
-  T key,
-  Stream<List<int>> data,
-  Map<String, dynamic> signParams,
-);
+typedef SignStreamFn<T> =
+    Future<List<int>> Function(
+      T key,
+      Stream<List<int>> data,
+      Map<String, dynamic> signParams,
+    );
 
 /// Function for verifying [data] using [key].
-typedef VerifyBytesFn<T> = Future<bool> Function(
-  T key,
-  List<int> signature,
-  List<int> data,
-  Map<String, dynamic> verifyParams,
-);
+typedef VerifyBytesFn<T> =
+    Future<bool> Function(
+      T key,
+      List<int> signature,
+      List<int> data,
+      Map<String, dynamic> verifyParams,
+    );
 
 /// Function for verifying [data] using [key].
-typedef VerifyStreamFn<T> = Future<bool> Function(
-  T key,
-  List<int> signature,
-  Stream<List<int>> data,
-  Map<String, dynamic> verifyParams,
-);
+typedef VerifyStreamFn<T> =
+    Future<bool> Function(
+      T key,
+      List<int> signature,
+      Stream<List<int>> data,
+      Map<String, dynamic> verifyParams,
+    );
 
 /// Function for encrypting or a function for decrypting [data] using [key].
-typedef EncryptOrDecryptBytesFn<T> = Future<List<int>> Function(
-  T key,
-  List<int> data,
-  Map<String, dynamic> encryptOrDecryptParams,
-);
+typedef EncryptOrDecryptBytesFn<T> =
+    Future<List<int>> Function(
+      T key,
+      List<int> data,
+      Map<String, dynamic> encryptOrDecryptParams,
+    );
 
 /// Function for encrypting or a function for decrypting [data] using [key].
-typedef EncryptOrDecryptStreamFn<T> = Stream<List<int>> Function(
-  T key,
-  Stream<List<int>> data,
-  Map<String, dynamic> encryptOrDecryptParams,
-);
+typedef EncryptOrDecryptStreamFn<T> =
+    Stream<List<int>> Function(
+      T key,
+      Stream<List<int>> data,
+      Map<String, dynamic> encryptOrDecryptParams,
+    );
 
-typedef DeriveBitsFn<T> = Future<List<int>> Function(
-  T keyOrKeyPair,
-  int length,
-  Map<String, dynamic> deriveParams,
-);
+typedef DeriveBitsFn<T> =
+    Future<List<int>> Function(
+      T keyOrKeyPair,
+      int length,
+      Map<String, dynamic> deriveParams,
+    );
 
 @sealed
 class TestRunner<PrivateKey, PublicKey> {
@@ -273,30 +281,30 @@ class TestRunner<PrivateKey, PublicKey> {
     EncryptOrDecryptStreamFn<PrivateKey>? decryptStream,
     DeriveBitsFn<KeyPair<PrivateKey, PublicKey>>? deriveBits,
     Iterable<Map<dynamic, dynamic>>? testData,
-  })  : _isSymmetric = isSymmetric,
-        _importPrivateRawKey = importPrivateRawKey,
-        _exportPrivateRawKey = exportPrivateRawKey,
-        _importPrivatePkcs8Key = importPrivatePkcs8Key,
-        _exportPrivatePkcs8Key = exportPrivatePkcs8Key,
-        _importPrivateJsonWebKey = importPrivateJsonWebKey,
-        _exportPrivateJsonWebKey = exportPrivateJsonWebKey,
-        _importPublicRawKey = importPublicRawKey,
-        _exportPublicRawKey = exportPublicRawKey,
-        _importPublicSpkiKey = importPublicSpkiKey,
-        _exportPublicSpkiKey = exportPublicSpkiKey,
-        _importPublicJsonWebKey = importPublicJsonWebKey,
-        _exportPublicJsonWebKey = exportPublicJsonWebKey,
-        _generateKeyPair = generateKeyPair,
-        _signBytes = signBytes,
-        _signStream = signStream,
-        _verifyBytes = verifyBytes,
-        _verifyStream = verifyStream,
-        _encryptBytes = encryptBytes,
-        _encryptStream = encryptStream,
-        _decryptBytes = decryptBytes,
-        _decryptStream = decryptStream,
-        _deriveBits = deriveBits,
-        _testData = List.from(testData ?? <Map<dynamic, dynamic>>[]) {
+  }) : _isSymmetric = isSymmetric,
+       _importPrivateRawKey = importPrivateRawKey,
+       _exportPrivateRawKey = exportPrivateRawKey,
+       _importPrivatePkcs8Key = importPrivatePkcs8Key,
+       _exportPrivatePkcs8Key = exportPrivatePkcs8Key,
+       _importPrivateJsonWebKey = importPrivateJsonWebKey,
+       _exportPrivateJsonWebKey = exportPrivateJsonWebKey,
+       _importPublicRawKey = importPublicRawKey,
+       _exportPublicRawKey = exportPublicRawKey,
+       _importPublicSpkiKey = importPublicSpkiKey,
+       _exportPublicSpkiKey = exportPublicSpkiKey,
+       _importPublicJsonWebKey = importPublicJsonWebKey,
+       _exportPublicJsonWebKey = exportPublicJsonWebKey,
+       _generateKeyPair = generateKeyPair,
+       _signBytes = signBytes,
+       _signStream = signStream,
+       _verifyBytes = verifyBytes,
+       _verifyStream = verifyStream,
+       _encryptBytes = encryptBytes,
+       _encryptStream = encryptStream,
+       _decryptBytes = decryptBytes,
+       _decryptStream = decryptStream,
+       _deriveBits = deriveBits,
+       _testData = List.from(testData ?? <Map<dynamic, dynamic>>[]) {
     _validate();
   }
 
@@ -436,9 +444,11 @@ class TestRunner<PrivateKey, PublicKey> {
     }
 
     // Must have one priate key import format.
-    check(_importPrivateRawKey != null ||
-        _importPrivatePkcs8Key != null ||
-        _importPrivateJsonWebKey != null);
+    check(
+      _importPrivateRawKey != null ||
+          _importPrivatePkcs8Key != null ||
+          _importPrivateJsonWebKey != null,
+    );
 
     if (_isSymmetric) {
       // if symmetric we have no methods for importing public keys
@@ -447,27 +457,21 @@ class TestRunner<PrivateKey, PublicKey> {
       check(_importPublicJsonWebKey == null);
     } else {
       // Must have one public key import format.
-      check(_importPublicRawKey != null ||
-          _importPublicSpkiKey != null ||
-          _importPublicJsonWebKey != null);
+      check(
+        _importPublicRawKey != null ||
+            _importPublicSpkiKey != null ||
+            _importPublicJsonWebKey != null,
+      );
     }
 
     // Export-only and import-only formats do not make sense
-    check(
-      (_importPrivateRawKey != null) == (_exportPrivateRawKey != null),
-    );
-    check(
-      (_importPrivatePkcs8Key != null) == (_exportPrivatePkcs8Key != null),
-    );
+    check((_importPrivateRawKey != null) == (_exportPrivateRawKey != null));
+    check((_importPrivatePkcs8Key != null) == (_exportPrivatePkcs8Key != null));
     check(
       (_importPrivateJsonWebKey != null) == (_exportPrivateJsonWebKey != null),
     );
-    check(
-      (_importPublicRawKey != null) == (_exportPublicRawKey != null),
-    );
-    check(
-      (_importPublicSpkiKey != null) == (_exportPublicSpkiKey != null),
-    );
+    check((_importPublicRawKey != null) == (_exportPublicRawKey != null));
+    check((_importPublicSpkiKey != null) == (_exportPublicSpkiKey != null));
     check(
       (_importPublicJsonWebKey != null) == (_exportPublicJsonWebKey != null),
     );
@@ -514,10 +518,7 @@ class TestRunner<PrivateKey, PublicKey> {
       final rng = Random.secure();
       final N = rng.nextInt(maxPlaintext - minPlaintext) + minPlaintext;
       final offset = rng.nextInt(plaintextTemplate.length - N);
-      plaintext = utf8.encode(plaintextTemplate.substring(
-        offset,
-        offset + N,
-      ));
+      plaintext = utf8.encode(plaintextTemplate.substring(offset, offset + N));
     }
 
     List<int>? signature;
@@ -553,11 +554,7 @@ class TestRunner<PrivateKey, PublicKey> {
           : rng.nextInt(maxDeriveLength - minDeriveLength) + minDeriveLength;
 
       log('creating derivedBits');
-      derivedBits = await deriveBits(
-        pair,
-        derivedLength,
-        deriveParams,
-      );
+      derivedBits = await deriveBits(pair, derivedLength, deriveParams);
     }
 
     Future<T?> optionalCall<S, T>(Future<T> Function(S)? fn, S v) async =>
@@ -566,14 +563,20 @@ class TestRunner<PrivateKey, PublicKey> {
       name,
       generateKeyParams: null, // omit generateKeyParams
       privateRawKeyData: await optionalCall(_exportPrivateRawKey, privateKey),
-      privatePkcs8KeyData:
-          await optionalCall(_exportPrivatePkcs8Key, privateKey),
-      privateJsonWebKeyData:
-          await optionalCall(_exportPrivateJsonWebKey, privateKey),
+      privatePkcs8KeyData: await optionalCall(
+        _exportPrivatePkcs8Key,
+        privateKey,
+      ),
+      privateJsonWebKeyData: await optionalCall(
+        _exportPrivateJsonWebKey,
+        privateKey,
+      ),
       publicRawKeyData: await optionalCall(_exportPublicRawKey, publicKey),
       publicSpkiKeyData: await optionalCall(_exportPublicSpkiKey, publicKey),
-      publicJsonWebKeyData:
-          await optionalCall(_exportPublicJsonWebKey, publicKey),
+      publicJsonWebKeyData: await optionalCall(
+        _exportPublicJsonWebKey,
+        publicKey,
+      ),
       plaintext: plaintext,
       signature: signature,
       ciphertext: ciphertext,
@@ -587,9 +590,9 @@ class TestRunner<PrivateKey, PublicKey> {
 
     // Log the generated test case. This makes it easy to copy/paste the test
     // case into test files.
-    final json = const JsonEncoder.withIndent('  ')
-        .convert(c.toJson())
-        .replaceAll('\n', '\n| ');
+    final json = const JsonEncoder.withIndent(
+      '  ',
+    ).convert(c.toJson()).replaceAll('\n', '\n| ');
     log('| $json');
 
     return c.toJson();
@@ -616,7 +619,7 @@ class TestRunner<PrivateKey, PublicKey> {
           test: () async {
             // Check BoringSSL error stack if running with dart:ffi
             await checkErrorStack(fn);
-          }
+          },
         ));
       });
     }
@@ -648,10 +651,12 @@ void _validateTestCase<PrivateKey, PublicKey>(
   TestRunner<PrivateKey, PublicKey> r,
   _TestCase c,
 ) {
-  final hasPrivateKey = c.privateRawKeyData != null ||
+  final hasPrivateKey =
+      c.privateRawKeyData != null ||
       c.privatePkcs8KeyData != null ||
       c.privateJsonWebKeyData != null;
-  final hasPublicKey = c.publicRawKeyData != null ||
+  final hasPublicKey =
+      c.publicRawKeyData != null ||
       c.publicSpkiKeyData != null ||
       c.publicJsonWebKeyData != null;
 
@@ -859,7 +864,7 @@ void _runTests<PrivateKey, PublicKey>(
         derivedBits = await r._deriveBits(
           (
             privateKey: privateKey as PrivateKey,
-            publicKey: publicKey as PublicKey
+            publicKey: publicKey as PublicKey,
           ),
           c.derivedLength!,
           c.deriveParams!,
@@ -871,7 +876,7 @@ void _runTests<PrivateKey, PublicKey>(
       final derived = await r._deriveBits(
         (
           privateKey: privateKey as PrivateKey,
-          publicKey: publicKey as PublicKey
+          publicKey: publicKey as PublicKey,
         ),
         c.derivedLength!,
         c.deriveParams!,
@@ -977,7 +982,7 @@ void _runTests<PrivateKey, PublicKey>(
       final derived = await r._deriveBits(
         (
           privateKey: privateKey as PrivateKey,
-          publicKey: publicKey as PublicKey
+          publicKey: publicKey as PublicKey,
         ),
         c.derivedLength!,
         c.deriveParams!,
@@ -1004,7 +1009,7 @@ void _runTests<PrivateKey, PublicKey>(
       final derived = await r._deriveBits(
         (
           privateKey: privateKey as PrivateKey,
-          publicKey: publicKey as PublicKey
+          publicKey: publicKey as PublicKey,
         ),
         c.derivedLength!,
         c.deriveParams!,
@@ -1239,20 +1244,24 @@ void _runTests<PrivateKey, PublicKey>(
 
   if (r._encryptStream != null) {
     test('encryptStream(plaintext)', () async {
-      final ctext = await bufferStream(r._encryptStream(
-        publicKey as PublicKey,
-        Stream.value(c.plaintext!),
-        c.encryptDecryptParams!,
-      ));
+      final ctext = await bufferStream(
+        r._encryptStream(
+          publicKey as PublicKey,
+          Stream.value(c.plaintext!),
+          c.encryptDecryptParams!,
+        ),
+      );
       await checkCipherText(ctext);
     });
 
     test('encryptStream(fibChunked(plaintext))', () async {
-      final ctext = await bufferStream(r._encryptStream(
-        publicKey as PublicKey,
-        fibonacciChunkedStream(c.plaintext!),
-        c.encryptDecryptParams!,
-      ));
+      final ctext = await bufferStream(
+        r._encryptStream(
+          publicKey as PublicKey,
+          fibonacciChunkedStream(c.plaintext!),
+          c.encryptDecryptParams!,
+        ),
+      );
       await checkCipherText(ctext);
     });
   }
@@ -1266,10 +1275,7 @@ void _runTests<PrivateKey, PublicKey>(
         ciphertext!,
         c.encryptDecryptParams!,
       );
-      check(
-        equalBytes(text, c.plaintext!),
-        'failed to decrypt signature',
-      );
+      check(equalBytes(text, c.plaintext!), 'failed to decrypt signature');
 
       if (ciphertext!.isNotEmpty) {
         // If ciphertext is mangled some primitives like AES-GCM must throw
@@ -1293,25 +1299,26 @@ void _runTests<PrivateKey, PublicKey>(
 
   if (r._decryptStream != null) {
     test('decryptStream(Stream.value(ciphertext))', () async {
-      final text = await bufferStream(r._decryptStream(
-        privateKey as PrivateKey,
-        Stream.value(ciphertext!),
-        c.encryptDecryptParams!,
-      ));
-      check(
-        equalBytes(text, c.plaintext!),
-        'failed to decrypt signature',
+      final text = await bufferStream(
+        r._decryptStream(
+          privateKey as PrivateKey,
+          Stream.value(ciphertext!),
+          c.encryptDecryptParams!,
+        ),
       );
+      check(equalBytes(text, c.plaintext!), 'failed to decrypt signature');
 
       if (ciphertext!.isNotEmpty) {
         // If ciphertext is mangled some primitives like AES-GCM must throw
         // others may return garbled plaintext.
         try {
-          final text2 = await bufferStream(r._decryptStream(
-            privateKey as PrivateKey,
-            Stream.value(flipFirstBits(ciphertext!)),
-            c.encryptDecryptParams!,
-          ));
+          final text2 = await bufferStream(
+            r._decryptStream(
+              privateKey as PrivateKey,
+              Stream.value(flipFirstBits(ciphertext!)),
+              c.encryptDecryptParams!,
+            ),
+          );
           check(
             !equalBytes(text2, c.plaintext!),
             'decrypted an invalid ciphertext correctly',
@@ -1323,25 +1330,26 @@ void _runTests<PrivateKey, PublicKey>(
     });
 
     test('decryptStream(fibChunkedStream(ciphertext))', () async {
-      final text = await bufferStream(r._decryptStream(
-        privateKey as PrivateKey,
-        fibonacciChunkedStream(ciphertext!),
-        c.encryptDecryptParams!,
-      ));
-      check(
-        equalBytes(text, c.plaintext!),
-        'failed to decrypt signature',
+      final text = await bufferStream(
+        r._decryptStream(
+          privateKey as PrivateKey,
+          fibonacciChunkedStream(ciphertext!),
+          c.encryptDecryptParams!,
+        ),
       );
+      check(equalBytes(text, c.plaintext!), 'failed to decrypt signature');
 
       if (ciphertext!.isNotEmpty) {
         // If ciphertext is mangled some primitives like AES-GCM must throw
         // others may return garbled plaintext.
         try {
-          final text2 = await bufferStream(r._decryptStream(
-            privateKey as PrivateKey,
-            fibonacciChunkedStream(flipFirstBits(ciphertext!)),
-            c.encryptDecryptParams!,
-          ));
+          final text2 = await bufferStream(
+            r._decryptStream(
+              privateKey as PrivateKey,
+              fibonacciChunkedStream(flipFirstBits(ciphertext!)),
+              c.encryptDecryptParams!,
+            ),
+          );
           check(
             !equalBytes(text2, c.plaintext!),
             'decrypted an invalid ciphertext correctly',
@@ -1359,7 +1367,7 @@ void _runTests<PrivateKey, PublicKey>(
       final derived = await r._deriveBits(
         (
           privateKey: privateKey as PrivateKey,
-          publicKey: publicKey as PublicKey
+          publicKey: publicKey as PublicKey,
         ),
         c.derivedLength!,
         c.deriveParams!,
@@ -1443,23 +1451,37 @@ void _runTests<PrivateKey, PublicKey>(
     test('validate generated test case', () async {
       Future<T?> optionalCall<S, T>(Future<T> Function(S)? fn, S v) async =>
           fn != null ? await fn(v) : null;
-      final date =
-          DateTime.now().toIso8601String().split('T').first; // drop time
+      final date = DateTime.now()
+          .toIso8601String()
+          .split('T')
+          .first; // drop time
       final generated = _TestCase(
         '${c.name} generated on $detectedRuntime at $date',
         generateKeyParams: null, // omit generateKeyParams
         privateRawKeyData: await optionalCall(
-            r._exportPrivateRawKey, privateKey as PrivateKey),
+          r._exportPrivateRawKey,
+          privateKey as PrivateKey,
+        ),
         privatePkcs8KeyData: await optionalCall(
-            r._exportPrivatePkcs8Key, privateKey as PrivateKey),
+          r._exportPrivatePkcs8Key,
+          privateKey as PrivateKey,
+        ),
         privateJsonWebKeyData: await optionalCall(
-            r._exportPrivateJsonWebKey, privateKey as PrivateKey),
-        publicRawKeyData:
-            await optionalCall(r._exportPublicRawKey, publicKey as PublicKey),
-        publicSpkiKeyData:
-            await optionalCall(r._exportPublicSpkiKey, publicKey as PublicKey),
+          r._exportPrivateJsonWebKey,
+          privateKey as PrivateKey,
+        ),
+        publicRawKeyData: await optionalCall(
+          r._exportPublicRawKey,
+          publicKey as PublicKey,
+        ),
+        publicSpkiKeyData: await optionalCall(
+          r._exportPublicSpkiKey,
+          publicKey as PublicKey,
+        ),
         publicJsonWebKeyData: await optionalCall(
-            r._exportPublicJsonWebKey, publicKey as PublicKey),
+          r._exportPublicJsonWebKey,
+          publicKey as PublicKey,
+        ),
         plaintext: c.plaintext,
         signature: signature,
         ciphertext: ciphertext,

@@ -47,7 +47,7 @@ part of 'webcrypto.dart';
 /// ```
 /// {@endtemplate}
 ///
-/// [1]: https://tools.ietf.org/html/rfc5869
+/// [1]: https://www.rfc-editor.org/rfc/rfc5869
 // TODO: It might be wise to use a random salt, then suggest that the non-secret
 //       salt is stored or exchanged...
 final class HkdfSecretKey {
@@ -91,6 +91,5 @@ final class HkdfSecretKey {
     Hash hash,
     List<int> salt,
     List<int> info,
-  ) =>
-      _impl.deriveBits(length, hash._impl, salt, info);
+  ) => _impl.deriveBits(length, hash._impl, salt, info);
 }

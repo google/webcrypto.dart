@@ -89,7 +89,9 @@ final class JsonWebKey {
       if (json['key_ops'] is! List ||
           (json['key_ops'] as List).any((e) => e is! String)) {
         throw FormatException(
-            'JWK entry "key_ops" must be a list of strings', json);
+          'JWK entry "key_ops" must be a list of strings',
+          json,
+        );
       }
       key_ops = (json['key_ops'] as List).map((e) => e as String).toList();
     }
@@ -216,17 +218,13 @@ final class JsonWebKey {
 /// See also "oth" in [RFC 7518 Section 6.3.2.7].
 ///
 /// [1]: https://www.w3.org/TR/WebCryptoAPI/#JsonWebKey-dictionary
-/// [2]: https://tools.ietf.org/html/rfc7518#section-6.3.2.7
+/// [2]: https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2.7
 final class RsaOtherPrimesInfo {
   String r;
   String d;
   String t;
 
-  RsaOtherPrimesInfo({
-    required this.r,
-    required this.d,
-    required this.t,
-  });
+  RsaOtherPrimesInfo({required this.r, required this.d, required this.t});
 
   static RsaOtherPrimesInfo fromJson(Map json) {
     for (final k in ['r', 'd', 't']) {
@@ -242,10 +240,6 @@ final class RsaOtherPrimesInfo {
   }
 
   Map<String, Object> toJson() {
-    return <String, Object>{
-      'r': r,
-      'd': d,
-      't': t,
-    };
+    return <String, Object>{'r': r, 'd': d, 't': t};
   }
 }

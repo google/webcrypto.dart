@@ -21,10 +21,7 @@ final class _HashImpl implements HashImpl {
   @override
   Future<Uint8List> digestBytes(List<int> data) async {
     return await _handleDomException(() async {
-      final result = await subtle.digest(
-        _algorithm,
-        Uint8List.fromList(data),
-      );
+      final result = await subtle.digest(_algorithm, Uint8List.fromList(data));
       return result.asUint8List();
     });
   }

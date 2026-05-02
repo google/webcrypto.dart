@@ -1,12 +1,12 @@
-Cross-Platform Web Cryptography Implemenation
+Cross-Platform Web Cryptography Implementation
 =============================================
 This package provides a cross-platform implementation of the
-[Web Cryptograph API][webcrypto-spec].
+[Web Cryptography API][webcrypto-spec].
 
 **Disclaimer:** This is not an officially supported Google product.
 
 This packages provides an implementation of the
-[Web Cryptograph API][webcrypto-spec] across multiple platforms. Outside the
+[Web Cryptography API][webcrypto-spec] across multiple platforms. Outside the
 browser, this package features a native implementation embedding
 [BoringSSL][boringssl-src] using [`dart:ffi`][dart-ffi]. When used inside a
 web browser this package wraps the [`window.crypto`][window-crypto] APIs and
@@ -49,35 +49,19 @@ Future<void> main() async {
 For a discussion of the API design of this package,
 see `doc/design-rationale-md`.
 
-## Use with `flutter test`
 
-Unlike most plugins it is possible to run code that uses `package:webcrypto`
-with `flutter test`. For this to work the native library must be built in the
-application folder where `flutter test` is called. This can be done with:
+## System dependencies
 
-```bash
-# Only necessary when package:webcrypto is used from 'flutter test'
-# This is not necessary for development with 'flutter run' and hot-reload
-$ flutter pub run webcrypto:setup
+When you have a dependency on `package:webcrypto`, it will use
+[hooks](https://dart.dev/tools/hooks) to build BoringSSL. Thus, your system
+must have:
 
-# Now it's possible to run tests that uses package:webcrypto
-$ flutter test test/my_test_file_using_webcrypto.dart
-```
-
-This requires:
- * `cmake`
+ * `cmake`, and,
  * a C compiler (like `gcc` or `clang`)
- * Linux or Mac.
-
-The native library will be stored in `.dart_tool/webcrypto/` which should
-_not_ be under source control.
-
-It is also possible to run tests with Flutter Web using
-`flutter test -p chrome`, this does not require any additional setup steps.
 
 ## Limitations
 This package has a few limitations compared to the
-[Web Cryptograph API][webcrypto-spec]. For a discussion of parity with
+[Web Cryptography API][webcrypto-spec]. For a discussion of parity with
 Web Cryptography APIs see `doc/webcrypto-parity.md`.
 
  * `deriveKey` is not supported, however, keys can always be created from
@@ -104,6 +88,12 @@ Chrome, Firefox and Safari.
    _decryption_, _signing_ and _verification_ buffers the entire input, because
    `window.crypto` does not expose a streaming API. However, the native
    implementation using BoringSSL does support streaming.
+ * In browsers, operations backed by `window.crypto.subtle` require a secure
+   context. When loaded from an insecure context, `package:webcrypto` throws
+   `UnsupportedError` for those operations with guidance to use HTTPS or a
+   trustworthy local origin such as `localhost`. `fillRandomBytes()` continues
+   to work because it uses `window.crypto.getRandomValues()`, which browsers
+   expose outside secure contexts.
 
 ## References
 
@@ -114,7 +104,7 @@ Chrome, Firefox and Safari.
  * [BoringSSL Documentation][boringssl-docs].
 
 
-[window-crypto]: webcrypto-mdn
+[window-crypto]: https://developer.mozilla.org/en-US/docs/Web/API/Window/crypto
 [webcrypto-spec]: https://www.w3.org/TR/WebCryptoAPI/
 [boringssl-src]: https://boringssl.googlesource.com/boringssl/
 [boringssl-docs]: https://commondatastorage.googleapis.com/chromium-boringssl-docs/headers.html

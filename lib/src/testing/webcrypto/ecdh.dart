@@ -26,7 +26,9 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   exportPrivatePkcs8Key: (key) => key.exportPkcs8Key(),
   importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdhPrivateKey.importJsonWebKey(
-          jsonWebKeyData, curveFromJson(keyImportParams)),
+        jsonWebKeyData,
+        curveFromJson(keyImportParams),
+      ),
   exportPrivateJsonWebKey: (key) => key.exportJsonWebKey(),
   importPublicRawKey: (keyData, keyImportParams) =>
       EcdhPublicKey.importRawKey(keyData, curveFromJson(keyImportParams)),
@@ -36,26 +38,23 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   exportPublicSpkiKey: (key) => key.exportSpkiKey(),
   importPublicJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdhPublicKey.importJsonWebKey(
-          jsonWebKeyData, curveFromJson(keyImportParams)),
+        jsonWebKeyData,
+        curveFromJson(keyImportParams),
+      ),
   exportPublicJsonWebKey: (key) => key.exportJsonWebKey(),
   generateKeyPair: (generateKeyPairParams) async {
     // Use public / private keys from two different pairs, as if they had been
     // exchanged.
-    final a = await EcdhPrivateKey.generateKey(curveFromJson(
-      generateKeyPairParams,
-    ));
-    final b = await EcdhPrivateKey.generateKey(curveFromJson(
-      generateKeyPairParams,
-    ));
-    return (
-      privateKey: a.privateKey,
-      publicKey: b.publicKey,
+    final a = await EcdhPrivateKey.generateKey(
+      curveFromJson(generateKeyPairParams),
     );
+    final b = await EcdhPrivateKey.generateKey(
+      curveFromJson(generateKeyPairParams),
+    );
+    return (privateKey: a.privateKey, publicKey: b.publicKey);
   },
-  deriveBits: (keys, length, deriveParams) => keys.privateKey.deriveBits(
-    length,
-    keys.publicKey,
-  ),
+  deriveBits: (keys, length, deriveParams) =>
+      keys.privateKey.deriveBits(length, keys.publicKey),
   testData: _testData,
 );
 
@@ -84,7 +83,7 @@ final _testData = [
       "crv": "P-256",
       "x": "5dBlWvDtbF139jVeahif_f1avD1VgmbnswA2tRdFa9k",
       "y": "NoHwGx5khb6uGYSYsLYV8J3GP02YunTRKKVFObjQfGY",
-      "d": "3aTiZ7odKAODYk4BpZlzulBCB_BptmxjtvrzyXI71Uw"
+      "d": "3aTiZ7odKAODYk4BpZlzulBCB_BptmxjtvrzyXI71Uw",
     },
     "publicRawKeyData":
         "BHiIXxrwhM92v4ueDrj3x1JJY4uS+II/IJPjqMvaKj/QfoOllnEkrnaOW1owBYRBMnP0pPouPkqbVfPACMUsfKs=",
@@ -94,12 +93,12 @@ final _testData = [
       "kty": "EC",
       "crv": "P-256",
       "x": "eIhfGvCEz3a_i54OuPfHUklji5L4gj8gk-Ooy9oqP9A",
-      "y": "foOllnEkrnaOW1owBYRBMnP0pPouPkqbVfPACMUsfKs"
+      "y": "foOllnEkrnaOW1owBYRBMnP0pPouPkqbVfPACMUsfKs",
     },
     "derivedBits": "WA==",
     "derivedLength": 7,
     "importKeyParams": {"curve": "p-256"},
-    "deriveParams": {}
+    "deriveParams": {},
   },
   {
     "name": "generated on chrome/linux at 2020-01-22T23:24:39",
@@ -110,7 +109,7 @@ final _testData = [
       "crv": "P-256",
       "x": "OiV_K76gFmgX-tn4gVnkUkOFZkhbW14gXjD5Vu5L3Zs",
       "y": "4JifmrKys6bBZAXujNiqSyBTaur9XGI4gMQD_SPAqKE",
-      "d": "5AWOpgxJFPrYFT35Cd9NzjY_42GMqXHjN2u7nr4vTxk"
+      "d": "5AWOpgxJFPrYFT35Cd9NzjY_42GMqXHjN2u7nr4vTxk",
     },
     "publicRawKeyData":
         "BCjk7bfchTtYegPTteeUP+MrjJKfV7MqOZXFoS1GixVyRhk7MGC0Sc+2mdO1b3P1vR0F9l1pEk1hZfrbPdRs10U=",
@@ -120,12 +119,12 @@ final _testData = [
       "kty": "EC",
       "crv": "P-256",
       "x": "KOTtt9yFO1h6A9O155Q_4yuMkp9Xsyo5lcWhLUaLFXI",
-      "y": "Rhk7MGC0Sc-2mdO1b3P1vR0F9l1pEk1hZfrbPdRs10U"
+      "y": "Rhk7MGC0Sc-2mdO1b3P1vR0F9l1pEk1hZfrbPdRs10U",
     },
     "derivedBits": "iZA=",
     "derivedLength": 15,
     "importKeyParams": {"curve": "p-256"},
-    "deriveParams": {}
+    "deriveParams": {},
   },
   {
     "name": "generated on firefox/linux at 2020-01-26T19:36:54",
@@ -134,7 +133,7 @@ final _testData = [
       "crv": "P-256",
       "x": "CEFhbltPwubSZ7uvcAStaPsQiAzrd8Lg0ABAwSDLx2M",
       "y": "htguB5lc8x5uKJ_Uj8Mg_kXYLqdxYfFxYW0fWTpSP78",
-      "d": "r5YhnToYxcqOHKSr4E_IRMuGvOc0fF0NeEYmc1i6Yxw"
+      "d": "r5YhnToYxcqOHKSr4E_IRMuGvOc0fF0NeEYmc1i6Yxw",
     },
     "publicRawKeyData":
         "BJlCZHJvjqvdpytyJR1Rv4tzlMWWTNw0zEAtDLiIHrZBvKXhSN5y1ZWWhDQFFkKz91MpeA2PMN9YrN9w4aAMTA0=",
@@ -144,12 +143,12 @@ final _testData = [
       "kty": "EC",
       "crv": "P-256",
       "x": "mUJkcm-Oq92nK3IlHVG_i3OUxZZM3DTMQC0MuIgetkE",
-      "y": "vKXhSN5y1ZWWhDQFFkKz91MpeA2PMN9YrN9w4aAMTA0"
+      "y": "vKXhSN5y1ZWWhDQFFkKz91MpeA2PMN9YrN9w4aAMTA0",
     },
     "derivedBits": "sA==",
     "derivedLength": 6,
     "importKeyParams": {"curve": "p-256"},
-    "deriveParams": {}
+    "deriveParams": {},
   },
 
   /// Safari and WebKit on Mac (with CommonCrypto) does not support P-521, see:
@@ -172,7 +171,7 @@ final _testDataWithP521 = [
       "y":
           "ASkJKvdnNs_Xyr-BDwjMIgAZeAEu9sD6BqiVIapK3JifgBsAx1cAvH2D3RQKy2og7bNK9OX8eH49z3wlJ7lgLNJK",
       "d":
-          "ATzquO9ebHl2ATKzE8baz-5JbbCHN2_QsnBnOsTQJse2lEMohZJLhVn-kXuQvQIMCcEEcZGNeH0ptkN1sDzOj6MW"
+          "ATzquO9ebHl2ATKzE8baz-5JbbCHN2_QsnBnOsTQJse2lEMohZJLhVn-kXuQvQIMCcEEcZGNeH0ptkN1sDzOj6MW",
     },
     "publicRawKeyData":
         "BAFZiFCz9cHz/k9DZOb6wxZKqzpoemGisvlmkuVaB7J2Od1qp4MHyWCnXpws26TEqg/cSgZQMye2+Sih3qUFX/3AQgA7OiqrVeL4cTWsaej833S8EKyE2BOQe+nLPEvAvaJAufeH+IctMXhoL0aKw56uueyeBxxoIZRv4/TX+C/P//g2WA==",
@@ -184,13 +183,13 @@ final _testDataWithP521 = [
       "x":
           "AVmIULP1wfP-T0Nk5vrDFkqrOmh6YaKy-WaS5VoHsnY53WqngwfJYKdenCzbpMSqD9xKBlAzJ7b5KKHepQVf_cBC",
       "y":
-          "ADs6KqtV4vhxNaxp6PzfdLwQrITYE5B76cs8S8C9okC594f4hy0xeGgvRorDnq657J4HHGghlG_j9Nf4L8__-DZY"
+          "ADs6KqtV4vhxNaxp6PzfdLwQrITYE5B76cs8S8C9okC594f4hy0xeGgvRorDnq657J4HHGghlG_j9Nf4L8__-DZY",
     },
     "derivedBits":
         "ANKd9Y53XFXIW2uHp4EcVnDmFKNoJ2fga+zYPkD4tl3lmvAl6ACO/KkS8JQ3YPnR9xvuyHXqkeNewCwvoKdzY946",
     "derivedLength": 528,
     "importKeyParams": {"curve": "p-521"},
-    "deriveParams": {}
+    "deriveParams": {},
   },
   {
     "name": "P521/528 generated on chrome/linux at 2020-01-23T18:24:21",
@@ -204,7 +203,7 @@ final _testDataWithP521 = [
       "y":
           "ALM9YolcMab9RkqBFQGGXn8kGeUhNC3WLAohPlDr_jtp9lNJ_Gt2gFw8CIh3vdUmrt-f2InBFEwYDJiqoeYPrOVY",
       "d":
-          "AAbAwBg-V1lr84Z58wsrzQA9rWiyyAxc18B8e_P7j6_5DDUVOSje2RpBcqSUNFUR76lGnucQH7UAVSDcu1PvQG2i"
+          "AAbAwBg-V1lr84Z58wsrzQA9rWiyyAxc18B8e_P7j6_5DDUVOSje2RpBcqSUNFUR76lGnucQH7UAVSDcu1PvQG2i",
     },
     "publicRawKeyData":
         "BAHFcqB1M8eMxMcy41W0vhqe/UHuoq6muZn+UR0JRVnJmtSAdESTaRu/wCSjun3K+cTOlKMKvRpBNn75zc4MTuJ/SwFdjjm3upV4aWYGKyUjHUEyb2aEAwXYgY2QtNTVs7+L5rJeFL5M0m16XqLkg4kWTSoVQpBt2WJZy30swHUlPuCPbw==",
@@ -216,13 +215,13 @@ final _testDataWithP521 = [
       "x":
           "AcVyoHUzx4zExzLjVbS-Gp79Qe6irqa5mf5RHQlFWcma1IB0RJNpG7_AJKO6fcr5xM6Uowq9GkE2fvnNzgxO4n9L",
       "y":
-          "AV2OObe6lXhpZgYrJSMdQTJvZoQDBdiBjZC01NWzv4vmsl4UvkzSbXpeouSDiRZNKhVCkG3ZYlnLfSzAdSU-4I9v"
+          "AV2OObe6lXhpZgYrJSMdQTJvZoQDBdiBjZC01NWzv4vmsl4UvkzSbXpeouSDiRZNKhVCkG3ZYlnLfSzAdSU-4I9v",
     },
     "derivedBits":
         "ABa2Lr/ImF+AskXCqyO8fWQjh7YNoiynFMbAw6bmDZT/1hVNbAWIyKTjlgRc6YQvV/3alD3SlSCxlEc0BkGGUMiS",
     "derivedLength": 528,
     "importKeyParams": {"curve": "p-521"},
-    "deriveParams": {}
+    "deriveParams": {},
   },
   {
     "name": "P521/528 generated firefox/linux at 2020-01-26T19:39:32",
@@ -234,7 +233,7 @@ final _testDataWithP521 = [
       "y":
           "ABgohNvlwwKqYzj8pFd5qYHmwk8uAvjRRTjOwWo5Y_rPnumGLlZwLm0QrFJ6-OnXKJcmSfSsFVRZx00k-ANH8hNK",
       "d":
-          "AU1zr6Fn9zQOp9PYHbOoVt56nDfPgU9hh5BBSPyJdpuNnK-WsyPJ66oBv_Oj7E9krila57wKl54Gj0vfTiR8pU-x"
+          "AU1zr6Fn9zQOp9PYHbOoVt56nDfPgU9hh5BBSPyJdpuNnK-WsyPJ66oBv_Oj7E9krila57wKl54Gj0vfTiR8pU-x",
     },
     "publicRawKeyData":
         "BAHgS8NJglQ69SeU8yGU3QWbNyjyUG4ZvsJJIaYZGqSlbgqZZMLAc5upu9/bEyBL7rgn3wBWRB5IC+F1pM/lhNUpogCzRbB9MqvFCHQxjOtLROI2baiAVnvZ31AWYadWvLeqJdIdFdLgOveK1ORVkDIJT/m5rs1jW1KDc0SYLyGtAGWW1g==",
@@ -246,12 +245,12 @@ final _testDataWithP521 = [
       "x":
           "AeBLw0mCVDr1J5TzIZTdBZs3KPJQbhm-wkkhphkapKVuCplkwsBzm6m739sTIEvuuCffAFZEHkgL4XWkz-WE1Smi",
       "y":
-          "ALNFsH0yq8UIdDGM60tE4jZtqIBWe9nfUBZhp1a8t6ol0h0V0uA694rU5FWQMglP-bmuzWNbUoNzRJgvIa0AZZbW"
+          "ALNFsH0yq8UIdDGM60tE4jZtqIBWe9nfUBZhp1a8t6ol0h0V0uA694rU5FWQMglP-bmuzWNbUoNzRJgvIa0AZZbW",
     },
     "derivedBits":
         "AT8SeVde9pfjq+ktYDRrVeYHQJM9c+gflBxlJqIKyJrMIWH5ZTm470ateBrlZr2uNI/lT7OfayxSz6WGkhEZUDXl",
     "derivedLength": 528,
     "importKeyParams": {"curve": "p-521"},
-    "deriveParams": {}
+    "deriveParams": {},
   },
 ];

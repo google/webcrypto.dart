@@ -27,8 +27,10 @@ final class EcdsaPrivateKey {
     List<int> keyData,
     EllipticCurve curve,
   ) async {
-    final impl =
-        await webCryptImpl.ecdsaPrivateKey.importPkcs8Key(keyData, curve);
+    final impl = await webCryptImpl.ecdsaPrivateKey.importPkcs8Key(
+      keyData,
+      curve,
+    );
     return EcdsaPrivateKey._(impl);
   }
 
@@ -36,16 +38,18 @@ final class EcdsaPrivateKey {
     Map<String, dynamic> jwk,
     EllipticCurve curve,
   ) async {
-    final impl =
-        await webCryptImpl.ecdsaPrivateKey.importJsonWebKey(jwk, curve);
+    final impl = await webCryptImpl.ecdsaPrivateKey.importJsonWebKey(
+      jwk,
+      curve,
+    );
     return EcdsaPrivateKey._(impl);
   }
 
   static Future<KeyPair<EcdsaPrivateKey, EcdsaPublicKey>> generateKey(
     EllipticCurve curve,
   ) async {
-    final (privateKeyImpl, publicKeyImpl) =
-        await webCryptImpl.ecdsaPrivateKey.generateKey(curve);
+    final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.ecdsaPrivateKey
+        .generateKey(curve);
 
     final privateKey = EcdsaPrivateKey(privateKeyImpl);
     final publicKey = EcdsaPublicKey(publicKeyImpl);
@@ -90,8 +94,10 @@ final class EcdsaPublicKey {
     List<int> keyData,
     EllipticCurve curve,
   ) async {
-    final impl =
-        await webCryptImpl.ecdsaPublicKey.importSpkiKey(keyData, curve);
+    final impl = await webCryptImpl.ecdsaPublicKey.importSpkiKey(
+      keyData,
+      curve,
+    );
     return EcdsaPublicKey._(impl);
   }
 
@@ -103,19 +109,14 @@ final class EcdsaPublicKey {
     return EcdsaPublicKey._(impl);
   }
 
-  Future<bool> verifyBytes(
-    List<int> signature,
-    List<int> data,
-    Hash hash,
-  ) =>
+  Future<bool> verifyBytes(List<int> signature, List<int> data, Hash hash) =>
       _impl.verifyBytes(signature, data, hash._impl);
 
   Future<bool> verifyStream(
     List<int> signature,
     Stream<List<int>> data,
     Hash hash,
-  ) =>
-      _impl.verifyStream(signature, data, hash._impl);
+  ) => _impl.verifyStream(signature, data, hash._impl);
 
   /// TODO: Document this being X9.62 format
   Future<Uint8List> exportRawKey() => _impl.exportRawKey();

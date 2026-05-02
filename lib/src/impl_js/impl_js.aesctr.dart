@@ -19,32 +19,38 @@ part of 'impl_js.dart';
 const _aesCtrAlgorithm = subtle.Algorithm(name: 'AES-CTR');
 
 Future<AesCtrSecretKeyImpl> aesCtr_importRawKey(List<int> keyData) async {
-  return _AesCtrSecretKeyImpl(await _importKey(
-    'raw',
-    keyData,
-    _aesCtrAlgorithm,
-    _usagesEncryptDecrypt,
-    'secret',
-  ));
+  return _AesCtrSecretKeyImpl(
+    await _importKey(
+      'raw',
+      keyData,
+      _aesCtrAlgorithm,
+      _usagesEncryptDecrypt,
+      'secret',
+    ),
+  );
 }
 
 Future<AesCtrSecretKeyImpl> aesCtr_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async {
-  return _AesCtrSecretKeyImpl(await _importJsonWebKey(
-    jwk,
-    _aesCtrAlgorithm,
-    _usagesEncryptDecrypt,
-    'secret',
-  ));
+  return _AesCtrSecretKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      _aesCtrAlgorithm,
+      _usagesEncryptDecrypt,
+      'secret',
+    ),
+  );
 }
 
 Future<AesCtrSecretKeyImpl> aesCtr_generateKey(int length) async {
-  return _AesCtrSecretKeyImpl(await _generateKey(
-    _aesCtrAlgorithm.update(length: length),
-    _usagesEncryptDecrypt,
-    'secret',
-  ));
+  return _AesCtrSecretKeyImpl(
+    await _generateKey(
+      _aesCtrAlgorithm.update(length: length),
+      _usagesEncryptDecrypt,
+      'secret',
+    ),
+  );
 }
 
 final class _StaticAesCtrSecretKeyImpl implements StaticAesCtrSecretKeyImpl {

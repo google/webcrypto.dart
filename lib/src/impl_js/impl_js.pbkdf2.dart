@@ -19,17 +19,20 @@ part of 'impl_js.dart';
 const _pbkdf2AlgorithmName = 'PBKDF2';
 
 Future<Pbkdf2SecretKeyImpl> pbkdf2SecretKey_importRawKey(
-    List<int> keyData) async {
-  return _Pbkdf2SecretKeyImpl(await _importKey(
-    'raw',
-    keyData,
-    const subtle.Algorithm(name: _pbkdf2AlgorithmName),
-    _usagesDeriveBits,
-    'secret',
-    // Unlike all other key types it makes no sense to HkdfSecretKey to be
-    // exported, and indeed webcrypto requires `extractable: false`.
-    extractable: false,
-  ));
+  List<int> keyData,
+) async {
+  return _Pbkdf2SecretKeyImpl(
+    await _importKey(
+      'raw',
+      keyData,
+      const subtle.Algorithm(name: _pbkdf2AlgorithmName),
+      _usagesDeriveBits,
+      'secret',
+      // Unlike all other key types it makes no sense to HkdfSecretKey to be
+      // exported, and indeed webcrypto requires `extractable: false`.
+      extractable: false,
+    ),
+  );
 }
 
 final class _StaticPbkdf2SecretKeyImpl implements StaticPbkdf2SecretKeyImpl {

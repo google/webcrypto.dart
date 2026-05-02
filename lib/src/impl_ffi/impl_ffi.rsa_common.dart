@@ -20,8 +20,10 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
     _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
 
-    _checkData(ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_RSA,
-        message: 'key is not an RSA key');
+    _checkData(
+      ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_RSA,
+      message: 'key is not an RSA key',
+    );
 
     final rsa = ssl.EVP_PKEY_get1_RSA.invoke(key);
     _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
@@ -39,8 +41,10 @@ _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
     _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
 
-    _checkData(ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_RSA,
-        message: 'key is not an RSA key');
+    _checkData(
+      ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_RSA,
+      message: 'key is not an RSA key',
+    );
 
     final rsa = ssl.EVP_PKEY_get1_RSA.invoke(key);
     _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
@@ -63,8 +67,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
       bool condition,
       String prop, [
       String message = 'must be present',
-    ]) =>
-        _checkData(condition, message: 'JWK property "$prop" $message');
+    ]) => _checkData(condition, message: 'JWK property "$prop" $message');
 
     checkJwk(jwk.kty == 'RSA', 'kty', 'must be "RSA"');
     checkJwk(
@@ -115,7 +118,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
       checkJwk(jwk.d != null, 'd');
       final d = readBN(jwk.d!, 'd');
       // If present properties p,q,dp,dq,qi enable optional optimizations, see:
-      // https://tools.ietf.org/html/rfc7518#section-6.3.2
+      // https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2
       // However, these are required by Chromes Web Crypto implementation:
       // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#82
       // They are also required by Web Crypto implementation in Firefox:
@@ -202,7 +205,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
     ssl.RSA_get0_key(rsa, ffi.nullptr, ffi.nullptr, d);
 
     // p, q, dp, dq, qi is optional in:
-    // // https://tools.ietf.org/html/rfc7518#section-6.3.2
+    // // https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2
     // but explicitly required when exporting in Web Crypto.
     final p = scope<ffi.Pointer<BIGNUM>>();
     final q = scope<ffi.Pointer<BIGNUM>>();
@@ -241,7 +244,8 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
   }
   if ((modulusLength % 8) != 0) {
     throw UnsupportedError(
-        'modulusLength: $modulusLength is not a multiple of 8');
+      'modulusLength: $modulusLength is not a multiple of 8',
+    );
   }
 
   // Limit publicExponent allow-listed as in chromium:
@@ -258,12 +262,9 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
     final e = scope.createBN();
     _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
 
-    _checkOpIsOne(await _RSA_generate_key_ex(
-      privRSA,
-      modulusLength,
-      e,
-      ffi.nullptr,
-    ));
+    _checkOpIsOne(
+      await _RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr),
+    );
 
     // Copy out the public RSA key
     final pubRSA = scope.create(
@@ -279,10 +280,7 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
     final pubKey = _EvpPKey();
     _checkOp(ssl.EVP_PKEY_set1_RSA.invoke(pubKey, pubRSA) == 1);
 
-    return (
-      privateKey: privKey,
-      publicKey: pubKey,
-    );
+    return (privateKey: privKey, publicKey: pubKey);
   });
 }
 
@@ -297,8 +295,7 @@ Future<int> _RSA_generate_key_ex(
   int bits,
   ffi.Pointer<BIGNUM> e,
   ffi.Pointer<BN_GENCB> cb,
-) async =>
-    await Isolate.run(
-      () => ssl.RSA_generate_key_ex(rsa, bits, e, cb),
-      debugName: 'RSA_generate_key_ex',
-    );
+) async => await Isolate.run(
+  () => ssl.RSA_generate_key_ex(rsa, bits, e, cb),
+  debugName: 'RSA_generate_key_ex',
+);

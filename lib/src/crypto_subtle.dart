@@ -50,6 +50,9 @@ external JSWindow get window;
 
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window
 extension type JSWindow(JSObject _) implements JSObject {
+  /// https://developer.mozilla.org/en-US/docs/Web/API/Window/isSecureContext
+  external bool get isSecureContext;
+
   /// https://developer.mozilla.org/en-US/docs/Web/API/crypto_property
   external JSCrypto get crypto;
 }
@@ -60,10 +63,42 @@ extension type JSWindow(JSObject _) implements JSObject {
 /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto
 extension type JSCrypto(JSObject _) implements JSObject {
   /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/subtle
-  external JSSubtleCrypto get subtle;
+  @JS('subtle')
+  external JSSubtleCrypto? get _subtleOrNull;
+
+  JSSubtleCrypto get subtle =>
+      requireSubtleCrypto(_subtleOrNull, window.isSecureContext);
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
   external JSTypedArray getRandomValues(JSTypedArray array);
+}
+
+const _webCryptoApiDocumentationUrl =
+    'https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API';
+const _secureContextsDocumentationUrl =
+    'https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts';
+
+@visibleForTesting
+JSSubtleCrypto requireSubtleCrypto(
+  JSSubtleCrypto? subtle,
+  bool isSecureContext,
+) {
+  if (subtle != null) {
+    return subtle;
+  }
+
+  if (!isSecureContext) {
+    throw UnsupportedError(
+      'Browser Web Crypto APIs require a secure context. '
+      'Load the page over HTTPS or a potentially trustworthy origin such as localhost. '
+      'See: $_secureContextsDocumentationUrl',
+    );
+  }
+
+  throw UnsupportedError(
+    'Browser Web Crypto APIs are unavailable because `window.crypto.subtle` '
+    'is missing in this runtime. See: $_webCryptoApiDocumentationUrl',
+  );
 }
 
 /// The `window.crypto.subtle` object.
@@ -101,10 +136,7 @@ extension type JSSubtleCrypto(JSObject _) implements JSObject {
   );
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
-  external JSPromise<JSArrayBuffer> digest(
-    String algorithm,
-    JSTypedArray data,
-  );
+  external JSPromise<JSArrayBuffer> digest(String algorithm, JSTypedArray data);
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveBits
   external JSPromise<JSArrayBuffer> deriveBits(
@@ -151,10 +183,7 @@ extension type JSSubtleCrypto(JSObject _) implements JSObject {
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey
   @JS('exportKey')
-  external JSPromise<JSArrayBuffer> exportKey(
-    String format,
-    JSCryptoKey key,
-  );
+  external JSPromise<JSArrayBuffer> exportKey(String format, JSCryptoKey key);
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey
   @JS('exportKey')
@@ -283,25 +312,24 @@ class Algorithm {
     TypedData? salt,
     TypedData? info,
     int? iterations,
-  }) =>
-      Algorithm(
-        name: this.name ?? name,
-        modulusLength: this.modulusLength ?? modulusLength,
-        publicExponent: this.publicExponent ?? publicExponent,
-        hash: this.hash ?? hash,
-        saltLength: this.saltLength ?? saltLength,
-        label: this.label ?? label,
-        namedCurve: this.namedCurve ?? namedCurve,
-        public: this.public ?? public,
-        counter: this.counter ?? counter,
-        length: this.length ?? length,
-        iv: this.iv ?? iv,
-        additionalData: this.additionalData ?? additionalData,
-        tagLength: this.tagLength ?? tagLength,
-        salt: this.salt ?? salt,
-        info: this.info ?? info,
-        iterations: this.iterations ?? iterations,
-      );
+  }) => Algorithm(
+    name: this.name ?? name,
+    modulusLength: this.modulusLength ?? modulusLength,
+    publicExponent: this.publicExponent ?? publicExponent,
+    hash: this.hash ?? hash,
+    saltLength: this.saltLength ?? saltLength,
+    label: this.label ?? label,
+    namedCurve: this.namedCurve ?? namedCurve,
+    public: this.public ?? public,
+    counter: this.counter ?? counter,
+    length: this.length ?? length,
+    iv: this.iv ?? iv,
+    additionalData: this.additionalData ?? additionalData,
+    tagLength: this.tagLength ?? tagLength,
+    salt: this.salt ?? salt,
+    info: this.info ?? info,
+    iterations: this.iterations ?? iterations,
+  );
 }
 
 extension type JSJsonWebKey(JSObject _) implements JSObject {
@@ -390,11 +418,7 @@ TypedData getRandomValues(TypedData array) {
       array.setAll(0, dartArray);
     }
   } else {
-    throw ArgumentError.value(
-      array,
-      'array',
-      'Unsupported TypedData type',
-    );
+    throw ArgumentError.value(array, 'array', 'Unsupported TypedData type');
   }
 
   return array;
@@ -406,11 +430,7 @@ Future<ByteBuffer> decrypt(
   Uint8List data,
 ) async {
   final value = await window.crypto.subtle
-      .decrypt(
-        algorithm.toJS,
-        key,
-        data.toJS,
-      )
+      .decrypt(algorithm.toJS, key, data.toJS)
       .toDart;
 
   return value.toDart;
@@ -422,40 +442,20 @@ Future<ByteBuffer> encrypt(
   Uint8List data,
 ) async {
   final value = await window.crypto.subtle
-      .encrypt(
-        algorithm.toJS,
-        key,
-        data.toJS,
-      )
+      .encrypt(algorithm.toJS, key, data.toJS)
       .toDart;
 
   return value.toDart;
 }
 
-Future<ByteBuffer> exportKey(
-  String format,
-  JSCryptoKey key,
-) async {
-  final value = await window.crypto.subtle
-      .exportKey(
-        format,
-        key,
-      )
-      .toDart;
+Future<ByteBuffer> exportKey(String format, JSCryptoKey key) async {
+  final value = await window.crypto.subtle.exportKey(format, key).toDart;
 
   return value.toDart;
 }
 
-Future<JsonWebKey> exportJsonWebKey(
-  String format,
-  JSCryptoKey key,
-) async {
-  final value = await window.crypto.subtle
-      .exportJsonWebKey(
-        format,
-        key,
-      )
-      .toDart;
+Future<JsonWebKey> exportJsonWebKey(String format, JSCryptoKey key) async {
+  final value = await window.crypto.subtle.exportJsonWebKey(format, key).toDart;
 
   return value.toDart;
 }
@@ -466,11 +466,7 @@ Future<JSCryptoKey> generateKey(
   List<String> usages,
 ) async {
   final value = await window.crypto.subtle
-      .generateCryptoKey(
-        algorithm.toJS,
-        extractable,
-        usages.toJS,
-      )
+      .generateCryptoKey(algorithm.toJS, extractable, usages.toJS)
       .toDart;
 
   return value;
@@ -482,26 +478,14 @@ Future<JSCryptoKeyPair> generateKeyPair(
   List<String> usages,
 ) async {
   final value = await window.crypto.subtle
-      .generateCryptoKeyPair(
-        algorithm.toJS,
-        extractable,
-        usages.toJS,
-      )
+      .generateCryptoKeyPair(algorithm.toJS, extractable, usages.toJS)
       .toDart;
 
   return value;
 }
 
-Future<ByteBuffer> digest(
-  String algorithm,
-  Uint8List data,
-) async {
-  final value = await window.crypto.subtle
-      .digest(
-        algorithm,
-        data.toJS,
-      )
-      .toDart;
+Future<ByteBuffer> digest(String algorithm, Uint8List data) async {
+  final value = await window.crypto.subtle.digest(algorithm, data.toJS).toDart;
 
   return value.toDart;
 }
@@ -514,13 +498,7 @@ Future<JSCryptoKey> importKey(
   List<String> usages,
 ) async {
   final value = await window.crypto.subtle
-      .importKey(
-        format,
-        keyData.toJS,
-        algorithm.toJS,
-        extractable,
-        usages.toJS,
-      )
+      .importKey(format, keyData.toJS, algorithm.toJS, extractable, usages.toJS)
       .toDart;
 
   return value;
@@ -552,11 +530,7 @@ Future<ByteBuffer> sign(
   Uint8List data,
 ) async {
   final value = await window.crypto.subtle
-      .sign(
-        algorithm.toJS,
-        key,
-        data.toJS,
-      )
+      .sign(algorithm.toJS, key, data.toJS)
       .toDart;
 
   return value.toDart;
@@ -569,12 +543,7 @@ Future<bool> verify(
   Uint8List data,
 ) async {
   final value = await window.crypto.subtle
-      .verify(
-        algorithm.toJS,
-        key,
-        signature.toJS,
-        data.toJS,
-      )
+      .verify(algorithm.toJS, key, signature.toJS, data.toJS)
       .toDart;
 
   return value.toDart;
@@ -586,11 +555,7 @@ Future<ByteBuffer> deriveBits(
   int length,
 ) async {
   final value = await window.crypto.subtle
-      .deriveBits(
-        algorithm.toJS,
-        key,
-        length,
-      )
+      .deriveBits(algorithm.toJS, key, length)
       .toDart;
 
   return value.toDart;
@@ -598,9 +563,8 @@ Future<ByteBuffer> deriveBits(
 
 extension ListExtension on List<String> {
   @visibleForTesting
-  JSArray<JSString> get toJS => <JSString>[
-        for (final value in this) value.toJS,
-      ].toJS;
+  JSArray<JSString> get toJS =>
+      <JSString>[for (final value in this) value.toJS].toJS;
 }
 
 extension AlgorithmExtension on Algorithm {
@@ -687,33 +651,27 @@ extension on JsonWebKey {
 
 extension on JSJsonWebKey {
   JsonWebKey get toDart => JsonWebKey(
-        kty: kty,
-        use: use,
-        key_ops: keyOps?.toDart.map((e) => e.toDart).toList(),
-        alg: alg,
-        ext: ext,
-        crv: crv,
-        x: x,
-        y: y,
-        d: d,
-        n: n,
-        e: e,
-        p: p,
-        q: q,
-        dp: dp,
-        dq: dq,
-        qi: qi,
-        oth: oth?.toDart
-            .map(
-              (e) => RsaOtherPrimesInfo(
-                r: e.r,
-                d: e.d,
-                t: e.t,
-              ),
-            )
-            .toList(),
-        k: k,
-      );
+    kty: kty,
+    use: use,
+    key_ops: keyOps?.toDart.map((e) => e.toDart).toList(),
+    alg: alg,
+    ext: ext,
+    crv: crv,
+    x: x,
+    y: y,
+    d: d,
+    n: n,
+    e: e,
+    p: p,
+    q: q,
+    dp: dp,
+    dq: dq,
+    qi: qi,
+    oth: oth?.toDart
+        .map((e) => RsaOtherPrimesInfo(r: e.r, d: e.d, t: e.t))
+        .toList(),
+    k: k,
+  );
 }
 
 // TODO: crypto.subtle.unwrapKey

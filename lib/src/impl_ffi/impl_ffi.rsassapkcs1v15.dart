@@ -43,7 +43,7 @@ Future<RsaSsaPkcs1V15PrivateKeyImpl> rsassaPkcs1V15PrivateKey_importJsonWebKey(
 }
 
 Future<KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>>
-    rsassaPkcs1V15PrivateKey_generateKey(
+rsassaPkcs1V15PrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
   HashImpl hash,
@@ -91,26 +91,23 @@ final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importPkcs8Key(
     List<int> keyData,
     HashImpl hash,
-  ) =>
-      rsassaPkcs1V15PrivateKey_importPkcs8Key(keyData, hash);
+  ) => rsassaPkcs1V15PrivateKey_importPkcs8Key(keyData, hash);
 
   @override
   Future<RsaSsaPkcs1V15PrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     HashImpl hash,
-  ) =>
-      rsassaPkcs1V15PrivateKey_importJsonWebKey(jwk, hash);
+  ) => rsassaPkcs1V15PrivateKey_importJsonWebKey(jwk, hash);
 
   @override
   Future<(RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl)>
-      generateKey(
-    int modulusLength,
-    BigInt publicExponent,
-    HashImpl hash,
-  ) async {
+  generateKey(int modulusLength, BigInt publicExponent, HashImpl hash) async {
     final KeyPair<RsaSsaPkcs1V15PrivateKeyImpl, RsaSsaPkcs1V15PublicKeyImpl>
-        pair = await rsassaPkcs1V15PrivateKey_generateKey(
-            modulusLength, publicExponent, hash);
+    pair = await rsassaPkcs1V15PrivateKey_generateKey(
+      modulusLength,
+      publicExponent,
+      hash,
+    );
 
     return (pair.privateKey, pair.publicKey);
   }
@@ -132,10 +129,14 @@ final class _RsaSsaPkcs1V15PrivateKeyImpl
   Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override
-  Future<Uint8List> signStream(Stream<List<int>> data) =>
-      _signStream(_key, _hash._md, data, config: (ctx) {
-        _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING));
-      });
+  Future<Uint8List> signStream(Stream<List<int>> data) => _signStream(
+    _key,
+    _hash._md,
+    data,
+    config: (ctx) {
+      _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING));
+    },
+  );
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
@@ -156,13 +157,15 @@ final class _StaticRsaSsaPkcs1V15PublicKeyImpl
 
   @override
   Future<RsaSsaPkcs1V15PublicKeyImpl> importSpkiKey(
-          List<int> keyData, HashImpl hash) =>
-      rsassaPkcs1V15PublicKey_importSpkiKey(keyData, hash);
+    List<int> keyData,
+    HashImpl hash,
+  ) => rsassaPkcs1V15PublicKey_importSpkiKey(keyData, hash);
 
   @override
   Future<RsaSsaPkcs1V15PublicKeyImpl> importJsonWebKey(
-          Map<String, dynamic> jwk, HashImpl hash) =>
-      rsassaPkcs1V15PublicKey_importJsonWebKey(jwk, hash);
+    Map<String, dynamic> jwk,
+    HashImpl hash,
+  ) => rsassaPkcs1V15PublicKey_importJsonWebKey(jwk, hash);
 }
 
 final class _RsaSsaPkcs1V15PublicKeyImpl
@@ -178,9 +181,17 @@ final class _RsaSsaPkcs1V15PublicKeyImpl
 
   @override
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) =>
-      _verifyStream(_key, _hash._md, signature, data, config: (ctx) {
-        _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING));
-      });
+      _verifyStream(
+        _key,
+        _hash._md,
+        signature,
+        data,
+        config: (ctx) {
+          _checkOpIsOne(
+            ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING),
+          );
+        },
+      );
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>

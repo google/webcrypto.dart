@@ -45,8 +45,11 @@ Uint8List _aesImportJwkKey(
     // If not supported in Chrome, there is not reason to support it in Dart.
     throw UnsupportedError('192-bit AES keys are not supported');
   }
-  checkJwk(keyData.length == 16 || keyData.length == 32, 'k',
-      'must be a 128 or 256 bit key');
+  checkJwk(
+    keyData.length == 16 || keyData.length == 32,
+    'k',
+    'must be a 128 or 256 bit key',
+  );
 
   final expectedAlgPrefix = keyData.length == 16 ? 'A128' : 'A256';
   final expectedAlg = expectedAlgPrefix + expectedJwkAlgSuffix;

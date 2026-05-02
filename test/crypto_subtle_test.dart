@@ -39,15 +39,9 @@ void main() {
         Int32List(16 * 1024),
       ];
       for (final data in list) {
-        expect(
-          data.every((e) => e == 0),
-          isTrue,
-        );
+        expect(data.every((e) => e == 0), isTrue);
         fillRandomBytes(data);
-        expect(
-          data.any((e) => e != 0),
-          isTrue,
-        );
+        expect(data.any((e) => e != 0), isTrue);
       }
     });
 
@@ -67,37 +61,26 @@ void main() {
           throwsA(
             // dart2js throws ArgumentError
             // dart2wasm throws UnknownError
-            anyOf(
-              isA<ArgumentError>(),
-              isA<UnknownError>(),
-            ),
+            anyOf(isA<ArgumentError>(), isA<UnknownError>()),
           ),
         );
       }
     });
 
     test('not supported type', () {
-      final list = [
-        Float32List(32),
-        Float64List(32),
-      ];
+      final list = [Float32List(32), Float64List(32)];
       for (final data in list) {
         expect(
           // TODO: Test subtle.window.crypto.getRandomValues(values); instead
           () => fillRandomBytes(data),
-          throwsA(
-            isA<ArgumentError>(),
-          ),
+          throwsA(isA<ArgumentError>()),
         );
       }
     });
 
     test('list that is supported depending on the environment', () {
       if (kIsWasm) {
-        final list = [
-          Uint64List(32),
-          Int64List(32),
-        ];
+        final list = [Uint64List(32), Int64List(32)];
 
         for (final data in list) {
           expect(
@@ -111,10 +94,7 @@ void main() {
         }
       } else {
         try {
-          final _ = [
-            Uint64List(32),
-            Int64List(32),
-          ];
+          final _ = [Uint64List(32), Int64List(32)];
           fail('dart2js does not reach this line');
         } catch (e) {
           // dart2js throws UnsupportedError in list creation
@@ -125,31 +105,63 @@ void main() {
   });
 
   group('crypto', () {
+    test('subtle API is available in secure contexts', () {
+      if (subtle.window.isSecureContext) {
+        expect(() => subtle.window.crypto.subtle, returnsNormally);
+        return;
+      }
+
+      expect(
+        () => subtle.window.crypto.subtle,
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            contains('secure context'),
+          ),
+        ),
+      );
+    });
+
+    test('subtle API throws secure-context guidance when unavailable', () {
+      expect(
+        () => subtle.requireSubtleCrypto(null, false),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('secure context'), contains('localhost')),
+          ),
+        ),
+      );
+    });
+
+    test('subtle API throws missing-API guidance in secure contexts', () {
+      expect(
+        () => subtle.requireSubtleCrypto(null, true),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('window.crypto.subtle'), contains('Web Crypto API')),
+          ),
+        ),
+      );
+    });
+
     test('getRandomValues: success', () {
       final data = Uint8List(16 * 1024);
-      expect(
-        data.every((e) => e == 0),
-        isTrue,
-      );
+      expect(data.every((e) => e == 0), isTrue);
       final values = data.toJS;
       subtle.window.crypto.getRandomValues(values);
       if (kIsWasm) {
         // In dart2wasm, the value is not reflected in Uint8List.
-        expect(
-          data.every((e) => e == 0),
-          isTrue,
-        );
+        expect(data.every((e) => e == 0), isTrue);
       } else {
         // In dart2js, the value is reflected in Uint8List.
-        expect(
-          data.every((e) => e == 0),
-          isFalse,
-        );
+        expect(data.every((e) => e == 0), isFalse);
       }
-      expect(
-        values.toDart.any((e) => e != 0),
-        isTrue,
-      );
+      expect(values.toDart.any((e) => e != 0), isTrue);
     });
 
     test('getRandomValues: too long', () {
@@ -157,15 +169,11 @@ void main() {
         subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS);
       } on subtle.JSDomException catch (e) {
         // dart2js throws QuotaExceededError
-        expect(
-          e.name,
-          'QuotaExceededError',
-        );
+        expect(e.name, 'QuotaExceededError');
       } on Error catch (e) {
-        // dart2wasm throws JavaScriptError
         expect(
           e.toString(),
-          'JavaScriptError',
+          anyOf('JavaScriptError', startsWith('QuotaExceededError:')),
         );
       }
     });
@@ -175,15 +183,11 @@ void main() {
         subtle.window.crypto.getRandomValues(Float32List(32).toJS);
       } on subtle.JSDomException catch (e) {
         // dart2js throws TypeMismatchError
-        expect(
-          e.name,
-          'TypeMismatchError',
-        );
+        expect(e.name, 'TypeMismatchError');
       } on Error catch (e) {
-        // dart2wasm throws JavaScriptError
         expect(
           e.toString(),
-          'JavaScriptError',
+          anyOf('JavaScriptError', startsWith('TypeMismatchError:')),
         );
       }
     });
@@ -194,25 +198,14 @@ void main() {
       expect(
         await subtle.window.crypto.subtle
             .generateCryptoKey(
-              const subtle.Algorithm(
-                name: 'AES-GCM',
-                length: 256,
-              ).toJS,
+              const subtle.Algorithm(name: 'AES-GCM', length: 256).toJS,
               false,
               ['encrypt', 'decrypt'].toJS,
             )
             .toDart,
         isA<subtle.JSCryptoKey>()
-            .having(
-              (key) => key.type,
-              'type',
-              'secret',
-            )
-            .having(
-              (key) => key.extractable,
-              'extractable',
-              false,
-            )
+            .having((key) => key.type, 'type', 'secret')
+            .having((key) => key.extractable, 'extractable', false)
             .having(
               (key) => key.usages.toDartList,
               'usages',
@@ -225,10 +218,7 @@ void main() {
       expect(
         () async => await subtle.window.crypto.subtle
             .generateCryptoKey(
-              const subtle.Algorithm(
-                name: 'AES-GCM',
-                length: 256,
-              ).toJS,
+              const subtle.Algorithm(name: 'AES-GCM', length: 256).toJS,
               false,
               <String>[].toJS,
             )
@@ -279,11 +269,7 @@ void main() {
             )
             .toDart,
         isA<subtle.JSCryptoKeyPair>()
-            .having(
-              (key) => key.publicKey.type,
-              'publicKey.type',
-              'public',
-            )
+            .having((key) => key.publicKey.type, 'publicKey.type', 'public')
             .having(
               (key) => key.publicKey.extractable,
               'publicKey.extractable',
@@ -294,11 +280,7 @@ void main() {
               'publicKey.usages',
               ['encrypt'],
             )
-            .having(
-              (key) => key.privateKey.type,
-              'privateKey.type',
-              'private',
-            )
+            .having((key) => key.privateKey.type, 'privateKey.type', 'private')
             .having(
               (key) => key.privateKey.extractable,
               'privateKey.extractable',
@@ -327,11 +309,7 @@ void main() {
             )
             .toDart,
         isA<subtle.JSCryptoKeyPair>()
-            .having(
-              (key) => key.publicKey.type,
-              'publicKey.type',
-              'public',
-            )
+            .having((key) => key.publicKey.type, 'publicKey.type', 'public')
             .having(
               (key) => key.publicKey.extractable,
               'publicKey.extractable',
@@ -342,11 +320,7 @@ void main() {
               'publicKey.usages',
               ['encrypt'],
             )
-            .having(
-              (key) => key.privateKey.type,
-              'privateKey.type',
-              'private',
-            )
+            .having((key) => key.privateKey.type, 'privateKey.type', 'private')
             .having(
               (key) => key.privateKey.extractable,
               'privateKey.extractable',

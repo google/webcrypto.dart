@@ -30,9 +30,9 @@ const _dumpData = bool.fromEnvironment('webcrypto.dump', defaultValue: false);
 /// This can also be overwritten by manually tweaking the [_dumpData] variable.
 void dump(Map data) {
   if (_dumpData) {
-    final json = const JsonEncoder.withIndent('  ')
-        .convert(data)
-        .replaceAll('\n', '\n| ');
+    final json = const JsonEncoder.withIndent(
+      '  ',
+    ).convert(data).replaceAll('\n', '\n| ');
     log('| $json');
   }
 }

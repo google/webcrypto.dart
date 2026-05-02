@@ -22,16 +22,18 @@ Future<EcdhPrivateKeyImpl> ecdhPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdhPrivateKeyImpl(await _importKey(
-    'pkcs8',
-    keyData,
-    subtle.Algorithm(
-      name: _ecdhAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdhPrivateKeyImpl(
+    await _importKey(
+      'pkcs8',
+      keyData,
+      subtle.Algorithm(
+        name: _ecdhAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      _usagesDeriveBits,
+      'private',
     ),
-    _usagesDeriveBits,
-    'private',
-  ));
+  );
 }
 
 Future<EcdhPrivateKeyImpl> ecdhPrivateKey_importJsonWebKey(
@@ -44,26 +46,23 @@ Future<EcdhPrivateKeyImpl> ecdhPrivateKey_importJsonWebKey(
     // See: https://crbug.com/641499
     jwk = Map.fromEntries(jwk.entries.where((e) => e.key != 'use'));
   }
-  return _EcdhPrivateKeyImpl(await _importJsonWebKey(
-    jwk,
-    subtle.Algorithm(
-      name: _ecdhAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdhPrivateKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      subtle.Algorithm(
+        name: _ecdhAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      _usagesDeriveBits,
+      'private',
     ),
-    _usagesDeriveBits,
-    'private',
-  ));
+  );
 }
 
 Future<KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl>>
-    ecdhPrivateKey_generateKey(
-  EllipticCurve curve,
-) async {
+ecdhPrivateKey_generateKey(EllipticCurve curve) async {
   final pair = await _generateKeyPair(
-    subtle.Algorithm(
-      name: _ecdhAlgorithmName,
-      namedCurve: _curveToName(curve),
-    ),
+    subtle.Algorithm(name: _ecdhAlgorithmName, namedCurve: _curveToName(curve)),
     _usagesDeriveBits,
   );
   return (
@@ -76,32 +75,36 @@ Future<EcdhPublicKeyImpl> ecdhPublicKey_importRawKey(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdhPublicKeyImpl(await _importKey(
-    'raw',
-    keyData,
-    subtle.Algorithm(
-      name: _ecdhAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdhPublicKeyImpl(
+    await _importKey(
+      'raw',
+      keyData,
+      subtle.Algorithm(
+        name: _ecdhAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      [],
+      'public',
     ),
-    [],
-    'public',
-  ));
+  );
 }
 
 Future<EcdhPublicKeyImpl> ecdhPublicKey_importSpkiKey(
   List<int> keyData,
   EllipticCurve curve,
 ) async {
-  return _EcdhPublicKeyImpl(await _importKey(
-    'spki',
-    keyData,
-    subtle.Algorithm(
-      name: _ecdhAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdhPublicKeyImpl(
+    await _importKey(
+      'spki',
+      keyData,
+      subtle.Algorithm(
+        name: _ecdhAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      [],
+      'public',
     ),
-    [],
-    'public',
-  ));
+  );
 }
 
 Future<EcdhPublicKeyImpl> ecdhPublicKey_importJsonWebKey(
@@ -114,15 +117,17 @@ Future<EcdhPublicKeyImpl> ecdhPublicKey_importJsonWebKey(
     // See: https://crbug.com/641499
     jwk = Map.fromEntries(jwk.entries.where((e) => e.key != 'use'));
   }
-  return _EcdhPublicKeyImpl(await _importJsonWebKey(
-    jwk,
-    subtle.Algorithm(
-      name: _ecdhAlgorithmName,
-      namedCurve: _curveToName(curve),
+  return _EcdhPublicKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      subtle.Algorithm(
+        name: _ecdhAlgorithmName,
+        namedCurve: _curveToName(curve),
+      ),
+      [],
+      'public',
     ),
-    [],
-    'public',
-  ));
+  );
 }
 
 final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
@@ -130,17 +135,20 @@ final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
 
   @override
   Future<EcdhPrivateKeyImpl> importPkcs8Key(
-          List<int> keyData, EllipticCurve curve) =>
-      ecdhPrivateKey_importPkcs8Key(keyData, curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => ecdhPrivateKey_importPkcs8Key(keyData, curve);
 
   @override
   Future<EcdhPrivateKeyImpl> importJsonWebKey(
-          Map<String, dynamic> jwk, EllipticCurve curve) =>
-      ecdhPrivateKey_importJsonWebKey(jwk, curve);
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  ) => ecdhPrivateKey_importJsonWebKey(jwk, curve);
 
   @override
   Future<(EcdhPrivateKeyImpl, EcdhPublicKeyImpl)> generateKey(
-      EllipticCurve curve) async {
+    EllipticCurve curve,
+  ) async {
     final KeyPair<EcdhPrivateKeyImpl, EcdhPublicKeyImpl> keyPair =
         await ecdhPrivateKey_generateKey(curve);
 
@@ -168,10 +176,7 @@ final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
     }
     final lengthInBytes = (length / 8).ceil();
     final derived = await _deriveBits(
-      subtle.Algorithm(
-        name: _ecdhAlgorithmName,
-        public: publicKey._key,
-      ),
+      subtle.Algorithm(name: _ecdhAlgorithmName, public: publicKey._key),
       _key,
       // Always deriveBits in multiples of 8 as required by Firefox, see:
       // https://hg.mozilla.org/mozilla-central/file/1c9b97bed37830e39642bfa7e73dbc2ea860662a/dom/crypto/WebCryptoTask.cpp#l2667
@@ -205,18 +210,21 @@ final class _StaticEcdhPublicKeyImpl implements StaticEcdhPublicKeyImpl {
 
   @override
   Future<EcdhPublicKeyImpl> importRawKey(
-          List<int> keyData, EllipticCurve curve) =>
-      ecdhPublicKey_importRawKey(keyData, curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => ecdhPublicKey_importRawKey(keyData, curve);
 
   @override
   Future<EcdhPublicKeyImpl> importSpkiKey(
-          List<int> keyData, EllipticCurve curve) =>
-      ecdhPublicKey_importSpkiKey(keyData, curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => ecdhPublicKey_importSpkiKey(keyData, curve);
 
   @override
   Future<EcdhPublicKeyImpl> importJsonWebKey(
-          Map<String, dynamic> jwk, EllipticCurve curve) =>
-      ecdhPublicKey_importJsonWebKey(jwk, curve);
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  ) => ecdhPublicKey_importJsonWebKey(jwk, curve);
 }
 
 final class _EcdhPublicKeyImpl implements EcdhPublicKeyImpl {

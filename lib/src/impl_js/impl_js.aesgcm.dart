@@ -19,32 +19,38 @@ part of 'impl_js.dart';
 const _aesGcmAlgorithm = subtle.Algorithm(name: 'AES-GCM');
 
 Future<AesGcmSecretKeyImpl> aesGcm_importRawKey(List<int> keyData) async {
-  return _AesGcmSecretKeyImpl(await _importKey(
-    'raw',
-    keyData,
-    _aesGcmAlgorithm,
-    _usagesEncryptDecrypt,
-    'secret',
-  ));
+  return _AesGcmSecretKeyImpl(
+    await _importKey(
+      'raw',
+      keyData,
+      _aesGcmAlgorithm,
+      _usagesEncryptDecrypt,
+      'secret',
+    ),
+  );
 }
 
 Future<AesGcmSecretKeyImpl> aesGcm_importJsonWebKey(
   Map<String, dynamic> jwk,
 ) async {
-  return _AesGcmSecretKeyImpl(await _importJsonWebKey(
-    jwk,
-    _aesGcmAlgorithm,
-    _usagesEncryptDecrypt,
-    'secret',
-  ));
+  return _AesGcmSecretKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      _aesGcmAlgorithm,
+      _usagesEncryptDecrypt,
+      'secret',
+    ),
+  );
 }
 
 Future<AesGcmSecretKeyImpl> aesGcm_generateKey(int length) async {
-  return _AesGcmSecretKeyImpl(await _generateKey(
-    _aesGcmAlgorithm.update(length: length),
-    _usagesEncryptDecrypt,
-    'secret',
-  ));
+  return _AesGcmSecretKeyImpl(
+    await _generateKey(
+      _aesGcmAlgorithm.update(length: length),
+      _usagesEncryptDecrypt,
+      'secret',
+    ),
+  );
 }
 
 final class _StaticAesGcmSecretKeyImpl implements StaticAesGcmSecretKeyImpl {

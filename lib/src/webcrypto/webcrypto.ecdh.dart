@@ -92,13 +92,15 @@ final class EcdhPrivateKey {
   /// }
   /// ```
   ///
-  /// [1]: https://datatracker.ietf.org/doc/html/rfc5208
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5208
   static Future<EcdhPrivateKey> importPkcs8Key(
     List<int> keyData,
     EllipticCurve curve,
   ) async {
-    final impl =
-        await webCryptImpl.ecdhPrivateKey.importPkcs8Key(keyData, curve);
+    final impl = await webCryptImpl.ecdhPrivateKey.importPkcs8Key(
+      keyData,
+      curve,
+    );
     return EcdhPrivateKey._(impl);
   }
 
@@ -153,7 +155,7 @@ final class EcdhPrivateKey {
   /// }
   /// ```
   ///
-  /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7518#section-6.2
   static Future<EcdhPrivateKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
@@ -187,8 +189,8 @@ final class EcdhPrivateKey {
   static Future<KeyPair<EcdhPrivateKey, EcdhPublicKey>> generateKey(
     EllipticCurve curve,
   ) async {
-    final (privateKeyImpl, publicKeyImpl) =
-        await webCryptImpl.ecdhPrivateKey.generateKey(curve);
+    final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.ecdhPrivateKey
+        .generateKey(curve);
 
     final privateKey = EcdhPrivateKey(privateKeyImpl);
     final publicKey = EcdhPublicKey(publicKeyImpl);
@@ -213,9 +215,9 @@ final class EcdhPrivateKey {
   // null for length (in this primitive). However, you can always know the right
   // length from the curve. Note p512 can provide up to: 528 bits!!!
   //
-  // See: https://tools.ietf.org/html/rfc6090#section-4
+  // See: https://www.rfc-editor.org/rfc/rfc6090#section-4
   // Notice that this is not uniformly distributed, see also:
-  // https://tools.ietf.org/html/rfc6090#appendix-B
+  // https://www.rfc-editor.org/rfc/rfc6090#appendix-B
   Future<Uint8List> deriveBits(int length, EcdhPublicKey publicKey) async {
     final publicKeyImpl = publicKey._impl;
 
@@ -244,7 +246,7 @@ final class EcdhPrivateKey {
   ///   print(PemCodec(PemLabel.privateKey).encode(exportedPkcs8Key));
   /// }
   /// ```
-  /// [1]: https://datatracker.ietf.org/doc/html/rfc5208
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5208
   Future<Uint8List> exportPkcs8Key() => _impl.exportPkcs8Key();
 
   /// Export the [EcdhPrivateKey] as a [JSON Web Key][1].
@@ -268,7 +270,7 @@ final class EcdhPrivateKey {
   ///   print(jsonEncode(exportedPrivateKey));
   /// }
   /// ```
-  /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7518#section-6.2
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
@@ -362,7 +364,7 @@ final class EcdhPublicKey {
   /// }
   /// ```
   ///
-  /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7518#section-6.2
   static Future<EcdhPublicKey> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
@@ -407,6 +409,6 @@ final class EcdhPublicKey {
   ///   print(jsonEncode(exportedPublicKey));
   /// }
   /// ```
-  /// [1]: https://www.rfc-editor.org/rfc/rfc7518.html#section-6.2
+  /// [1]: https://www.rfc-editor.org/rfc/rfc7518#section-6.2
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }

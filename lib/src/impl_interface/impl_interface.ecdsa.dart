@@ -16,11 +16,16 @@ part of 'impl_interface.dart';
 
 abstract interface class StaticEcdsaPrivateKeyImpl {
   Future<EcdsaPrivateKeyImpl> importPkcs8Key(
-      List<int> keyData, EllipticCurve curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  );
   Future<EcdsaPrivateKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, EllipticCurve curve);
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  );
   Future<(EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl)> generateKey(
-      EllipticCurve curve);
+    EllipticCurve curve,
+  );
 }
 
 abstract interface class EcdsaPrivateKeyImpl {
@@ -32,17 +37,26 @@ abstract interface class EcdsaPrivateKeyImpl {
 
 abstract interface class StaticEcdsaPublicKeyImpl {
   Future<EcdsaPublicKeyImpl> importRawKey(
-      List<int> keyData, EllipticCurve curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  );
   Future<EcdsaPublicKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, EllipticCurve curve);
+    Map<String, dynamic> jwk,
+    EllipticCurve curve,
+  );
   Future<EcdsaPublicKeyImpl> importSpkiKey(
-      List<int> keyData, EllipticCurve curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  );
 }
 
 abstract interface class EcdsaPublicKeyImpl {
   Future<bool> verifyBytes(List<int> signature, List<int> data, HashImpl hash);
   Future<bool> verifyStream(
-      List<int> signature, Stream<List<int>> data, HashImpl hash);
+    List<int> signature,
+    Stream<List<int>> data,
+    HashImpl hash,
+  );
   Future<Uint8List> exportRawKey();
   Future<Uint8List> exportSpkiKey();
   Future<Map<String, dynamic>> exportJsonWebKey();

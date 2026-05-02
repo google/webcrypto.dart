@@ -29,10 +29,8 @@ void main() => tests().runTests();
 /// Tests, exported for use in `../run_all_tests.dart`.
 List<({String name, Future<void> Function() test})> tests() {
   final tests = <({String name, Future<void> Function() test})>[];
-  void test(String name, Future<void> Function() test) => tests.add((
-        name: name,
-        test: test,
-      ));
+  void test(String name, Future<void> Function() test) =>
+      tests.add((name: name, test: test));
 
   test('fillRandomBytes: Uint8List', () async {
     final data = Uint8List(16 * 1024);

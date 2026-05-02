@@ -24,7 +24,7 @@ cryptography implementation. This option comes with significant draw backs:
  * Custom implementations of cryptographic algorithms requires domain experts
    and extensive security reviews.
  * A Javascript implementation is unlikely to achieve performance comparable to
-   the native crytography algorithms shipped with the browser.
+   the native cryptography algorithms shipped with the browser.
  * A Javascript implementation would need to use WebWorker to off-load
    computation from the main-thread, while the browsers native implementation
    can do this for free.
@@ -38,7 +38,7 @@ for golang, this package will not provide low-level access to underlying
 primitives. However, most Dart developers are also unlikely to need such
 advanced features for using a modern Web API.
 
-Crytography is not simple, and should not be simplfied
+Cryptography is not simple, and should not be simplified
 ------------------------------------------------------
 This isn't entirely true of course, cryptography isn't so hard _if_ you know
 what you're doing. If you don't know what you're doing, then you shouldn't be
@@ -74,7 +74,7 @@ This does not follow `package:crypto` by implementing `Converter<S,T>`
 because `convert()` cannot be asynchronous as required by WebCrypto.
 
 Besides users (hint Flutter) would likely prefer to avoid heavy computations
-like crypto on the main-thread. Even if an initial implemention doesn't move
+like crypto on the main-thread. Even if an initial implementation doesn't move
 computation off-the-mainthread, it would be preferable to keep the option open
 by returning futures.
 

@@ -17,68 +17,26 @@
 import 'dart:ffi';
 
 import '../../third_party/boringssl/generated_bindings.dart';
-import '../bindings/generated_bindings.dart';
-
-import 'dart:io' show Platform;
 
 import 'symbols.generated.dart';
-import 'utils.dart';
 
 export 'symbols.generated.dart' show Sym;
 
-/// Dynamically load `webcrypto_lookup_symbol` function.
-final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
-  try {
-    late DynamicLibrary library;
-    if (Platform.isAndroid || Platform.isLinux) {
-      library = DynamicLibrary.open('libwebcrypto.so');
-    } else if (Platform.isWindows) {
-      library = DynamicLibrary.open('webcrypto.dll');
-    } else {
-      library = DynamicLibrary.executable();
-      // If current executable doesn't provide the symbol, then we're
-      if (!library.providesSymbol('webcrypto_lookup_symbol')) {
-        final lookup = lookupLibraryInDotDartTool();
-        if (lookup != null) {
-          return lookup;
-        }
-        throw UnsupportedError(
-          'package:webcrypto could not find required symbols in executable. '
-          'If you are using package:webcrypto from scripts or `flutter test` '
-          'make sure to run `flutter pub run webcrypto:setup` in the current '
-          'root project.',
-        );
-      }
-    }
+@Native<Pointer<Void> Function(Int32)>(
+  symbol: 'webcrypto_lookup_symbol',
+  assetId: 'package:webcrypto/webcrypto.dart',
+)
+external Pointer<Void> _nativeWebcryptoLookupSymbol(int index);
 
-    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcrypto = WebCrypto(library);
-    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
-
-    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    Pointer<T> lookup<T extends NativeType>(String s) =>
-        webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
-
-    return lookup;
-  } on ArgumentError {
-    final lookup = lookupLibraryInDotDartTool();
-    if (lookup != null) {
-      return lookup;
-    }
-
-    throw UnsupportedError(
-      'package:webcrypto cannot be used from scripts or `flutter test` '
-      'unless `flutter pub run webcrypto:setup` has been run for the current '
-      'root project.',
-    );
-  }
-}();
-
-final Pointer<T> Function<T extends NativeType>(String symbolName)
-    _cachedLookup = lookup;
+/// Resolve lookup from native assets first, then fall back to the legacy
+/// runtime loading strategy used by `flutter pub run webcrypto:setup`.
+Pointer<T> lookup<T extends NativeType>(String symbolName) {
+  final sym = symFromString(symbolName);
+  return _nativeWebcryptoLookupSymbol(sym.index).cast<T>();
+}
 
 /// Gives access to BoringSSL symbols.
-final BoringSsl ssl = BoringSsl.fromLookup(_cachedLookup);
+final BoringSsl ssl = BoringSsl.fromLookup(lookup);
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.

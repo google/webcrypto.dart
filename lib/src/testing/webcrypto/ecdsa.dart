@@ -25,7 +25,9 @@ final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
   exportPrivatePkcs8Key: (key) => key.exportPkcs8Key(),
   importPrivateJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdsaPrivateKey.importJsonWebKey(
-          jsonWebKeyData, curveFromJson(keyImportParams)),
+        jsonWebKeyData,
+        curveFromJson(keyImportParams),
+      ),
   exportPrivateJsonWebKey: (key) => key.exportJsonWebKey(),
   importPublicRawKey: (keyData, keyImportParams) =>
       EcdsaPublicKey.importRawKey(keyData, curveFromJson(keyImportParams)),
@@ -35,11 +37,12 @@ final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
   exportPublicSpkiKey: (key) => key.exportSpkiKey(),
   importPublicJsonWebKey: (jsonWebKeyData, keyImportParams) =>
       EcdsaPublicKey.importJsonWebKey(
-          jsonWebKeyData, curveFromJson(keyImportParams)),
+        jsonWebKeyData,
+        curveFromJson(keyImportParams),
+      ),
   exportPublicJsonWebKey: (key) => key.exportJsonWebKey(),
-  generateKeyPair: (generateKeyPairParams) => EcdsaPrivateKey.generateKey(
-    curveFromJson(generateKeyPairParams),
-  ),
+  generateKeyPair: (generateKeyPairParams) =>
+      EcdsaPrivateKey.generateKey(curveFromJson(generateKeyPairParams)),
   signBytes: (key, data, signParams) =>
       key.signBytes(data, hashFromJson(signParams)),
   signStream: (key, data, signParams) =>
@@ -74,7 +77,7 @@ final _testData = [
     "plaintext":
         "dXNjaXBpdCBhdCB2ZWhpY3VsYQppZCwgdmVzdGlidWx1bSBuZWMgbmlzbC4gRHVpcyBlcmF0IG5pc2ksIHJob25jdQ==",
     "importKeyParams": {"curve": "p-256"},
-    "signVerifyParams": {"hash": "sha-256"}
+    "signVerifyParams": {"hash": "sha-256"},
   },
   {
     "name": "generated on boringssl/linux at 2020-01-14T18:35:09",
@@ -88,7 +91,7 @@ final _testData = [
       "crv": "P-256",
       "x": "Ess8A1aT5EcSRQtQ4TzTpmza4mojvGSdGOyXMhXVIEI",
       "y": "tmoLqkvpBQmGT4obOV5NeXsV3JKZGjePbEWCVTEjA74",
-      "d": "0lrDqshZTukBhbY2YzW-Ao_SAshmHtYHDbDYh2KBJEY"
+      "d": "0lrDqshZTukBhbY2YzW-Ao_SAshmHtYHDbDYh2KBJEY",
     },
     "publicRawKeyData":
         "BBLLPANWk+RHEkULUOE806Zs2uJqI7xknRjslzIV1SBCtmoLqkvpBQmGT4obOV5NeXsV3JKZGjePbEWCVTEjA74=",
@@ -99,14 +102,14 @@ final _testData = [
       "use": "sig",
       "crv": "P-256",
       "x": "Ess8A1aT5EcSRQtQ4TzTpmza4mojvGSdGOyXMhXVIEI",
-      "y": "tmoLqkvpBQmGT4obOV5NeXsV3JKZGjePbEWCVTEjA74"
+      "y": "tmoLqkvpBQmGT4obOV5NeXsV3JKZGjePbEWCVTEjA74",
     },
     "plaintext":
         "IHBvc3VlcmUgbGFjdXMgdmVsCnZhcml1cy4gSW4gZWdldCBtZXR1cyBsaWJlcm8uIEluIGhhYyBoYWJpdGFzc2UgcGxh",
     "signature":
         "BJodpIHbPhlgp31lzMAjb85i/4n5WIa2697Ac/9zpwL+RG65QsiYBIopeuiYl1yIu3BB4mgRHVpEP+7qAWl65Q==",
     "importKeyParams": {"curve": "p-256"},
-    "signVerifyParams": {"hash": "sha-256"}
+    "signVerifyParams": {"hash": "sha-256"},
   },
   {
     "name": "generated on chrome/linux at 2020-01-14T18:35:52",
@@ -119,7 +122,7 @@ final _testData = [
       "crv": "P-256",
       "x": "l6pzsz05FLXsFvUHrOC8Bh-BZbIQPN_48xAMFcd8ha8",
       "y": "MYy1Kv1B1ZkcgTtWrNzhODrLvCPeaXQ-2waI3KLZIF0",
-      "d": "nG_CKsDXeXSwGY10JcaO_nIjXJAVRUDKJqDE6JWssL0"
+      "d": "nG_CKsDXeXSwGY10JcaO_nIjXJAVRUDKJqDE6JWssL0",
     },
     "publicRawKeyData":
         "BJeqc7M9ORS17Bb1B6zgvAYfgWWyEDzf+PMQDBXHfIWvMYy1Kv1B1ZkcgTtWrNzhODrLvCPeaXQ+2waI3KLZIF0=",
@@ -129,14 +132,14 @@ final _testData = [
       "kty": "EC",
       "crv": "P-256",
       "x": "l6pzsz05FLXsFvUHrOC8Bh-BZbIQPN_48xAMFcd8ha8",
-      "y": "MYy1Kv1B1ZkcgTtWrNzhODrLvCPeaXQ-2waI3KLZIF0"
+      "y": "MYy1Kv1B1ZkcgTtWrNzhODrLvCPeaXQ-2waI3KLZIF0",
     },
     "plaintext":
         "ZGlnbmlzc2ltIHBoYXJldHJhLiBWaXZhbXVzIHB1bHZpbmFyIGxpYmVybyBvZGlvLiBQZWxsZW50ZXM=",
     "signature":
         "iwcez6+9FzkZXVHq+fwCP09i4NVnCdh7Cq5E5P0O1G40fgaewBvxIUHPiTdc4wjFCAOfR/OQ5zC+Y/SNzGnwLQ==",
     "importKeyParams": {"curve": "p-256"},
-    "signVerifyParams": {"hash": "sha-256"}
-  }
+    "signVerifyParams": {"hash": "sha-256"},
+  },
   // TODO: generate on firefox, once the import/export pkcs8 has been figured out
 ];

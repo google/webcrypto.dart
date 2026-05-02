@@ -23,22 +23,21 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importRawKey(
   HashImpl hash, {
   int? length,
 }) async {
-  return _HmacSecretKeyImpl(await _importKey(
-    'raw',
-    keyData,
-    length == null
-        ? subtle.Algorithm(
-            name: 'HMAC',
-            hash: _getHashAlgorithm(hash),
-          )
-        : subtle.Algorithm(
-            name: 'HMAC',
-            hash: _getHashAlgorithm(hash),
-            length: length,
-          ),
-    _usagesSignVerify,
-    'secret',
-  ));
+  return _HmacSecretKeyImpl(
+    await _importKey(
+      'raw',
+      keyData,
+      length == null
+          ? subtle.Algorithm(name: 'HMAC', hash: _getHashAlgorithm(hash))
+          : subtle.Algorithm(
+              name: 'HMAC',
+              hash: _getHashAlgorithm(hash),
+              length: length,
+            ),
+      _usagesSignVerify,
+      'secret',
+    ),
+  );
 }
 
 Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
@@ -46,54 +45,59 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   HashImpl hash, {
   int? length,
 }) async {
-  return _HmacSecretKeyImpl(await _importJsonWebKey(
-    jwk,
-    length == null
-        ? subtle.Algorithm(
-            name: 'HMAC',
-            hash: _getHashAlgorithm(hash),
-          )
-        : subtle.Algorithm(
-            name: 'HMAC',
-            hash: _getHashAlgorithm(hash),
-            length: length,
-          ),
-    _usagesSignVerify,
-    'secret',
-  ));
+  return _HmacSecretKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      length == null
+          ? subtle.Algorithm(name: 'HMAC', hash: _getHashAlgorithm(hash))
+          : subtle.Algorithm(
+              name: 'HMAC',
+              hash: _getHashAlgorithm(hash),
+              length: length,
+            ),
+      _usagesSignVerify,
+      'secret',
+    ),
+  );
 }
 
-Future<HmacSecretKeyImpl> hmacSecretKey_generateKey(HashImpl hash,
-    {int? length}) async {
-  return _HmacSecretKeyImpl(await _generateKey(
-    length == null
-        ? subtle.Algorithm(
-            name: 'HMAC',
-            hash: _getHashAlgorithm(hash),
-          )
-        : subtle.Algorithm(
-            name: 'HMAC',
-            hash: _getHashAlgorithm(hash),
-            length: length,
-          ),
-    _usagesSignVerify,
-    'secret',
-  ));
+Future<HmacSecretKeyImpl> hmacSecretKey_generateKey(
+  HashImpl hash, {
+  int? length,
+}) async {
+  return _HmacSecretKeyImpl(
+    await _generateKey(
+      length == null
+          ? subtle.Algorithm(name: 'HMAC', hash: _getHashAlgorithm(hash))
+          : subtle.Algorithm(
+              name: 'HMAC',
+              hash: _getHashAlgorithm(hash),
+              length: length,
+            ),
+      _usagesSignVerify,
+      'secret',
+    ),
+  );
 }
 
 final class _StaticHmacSecretKeyImpl implements StaticHmacSecretKeyImpl {
   const _StaticHmacSecretKeyImpl();
 
   @override
-  Future<HmacSecretKeyImpl> importRawKey(List<int> keyData, HashImpl hash,
-      {int? length}) {
+  Future<HmacSecretKeyImpl> importRawKey(
+    List<int> keyData,
+    HashImpl hash, {
+    int? length,
+  }) {
     return hmacSecretKey_importRawKey(keyData, hash, length: length);
   }
 
   @override
   Future<HmacSecretKeyImpl> importJsonWebKey(
-      Map<String, dynamic> jwk, HashImpl hash,
-      {int? length}) {
+    Map<String, dynamic> jwk,
+    HashImpl hash, {
+    int? length,
+  }) {
     return hmacSecretKey_importJsonWebKey(jwk, hash, length: length);
   }
 

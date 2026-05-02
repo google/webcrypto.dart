@@ -21,18 +21,12 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd "$DIR/.."
 
+# We use 'flutter pub get' because example/ requires flutter!
 section 'Running "flutter pub get"'
 flutter pub get
 
-
-flutter pub run webcrypto:setup
-
-section 'flutter test (local)'
-flutter test
-
-
-section 'flutter test (chrome)'
-flutter test --platform chrome
+section 'dart test (vm,chrome,firefox)'
+xvfb-run dart test -p vm,chrome,firefox
 
 cd "$DIR/../example"
 
@@ -47,20 +41,5 @@ for DEVICE in linux android; do
     section "Skipping integration tests on $DEVICE (missing device)"
   fi
 done
-
-# We can't run integration tests on chrome without using `flutter drive`, see:
-# https://docs.flutter.dev/cookbook/testing/integration/introduction#5b-web
-section 'Running integration tests on chrome'
-xvfb-run "$DIR/with-chromedriver.sh" flutter drive \
- --driver=test_driver/integration_test.dart \
- --target=integration_test/webcrypto_test.dart \
- -d chrome
-
-# We can problem skip vm and chrome, but afaik this is the only way to test on
-# Firefox (xvfb-run, is necessary for Firefox testing to work)
-cd "$DIR/.."
-
-section 'flutter pub run test (vm,chrome,firefox)'
-xvfb-run flutter pub run test -p vm,chrome,firefox
 
 echo '### All tests passed'

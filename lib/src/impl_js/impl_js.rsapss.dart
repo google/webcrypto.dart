@@ -22,29 +22,39 @@ Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importPkcs8Key(
   List<int> keyData,
   HashImpl hash,
 ) async {
-  return _RsaPssPrivateKeyImpl(await _importKey(
-    'pkcs8',
-    keyData,
-    subtle.Algorithm(name: _rsaPssAlgorithmName, hash: _getHashAlgorithm(hash)),
-    _usagesSign,
-    'private',
-  ));
+  return _RsaPssPrivateKeyImpl(
+    await _importKey(
+      'pkcs8',
+      keyData,
+      subtle.Algorithm(
+        name: _rsaPssAlgorithmName,
+        hash: _getHashAlgorithm(hash),
+      ),
+      _usagesSign,
+      'private',
+    ),
+  );
 }
 
 Future<RsaPssPrivateKeyImpl> rsaPssPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash,
 ) async {
-  return _RsaPssPrivateKeyImpl(await _importJsonWebKey(
-    jwk,
-    subtle.Algorithm(name: _rsaPssAlgorithmName, hash: _getHashAlgorithm(hash)),
-    _usagesSign,
-    'private',
-  ));
+  return _RsaPssPrivateKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      subtle.Algorithm(
+        name: _rsaPssAlgorithmName,
+        hash: _getHashAlgorithm(hash),
+      ),
+      _usagesSign,
+      'private',
+    ),
+  );
 }
 
 Future<KeyPair<RsaPssPrivateKeyImpl, RsaPssPublicKeyImpl>>
-    rsaPssPrivateKey_generateKey(
+rsaPssPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
   HashImpl hash,
@@ -68,25 +78,35 @@ Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importSpkiKey(
   List<int> keyData,
   HashImpl hash,
 ) async {
-  return _RsaPssPublicKeyImpl(await _importKey(
-    'spki',
-    keyData,
-    subtle.Algorithm(name: _rsaPssAlgorithmName, hash: _getHashAlgorithm(hash)),
-    _usagesVerify,
-    'public',
-  ));
+  return _RsaPssPublicKeyImpl(
+    await _importKey(
+      'spki',
+      keyData,
+      subtle.Algorithm(
+        name: _rsaPssAlgorithmName,
+        hash: _getHashAlgorithm(hash),
+      ),
+      _usagesVerify,
+      'public',
+    ),
+  );
 }
 
 Future<RsaPssPublicKeyImpl> rsaPssPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash,
 ) async {
-  return _RsaPssPublicKeyImpl(await _importJsonWebKey(
-    jwk,
-    subtle.Algorithm(name: _rsaPssAlgorithmName, hash: _getHashAlgorithm(hash)),
-    _usagesVerify,
-    'public',
-  ));
+  return _RsaPssPublicKeyImpl(
+    await _importJsonWebKey(
+      jwk,
+      subtle.Algorithm(
+        name: _rsaPssAlgorithmName,
+        hash: _getHashAlgorithm(hash),
+      ),
+      _usagesVerify,
+      'public',
+    ),
+  );
 }
 
 final class _StaticRsaPssPrivateKeyImpl implements StaticRsaPssPrivateKeyImpl {

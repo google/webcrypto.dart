@@ -35,25 +35,23 @@ String _ecdsaCurveToJwkAlg(EllipticCurve curve) {
 Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importPkcs8Key(
   List<int> keyData,
   EllipticCurve curve,
-) async =>
-    _EcdsaPrivateKeyImpl(_importPkcs8EcPrivateKey(keyData, curve));
+) async => _EcdsaPrivateKeyImpl(_importPkcs8EcPrivateKey(keyData, curve));
 
 Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
-) async =>
-    _EcdsaPrivateKeyImpl(_importJwkEcPrivateOrPublicKey(
-      JsonWebKey.fromJson(jwk),
-      curve,
-      isPrivateKey: true,
-      expectedUse: 'sig',
-      expectedAlg: _ecdsaCurveToJwkAlg(curve),
-    ));
+) async => _EcdsaPrivateKeyImpl(
+  _importJwkEcPrivateOrPublicKey(
+    JsonWebKey.fromJson(jwk),
+    curve,
+    isPrivateKey: true,
+    expectedUse: 'sig',
+    expectedAlg: _ecdsaCurveToJwkAlg(curve),
+  ),
+);
 
 Future<KeyPair<EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl>>
-    ecdsaPrivateKey_generateKey(
-  EllipticCurve curve,
-) async {
+ecdsaPrivateKey_generateKey(EllipticCurve curve) async {
   final p = _generateEcKeyPair(curve);
   return (
     privateKey: _EcdsaPrivateKeyImpl(p.privateKey),
@@ -64,26 +62,25 @@ Future<KeyPair<EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl>>
 Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importRawKey(
   List<int> keyData,
   EllipticCurve curve,
-) async =>
-    _EcdsaPublicKeyImpl(_importRawEcPublicKey(keyData, curve));
+) async => _EcdsaPublicKeyImpl(_importRawEcPublicKey(keyData, curve));
 
 Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importSpkiKey(
   List<int> keyData,
   EllipticCurve curve,
-) async =>
-    _EcdsaPublicKeyImpl(_importSpkiEcPublicKey(keyData, curve));
+) async => _EcdsaPublicKeyImpl(_importSpkiEcPublicKey(keyData, curve));
 
 Future<EcdsaPublicKeyImpl> ecdsaPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
-) async =>
-    _EcdsaPublicKeyImpl(_importJwkEcPrivateOrPublicKey(
-      JsonWebKey.fromJson(jwk),
-      curve,
-      isPrivateKey: false,
-      expectedUse: 'sig',
-      expectedAlg: _ecdsaCurveToJwkAlg(curve),
-    ));
+) async => _EcdsaPublicKeyImpl(
+  _importJwkEcPrivateOrPublicKey(
+    JsonWebKey.fromJson(jwk),
+    curve,
+    isPrivateKey: false,
+    expectedUse: 'sig',
+    expectedAlg: _ecdsaCurveToJwkAlg(curve),
+  ),
+);
 
 /// Convert ECDSA signature in DER format returned by BoringSSL to the raw R + S
 /// formated specified in the webcrypto specification.
@@ -96,8 +93,10 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
   return _Scope.sync((scope) {
     // TODO: Check if cbs is empty after parsing, consider using ECDSA_SIG_from_bytes instead (like chrome does)
     final ecdsa = ssl.ECDSA_SIG_parse(scope.createCBS(signature));
-    _checkOp(ecdsa.address != 0,
-        message: 'internal error formatting signature');
+    _checkOp(
+      ecdsa.address != 0,
+      message: 'internal error formatting signature',
+    );
     scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
 
     // Read EC key and get the number of bytes required to encode R and S.
@@ -105,9 +104,9 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
-    final N = ssl.BN_num_bytes(ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(
-      ec,
-    )));
+    final N = ssl.BN_num_bytes(
+      ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(ec)),
+    );
 
     // Access R and S from the ecdsa signature
     final R = scope<ffi.Pointer<BIGNUM>>();
@@ -144,9 +143,9 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
     scope.defer(() => ssl.EC_KEY_free(ec));
 
-    final N = ssl.BN_num_bytes(ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(
-      ec,
-    )));
+    final N = ssl.BN_num_bytes(
+      ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(ec)),
+    );
 
     if (N * 2 != signature.length) {
       // If the signature format is invalid we consider the signature invalid and
@@ -186,15 +185,15 @@ final class _StaticEcdsaPrivateKeyImpl implements StaticEcdsaPrivateKeyImpl {
 
   @override
   Future<EcdsaPrivateKeyImpl> importPkcs8Key(
-          List<int> keyData, EllipticCurve curve) =>
-      ecdsaPrivateKey_importPkcs8Key(keyData, curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => ecdsaPrivateKey_importPkcs8Key(keyData, curve);
 
   @override
   Future<EcdsaPrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) =>
-      ecdsaPrivateKey_importJsonWebKey(jwk, curve);
+  ) => ecdsaPrivateKey_importJsonWebKey(jwk, curve);
 
   @override
   Future<(EcdsaPrivateKeyImpl, EcdsaPublicKeyImpl)> generateKey(
@@ -241,20 +240,21 @@ final class _StaticEcdsaPublicKeyImpl implements StaticEcdsaPublicKeyImpl {
 
   @override
   Future<EcdsaPublicKeyImpl> importRawKey(
-          List<int> keyData, EllipticCurve curve) =>
-      ecdsaPublicKey_importRawKey(keyData, curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => ecdsaPublicKey_importRawKey(keyData, curve);
 
   @override
   Future<EcdsaPublicKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     EllipticCurve curve,
-  ) =>
-      ecdsaPublicKey_importJsonWebKey(jwk, curve);
+  ) => ecdsaPublicKey_importJsonWebKey(jwk, curve);
 
   @override
   Future<EcdsaPublicKeyImpl> importSpkiKey(
-          List<int> keyData, EllipticCurve curve) =>
-      ecdsaPublicKey_importSpkiKey(keyData, curve);
+    List<int> keyData,
+    EllipticCurve curve,
+  ) => ecdsaPublicKey_importSpkiKey(keyData, curve);
 }
 
 final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
@@ -269,8 +269,10 @@ final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
 
   @override
   Future<bool> verifyBytes(
-          List<int> signature, List<int> data, HashImpl hash) =>
-      verifyStream(signature, Stream.value(data), hash);
+    List<int> signature,
+    List<int> data,
+    HashImpl hash,
+  ) => verifyStream(signature, Stream.value(data), hash);
 
   @override
   Future<bool> verifyStream(

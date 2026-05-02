@@ -43,7 +43,7 @@ Future<RsaOaepPrivateKeyImpl> rsaOaepPrivateKey_importJsonWebKey(
 }
 
 Future<KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl>>
-    rsaOaepPrivateKey_generateKey(
+rsaOaepPrivateKey_generateKey(
   int modulusLength,
   BigInt publicExponent,
   HashImpl hash,
@@ -100,7 +100,8 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
     ffi.Pointer<ffi.Size>,
     ffi.Pointer<ffi.Uint8>,
     int,
-  ) encryptOrDecryptFn,
+  )
+  encryptOrDecryptFn,
   List<int> data, {
   List<int>? label,
 }) async {
@@ -110,42 +111,29 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
       ssl.EVP_PKEY_CTX_free,
     );
     _checkOpIsOne(initFn(ctx));
-    _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_padding(
-      ctx,
-      RSA_PKCS1_OAEP_PADDING,
-    ));
+    _checkOpIsOne(
+      ssl.EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING),
+    );
     _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_oaep_md(ctx, md));
     _checkOpIsOne(ssl.EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, md));
 
     // Copy and set label
     if (label != null && label.isNotEmpty) {
       final plabel = scope.dataAsPointer<ffi.Uint8>(label);
-      _checkOpIsOne(ssl.EVP_PKEY_CTX_set0_rsa_oaep_label(
-        ctx,
-        plabel,
-        label.length,
-      ));
+      _checkOpIsOne(
+        ssl.EVP_PKEY_CTX_set0_rsa_oaep_label(ctx, plabel, label.length),
+      );
       scope.move(plabel);
     }
 
     final input = scope.dataAsPointer<ffi.Uint8>(data);
     final plen = scope<ffi.Size>();
     plen.value = 0;
-    _checkOpIsOne(encryptOrDecryptFn(
-      ctx,
-      ffi.nullptr,
-      plen,
-      input,
-      data.length,
-    ));
+    _checkOpIsOne(
+      encryptOrDecryptFn(ctx, ffi.nullptr, plen, input, data.length),
+    );
     final out = scope<ffi.Uint8>(plen.value);
-    _checkOpIsOne(encryptOrDecryptFn(
-      ctx,
-      out,
-      plen,
-      input,
-      data.length,
-    ));
+    _checkOpIsOne(encryptOrDecryptFn(ctx, out, plen, input, data.length));
     return out.copy(plen.value);
   });
 }
@@ -156,15 +144,15 @@ final class _StaticRsaOaepPrivateKeyImpl
 
   @override
   Future<RsaOaepPrivateKeyImpl> importPkcs8Key(
-          List<int> keyData, HashImpl hash) =>
-      rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
+    List<int> keyData,
+    HashImpl hash,
+  ) => rsaOaepPrivateKey_importPkcs8Key(keyData, hash);
 
   @override
   Future<RsaOaepPrivateKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     HashImpl hash,
-  ) =>
-      rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
+  ) => rsaOaepPrivateKey_importJsonWebKey(jwk, hash);
 
   @override
   Future<(RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl)> generateKey(
@@ -174,7 +162,10 @@ final class _StaticRsaOaepPrivateKeyImpl
   ) async {
     final KeyPair<RsaOaepPrivateKeyImpl, RsaOaepPublicKeyImpl> keyPair =
         await rsaOaepPrivateKey_generateKey(
-            modulusLength, publicExponent, hash);
+          modulusLength,
+          publicExponent,
+          hash,
+        );
 
     return (keyPair.privateKey, keyPair.publicKey);
   }
@@ -223,15 +214,13 @@ final class _StaticRsaOaepPublicKeyImpl implements StaticRsaOaepPublicKeyImpl {
   Future<RsaOaepPublicKeyImpl> importSpkiKey(
     List<int> keyData,
     HashImpl hash,
-  ) =>
-      rsaOaepPublicKey_importSpkiKey(keyData, hash);
+  ) => rsaOaepPublicKey_importSpkiKey(keyData, hash);
 
   @override
   Future<RsaOaepPublicKeyImpl> importJsonWebKey(
     Map<String, dynamic> jwk,
     HashImpl hash,
-  ) =>
-      rsaOaepPublicKey_importJsonWebKey(jwk, hash);
+  ) => rsaOaepPublicKey_importJsonWebKey(jwk, hash);
 }
 
 final class _RsaOaepPublicKeyImpl implements RsaOaepPublicKeyImpl {
