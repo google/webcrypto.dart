@@ -21,14 +21,16 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd "$DIR/.."
 
-# We use 'flutter pub get' because example/ requires flutter!
-section 'Running "flutter pub get"'
-flutter pub get
+section 'Running "dart pub get --no-example"'
+dart pub get --no-example
 
 section 'dart test (vm,chrome,firefox)'
 xvfb-run dart test -p vm,chrome,firefox
 
 cd "$DIR/../example"
+
+section 'Running "flutter pub get" in example/'
+flutter pub get
 
 # List devices and run integration tests on each device (if available)
 # Skip "chrome" because it's not supported by integration test system.

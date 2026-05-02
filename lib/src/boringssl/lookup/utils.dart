@@ -69,9 +69,9 @@ lookupLibraryInDotDartTool() {
 
 /// Find the `.dart_tool/` folder, returns `null` if unable to find it.
 Uri? _findDotDartTool() {
-  // HACK: We have no good mechanism for finding the library created by:
-  //         flutter pub run webcrypto:setup
-  //       So we search relative to the script path and CWD.
+  // HACK: We have no good mechanism for finding the legacy
+  // `.dart_tool/webcrypto/` output, so we search relative to the script path
+  // and CWD.
 
   // Find script directory
   Uri root = Platform.script.resolve('./');

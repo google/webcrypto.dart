@@ -16,6 +16,7 @@
 
 import 'dart:ffi';
 
+import '../bindings/generated_bindings.dart' show WebCrypto;
 import '../../third_party/boringssl/generated_bindings.dart';
 
 import 'symbols.generated.dart';
@@ -28,8 +29,7 @@ export 'symbols.generated.dart' show Sym;
 )
 external Pointer<Void> _nativeWebcryptoLookupSymbol(int index);
 
-/// Resolve lookup from native assets first, then fall back to the legacy
-/// runtime loading strategy used by `flutter pub run webcrypto:setup`.
+/// Resolve lookup from the bundled native asset for `package:webcrypto`.
 Pointer<T> lookup<T extends NativeType>(String symbolName) {
   final sym = symFromString(symbolName);
   return _nativeWebcryptoLookupSymbol(sym.index).cast<T>();
@@ -37,6 +37,9 @@ Pointer<T> lookup<T extends NativeType>(String symbolName) {
 
 /// Gives access to BoringSSL symbols.
 final BoringSsl ssl = BoringSsl.fromLookup(lookup);
+
+/// Gives access to helper symbols exported by src/webcrypto.h.
+final WebCrypto webcrypto = WebCrypto.fromLookup(lookup);
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.
