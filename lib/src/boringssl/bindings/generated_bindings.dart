@@ -43,9 +43,10 @@ class WebCrypto {
 
   late final _webcrypto_get_CBB_sizePtr =
       _lookup<ffi.NativeFunction<ffi.Size Function()>>(
-          'webcrypto_get_CBB_size');
-  late final _webcrypto_get_CBB_size =
-      _webcrypto_get_CBB_sizePtr.asFunction<int Function()>();
+        'webcrypto_get_CBB_size',
+      );
+  late final _webcrypto_get_CBB_size = _webcrypto_get_CBB_sizePtr
+      .asFunction<int Function()>();
 
   /// Function to lookup BoringSSL symbols based on index in the Sym enum.
   /// See src/symbols.yaml for details.
