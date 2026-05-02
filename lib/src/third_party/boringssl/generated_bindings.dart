@@ -1548,6 +1548,41 @@ class BoringSsl {
         int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<EVP_MD>)
       >();
 
+  /// EVP_DigestSign signs |data_len| bytes from |data| using |ctx|. If |out_sig|
+  /// is NULL then |*out_sig_len| is set to the maximum number of output
+  /// bytes. Otherwise, on entry, |*out_sig_len| must contain the length of the
+  /// |out_sig| buffer. If the call is successful, the signature is written to
+  /// |out_sig| and |*out_sig_len| is set to its length.
+  ///
+  /// It returns one on success and zero on error.
+  int EVP_DigestSign(
+    ffi.Pointer<EVP_MD_CTX> ctx,
+    ffi.Pointer<ffi.Uint8> out_sig,
+    ffi.Pointer<ffi.Size> out_sig_len,
+    ffi.Pointer<ffi.Uint8> data,
+    int data_len,
+  ) {
+    return _EVP_DigestSign(
+      ctx,
+      out_sig,
+      out_sig_len,
+      data,
+      data_len,
+    );
+  }
+
+  late final _EVP_DigestSignPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<EVP_MD_CTX>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size)>>('EVP_DigestSign');
+  late final _EVP_DigestSign = _EVP_DigestSignPtr.asFunction<
+      int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Uint8>,
+          ffi.Pointer<ffi.Size>, ffi.Pointer<ffi.Uint8>, int)>();
+
   /// EVP_DigestSignFinal signs the data that has been included by one or more
   /// calls to |EVP_DigestSignUpdate|. If |out_sig| is NULL then |*out_sig_len| is
   /// set to the maximum number of output bytes. Otherwise, on entry,
@@ -1687,6 +1722,32 @@ class BoringSsl {
       _EVP_DigestUpdatePtr.asFunction<
         int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, int)
       >();
+
+  /// EVP_DigestVerify verifies that |sig_len| bytes from |sig| are a valid
+  /// signature for |data|. It returns one on success or zero on error.
+  int EVP_DigestVerify(
+    ffi.Pointer<EVP_MD_CTX> ctx,
+    ffi.Pointer<ffi.Uint8> sig,
+    int sig_len,
+    ffi.Pointer<ffi.Uint8> data,
+    int len,
+  ) {
+    return _EVP_DigestVerify(
+      ctx,
+      sig,
+      sig_len,
+      data,
+      len,
+    );
+  }
+
+  late final _EVP_DigestVerifyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Uint8>,
+              ffi.Size, ffi.Pointer<ffi.Uint8>, ffi.Size)>>('EVP_DigestVerify');
+  late final _EVP_DigestVerify = _EVP_DigestVerifyPtr.asFunction<
+      int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Uint8>, int,
+          ffi.Pointer<ffi.Uint8>, int)>();
 
   /// EVP_DigestVerifyFinal verifies that |sig_len| bytes of |sig| are a valid
   /// signature for the data that has been included by one or more calls to
@@ -1885,6 +1946,27 @@ class BoringSsl {
         )
       >();
 
+  /// EVP_PKEY_CTX_new_id allocates a fresh |EVP_PKEY_CTX| for a key of type |id|
+  /// (e.g. |EVP_PKEY_HMAC|). This can be used for key generation where
+  /// |EVP_PKEY_CTX_new| can't be used because there isn't an |EVP_PKEY| to pass
+  /// it. It returns the context or NULL on error.
+  ffi.Pointer<EVP_PKEY_CTX> EVP_PKEY_CTX_new_id(
+    int id,
+    ffi.Pointer<ENGINE> e,
+  ) {
+    return _EVP_PKEY_CTX_new_id(
+      id,
+      e,
+    );
+  }
+
+  late final _EVP_PKEY_CTX_new_idPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<EVP_PKEY_CTX> Function(
+              ffi.Int, ffi.Pointer<ENGINE>)>>('EVP_PKEY_CTX_new_id');
+  late final _EVP_PKEY_CTX_new_id = _EVP_PKEY_CTX_new_idPtr.asFunction<
+      ffi.Pointer<EVP_PKEY_CTX> Function(int, ffi.Pointer<ENGINE>)>();
+
   /// EVP_PKEY_CTX_set0_rsa_oaep_label sets |label_len| bytes from |label| as the
   /// label used in OAEP. DANGER: On success, this call takes ownership of |label|
   /// and will call |OPENSSL_free| on it when |ctx| is destroyed.
@@ -2063,6 +2145,77 @@ class BoringSsl {
         int Function(ffi.Pointer<EVP_PKEY_CTX>)
       >();
 
+  /// EVP_PKEY_derive derives a shared key from |ctx|. If |key| is non-NULL then,
+  /// on entry, |out_key_len| must contain the amount of space at |key|. If
+  /// sufficient then the shared key will be written to |key| and |*out_key_len|
+  /// will be set to the length. If |key| is NULL then |out_key_len| will be set to
+  /// the maximum length.
+  ///
+  /// WARNING: Setting |out| to NULL only gives the maximum size of the key. The
+  /// actual key may be smaller.
+  ///
+  /// It returns one on success and zero on error.
+  int EVP_PKEY_derive(
+    ffi.Pointer<EVP_PKEY_CTX> ctx,
+    ffi.Pointer<ffi.Uint8> key,
+    ffi.Pointer<ffi.Size> out_key_len,
+  ) {
+    return _EVP_PKEY_derive(
+      ctx,
+      key,
+      out_key_len,
+    );
+  }
+
+  late final _EVP_PKEY_derivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>)>>('EVP_PKEY_derive');
+  late final _EVP_PKEY_derive = _EVP_PKEY_derivePtr.asFunction<
+      int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Pointer<ffi.Uint8>,
+          ffi.Pointer<ffi.Size>)>();
+
+  /// EVP_PKEY_derive_init initialises an |EVP_PKEY_CTX| for a key derivation
+  /// operation. It should be called before |EVP_PKEY_derive_set_peer| and
+  /// |EVP_PKEY_derive|.
+  ///
+  /// It returns one on success or zero on error.
+  int EVP_PKEY_derive_init(
+    ffi.Pointer<EVP_PKEY_CTX> ctx,
+  ) {
+    return _EVP_PKEY_derive_init(
+      ctx,
+    );
+  }
+
+  late final _EVP_PKEY_derive_initPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>)>>(
+          'EVP_PKEY_derive_init');
+  late final _EVP_PKEY_derive_init = _EVP_PKEY_derive_initPtr.asFunction<
+      int Function(ffi.Pointer<EVP_PKEY_CTX>)>();
+
+  /// EVP_PKEY_derive_set_peer sets the peer's key to be used for key derivation
+  /// by |ctx| to |peer|. It should be called after |EVP_PKEY_derive_init|. (For
+  /// example, this is used to set the peer's key in (EC)DH.) It returns one on
+  /// success and zero on error.
+  int EVP_PKEY_derive_set_peer(
+    ffi.Pointer<EVP_PKEY_CTX> ctx,
+    ffi.Pointer<EVP_PKEY> peer,
+  ) {
+    return _EVP_PKEY_derive_set_peer(
+      ctx,
+      peer,
+    );
+  }
+
+  late final _EVP_PKEY_derive_set_peerPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>,
+              ffi.Pointer<EVP_PKEY>)>>('EVP_PKEY_derive_set_peer');
+  late final _EVP_PKEY_derive_set_peer =
+      _EVP_PKEY_derive_set_peerPtr.asFunction<
+          int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Pointer<EVP_PKEY>)>();
+
   /// EVP_PKEY_encrypt encrypts |in_len| bytes from |in|. If |out| is NULL, the
   /// maximum size of the ciphertext is written to |out_len|. Otherwise, |*out_len|
   /// must contain the number of bytes of space available at |out|. If sufficient,
@@ -2162,6 +2315,62 @@ class BoringSsl {
         ffi.Pointer<RSA> Function(ffi.Pointer<EVP_PKEY>)
       >();
 
+  /// EVP_PKEY_get_raw_private_key outputs the private key for |pkey| in raw form.
+  /// If |out| is NULL, it sets |*out_len| to the size of the raw private key.
+  /// Otherwise, it writes at most |*out_len| bytes to |out| and sets |*out_len| to
+  /// the number of bytes written.
+  ///
+  /// It returns one on success and zero if |pkey| has no private key, the key
+  /// type does not support a raw format, or the buffer is too small.
+  int EVP_PKEY_get_raw_private_key(
+    ffi.Pointer<EVP_PKEY> pkey,
+    ffi.Pointer<ffi.Uint8> out,
+    ffi.Pointer<ffi.Size> out_len,
+  ) {
+    return _EVP_PKEY_get_raw_private_key(
+      pkey,
+      out,
+      out_len,
+    );
+  }
+
+  late final _EVP_PKEY_get_raw_private_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>)>>('EVP_PKEY_get_raw_private_key');
+  late final _EVP_PKEY_get_raw_private_key =
+      _EVP_PKEY_get_raw_private_keyPtr.asFunction<
+          int Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>)>();
+
+  /// EVP_PKEY_get_raw_public_key outputs the public key for |pkey| in raw form.
+  /// If |out| is NULL, it sets |*out_len| to the size of the raw public key.
+  /// Otherwise, it writes at most |*out_len| bytes to |out| and sets |*out_len| to
+  /// the number of bytes written.
+  ///
+  /// It returns one on success and zero if |pkey| has no public key, the key
+  /// type does not support a raw format, or the buffer is too small.
+  int EVP_PKEY_get_raw_public_key(
+    ffi.Pointer<EVP_PKEY> pkey,
+    ffi.Pointer<ffi.Uint8> out,
+    ffi.Pointer<ffi.Size> out_len,
+  ) {
+    return _EVP_PKEY_get_raw_public_key(
+      pkey,
+      out,
+      out_len,
+    );
+  }
+
+  late final _EVP_PKEY_get_raw_public_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>)>>('EVP_PKEY_get_raw_public_key');
+  late final _EVP_PKEY_get_raw_public_key =
+      _EVP_PKEY_get_raw_public_keyPtr.asFunction<
+          int Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>)>();
+
   /// EVP_PKEY_id returns the type of |pkey|, which is one of the |EVP_PKEY_*|
   /// values.
   int EVP_PKEY_id(ffi.Pointer<EVP_PKEY> pkey) {
@@ -2175,6 +2384,46 @@ class BoringSsl {
   late final _EVP_PKEY_id =
       _EVP_PKEY_idPtr.asFunction<int Function(ffi.Pointer<EVP_PKEY>)>();
 
+  /// EVP_PKEY_keygen performs a key generation operation using the values from
+  /// |ctx|. If |*out_pkey| is non-NULL, it overwrites |*out_pkey| with the
+  /// resulting key. Otherwise, it sets |*out_pkey| to a newly-allocated |EVP_PKEY|
+  /// containing the result. It returns one on success or zero on error.
+  int EVP_PKEY_keygen(
+    ffi.Pointer<EVP_PKEY_CTX> ctx,
+    ffi.Pointer<ffi.Pointer<EVP_PKEY>> out_pkey,
+  ) {
+    return _EVP_PKEY_keygen(
+      ctx,
+      out_pkey,
+    );
+  }
+
+  late final _EVP_PKEY_keygenPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>,
+              ffi.Pointer<ffi.Pointer<EVP_PKEY>>)>>('EVP_PKEY_keygen');
+  late final _EVP_PKEY_keygen = _EVP_PKEY_keygenPtr.asFunction<
+      int Function(
+          ffi.Pointer<EVP_PKEY_CTX>, ffi.Pointer<ffi.Pointer<EVP_PKEY>>)>();
+
+  /// EVP_PKEY_keygen_init initialises an |EVP_PKEY_CTX| for a key generation
+  /// operation. It should be called before |EVP_PKEY_keygen|.
+  ///
+  /// It returns one on success or zero on error.
+  int EVP_PKEY_keygen_init(
+    ffi.Pointer<EVP_PKEY_CTX> ctx,
+  ) {
+    return _EVP_PKEY_keygen_init(
+      ctx,
+    );
+  }
+
+  late final _EVP_PKEY_keygen_initPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>)>>(
+          'EVP_PKEY_keygen_init');
+  late final _EVP_PKEY_keygen_init = _EVP_PKEY_keygen_initPtr.asFunction<
+      int Function(ffi.Pointer<EVP_PKEY_CTX>)>();
+
   /// EVP_PKEY_new creates a new, empty public-key object and returns it or NULL
   /// on allocation failure.
   ffi.Pointer<EVP_PKEY> EVP_PKEY_new() {
@@ -2187,6 +2436,64 @@ class BoringSsl {
       );
   late final _EVP_PKEY_new =
       _EVP_PKEY_newPtr.asFunction<ffi.Pointer<EVP_PKEY> Function()>();
+
+  /// EVP_PKEY_new_raw_private_key returns a newly allocated |EVP_PKEY| wrapping a
+  /// private key of the specified type. It returns one on success and zero on
+  /// error.
+  ffi.Pointer<EVP_PKEY> EVP_PKEY_new_raw_private_key(
+    int type,
+    ffi.Pointer<ENGINE> unused,
+    ffi.Pointer<ffi.Uint8> in1,
+    int len,
+  ) {
+    return _EVP_PKEY_new_raw_private_key(
+      type,
+      unused,
+      in1,
+      len,
+    );
+  }
+
+  late final _EVP_PKEY_new_raw_private_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<EVP_PKEY> Function(
+              ffi.Int,
+              ffi.Pointer<ENGINE>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size)>>('EVP_PKEY_new_raw_private_key');
+  late final _EVP_PKEY_new_raw_private_key =
+      _EVP_PKEY_new_raw_private_keyPtr.asFunction<
+          ffi.Pointer<EVP_PKEY> Function(
+              int, ffi.Pointer<ENGINE>, ffi.Pointer<ffi.Uint8>, int)>();
+
+  /// EVP_PKEY_new_raw_public_key returns a newly allocated |EVP_PKEY| wrapping a
+  /// public key of the specified type. It returns one on success and zero on
+  /// error.
+  ffi.Pointer<EVP_PKEY> EVP_PKEY_new_raw_public_key(
+    int type,
+    ffi.Pointer<ENGINE> unused,
+    ffi.Pointer<ffi.Uint8> in1,
+    int len,
+  ) {
+    return _EVP_PKEY_new_raw_public_key(
+      type,
+      unused,
+      in1,
+      len,
+    );
+  }
+
+  late final _EVP_PKEY_new_raw_public_keyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<EVP_PKEY> Function(
+              ffi.Int,
+              ffi.Pointer<ENGINE>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size)>>('EVP_PKEY_new_raw_public_key');
+  late final _EVP_PKEY_new_raw_public_key =
+      _EVP_PKEY_new_raw_public_keyPtr.asFunction<
+          ffi.Pointer<EVP_PKEY> Function(
+              int, ffi.Pointer<ENGINE>, ffi.Pointer<ffi.Uint8>, int)>();
 
   int EVP_PKEY_set1_EC_KEY(
     ffi.Pointer<EVP_PKEY> pkey,
@@ -3105,7 +3412,11 @@ typedef EVP_PKEY_CTX = evp_pkey_ctx_st;
 
 const int EVP_PKEY_EC = 408;
 
+const int EVP_PKEY_ED25519 = 949;
+
 const int EVP_PKEY_RSA = 6;
+
+const int EVP_PKEY_X25519 = 948;
 
 const int HKDF_R_OUTPUT_TOO_LARGE = 100;
 

@@ -27,6 +27,7 @@ part 'impl_js.aesgcm.dart';
 part 'impl_js.digest.dart';
 part 'impl_js.ecdh.dart';
 part 'impl_js.ecdsa.dart';
+part 'impl_js.ed25519.dart';
 part 'impl_js.hkdf.dart';
 part 'impl_js.hmac.dart';
 part 'impl_js.pbkdf2.dart';
@@ -34,6 +35,7 @@ part 'impl_js.random.dart';
 part 'impl_js.rsaoaep.dart';
 part 'impl_js.rsapss.dart';
 part 'impl_js.rsassapkcs1v15.dart';
+part 'impl_js.x25519.dart';
 part 'impl_js.utils.dart';
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
@@ -69,6 +71,12 @@ final class _WebCryptoImpl implements WebCryptoImpl {
   final ecdsaPublicKey = const _StaticEcdsaPublicKeyImpl();
 
   @override
+  final ed25519PrivateKey = const _StaticEd25519PrivateKeyImpl();
+
+  @override
+  final ed25519PublicKey = const _StaticEd25519PublicKeyImpl();
+
+  @override
   final rsaOaepPrivateKey = const _StaticRsaOaepPrivateKeyImpl();
 
   @override
@@ -88,6 +96,12 @@ final class _WebCryptoImpl implements WebCryptoImpl {
 
   @override
   final rsaSsaPkcs1v15PublicKey = const _StaticRsaSsaPkcs1V15PublicKeyImpl();
+
+  @override
+  final x25519PrivateKey = const _StaticX25519PrivateKeyImpl();
+
+  @override
+  final x25519PublicKey = const _StaticX25519PublicKeyImpl();
 
   @override
   final sha1 = const _HashImpl('SHA-1');
