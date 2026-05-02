@@ -308,18 +308,12 @@ extension on _Scope {
 
   ffi.Pointer<CBS> createCBS(List<int> data) {
     final cbs = this<CBS>();
-    // CBS_init is an inline function, so we need to initialize the struct directly
-    cbs.ref.data = dataAsPointer(data);
-    cbs.ref.len = data.length;
+    ssl.CBS_init(cbs, dataAsPointer(data), data.length);
     return cbs;
   }
 
   ffi.Pointer<CBB> createCBB([int sizeHint = 4096]) {
-    // Get the actual size of CBB structure from native code
-    // This ensures we allocate exactly the right amount of memory
-    // regardless of platform (32-bit, 64-bit, ARM, x86, etc.)
-    final cbbSize = webcrypto.webcrypto_get_CBB_size();
-    final cbb = allocate<ffi.Uint8>(cbbSize).cast<CBB>();
+    final cbb = this<CBB>();
     ssl.CBB_zero(cbb);
     _checkOp(ssl.CBB_init(cbb, sizeHint) == 1, fallback: 'allocation failure');
     defer(() => ssl.CBB_cleanup(cbb));

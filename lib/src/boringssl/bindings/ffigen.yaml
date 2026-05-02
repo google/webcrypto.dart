@@ -22,7 +22,6 @@ structs:
 functions:
   include:
     - webcrypto_lookup_symbol
-    - webcrypto_get_CBB_size
 preamble: |
   // Copyright 2021 Google LLC
   //

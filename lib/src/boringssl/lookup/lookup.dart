@@ -16,7 +16,6 @@
 
 import 'dart:ffi';
 
-import '../bindings/generated_bindings.dart' show WebCrypto;
 import '../../third_party/boringssl/generated_bindings.dart';
 
 import 'symbols.generated.dart';
@@ -37,9 +36,6 @@ Pointer<T> lookup<T extends NativeType>(String symbolName) {
 
 /// Gives access to BoringSSL symbols.
 final BoringSsl ssl = BoringSsl.fromLookup(lookup);
-
-/// Gives access to helper symbols exported by src/webcrypto.h.
-final WebCrypto webcrypto = WebCrypto.fromLookup(lookup);
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.
