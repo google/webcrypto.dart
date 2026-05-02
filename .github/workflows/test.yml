@@ -49,6 +49,15 @@ jobs:
       - name: Convert coverage to lcov
         run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@v2
+  linux-dart:
+    name: Linux Dart / Chrome / Firefox
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get --no-example
+      - run: xvfb-run dart test -p vm,chrome,firefox -c dart2js,dart2wasm
   macos:
     name: MacOS desktop / Chrome
     runs-on: macos-15 # Test with xcode 16
