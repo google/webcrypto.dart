@@ -44,7 +44,7 @@ BigInt _parseBigEndian(List<int> data, [int? bitLength]) {
   // Parse BigInt as big-endian integer.
   var value = BigInt.from(0);
   for (var i = init; i < data.length; i++) {
-    value = (value << 8) | BigInt.from(data[i] & 0xf);
+    value = (value << 8) | BigInt.from(data[i] & 0xff);
   }
   return value;
 }
