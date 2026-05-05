@@ -61,46 +61,38 @@ final class JsonWebKey {
     this.k,
   });
 
-static void _verifyUseAndKeyOps(
-  String? use,
-  List<String>? keyOps,
-  Map<String, dynamic> json,
-) {
-  if (use == null || keyOps == null) {
-    return; // nothing to validate
-  }
+  static void _verifyUseAndKeyOps(
+    String? use,
+    List<String>? keyOps,
+    Map<String, dynamic> json,
+  ) {
+    if (use == null || keyOps == null) {
+      return; // nothing to validate
+    }
 
-  const encryptionOps = {
-    'encrypt',
-    'decrypt',
-    'wrapKey',
-    'unwrapKey',
-  };
+    const encryptionOps = {'encrypt', 'decrypt', 'wrapKey', 'unwrapKey'};
 
-  const signingOps = {
-    'sign',
-    'verify',
-  };
+    const signingOps = {'sign', 'verify'};
 
-  Set<String>? allowedOps;
-  if (use == 'enc') {
-    allowedOps = encryptionOps;
-  } else if (use == 'sig') {
-    allowedOps = signingOps;
-  } else {
-    // Unknown "use" values are ignored (spec-compatible)
-    return;
-  }
+    Set<String>? allowedOps;
+    if (use == 'enc') {
+      allowedOps = encryptionOps;
+    } else if (use == 'sig') {
+      allowedOps = signingOps;
+    } else {
+      // Unknown "use" values are ignored (spec-compatible)
+      return;
+    }
 
-  for (final op in keyOps) {
-    if (!allowedOps.contains(op)) {
-      throw FormatException(
-        'JWK property "key_ops" conflicts with "use": "$use"',
-        json,
-      );
+    for (final op in keyOps) {
+      if (!allowedOps.contains(op)) {
+        throw FormatException(
+          'JWK property "key_ops" conflicts with "use": "$use"',
+          json,
+        );
+      }
     }
   }
-}
 
   static JsonWebKey fromJson(Map<String, dynamic> json) {
     const stringKeys = [
@@ -137,7 +129,6 @@ static void _verifyUseAndKeyOps(
       key_ops = (json['key_ops'] as List).map((e) => e as String).toList();
     }
     _verifyUseAndKeyOps(json['use'] as String?, key_ops, json);
-
 
     if (json.containsKey('ext') && json['ext'] is! bool) {
       throw FormatException('JWK entry "ext" must be boolean', json);
