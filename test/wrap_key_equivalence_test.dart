@@ -1,4 +1,5 @@
 @TestOn('browser')
+@Tags(['experimental'])
 library;
 
 import 'dart:convert';
@@ -9,8 +10,7 @@ import 'package:test/test.dart';
 import 'package:webcrypto/src/crypto_subtle.dart' as subtle;
 import 'package:webcrypto/webcrypto.dart';
 
-extension type JSSubtleCryptoWrap(subtle.JSSubtleCrypto _)
-    implements JSObject {
+extension type JSSubtleCryptoWrap(subtle.JSSubtleCrypto _) implements JSObject {
   external JSPromise<JSArrayBuffer> wrapKey(
     String format,
     subtle.JSCryptoKey key,
@@ -98,21 +98,27 @@ void main() {
       true,
       ['sign', 'verify'],
     );
-    jsRsaPair = await subtle.generateKeyPair(
-      rsaAlgorithm,
-      true,
-      ['wrapKey', 'unwrapKey'],
-    );
+    jsRsaPair = await subtle.generateKeyPair(rsaAlgorithm, true, [
+      'wrapKey',
+      'unwrapKey',
+    ]);
 
     packageAesWrappingKey = await AesGcmSecretKey.importRawKey(aesKeyBytes);
     packageAesCbcWrappingKey = await AesCbcSecretKey.importRawKey(aesKeyBytes);
     packageAesCtrWrappingKey = await AesCtrSecretKey.importRawKey(aesKeyBytes);
-    packageHmacKey = await HmacSecretKey.importRawKey(hmacKeyBytes, Hash.sha256);
+    packageHmacKey = await HmacSecretKey.importRawKey(
+      hmacKeyBytes,
+      Hash.sha256,
+    );
 
-    rsaSpkiBytes = (await subtle.exportKey('spki', jsRsaPair.publicKey))
-        .asUint8List();
-    rsaPkcs8Bytes = (await subtle.exportKey('pkcs8', jsRsaPair.privateKey))
-        .asUint8List();
+    rsaSpkiBytes = (await subtle.exportKey(
+      'spki',
+      jsRsaPair.publicKey,
+    )).asUint8List();
+    rsaPkcs8Bytes = (await subtle.exportKey(
+      'pkcs8',
+      jsRsaPair.privateKey,
+    )).asUint8List();
 
     packageRsaPublicKey = await RsaOaepPublicKey.importSpkiKey(
       rsaSpkiBytes,
@@ -125,285 +131,322 @@ void main() {
   });
 
   group('wrapKey equivalence', () {
-    test('AES-CBC raw wrapping matches exportRawKey + encryptBytes exactly', () async {
-      final jsWrapped = await _wrapKey(
-        wrap,
-        'raw',
-        jsHmacKey,
-        jsAesCbcWrappingKey,
-        subtle.Algorithm(name: 'AES-CBC', iv: iv16),
-      );
+    test(
+      'AES-CBC raw wrapping matches exportRawKey + encryptBytes exactly',
+      () async {
+        final jsWrapped = await _wrapKey(
+          wrap,
+          'raw',
+          jsHmacKey,
+          jsAesCbcWrappingKey,
+          subtle.Algorithm(name: 'AES-CBC', iv: iv16),
+        );
 
-      final packageWrapped = await packageAesCbcWrappingKey.encryptBytes(
-        await packageHmacKey.exportRawKey(),
-        iv16,
-      );
+        final packageWrapped = await packageAesCbcWrappingKey.encryptBytes(
+          await packageHmacKey.exportRawKey(),
+          iv16,
+        );
 
-      expect(jsWrapped, orderedEquals(packageWrapped));
+        expect(jsWrapped, orderedEquals(packageWrapped));
 
-      final jsUnwrapped = await _unwrapKey(
-        wrap,
-        'raw',
-        packageWrapped,
-        jsAesCbcWrappingKey,
-        subtle.Algorithm(name: 'AES-CBC', iv: iv16),
-        const subtle.Algorithm(name: 'HMAC', hash: 'SHA-256'),
-        ['sign', 'verify'],
-      );
-      final jsUnwrappedRaw = (await subtle.exportKey('raw', jsUnwrapped))
-          .asUint8List();
-      expect(jsUnwrappedRaw, orderedEquals(hmacKeyBytes));
+        final jsUnwrapped = await _unwrapKey(
+          wrap,
+          'raw',
+          packageWrapped,
+          jsAesCbcWrappingKey,
+          subtle.Algorithm(name: 'AES-CBC', iv: iv16),
+          const subtle.Algorithm(name: 'HMAC', hash: 'SHA-256'),
+          ['sign', 'verify'],
+        );
+        final jsUnwrappedRaw = (await subtle.exportKey(
+          'raw',
+          jsUnwrapped,
+        )).asUint8List();
+        expect(jsUnwrappedRaw, orderedEquals(hmacKeyBytes));
 
-      final packageUnwrappedRaw = await packageAesCbcWrappingKey.decryptBytes(
-        jsWrapped,
-        iv16,
-      );
-      expect(packageUnwrappedRaw, orderedEquals(hmacKeyBytes));
-    });
+        final packageUnwrappedRaw = await packageAesCbcWrappingKey.decryptBytes(
+          jsWrapped,
+          iv16,
+        );
+        expect(packageUnwrappedRaw, orderedEquals(hmacKeyBytes));
+      },
+    );
 
-    test('AES-CTR raw wrapping matches exportRawKey + encryptBytes exactly', () async {
-      final ctrAlgorithm = subtle.Algorithm(
-        name: 'AES-CTR',
-        counter: counter,
-        length: 64,
-      );
-      final jsWrapped = await _wrapKey(
-        wrap,
-        'raw',
-        jsHmacKey,
-        jsAesCtrWrappingKey,
-        ctrAlgorithm,
-      );
+    test(
+      'AES-CTR raw wrapping matches exportRawKey + encryptBytes exactly',
+      () async {
+        final ctrAlgorithm = subtle.Algorithm(
+          name: 'AES-CTR',
+          counter: counter,
+          length: 64,
+        );
+        final jsWrapped = await _wrapKey(
+          wrap,
+          'raw',
+          jsHmacKey,
+          jsAesCtrWrappingKey,
+          ctrAlgorithm,
+        );
 
-      final packageWrapped = await packageAesCtrWrappingKey.encryptBytes(
-        await packageHmacKey.exportRawKey(),
-        counter,
-        64,
-      );
+        final packageWrapped = await packageAesCtrWrappingKey.encryptBytes(
+          await packageHmacKey.exportRawKey(),
+          counter,
+          64,
+        );
 
-      expect(jsWrapped, orderedEquals(packageWrapped));
+        expect(jsWrapped, orderedEquals(packageWrapped));
 
-      final jsUnwrapped = await _unwrapKey(
-        wrap,
-        'raw',
-        packageWrapped,
-        jsAesCtrWrappingKey,
-        ctrAlgorithm,
-        const subtle.Algorithm(name: 'HMAC', hash: 'SHA-256'),
-        ['sign', 'verify'],
-      );
-      final jsUnwrappedRaw = (await subtle.exportKey('raw', jsUnwrapped))
-          .asUint8List();
-      expect(jsUnwrappedRaw, orderedEquals(hmacKeyBytes));
+        final jsUnwrapped = await _unwrapKey(
+          wrap,
+          'raw',
+          packageWrapped,
+          jsAesCtrWrappingKey,
+          ctrAlgorithm,
+          const subtle.Algorithm(name: 'HMAC', hash: 'SHA-256'),
+          ['sign', 'verify'],
+        );
+        final jsUnwrappedRaw = (await subtle.exportKey(
+          'raw',
+          jsUnwrapped,
+        )).asUint8List();
+        expect(jsUnwrappedRaw, orderedEquals(hmacKeyBytes));
 
-      final packageUnwrappedRaw = await packageAesCtrWrappingKey.decryptBytes(
-        jsWrapped,
-        counter,
-        64,
-      );
-      expect(packageUnwrappedRaw, orderedEquals(hmacKeyBytes));
-    });
+        final packageUnwrappedRaw = await packageAesCtrWrappingKey.decryptBytes(
+          jsWrapped,
+          counter,
+          64,
+        );
+        expect(packageUnwrappedRaw, orderedEquals(hmacKeyBytes));
+      },
+    );
 
-    test('AES-GCM raw wrapping matches exportRawKey + encryptBytes exactly', () async {
-      final jsWrapped = await _wrapKey(
-        wrap,
-        'raw',
-        jsHmacKey,
-        jsAesWrappingKey,
-        aesGcmAlgorithm,
-      );
+    test(
+      'AES-GCM raw wrapping matches exportRawKey + encryptBytes exactly',
+      () async {
+        final jsWrapped = await _wrapKey(
+          wrap,
+          'raw',
+          jsHmacKey,
+          jsAesWrappingKey,
+          aesGcmAlgorithm,
+        );
 
-      final packageWrapped = await packageAesWrappingKey.encryptBytes(
-        await packageHmacKey.exportRawKey(),
-        iv,
-        additionalData: additionalData,
-      );
+        final packageWrapped = await packageAesWrappingKey.encryptBytes(
+          await packageHmacKey.exportRawKey(),
+          iv,
+          additionalData: additionalData,
+        );
 
-      expect(jsWrapped, orderedEquals(packageWrapped));
+        expect(jsWrapped, orderedEquals(packageWrapped));
 
-      final jsUnwrapped = await _unwrapKey(
-        wrap,
-        'raw',
-        packageWrapped,
-        jsAesWrappingKey,
-        aesGcmAlgorithm,
-        const subtle.Algorithm(name: 'HMAC', hash: 'SHA-256'),
-        ['sign', 'verify'],
-      );
-      final jsUnwrappedRaw = (await subtle.exportKey('raw', jsUnwrapped))
-          .asUint8List();
-      expect(jsUnwrappedRaw, orderedEquals(hmacKeyBytes));
+        final jsUnwrapped = await _unwrapKey(
+          wrap,
+          'raw',
+          packageWrapped,
+          jsAesWrappingKey,
+          aesGcmAlgorithm,
+          const subtle.Algorithm(name: 'HMAC', hash: 'SHA-256'),
+          ['sign', 'verify'],
+        );
+        final jsUnwrappedRaw = (await subtle.exportKey(
+          'raw',
+          jsUnwrapped,
+        )).asUint8List();
+        expect(jsUnwrappedRaw, orderedEquals(hmacKeyBytes));
 
-      final packageUnwrappedRaw = await packageAesWrappingKey.decryptBytes(
-        jsWrapped,
-        iv,
-        additionalData: additionalData,
-      );
-      expect(packageUnwrappedRaw, orderedEquals(hmacKeyBytes));
-    });
+        final packageUnwrappedRaw = await packageAesWrappingKey.decryptBytes(
+          jsWrapped,
+          iv,
+          additionalData: additionalData,
+        );
+        expect(packageUnwrappedRaw, orderedEquals(hmacKeyBytes));
+      },
+    );
 
-    test('AES-GCM spki wrapping matches exportSpkiKey + encryptBytes exactly', () async {
-      final jsWrapped = await _wrapKey(
-        wrap,
-        'spki',
-        jsRsaPair.publicKey,
-        jsAesWrappingKey,
-        aesGcmAlgorithm,
-      );
+    test(
+      'AES-GCM spki wrapping matches exportSpkiKey + encryptBytes exactly',
+      () async {
+        final jsWrapped = await _wrapKey(
+          wrap,
+          'spki',
+          jsRsaPair.publicKey,
+          jsAesWrappingKey,
+          aesGcmAlgorithm,
+        );
 
-      final packageWrapped = await packageAesWrappingKey.encryptBytes(
-        await packageRsaPublicKey.exportSpkiKey(),
-        iv,
-        additionalData: additionalData,
-      );
+        final packageWrapped = await packageAesWrappingKey.encryptBytes(
+          await packageRsaPublicKey.exportSpkiKey(),
+          iv,
+          additionalData: additionalData,
+        );
 
-      expect(jsWrapped, orderedEquals(packageWrapped));
+        expect(jsWrapped, orderedEquals(packageWrapped));
 
-      final jsUnwrapped = await _unwrapKey(
-        wrap,
-        'spki',
-        packageWrapped,
-        jsAesWrappingKey,
-        aesGcmAlgorithm,
-        const subtle.Algorithm(name: 'RSA-OAEP', hash: 'SHA-256'),
-        ['encrypt'],
-      );
-      final jsUnwrappedSpki = (await subtle.exportKey('spki', jsUnwrapped))
-          .asUint8List();
-      expect(jsUnwrappedSpki, orderedEquals(rsaSpkiBytes));
+        final jsUnwrapped = await _unwrapKey(
+          wrap,
+          'spki',
+          packageWrapped,
+          jsAesWrappingKey,
+          aesGcmAlgorithm,
+          const subtle.Algorithm(name: 'RSA-OAEP', hash: 'SHA-256'),
+          ['encrypt'],
+        );
+        final jsUnwrappedSpki = (await subtle.exportKey(
+          'spki',
+          jsUnwrapped,
+        )).asUint8List();
+        expect(jsUnwrappedSpki, orderedEquals(rsaSpkiBytes));
 
-      final packageUnwrappedSpki = await packageAesWrappingKey.decryptBytes(
-        jsWrapped,
-        iv,
-        additionalData: additionalData,
-      );
-      expect(packageUnwrappedSpki, orderedEquals(rsaSpkiBytes));
-    });
+        final packageUnwrappedSpki = await packageAesWrappingKey.decryptBytes(
+          jsWrapped,
+          iv,
+          additionalData: additionalData,
+        );
+        expect(packageUnwrappedSpki, orderedEquals(rsaSpkiBytes));
+      },
+    );
 
-    test('AES-GCM pkcs8 wrapping matches exportPkcs8Key + encryptBytes exactly', () async {
-      final jsWrapped = await _wrapKey(
-        wrap,
-        'pkcs8',
-        jsRsaPair.privateKey,
-        jsAesWrappingKey,
-        aesGcmAlgorithm,
-      );
+    test(
+      'AES-GCM pkcs8 wrapping matches exportPkcs8Key + encryptBytes exactly',
+      () async {
+        final jsWrapped = await _wrapKey(
+          wrap,
+          'pkcs8',
+          jsRsaPair.privateKey,
+          jsAesWrappingKey,
+          aesGcmAlgorithm,
+        );
 
-      final packageWrapped = await packageAesWrappingKey.encryptBytes(
-        await packageRsaPrivateKey.exportPkcs8Key(),
-        iv,
-        additionalData: additionalData,
-      );
+        final packageWrapped = await packageAesWrappingKey.encryptBytes(
+          await packageRsaPrivateKey.exportPkcs8Key(),
+          iv,
+          additionalData: additionalData,
+        );
 
-      expect(jsWrapped, orderedEquals(packageWrapped));
+        expect(jsWrapped, orderedEquals(packageWrapped));
 
-      final jsUnwrapped = await _unwrapKey(
-        wrap,
-        'pkcs8',
-        packageWrapped,
-        jsAesWrappingKey,
-        aesGcmAlgorithm,
-        const subtle.Algorithm(name: 'RSA-OAEP', hash: 'SHA-256'),
-        ['decrypt'],
-      );
-      final jsUnwrappedPkcs8 = (await subtle.exportKey('pkcs8', jsUnwrapped))
-          .asUint8List();
-      expect(jsUnwrappedPkcs8, orderedEquals(rsaPkcs8Bytes));
+        final jsUnwrapped = await _unwrapKey(
+          wrap,
+          'pkcs8',
+          packageWrapped,
+          jsAesWrappingKey,
+          aesGcmAlgorithm,
+          const subtle.Algorithm(name: 'RSA-OAEP', hash: 'SHA-256'),
+          ['decrypt'],
+        );
+        final jsUnwrappedPkcs8 = (await subtle.exportKey(
+          'pkcs8',
+          jsUnwrapped,
+        )).asUint8List();
+        expect(jsUnwrappedPkcs8, orderedEquals(rsaPkcs8Bytes));
 
-      final packageUnwrappedPkcs8 = await packageAesWrappingKey.decryptBytes(
-        jsWrapped,
-        iv,
-        additionalData: additionalData,
-      );
-      expect(packageUnwrappedPkcs8, orderedEquals(rsaPkcs8Bytes));
-    });
+        final packageUnwrappedPkcs8 = await packageAesWrappingKey.decryptBytes(
+          jsWrapped,
+          iv,
+          additionalData: additionalData,
+        );
+        expect(packageUnwrappedPkcs8, orderedEquals(rsaPkcs8Bytes));
+      },
+    );
 
-    test('RSA-OAEP raw wrapping is cross-compatible even though ciphertext is randomized', () async {
-      final wrapParams = subtle.Algorithm(
-        name: 'RSA-OAEP',
-        label: Uint8List.fromList([1, 2, 3, 4]),
-      );
+    test(
+      'RSA-OAEP raw wrapping is cross-compatible even though ciphertext is randomized',
+      () async {
+        final wrapParams = subtle.Algorithm(
+          name: 'RSA-OAEP',
+          label: Uint8List.fromList([1, 2, 3, 4]),
+        );
 
-      final jsWrapped = await _wrapKey(
-        wrap,
-        'raw',
-        jsHmacKey,
-        jsRsaPair.publicKey,
-        wrapParams,
-      );
-      final packageWrapped = await packageRsaPublicKey.encryptBytes(
-        await packageHmacKey.exportRawKey(),
-        label: const [1, 2, 3, 4],
-      );
+        final jsWrapped = await _wrapKey(
+          wrap,
+          'raw',
+          jsHmacKey,
+          jsRsaPair.publicKey,
+          wrapParams,
+        );
+        final packageWrapped = await packageRsaPublicKey.encryptBytes(
+          await packageHmacKey.exportRawKey(),
+          label: const [1, 2, 3, 4],
+        );
 
-      expect(jsWrapped, isNot(orderedEquals(packageWrapped)));
+        expect(jsWrapped, isNot(orderedEquals(packageWrapped)));
 
-      final packageUnwrappedRaw = await packageRsaPrivateKey.decryptBytes(
-        jsWrapped,
-        label: const [1, 2, 3, 4],
-      );
-      expect(packageUnwrappedRaw, orderedEquals(hmacKeyBytes));
+        final packageUnwrappedRaw = await packageRsaPrivateKey.decryptBytes(
+          jsWrapped,
+          label: const [1, 2, 3, 4],
+        );
+        expect(packageUnwrappedRaw, orderedEquals(hmacKeyBytes));
 
-      final jsUnwrapped = await _unwrapKey(
-        wrap,
-        'raw',
-        packageWrapped,
-        jsRsaPair.privateKey,
-        wrapParams,
-        const subtle.Algorithm(name: 'HMAC', hash: 'SHA-256'),
-        ['sign', 'verify'],
-      );
-      final jsUnwrappedRaw = (await subtle.exportKey('raw', jsUnwrapped))
-          .asUint8List();
-      expect(jsUnwrappedRaw, orderedEquals(hmacKeyBytes));
-    });
+        final jsUnwrapped = await _unwrapKey(
+          wrap,
+          'raw',
+          packageWrapped,
+          jsRsaPair.privateKey,
+          wrapParams,
+          const subtle.Algorithm(name: 'HMAC', hash: 'SHA-256'),
+          ['sign', 'verify'],
+        );
+        final jsUnwrappedRaw = (await subtle.exportKey(
+          'raw',
+          jsUnwrapped,
+        )).asUint8List();
+        expect(jsUnwrappedRaw, orderedEquals(hmacKeyBytes));
+      },
+    );
 
-    test('JWK wrapKey carries ext/key_ops metadata that package exportJsonWebKey omits', () async {
-      final jsWrapped = await _wrapKey(
-        wrap,
-        'jwk',
-        jsHmacKey,
-        jsAesWrappingKey,
-        aesGcmAlgorithm,
-      );
+    test(
+      'JWK wrapKey carries ext/key_ops metadata that package exportJsonWebKey omits',
+      () async {
+        final jsWrapped = await _wrapKey(
+          wrap,
+          'jwk',
+          jsHmacKey,
+          jsAesWrappingKey,
+          aesGcmAlgorithm,
+        );
 
-      final packageWrapped = await packageAesWrappingKey.encryptBytes(
-        utf8.encode(jsonEncode(await packageHmacKey.exportJsonWebKey())),
-        iv,
-        additionalData: additionalData,
-      );
+        final packageWrapped = await packageAesWrappingKey.encryptBytes(
+          utf8.encode(jsonEncode(await packageHmacKey.exportJsonWebKey())),
+          iv,
+          additionalData: additionalData,
+        );
 
-      expect(jsWrapped, isNot(orderedEquals(packageWrapped)));
+        expect(jsWrapped, isNot(orderedEquals(packageWrapped)));
 
-      final jsJwk = jsonDecode(
-        utf8.decode(
-          await packageAesWrappingKey.decryptBytes(
-            jsWrapped,
-            iv,
-            additionalData: additionalData,
-          ),
-        ),
-      ) as Map<String, dynamic>;
-      final packageJwk = jsonDecode(
-        utf8.decode(
-          await packageAesWrappingKey.decryptBytes(
-            packageWrapped,
-            iv,
-            additionalData: additionalData,
-          ),
-        ),
-      ) as Map<String, dynamic>;
+        final jsJwk =
+            jsonDecode(
+                  utf8.decode(
+                    await packageAesWrappingKey.decryptBytes(
+                      jsWrapped,
+                      iv,
+                      additionalData: additionalData,
+                    ),
+                  ),
+                )
+                as Map<String, dynamic>;
+        final packageJwk =
+            jsonDecode(
+                  utf8.decode(
+                    await packageAesWrappingKey.decryptBytes(
+                      packageWrapped,
+                      iv,
+                      additionalData: additionalData,
+                    ),
+                  ),
+                )
+                as Map<String, dynamic>;
 
-      expect(jsJwk['ext'], isTrue);
-      expect(jsJwk['key_ops'], orderedEquals(['sign', 'verify']));
-      expect(packageJwk.containsKey('ext'), isFalse);
-      expect(packageJwk.containsKey('key_ops'), isFalse);
+        expect(jsJwk['ext'], isTrue);
+        expect(jsJwk['key_ops'], orderedEquals(['sign', 'verify']));
+        expect(packageJwk.containsKey('ext'), isFalse);
+        expect(packageJwk.containsKey('key_ops'), isFalse);
 
-      final normalizedJsJwk = Map<String, dynamic>.from(jsJwk)
-        ..remove('ext')
-        ..remove('key_ops');
-      expect(normalizedJsJwk, equals(packageJwk));
-    });
+        final normalizedJsJwk = Map<String, dynamic>.from(jsJwk)
+          ..remove('ext')
+          ..remove('key_ops');
+        expect(normalizedJsJwk, equals(packageJwk));
+      },
+    );
   });
 }
 
