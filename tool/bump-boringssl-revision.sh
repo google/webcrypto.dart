@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2020 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -89,6 +89,7 @@ get_current_revision() {
     fi
 }
 
+# update_revision <new-revision>
 update_revision() {
     local new_revision="$1"
     echo "$new_revision" > "$REVISION_FILE"
@@ -99,6 +100,7 @@ get_latest_revision() {
     git ls-remote "$BORINGSSL_REPOSITORY" HEAD | awk '{print $1}'
 }
 
+# check_command <command> <hint>
 check_command() {
     local command="$1"
     local hint="$2"
@@ -108,32 +110,25 @@ check_command() {
     fi
 }
 
-mkdirp() {
-    local path="$1"
-    if [[ ! -d "$path" ]]; then
-        mkdir -p "$path"
-    fi
-}
-
 cleanup_boringssl() {
     local path="$ROOT/third_party/boringssl"
     log_info "Cleaning up old BoringSSL files..."
     rm -rf "$path"
-    mkdirp "$path"
+    mkdir -p "$path"
 }
 
+# git_clone_boringssl <revision> <destination-folder>
 git_clone_boringssl() {
     local revision="$1"
-    local temp_dir="$2"
-    local target="$temp_dir/boringssl"
+    local target="$2"
 
     log_info "Cloning BoringSSL repository..."
     git clone "$BORINGSSL_REPOSITORY" "$target" >/dev/null 2>&1
     log_info "Checking out revision: $revision"
     git -C "$target" checkout --detach "$revision" >/dev/null 2>&1
-    echo "$target"
 }
 
+# write_build_manifest <boringssl-src-root> <manifest-path>
 write_build_manifest() {
     local src_root="$1"
     local manifest="$2"
@@ -187,6 +182,7 @@ prefix_src_tree_path() {
     fi
 }
 
+# write_sources_cmake <manifest-path>
 write_sources_cmake() {
     local manifest="$1"
     local dest="$ROOT/third_party/boringssl/sources.cmake"
@@ -194,7 +190,7 @@ write_sources_cmake() {
     log_info "Writing sources.cmake..."
 
     cat > "$dest" <<'EOF'
-# Copyright 2020 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -231,6 +227,7 @@ EOF
     done
 }
 
+# copy_manifest_group <manifest-path> <jq-selector> <source-root> <destination-root>
 copy_manifest_group() {
     local manifest="$1"
     local jq_selector="$2"
@@ -241,12 +238,13 @@ copy_manifest_group() {
         if [[ -n "$file" ]]; then
             local src="$src_root/$file"
             local dst="$dest_root/$(prefix_src_tree_path "$file")"
-            mkdirp "$(dirname "$dst")"
+            mkdir -p "$(dirname "$dst")"
             cp "$src" "$dst"
         fi
     done
 }
 
+# copy_asm_outputs <manifest-path> <source-root> <destination-root>
 copy_asm_outputs() {
     local manifest="$1"
     local src_root="$2"
@@ -256,12 +254,13 @@ copy_asm_outputs() {
         if [[ -n "$file" ]]; then
             local src="$src_root/$file"
             local dst="$dest_root/$file"
-            mkdirp "$(dirname "$dst")"
+            mkdir -p "$(dirname "$dst")"
             cp "$src" "$dst"
         fi
     done
 }
 
+# copy_sources <manifest-path> <source-root>
 copy_sources() {
     local manifest="$1"
     local src_root="$2"
@@ -292,8 +291,7 @@ write_boringssl_readme() {
 
 This folder contains sources from BoringSSL allowing `package:webcrypto` to
 incorporate libcrypto from BoringSSL. Contents of this folder are generated
-using `tool/bump-boringssl-revision.sh`, following BoringSSL's
-`INCORPORATING.md` guidance.
+using `tool/bump-boringssl-revision.sh`.
 
 Files in this folder are subject to `LICENSE` from the BoringSSL project.
 
@@ -306,17 +304,18 @@ files and information about BoringSSL refer to the [BoringSSL repository][1].
 EOF
 }
 
+# update_boringssl_sources <revision>
 update_boringssl_sources() {
     local revision="$1"
     local temp_dir
     temp_dir=$(mktemp -d)
+    local src_root="$temp_dir/boringssl"
     local manifest="$temp_dir/build-files.json"
 
     log_info "Starting BoringSSL update to revision: $revision"
 
     cleanup_boringssl
-    local src_root
-    src_root=$(git_clone_boringssl "$revision" "$temp_dir")
+    git_clone_boringssl "$revision" "$src_root"
 
     log_info "Enumerating source files using upstream generate_build_files.py"
     write_build_manifest "$src_root" "$manifest"
