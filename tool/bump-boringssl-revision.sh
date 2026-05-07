@@ -138,35 +138,101 @@ import json
 import os
 import sys
 
-
-class Capture:
-    def WriteFiles(self, file_sets, asm_outputs):
-        self.file_sets = file_sets
-        self.asm_outputs = asm_outputs
-
-
 boringssl_root = os.path.abspath(sys.argv[1])
-sys.path.insert(0, os.path.join(boringssl_root, "util"))
-import generate_build_files  # type: ignore
+sources_json = os.path.join(boringssl_root, "gen", "sources.json")
+if not os.path.exists(sources_json):
+    sources_json = os.path.join(boringssl_root, "sources.json")
 
-capture = Capture()
-cwd = os.getcwd()
-try:
-    os.chdir(boringssl_root)
-    generate_build_files.EMBED_TEST_DATA = False
-    generate_build_files.main([capture])
-finally:
-    os.chdir(cwd)
+if not os.path.exists(sources_json):
+    raise SystemExit(f"Could not find sources.json in {boringssl_root}")
+
+with open(sources_json, encoding="utf-8") as f:
+    sources = json.load(f)
+
+
+def classify_asm(path):
+    normalized = path[4:] if path.startswith("src/") else path
+
+    if normalized.endswith(".asm"):
+        if "-x86-win.asm" in normalized:
+            return "win_x86"
+        if "-x86_64-win.asm" in normalized:
+            return "win_x86_64"
+        return None
+
+    if normalized.endswith("-win.S"):
+        return "win_aarch64"
+
+    if normalized.endswith("-apple.S"):
+        if "x86_64" in normalized:
+            return "apple_x86_64"
+        if "-x86-" in normalized or "x86-apple" in normalized:
+            return "apple_x86"
+        if "armv7" in normalized or "armv4" in normalized:
+            return "apple_arm"
+        if "armv8" in normalized:
+            return "apple_aarch64"
+        return None
+
+    if normalized.endswith("-linux.S"):
+        if "ppc" in normalized:
+            return "linux_ppc64le"
+        if "x86_64" in normalized:
+            return "linux_x86_64"
+        if "-x86-" in normalized or "586-linux" in normalized:
+            return "linux_x86"
+        if "armv7" in normalized or "armv4" in normalized:
+            return "linux_arm"
+        if "armv8" in normalized:
+            return "linux_aarch64"
+        return None
+
+    if normalized == "crypto/curve25519/asm/x25519-asm-arm.S":
+        return "linux_arm"
+    if normalized == "crypto/poly1305/poly1305_arm_asm.S":
+        return "linux_arm"
+    if normalized == "crypto/hrss/asm/poly_rq_mul.S":
+        return "linux_x86_64"
+    if normalized.startswith("third_party/fiat/asm/"):
+        return "linux_x86_64"
+
+    return None
+
+
+asm_outputs = {
+    "apple_aarch64": [],
+    "apple_arm": [],
+    "apple_x86": [],
+    "apple_x86_64": [],
+    "linux_aarch64": [],
+    "linux_arm": [],
+    "linux_ppc64le": [],
+    "linux_x86": [],
+    "linux_x86_64": [],
+    "win_aarch64": [],
+    "win_x86": [],
+    "win_x86_64": [],
+}
+
+for file in (
+    sources.get("bcm_sources_asm", [])
+    + sources.get("bcm_sources_nasm", [])
+    + sources.get("crypto_sources_asm", [])
+    + sources.get("crypto_sources_nasm", [])
+):
+    key = classify_asm(file)
+    if key is not None:
+        asm_outputs[key].append(file)
 
 payload = {
-    "crypto_sources": sorted(capture.file_sets["crypto"]),
-    "crypto_headers": sorted(capture.file_sets["crypto_headers"]),
-    "crypto_internal_headers": sorted(capture.file_sets["crypto_internal_headers"]),
-    "fips_fragments": sorted(capture.file_sets["fips_fragments"]),
-    "asm_outputs": {
-        f"{osname}_{arch}": sorted(files)
-        for (osname, arch), files in capture.asm_outputs
-    },
+    "crypto_sources": sorted(sources.get("bcm_sources", []) + sources.get("crypto_sources", [])),
+    "crypto_headers": sorted(sources.get("crypto_headers", [])),
+    "crypto_internal_headers": sorted(
+        sources.get("bcm_internal_headers", [])
+        + sources.get("crypto_internal_headers", [])
+    ),
+    "fips_fragments": [],
+    "asm_outputs": {key: sorted(files) for key, files in asm_outputs.items() if files},
 }
 json.dump(payload, sys.stdout, indent=2, sort_keys=True)
 sys.stdout.write("\n")
@@ -175,6 +241,10 @@ PY
 
 prefix_src_tree_path() {
     local path="$1"
+    if [[ "$path" == src/* ]]; then
+        echo "$path"
+        return
+    fi
     if [[ "$path" == */* ]]; then
         echo "src/$path"
     else
@@ -317,7 +387,7 @@ update_boringssl_sources() {
     cleanup_boringssl
     git_clone_boringssl "$revision" "$src_root"
 
-    log_info "Enumerating source files using upstream generate_build_files.py"
+    log_info "Enumerating source files using upstream sources.json"
     write_build_manifest "$src_root" "$manifest"
 
     local source_count
