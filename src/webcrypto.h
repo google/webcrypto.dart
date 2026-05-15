@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <stddef.h>
 #include <stdint.h>
 
 // Macro for annotating all functions to be exported
@@ -27,3 +28,6 @@
 // Function to lookup BoringSSL symbols based on index in the Sym enum.
 // See src/symbols.yaml for details.
 WEBCRYPTO_EXPORT void* webcrypto_lookup_symbol(int32_t index);
+
+// Helper function to get the size of CBB structure for FFI allocation.
+WEBCRYPTO_EXPORT size_t webcrypto_get_CBB_size(void);

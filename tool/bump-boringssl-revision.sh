@@ -61,6 +61,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROOT="$DIR/.."
 REVISION_FILE="$DIR/REVISION"
 BORINGSSL_REPOSITORY='https://boringssl.googlesource.com/boringssl'
+PYTHON_BIN=""
 
 log_info() {
     echo "[info] $1"
@@ -110,6 +111,21 @@ check_command() {
     fi
 }
 
+# resolve_python
+resolve_python() {
+    local command
+    for command in python3 python; do
+        if command -v "$command" >/dev/null 2>&1 &&
+           "$command" -c "import sys" >/dev/null 2>&1; then
+            echo "$command"
+            return 0
+        fi
+    done
+
+    log_error "python3 or python is required to enumerate BoringSSL source files"
+    exit 1
+}
+
 cleanup_boringssl() {
     local path="$ROOT/third_party/boringssl"
     log_info "Cleaning up old BoringSSL files..."
@@ -133,7 +149,7 @@ write_build_manifest() {
     local src_root="$1"
     local manifest="$2"
 
-    python3 - "$src_root" > "$manifest" <<'PY'
+    "$PYTHON_BIN" - "$src_root" > "$manifest" <<'PY'
 import json
 import os
 import sys
@@ -149,43 +165,41 @@ if not os.path.exists(sources_json):
 with open(sources_json, encoding="utf-8") as f:
     sources = json.load(f)
 
+bcm = sources.get("bcm", {})
+crypto = sources.get("crypto", {})
+test_support = sources.get("test_support", {})
+
 
 def classify_asm(path):
     normalized = path[4:] if path.startswith("src/") else path
 
     if normalized.endswith(".asm"):
-        if "-x86-win.asm" in normalized:
+        if "-x86-win.asm" in normalized or "586-win.asm" in normalized:
             return "win_x86"
-        if "-x86_64-win.asm" in normalized:
-            return "win_x86_64"
-        return None
+        return "win_x86_64"
 
     if normalized.endswith("-win.S"):
         return "win_aarch64"
 
     if normalized.endswith("-apple.S"):
-        if "x86_64" in normalized:
-            return "apple_x86_64"
-        if "-x86-" in normalized or "x86-apple" in normalized:
-            return "apple_x86"
         if "armv7" in normalized or "armv4" in normalized:
             return "apple_arm"
         if "armv8" in normalized:
             return "apple_aarch64"
-        return None
+        if "-x86-" in normalized or "x86-apple" in normalized:
+            return "apple_x86"
+        return "apple_x86_64"
 
     if normalized.endswith("-linux.S"):
         if "ppc" in normalized:
             return "linux_ppc64le"
-        if "x86_64" in normalized:
-            return "linux_x86_64"
-        if "-x86-" in normalized or "586-linux" in normalized:
-            return "linux_x86"
         if "armv7" in normalized or "armv4" in normalized:
             return "linux_arm"
         if "armv8" in normalized:
             return "linux_aarch64"
-        return None
+        if "-x86-" in normalized or "586-linux" in normalized:
+            return "linux_x86"
+        return "linux_x86_64"
 
     if normalized == "crypto/curve25519/asm/x25519-asm-arm.S":
         return "linux_arm"
@@ -215,21 +229,23 @@ asm_outputs = {
 }
 
 for file in (
-    sources.get("bcm_sources_asm", [])
-    + sources.get("bcm_sources_nasm", [])
-    + sources.get("crypto_sources_asm", [])
-    + sources.get("crypto_sources_nasm", [])
+    bcm.get("asm", [])
+    + bcm.get("nasm", [])
+    + crypto.get("asm", [])
+    + crypto.get("nasm", [])
+    + test_support.get("asm", [])
+    + test_support.get("nasm", [])
 ):
     key = classify_asm(file)
     if key is not None:
         asm_outputs[key].append(file)
 
 payload = {
-    "crypto_sources": sorted(sources.get("bcm_sources", []) + sources.get("crypto_sources", [])),
-    "crypto_headers": sorted(sources.get("crypto_headers", [])),
+    "crypto_sources": sorted(bcm.get("srcs", []) + crypto.get("srcs", [])),
+    "crypto_headers": sorted(crypto.get("hdrs", [])),
     "crypto_internal_headers": sorted(
-        sources.get("bcm_internal_headers", [])
-        + sources.get("crypto_internal_headers", [])
+        bcm.get("internal_hdrs", [])
+        + crypto.get("internal_hdrs", [])
     ),
     "fips_fragments": [],
     "asm_outputs": {key: sorted(files) for key, files in asm_outputs.items() if files},
@@ -282,15 +298,15 @@ EOF
 
     echo "" >> "$dest"
     echo "set(crypto_sources" >> "$dest"
-    jq -r '.crypto_sources[]' "$manifest" | while read -r file; do
+    jq -r '.crypto_sources[]' "$manifest" | tr -d '\r' | while read -r file; do
         echo "  \${BORINGSSL_ROOT}$(prefix_src_tree_path "$file")" >> "$dest"
     done
     echo ")" >> "$dest"
 
-    jq -r '.asm_outputs | keys[]' "$manifest" | while read -r key; do
+    jq -r '.asm_outputs | keys[]' "$manifest" | tr -d '\r' | while read -r key; do
         echo "" >> "$dest"
         echo "set(crypto_sources_$key" >> "$dest"
-        jq -r --arg key "$key" '.asm_outputs[$key][]' "$manifest" | while read -r file; do
+        jq -r --arg key "$key" '.asm_outputs[$key][]' "$manifest" | tr -d '\r' | while read -r file; do
             echo "  \${BORINGSSL_ROOT}$file" >> "$dest"
         done
         echo ")" >> "$dest"
@@ -304,7 +320,7 @@ copy_manifest_group() {
     local src_root="$3"
     local dest_root="$4"
 
-    jq -r "$jq_selector" "$manifest" | while read -r file; do
+    jq -r "$jq_selector" "$manifest" | tr -d '\r' | while read -r file; do
         if [[ -n "$file" ]]; then
             local src="$src_root/$file"
             local dst="$dest_root/$(prefix_src_tree_path "$file")"
@@ -320,7 +336,7 @@ copy_asm_outputs() {
     local src_root="$2"
     local dest_root="$3"
 
-    jq -r '.asm_outputs[]?[]' "$manifest" | while read -r file; do
+    jq -r '.asm_outputs[]?[]' "$manifest" | tr -d '\r' | while read -r file; do
         if [[ -n "$file" ]]; then
             local src="$src_root/$file"
             local dst="$dest_root/$file"
@@ -432,7 +448,7 @@ main() {
     check_command git "git is not installed or not in PATH"
     check_command dart "dart is required to regenerate bindings and run tests"
     check_command jq "jq is required to parse generated BoringSSL source metadata"
-    check_command python3 "python3 is required to enumerate BoringSSL source files"
+    PYTHON_BIN=$(resolve_python)
 
     section "Cleaning up build artifacts"
     log_info "Running clean.sh..."
@@ -450,7 +466,7 @@ main() {
 
     section "Generating symbols table"
     log_info "Running generate_symbols_table.dart..."
-    dart run "$DIR/generate_symbols_table.dart"
+    dart "$DIR/generate_symbols_table.dart"
 
     section "Updating FFI bindings"
     log_info "Running update-bindings.sh..."

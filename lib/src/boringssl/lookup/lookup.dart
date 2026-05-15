@@ -28,6 +28,12 @@ export 'symbols.generated.dart' show Sym;
 )
 external Pointer<Void> _nativeWebcryptoLookupSymbol(int index);
 
+@Native<Size Function()>(
+  symbol: 'webcrypto_get_CBB_size',
+  assetId: 'package:webcrypto/webcrypto.dart',
+)
+external int _nativeWebcryptoGetCbbSize();
+
 /// Resolve lookup from the bundled native asset for `package:webcrypto`.
 Pointer<T> lookup<T extends NativeType>(String symbolName) {
   final sym = symFromString(symbolName);
@@ -36,6 +42,9 @@ Pointer<T> lookup<T extends NativeType>(String symbolName) {
 
 /// Gives access to BoringSSL symbols.
 final BoringSsl ssl = BoringSsl.fromLookup(lookup);
+
+/// Gets the native `sizeof(CBB)` value from the bundled helper library.
+int nativeWebcryptoGetCbbSize() => _nativeWebcryptoGetCbbSize();
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.
