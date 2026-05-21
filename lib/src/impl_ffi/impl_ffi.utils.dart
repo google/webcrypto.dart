@@ -308,12 +308,14 @@ extension on _Scope {
 
   ffi.Pointer<CBS> createCBS(List<int> data) {
     final cbs = this<CBS>();
-    ssl.CBS_init(cbs, dataAsPointer(data), data.length);
+    cbs.ref.data = dataAsPointer(data);
+    cbs.ref.len = data.length;
     return cbs;
   }
 
   ffi.Pointer<CBB> createCBB([int sizeHint = 4096]) {
-    final cbb = this<CBB>();
+    final cbbSize = nativeWebcryptoGetCbbSize();
+    final cbb = allocate<ffi.Uint8>(cbbSize).cast<CBB>();
     ssl.CBB_zero(cbb);
     _checkOp(ssl.CBB_init(cbb, sizeHint) == 1, fallback: 'allocation failure');
     defer(() => ssl.CBB_cleanup(cbb));

@@ -3,9 +3,8 @@
 **GENERATED FOLDER DO NOT MODIFY**
 
 This folder contains sources from BoringSSL allowing `package:webcrypto` to
-incorporate libcrypto from BoringSSL. Contents of this folder is generated
-using `tool/update-boringssl.py` which utilizes scripts and procedures from
-`src/INCORPORATING.md` to faciliate embedding of libcrypto from BoringSSL.
+incorporate libcrypto from BoringSSL. Contents of this folder are generated
+using `tool/bump-boringssl-revision.sh`.
 
 Files in this folder are subject to `LICENSE` from the BoringSSL project.
 

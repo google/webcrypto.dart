@@ -17,18 +17,28 @@
 set -e
 section() { echo ''; echo "### $1"; echo '';}
 
+run_with_xvfb() {
+  if command -v xvfb-run >/dev/null 2>&1; then
+    xvfb-run "$@"
+  else
+    "$@"
+  fi
+}
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd "$DIR/.."
 
-# We use 'flutter pub get' because example/ requires flutter!
-section 'Running "flutter pub get"'
-flutter pub get
+section 'Running "dart pub get --no-example"'
+dart pub get --no-example
 
 section 'dart test (vm,chrome,firefox)'
-xvfb-run dart test -p vm,chrome,firefox
+run_with_xvfb dart test -p vm,chrome,firefox
 
 cd "$DIR/../example"
+
+section 'Running "flutter pub get" in example/'
+flutter pub get
 
 # List devices and run integration tests on each device (if available)
 # Skip "chrome" because it's not supported by integration test system.
@@ -36,7 +46,7 @@ DEVICE_IDS=$(flutter devices --machine | grep '"sdk"')
 for DEVICE in linux android; do
   if echo "$DEVICE_IDS" | grep -i "$DEVICE" > /dev/null; then
     section "Running integration tests on $DEVICE"
-    xvfb-run flutter test integration_test/webcrypto_test.dart -d "$DEVICE"
+    run_with_xvfb flutter test integration_test/webcrypto_test.dart -d "$DEVICE"
   else
     section "Skipping integration tests on $DEVICE (missing device)"
   fi

@@ -15,7 +15,7 @@
 # **GENERATED FILE DO NOT MODIFY**
 #
 # This file is generated using:
-# `tool/update-boringssl.py`
+# `tool/bump-boringssl-revision.sh`
 
 set(crypto_sources
   ${BORINGSSL_ROOT}err_data.c
