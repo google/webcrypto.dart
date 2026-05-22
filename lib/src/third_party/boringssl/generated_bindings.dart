@@ -221,6 +221,10 @@ class BoringSsl {
 
   /// BN_num_bytes returns the minimum number of bytes needed to represent the
   /// absolute value of |bn|.
+  ///
+  /// While |size_t| is the preferred type for byte counts, callers can assume that
+  /// |BIGNUM|s are bounded such that this value, and its corresponding bit count,
+  /// will always fit in |int|.
   int BN_num_bytes(ffi.Pointer<BIGNUM> bn) {
     return _BN_num_bytes(bn);
   }
@@ -286,8 +290,9 @@ class BoringSsl {
   late final _BN_value_one =
       _BN_value_onePtr.asFunction<ffi.Pointer<BIGNUM> Function()>();
 
-  /// BORINGSSL_self_test triggers the FIPS KAT-based self tests. It returns one on
-  /// success and zero on error.
+  /// BORINGSSL_self_test triggers most of the FIPS KAT-based self tests. It
+  /// returns one on success and zero on error. It currently skips the SLH-DSA
+  /// tests, which take a really long time to run.
   int BORINGSSL_self_test() {
     return _BORINGSSL_self_test();
   }
@@ -393,23 +398,6 @@ class BoringSsl {
       );
   late final _CBB_zero =
       _CBB_zeroPtr.asFunction<void Function(ffi.Pointer<CBB>)>();
-
-  /// CBS_init sets |cbs| to point to |data|. It does not take ownership of
-  /// |data|.
-  void CBS_init(ffi.Pointer<CBS> cbs, ffi.Pointer<ffi.Uint8> data, int len) {
-    return _CBS_init(cbs, data, len);
-  }
-
-  late final _CBS_initPtr =
-      _lookup<
-        ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<CBS>, ffi.Pointer<ffi.Uint8>, ffi.Size)
-        >
-      >('CBS_init');
-  late final _CBS_init =
-      _CBS_initPtr.asFunction<
-        void Function(ffi.Pointer<CBS>, ffi.Pointer<ffi.Uint8>, int)
-      >();
 
   /// CRYPTO_memcmp returns zero iff the |len| bytes at |a| and |b| are equal. It
   /// takes an amount of time dependent on |len|, but independent of the contents
@@ -587,7 +575,12 @@ class BoringSsl {
         ffi.Pointer<ECDSA_SIG> Function(ffi.Pointer<CBS>)
       >();
 
-  /// EC_GROUP_free releases a reference to |group|.
+  /// EC_GROUP_free releases a reference to |group|, if |group| was created by
+  /// |EC_GROUP_new_curve_GFp|. If |group| is static, it does nothing.
+  ///
+  /// This function exists for OpenSSL compatibility, and to manage dynamic
+  /// |EC_GROUP|s constructed by |EC_GROUP_new_curve_GFp|. Callers that do not need
+  /// either may ignore this function.
   void EC_GROUP_free(ffi.Pointer<EC_GROUP> group) {
     return _EC_GROUP_free(group);
   }
@@ -641,14 +634,20 @@ class BoringSsl {
   late final _EC_GROUP_get_degree =
       _EC_GROUP_get_degreePtr.asFunction<int Function(ffi.Pointer<EC_GROUP>)>();
 
-  /// EC_GROUP_new_by_curve_name returns a fresh EC_GROUP object for the elliptic
-  /// curve specified by |nid|, or NULL on unsupported NID or allocation failure.
+  /// EC_GROUP_new_by_curve_name returns the |EC_GROUP| object for the elliptic
+  /// curve specified by |nid|, or NULL on unsupported NID.  For OpenSSL
+  /// compatibility, this function returns a non-const pointer which may be passed
+  /// to |EC_GROUP_free|. However, the resulting object is actually static and
+  /// calling |EC_GROUP_free| is optional.
   ///
   /// The supported NIDs are:
-  /// NID_secp224r1 (P-224),
-  /// NID_X9_62_prime256v1 (P-256),
-  /// NID_secp384r1 (P-384),
-  /// NID_secp521r1 (P-521)
+  /// - |NID_secp224r1| (P-224)
+  /// - |NID_X9_62_prime256v1| (P-256)
+  /// - |NID_secp384r1| (P-384)
+  /// - |NID_secp521r1| (P-521)
+  ///
+  /// Calling this function causes all four curves to be linked into the binary.
+  /// Prefer calling |EC_group_*| to allow the static linker to drop unused curves.
   ///
   /// If in doubt, use |NID_X9_62_prime256v1|, or see the curve25519.h header for
   /// more modern primitives.
@@ -818,7 +817,7 @@ class BoringSsl {
   /// EC_KEY_set_public_key sets the public key of |key| to |pub|, by copying it.
   /// It returns one on success and zero otherwise. |key| must already have had a
   /// group configured (see |EC_KEY_set_group| and |EC_KEY_new_by_curve_name|), and
-  /// |pub| must also belong to that group.
+  /// |pub| must also belong to that group, and must not be the point at infinity.
   int EC_KEY_set_public_key(
     ffi.Pointer<EC_KEY> key,
     ffi.Pointer<EC_POINT> pub,
@@ -880,8 +879,8 @@ class BoringSsl {
       _EC_POINT_freePtr.asFunction<void Function(ffi.Pointer<EC_POINT>)>();
 
   /// EC_POINT_get_affine_coordinates_GFp sets |x| and |y| to the affine value of
-  /// |point| using |ctx|, if it's not NULL. It returns one on success and zero
-  /// otherwise.
+  /// |point|. It returns one on success and zero otherwise. |ctx| is ignored and
+  /// may be NULL.
   ///
   /// Either |x| or |y| may be NULL to skip computing that coordinate. This is
   /// slightly faster in the common case where only the x-coordinate is needed.
@@ -936,9 +935,9 @@ class BoringSsl {
       >();
 
   /// EC_POINT_oct2point sets |point| from |len| bytes of X9.62 format
-  /// serialisation in |buf|. It returns one on success and zero on error. The
-  /// |ctx| argument may be used if not NULL. It's considered an error if |buf|
-  /// does not represent a point on the curve.
+  /// serialisation in |buf|. It returns one on success and zero on error. |ctx|
+  /// may be NULL. It's considered an error if |buf| does not represent a point on
+  /// the curve.
   int EC_POINT_oct2point(
     ffi.Pointer<EC_GROUP> group,
     ffi.Pointer<EC_POINT> point,
@@ -973,7 +972,8 @@ class BoringSsl {
       >();
 
   /// EC_POINT_point2cbb behaves like |EC_POINT_point2oct| but appends the
-  /// serialised point to |cbb|. It returns one on success and zero on error.
+  /// serialised point to |cbb|. It returns one on success and zero on error. |ctx|
+  /// is ignored and may be NULL.
   int EC_POINT_point2cbb(
     ffi.Pointer<CBB> out,
     ffi.Pointer<EC_GROUP> group,
@@ -1395,8 +1395,11 @@ class BoringSsl {
         int Function(ffi.Pointer<EVP_CIPHER>)
       >();
 
-  /// EVP_CipherFinal_ex calls either |EVP_EncryptFinal_ex| or
-  /// |EVP_DecryptFinal_ex| depending on how |ctx| has been setup.
+  /// EVP_CipherFinal_ex does the same as |EVP_CipherFinal_ex2|, except that no
+  /// output size is given and thus no bounds checking is performed.
+  ///
+  /// WARNING: This function does not check bounds on out, and correctly sizing
+  /// the output buffer is difficult. Use |EVP_CipherFinal_ex2| instead.
   int EVP_CipherFinal_ex(
     ffi.Pointer<EVP_CIPHER_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
@@ -1467,8 +1470,15 @@ class BoringSsl {
         )
       >();
 
-  /// EVP_CipherUpdate calls either |EVP_EncryptUpdate| or |EVP_DecryptUpdate|
-  /// depending on how |ctx| has been setup.
+  /// EVP_CipherUpdate does the same as |EVP_CipherUpdate_ex|, except that no
+  /// output size is given and thus no bounds checking is performed.
+  ///
+  /// Additionally, if |ctx| is an AEAD cipher, e.g. |EVP_aes_128_gcm|, and |out|
+  /// is NULL, this function instead behaves like |EVP_CipherUpdateAAD|.
+  ///
+  /// WARNING: This function does not check bounds on |out|, and correctly sizing
+  /// the output buffer is difficult. Use |EVP_CipherUpdate_ex| or
+  /// |EVP_CipherUpdateAAD| instead.
   int EVP_CipherUpdate(
     ffi.Pointer<EVP_CIPHER_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
@@ -1693,8 +1703,8 @@ class BoringSsl {
   /// |EVP_DigestVerifyUpdate|. It returns one on success and zero otherwise.
   ///
   /// This function performs streaming signature verification and will fail for
-  /// signature algorithms which do not support this. Use |EVP_PKEY_verify_message|
-  /// for a single-shot verification.
+  /// signature algorithms which do not support this. Use |EVP_DigestVerify| for a
+  /// single-shot verification.
   int EVP_DigestVerifyFinal(
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Uint8> sig,
@@ -1769,8 +1779,8 @@ class BoringSsl {
   /// will be verified by |EVP_DigestVerifyFinal|. It returns one.
   ///
   /// This function performs streaming signature verification and will fail for
-  /// signature algorithms which do not support this. Use |EVP_PKEY_verify_message|
-  /// for a single-shot verification.
+  /// signature algorithms which do not support this. Use |EVP_DigestVerify| for a
+  /// single-shot verification.
   int EVP_DigestVerifyUpdate(
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Void> data,
@@ -1977,16 +1987,16 @@ class BoringSsl {
       >();
 
   /// EVP_PKEY_CTX_set_rsa_pss_saltlen sets the length of the salt in a PSS-padded
-  /// signature. A value of -1 cause the salt to be the same length as the digest
-  /// in the signature. A value of -2 causes the salt to be the maximum length
-  /// that will fit when signing and recovered from the signature when verifying.
-  /// Otherwise the value gives the size of the salt in bytes.
+  /// signature. A value of |RSA_PSS_SALTLEN_DIGEST| causes the salt to be the same
+  /// length as the digest in the signature. A value of |RSA_PSS_SALTLEN_AUTO|
+  /// causes the salt to be the maximum length that will fit when signing and
+  /// recovered from the signature when verifying. Otherwise the value gives the
+  /// size of the salt in bytes.
   ///
-  /// If unsure, use -1.
+  /// If unsure, use |RSA_PSS_SALTLEN_DIGEST|, which is the default. Note this
+  /// differs from OpenSSL, which defaults to |RSA_PSS_SALTLEN_AUTO|.
   ///
   /// Returns one on success or zero on error.
-  ///
-  /// TODO(davidben): The default is currently -2. Switch it to -1.
   int EVP_PKEY_CTX_set_rsa_pss_saltlen(
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     int salt_len,
@@ -2123,8 +2133,8 @@ class BoringSsl {
         int Function(ffi.Pointer<EVP_PKEY_CTX>)
       >();
 
-  /// EVP_PKEY_free frees all data referenced by |pkey| and then frees |pkey|
-  /// itself.
+  /// EVP_PKEY_free decrements the reference count of |pkey| and frees it if the
+  /// reference count drops to zero.
   void EVP_PKEY_free(ffi.Pointer<EVP_PKEY> pkey) {
     return _EVP_PKEY_free(pkey);
   }
@@ -2163,7 +2173,11 @@ class BoringSsl {
       >();
 
   /// EVP_PKEY_id returns the type of |pkey|, which is one of the |EVP_PKEY_*|
-  /// values.
+  /// values above. These type values generally correspond to the algorithm OID,
+  /// but not the parameters, of a SubjectPublicKeyInfo (RFC 5280) or
+  /// PrivateKeyInfo (RFC 5208) AlgorithmIdentifier. Algorithm parameters can be
+  /// inspected with algorithm-specific accessors, e.g.
+  /// |EVP_PKEY_get_ec_curve_nid|.
   int EVP_PKEY_id(ffi.Pointer<EVP_PKEY> pkey) {
     return _EVP_PKEY_id(pkey);
   }
@@ -2206,9 +2220,9 @@ class BoringSsl {
         int Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<EC_KEY>)
       >();
 
-  /// Getting and setting concrete public key types.
+  /// Getting and setting concrete key types.
   ///
-  /// The following functions get and set the underlying public key in an
+  /// The following functions get and set the underlying key representation in an
   /// |EVP_PKEY| object. The |set1| functions take an additional reference to the
   /// underlying key and return one on success or zero if |key| is NULL. The
   /// |assign| functions adopt the caller's reference and return one on success or
@@ -2220,6 +2234,18 @@ class BoringSsl {
   /// non-mutating for thread-safety purposes, but mutating functions on the
   /// returned lower-level objects are considered to also mutate the |EVP_PKEY| and
   /// may not be called concurrently with other operations on the |EVP_PKEY|.
+  ///
+  /// WARNING: Matching OpenSSL, the RSA functions behave non-uniformly.
+  /// |EVP_PKEY_set1_RSA| and |EVP_PKEY_assign_RSA| construct an |EVP_PKEY_RSA|
+  /// key, while the |EVP_PKEY_get0_RSA| and |EVP_PKEY_get1_RSA| will return
+  /// non-NULL for both |EVP_PKEY_RSA| and |EVP_PKEY_RSA_PSS|.
+  ///
+  /// This means callers risk misusing a key if they assume a non-NULL return from
+  /// |EVP_PKEY_get0_RSA| or |EVP_PKEY_get1_RSA| implies |EVP_PKEY_RSA|. Prefer
+  /// |EVP_PKEY_id| to check the type of a key. To reduce this risk, BoringSSL does
+  /// not make |EVP_PKEY_RSA_PSS| available by default, only when callers opt in
+  /// via |EVP_pkey_rsa_pss_sha256|. This differs from upstream OpenSSL, where
+  /// callers are exposed to |EVP_PKEY_RSA_PSS| by default.
   int EVP_PKEY_set1_RSA(ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key) {
     return _EVP_PKEY_set1_RSA(pkey, key);
   }
@@ -2237,7 +2263,21 @@ class BoringSsl {
 
   /// EVP_PKEY_set_type sets the type of |pkey| to |type|. It returns one if
   /// successful or zero if the |type| argument is not one of the |EVP_PKEY_*|
-  /// values. If |pkey| is NULL, it simply reports whether the type is known.
+  /// values supported for use with this function. If |pkey| is NULL, it simply
+  /// reports whether the type is known.
+  ///
+  /// There are very few cases where this function is useful. Changing |pkey|'s
+  /// type clears any previously stored keys, so there is no benefit to loading a
+  /// key and then changing its type. Although |pkey| is left with a type
+  /// configured, it has no key, and functions which set a key, such as
+  /// |EVP_PKEY_set1_RSA|, will configure a type anyway. If writing unit tests that
+  /// are only sensitive to the type of a key, it is preferable to construct a real
+  /// key, so that tests are more representative of production code.
+  ///
+  /// The only API pattern which requires this function is
+  /// |EVP_PKEY_set1_tls_encodedpoint| with X25519, which requires a half-empty
+  /// |EVP_PKEY| that was first configured with |EVP_PKEY_X25519|. Currently, all
+  /// other values of |type| will result in an error.
   int EVP_PKEY_set_type(ffi.Pointer<EVP_PKEY> pkey, int type) {
     return _EVP_PKEY_set_type(pkey, type);
   }
@@ -2371,15 +2411,26 @@ class BoringSsl {
   /// 5208) from |cbs| and advances |cbs|. It returns a newly-allocated |EVP_PKEY|
   /// or NULL on error.
   ///
-  /// The caller must check the type of the parsed private key to ensure it is
-  /// suitable and validate other desired key properties such as RSA modulus size
-  /// or EC curve. In particular, RSA private key operations scale cubicly, so
+  /// Prefer |EVP_PKEY_from_private_key_info| instead. This function has
+  /// several pitfalls:
+  ///
+  /// Callers are expected to handle trailing data returned from |cbs|, making more
+  /// common cases error-prone.
+  ///
+  /// There is also no way to pass in supported algorithms. This function instead
+  /// supports some default set of algorithms. Future versions of BoringSSL may add
+  /// to this list, based on the needs of the other callers. Conversely, some
+  /// algorithms may be intentionally omitted, if they cause too much risk to
+  /// existing callers.
+  ///
+  /// This means the caller must check the type of the parsed private key to ensure
+  /// it is suitable and validate other desired key properties such as RSA modulus
+  /// size or EC curve. In particular, RSA private key operations scale cubicly, so
   /// applications accepting RSA private keys from external sources may need to
   /// bound key sizes (use |EVP_PKEY_bits| or |RSA_bits|) to avoid a DoS vector.
   ///
-  /// A PrivateKeyInfo ends with an optional set of attributes. These are not
-  /// processed and so this function will silently ignore any trailing data in the
-  /// structure.
+  /// A PrivateKeyInfo ends with an optional set of attributes. These are silently
+  /// ignored.
   ffi.Pointer<EVP_PKEY> EVP_parse_private_key(ffi.Pointer<CBS> cbs) {
     return _EVP_parse_private_key(cbs);
   }
@@ -2395,12 +2446,23 @@ class BoringSsl {
 
   /// EVP_parse_public_key decodes a DER-encoded SubjectPublicKeyInfo structure
   /// (RFC 5280) from |cbs| and advances |cbs|. It returns a newly-allocated
-  /// |EVP_PKEY| or NULL on error. If the key is an EC key, the curve is guaranteed
-  /// to be set.
+  /// |EVP_PKEY| or NULL on error.
   ///
-  /// The caller must check the type of the parsed public key to ensure it is
-  /// suitable and validate other desired key properties such as RSA modulus size
-  /// or EC curve.
+  /// Prefer |EVP_PKEY_from_subject_public_key_info| instead. This function has
+  /// several pitfalls:
+  ///
+  /// Callers are expected to handle trailing data returned from |cbs|, making more
+  /// common cases error-prone.
+  ///
+  /// There is also no way to pass in supported algorithms. This function instead
+  /// supports some default set of algorithms. Future versions of BoringSSL may add
+  /// to this list, based on the needs of the other callers. Conversely, some
+  /// algorithms may be intentionally omitted, if they cause too much risk to
+  /// existing callers.
+  ///
+  /// This means callers must check the type of the parsed public key to ensure it
+  /// is suitable and validate other desired key properties such as RSA modulus
+  /// size or EC curve.
   ffi.Pointer<EVP_PKEY> EVP_parse_public_key(ffi.Pointer<CBS> cbs) {
     return _EVP_parse_public_key(cbs);
   }
@@ -2539,10 +2601,10 @@ class BoringSsl {
       _HMAC_CTX_newPtr.asFunction<ffi.Pointer<HMAC_CTX> Function()>();
 
   /// HMAC_Final completes the HMAC operation in |ctx| and writes the result to
-  /// |out| and the sets |*out_len| to the length of the result. On entry, |out|
-  /// must contain at least |HMAC_size| bytes of space. An output size of
-  /// |EVP_MAX_MD_SIZE| will always be large enough. It returns one on success or
-  /// zero on allocation failure.
+  /// |out|. If |out_len| is not |NULL| then it writes the length of the result to
+  /// |*out_len|. On entry, |out| must contain at least |HMAC_size| bytes of
+  /// space. An output size of |EVP_MAX_MD_SIZE| will always be large enough. It
+  /// returns one on success or zero on allocation failure.
   int HMAC_Final(
     ffi.Pointer<HMAC_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
@@ -2651,7 +2713,8 @@ class BoringSsl {
       _HMAC_sizePtr.asFunction<int Function(ffi.Pointer<HMAC_CTX>)>();
 
   /// OPENSSL_free does nothing if |ptr| is NULL. Otherwise it zeros out the
-  /// memory allocated at |ptr| and frees it.
+  /// memory allocated at |ptr| and frees it along with the private data.
+  /// It must only be used on on |ptr| values obtained from |OPENSSL_malloc|
   void OPENSSL_free(ffi.Pointer<ffi.Void> ptr) {
     return _OPENSSL_free(ptr);
   }
@@ -2663,7 +2726,10 @@ class BoringSsl {
   late final _OPENSSL_free =
       _OPENSSL_freePtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
-  /// OPENSSL_malloc acts like a regular |malloc|.
+  /// OPENSSL_malloc is similar to a regular |malloc|, but allocates additional
+  /// private data. The resulting pointer must be freed with |OPENSSL_free|. In
+  /// the case of a malloc failure, prior to returning NULL |OPENSSL_malloc| will
+  /// push |ERR_R_MALLOC_FAILURE| onto the openssl error stack.
   ffi.Pointer<ffi.Void> OPENSSL_malloc(int size) {
     return _OPENSSL_malloc(size);
   }
@@ -2676,7 +2742,8 @@ class BoringSsl {
       _OPENSSL_mallocPtr.asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 
   /// OPENSSL_memdup returns an allocated, duplicate of |size| bytes from |data| or
-  /// NULL on allocation failure.
+  /// NULL on allocation failure. The memory allocated must be freed with
+  /// |OPENSSL_free|.
   ffi.Pointer<ffi.Void> OPENSSL_memdup(ffi.Pointer<ffi.Void> data, int size) {
     return _OPENSSL_memdup(data, size);
   }
@@ -2725,7 +2792,7 @@ class BoringSsl {
             ffi.Size,
             ffi.Pointer<ffi.Uint8>,
             ffi.Size,
-            ffi.UnsignedInt,
+            ffi.Uint32,
             ffi.Pointer<EVP_MD>,
             ffi.Size,
             ffi.Pointer<ffi.Uint8>,
@@ -2746,7 +2813,8 @@ class BoringSsl {
         )
       >();
 
-  /// RAND_bytes writes |len| bytes of random data to |buf| and returns one.
+  /// RAND_bytes writes |len| bytes of random data to |buf| and returns one. In the
+  /// event that sufficient random data can not be obtained, |abort| is called.
   int RAND_bytes(ffi.Pointer<ffi.Uint8> buf, int len) {
     return _RAND_bytes(buf, len);
   }
@@ -2934,7 +3002,8 @@ class BoringSsl {
         )
       >();
 
-  /// RSA_new returns a new, empty |RSA| object or NULL on error.
+  /// RSA_new returns a new, empty |RSA| object or NULL on error. Prefer using
+  /// |RSA_new_public_key| or |RSA_new_private_key| to import an RSA key.
   ffi.Pointer<RSA> RSA_new() {
     return _RSA_new();
   }
@@ -3070,18 +3139,6 @@ typedef BN_ULONG = ffi.Uint64;
 typedef DartBN_ULONG = int;
 typedef CBB = cbb_st;
 typedef CBS = cbs_st;
-
-/// CRYPTO_refcount_t is the type of a reference count.
-///
-/// Since some platforms use C11 atomics to access this, it should have the
-/// _Atomic qualifier. However, this header is included by C++ programs as well
-/// as C code that might not set -std=c11. So, in practice, it's not possible to
-/// do that. Instead we statically assert that the size and native alignment of
-/// a plain uint32_t and an _Atomic uint32_t are equal in refcount_c11.c.
-typedef CRYPTO_refcount_t = ffi.Uint32;
-typedef DartCRYPTO_refcount_t = int;
-typedef DH = dh_st;
-typedef DSA = dsa_st;
 typedef ECDSA_SIG = ecdsa_sig_st;
 typedef EC_GROUP = ec_group_st;
 typedef EC_KEY = ec_key_st;
@@ -3100,7 +3157,6 @@ typedef EVP_CIPHER_CTX = evp_cipher_ctx_st;
 typedef EVP_MD = env_md_st;
 typedef EVP_MD_CTX = env_md_ctx_st;
 typedef EVP_PKEY = evp_pkey_st;
-typedef EVP_PKEY_ASN1_METHOD = evp_pkey_asn1_method_st;
 typedef EVP_PKEY_CTX = evp_pkey_ctx_st;
 
 const int EVP_PKEY_EC = 408;
@@ -3125,16 +3181,13 @@ const int RSA_PKCS1_PADDING = 1;
 
 const int RSA_PKCS1_PSS_PADDING = 6;
 
-final class UnnamedUnion1 extends ffi.Union {
-  external ffi.Pointer<ffi.Void> ptr;
+/// md_data contains the hash-specific context.
+final class UnnamedUnion2 extends ffi.Union {
+  @ffi.Array.multi([208])
+  external ffi.Array<ffi.Uint8> md_data;
 
-  external ffi.Pointer<RSA> rsa;
-
-  external ffi.Pointer<DSA> dsa;
-
-  external ffi.Pointer<DH> dh;
-
-  external ffi.Pointer<EC_KEY> ec;
+  @ffi.Uint64()
+  external int alignment;
 }
 
 final class bignum_ctx extends ffi.Opaque {}
@@ -3175,8 +3228,6 @@ final class bignum_st extends ffi.Struct {
   external int flags;
 }
 
-final class bn_blinding_st extends ffi.Opaque {}
-
 /// bn_gencb_st, or |BN_GENCB|, holds a callback function that is used by
 /// generation functions that can take a very long time to complete. Use
 /// |BN_GENCB_set| to initialise a |BN_GENCB| structure.
@@ -3184,11 +3235,11 @@ final class bn_blinding_st extends ffi.Opaque {}
 /// The callback receives the address of that |BN_GENCB| structure as its last
 /// argument and the user is free to put an arbitrary pointer in |arg|. The other
 /// arguments are set as follows:
-/// event=BN_GENCB_GENERATED, n=i:   after generating the i'th possible prime
+/// - event=BN_GENCB_GENERATED, n=i:   after generating the i'th possible prime
 /// number.
-/// event=BN_GENCB_PRIME_TEST, n=-1: when finished trial division primality
+/// - event=BN_GENCB_PRIME_TEST, n=-1: when finished trial division primality
 /// checks.
-/// event=BN_GENCB_PRIME_TEST, n=i:  when the i'th primality test has finished.
+/// - event=BN_GENCB_PRIME_TEST, n=i:  when the i'th primality test has finished.
 ///
 /// The callback can return zero to abort the generation progress or one to
 /// allow it to continue.
@@ -3196,20 +3247,6 @@ final class bn_blinding_st extends ffi.Opaque {}
 /// When other code needs to call a BN generation function it will often take a
 /// BN_GENCB argument and may call the function with other argument values.
 final class bn_gencb_st extends ffi.Opaque {}
-
-final class bn_mont_ctx_st extends ffi.Struct {
-  /// RR is R^2, reduced modulo |N|. It is used to convert to Montgomery form. It
-  /// is guaranteed to have the same width as |N|.
-  external BIGNUM RR;
-
-  /// N is the modulus. It is always stored in minimal form, so |N.width|
-  /// determines R.
-  external BIGNUM N;
-
-  /// least significant words of (R*Ri-1)/N
-  @ffi.Array.multi([2])
-  external ffi.Array<BN_ULONG> n0;
-}
 
 /// CRYPTO ByteBuilder.
 ///
@@ -3225,52 +3262,11 @@ final class bn_mont_ctx_st extends ffi.Struct {
 /// If one needs to force a length prefix to be written out because a |CBB| is
 /// going out of scope, use |CBB_flush|. If an operation on a |CBB| fails, it is
 /// in an undefined state and must not be used except to call |CBB_cleanup|.
-final class cbb_buffer_st extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint8> buf;
+final class cbb_buffer_st extends ffi.Opaque {}
 
-  /// The number of valid bytes.
-  @ffi.Size()
-  external int len;
+final class cbb_child_st extends ffi.Opaque {}
 
-  /// The size of buf.
-  @ffi.Size()
-  external int cap;
-
-  /// One iff |buf| is owned by this object. If not then |buf|
-  /// cannot be resized.
-  @ffi.Char()
-  external int can_resize;
-
-  /// One iff there was an error writing to this CBB. All future
-  /// operations will fail.
-  @ffi.Char()
-  external int error;
-}
-
-final class cbb_st extends ffi.Struct {
-  external ffi.Pointer<cbb_buffer_st> base;
-
-  /// child points to a child CBB if a length-prefix is pending.
-  external ffi.Pointer<CBB> child;
-
-  /// offset is the number of bytes from the start of |base->buf| to this |CBB|'s
-  /// pending length prefix.
-  @ffi.Size()
-  external int offset;
-
-  /// pending_len_len contains the number of bytes in this |CBB|'s pending
-  /// length-prefix, or zero if no length-prefix is pending.
-  @ffi.Uint8()
-  external int pending_len_len;
-
-  @ffi.Char()
-  external int pending_is_asn1;
-
-  /// is_child is true iff this is a child |CBB| (as opposed to a top-level
-  /// |CBB|). Top-level objects are valid arguments for |CBB_finish|.
-  @ffi.Char()
-  external int is_child;
-}
+final class cbb_st extends ffi.Opaque {}
 
 /// CRYPTO ByteString
 final class cbs_st extends ffi.Struct {
@@ -3279,26 +3275,6 @@ final class cbs_st extends ffi.Struct {
   @ffi.Size()
   external int len;
 }
-
-final class crypto_ex_data_st extends ffi.Struct {
-  external ffi.Pointer<stack_st_void> sk;
-}
-
-/// On glibc, |pthread_rwlock_t| is hidden under feature flags, and we can't
-/// ensure that we'll be able to get it from a public header. It's statically
-/// asserted that this structure is large enough to contain a |pthread_rwlock_t|
-/// by thread_pthread.c.
-final class crypto_mutex_st extends ffi.Union {
-  @ffi.Double()
-  external double alignment;
-
-  @ffi.Array.multi([56])
-  external ffi.Array<ffi.Uint8> padding;
-}
-
-final class dh_st extends ffi.Opaque {}
-
-final class dsa_st extends ffi.Opaque {}
 
 final class ec_group_st extends ffi.Opaque {}
 
@@ -3318,13 +3294,15 @@ final class ecdsa_sig_st extends ffi.Struct {
 
 final class engine_st extends ffi.Opaque {}
 
+/// env_md_ctx_st is typoed ("evp" -> "env"), but the typo comes from OpenSSL
+/// and some consumers forward-declare these structures so we're leaving it
+/// alone.
 final class env_md_ctx_st extends ffi.Struct {
+  /// md_data contains the hash-specific context.
+  external UnnamedUnion2 unnamed;
+
   /// digest is the underlying digest function, or NULL if not set.
   external ffi.Pointer<EVP_MD> digest;
-
-  /// md_data points to a block of memory that contains the hash-specific
-  /// context.
-  external ffi.Pointer<ffi.Void> md_data;
 
   /// pctx is an opaque (at this layer) pointer to additional context that
   /// EVP_PKEY functions may store in this object.
@@ -3352,7 +3330,7 @@ final class evp_aead_ctx_st extends ffi.Struct {
 
 /// AEAD operations.
 final class evp_aead_ctx_st_state extends ffi.Union {
-  @ffi.Array.multi([580])
+  @ffi.Array.multi([560])
   external ffi.Array<ffi.Uint8> opaque;
 
   @ffi.Uint64()
@@ -3414,32 +3392,20 @@ final class evp_cipher_ctx_st extends ffi.Struct {
   /// possible final block
   @ffi.Array.multi([32])
   external ffi.Array<ffi.Uint8> final1;
+
+  /// Has this structure been rendered unusable by a failure.
+  @ffi.Int()
+  external int poisoned;
 }
 
 final class evp_cipher_st extends ffi.Opaque {}
 
+/// Internal constants and structures (hidden).
 final class evp_md_pctx_ops extends ffi.Opaque {}
-
-final class evp_pkey_asn1_method_st extends ffi.Opaque {}
 
 final class evp_pkey_ctx_st extends ffi.Opaque {}
 
-/// Private structures.
-final class evp_pkey_st extends ffi.Struct {
-  @CRYPTO_refcount_t()
-  external int references;
-
-  /// type contains one of the EVP_PKEY_* values or NID_undef and determines
-  /// which element (if any) of the |pkey| union is valid.
-  @ffi.Int()
-  external int type;
-
-  external UnnamedUnion1 pkey;
-
-  /// ameth contains a pointer to a method table that contains many ASN.1
-  /// methods for the key type.
-  external ffi.Pointer<EVP_PKEY_ASN1_METHOD> ameth;
-}
+final class evp_pkey_st extends ffi.Opaque {}
 
 /// Private functions
 final class hmac_ctx_st extends ffi.Struct {
@@ -3450,17 +3416,6 @@ final class hmac_ctx_st extends ffi.Struct {
   external EVP_MD_CTX i_ctx;
 
   external EVP_MD_CTX o_ctx;
-}
-
-/// openssl_method_common_st contains the common part of all method structures.
-/// This must be the first member of all method structures.
-final class openssl_method_common_st extends ffi.Struct {
-  /// dummy – not used.
-  @ffi.Int()
-  external int references;
-
-  @ffi.Char()
-  external int is_static;
 }
 
 /// point_conversion_form_t enumerates forms, as defined in X9.62 (ECDSA), for
@@ -3483,100 +3438,4 @@ abstract class point_conversion_form_t {
   static const int POINT_CONVERSION_HYBRID = 6;
 }
 
-final class rsa_meth_st extends ffi.Struct {
-  external openssl_method_common_st common;
-
-  external ffi.Pointer<ffi.Void> app_data;
-
-  external ffi.Pointer<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<RSA> rsa)>
-  >
-  init;
-
-  external ffi.Pointer<
-    ffi.NativeFunction<ffi.Int Function(ffi.Pointer<RSA> rsa)>
-  >
-  finish;
-
-  /// size returns the size of the RSA modulus in bytes.
-  external ffi.Pointer<
-    ffi.NativeFunction<ffi.Size Function(ffi.Pointer<RSA> rsa)>
-  >
-  size;
-
-  external ffi.Pointer<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Int type,
-        ffi.Pointer<ffi.Uint8> m,
-        ffi.UnsignedInt m_length,
-        ffi.Pointer<ffi.Uint8> sigret,
-        ffi.Pointer<ffi.UnsignedInt> siglen,
-        ffi.Pointer<RSA> rsa,
-      )
-    >
-  >
-  sign;
-
-  /// These functions mirror the |RSA_*| functions of the same name.
-  external ffi.Pointer<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<RSA> rsa,
-        ffi.Pointer<ffi.Size> out_len,
-        ffi.Pointer<ffi.Uint8> out,
-        ffi.Size max_out,
-        ffi.Pointer<ffi.Uint8> in1,
-        ffi.Size in_len,
-        ffi.Int padding,
-      )
-    >
-  >
-  sign_raw;
-
-  external ffi.Pointer<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<RSA> rsa,
-        ffi.Pointer<ffi.Size> out_len,
-        ffi.Pointer<ffi.Uint8> out,
-        ffi.Size max_out,
-        ffi.Pointer<ffi.Uint8> in1,
-        ffi.Size in_len,
-        ffi.Int padding,
-      )
-    >
-  >
-  decrypt;
-
-  /// private_transform takes a big-endian integer from |in|, calculates the
-  /// d'th power of it, modulo the RSA modulus and writes the result as a
-  /// big-endian integer to |out|. Both |in| and |out| are |len| bytes long and
-  /// |len| is always equal to |RSA_size(rsa)|. If the result of the transform
-  /// can be represented in fewer than |len| bytes, then |out| must be zero
-  /// padded on the left.
-  ///
-  /// It returns one on success and zero otherwise.
-  ///
-  /// RSA decrypt and sign operations will call this, thus an ENGINE might wish
-  /// to override it in order to avoid having to implement the padding
-  /// functionality demanded by those, higher level, operations.
-  external ffi.Pointer<
-    ffi.NativeFunction<
-      ffi.Int Function(
-        ffi.Pointer<RSA> rsa,
-        ffi.Pointer<ffi.Uint8> out,
-        ffi.Pointer<ffi.Uint8> in1,
-        ffi.Size len,
-      )
-    >
-  >
-  private_transform;
-
-  @ffi.Int()
-  external int flags;
-}
-
 final class rsa_st extends ffi.Opaque {}
-
-final class stack_st_void extends ffi.Opaque {}
