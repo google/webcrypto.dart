@@ -16,8 +16,14 @@ part of 'impl_ffi.dart';
 
 _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
   return _Scope.sync((scope) {
-    final k = ssl.EVP_parse_private_key(scope.createCBS(keyData));
-    _checkData(k.address != 0, fallback: 'unable to parse key');
+    final cbs = scope.createCBS(keyData);
+    final k = ssl.EVP_parse_private_key(cbs);
+
+    _checkData(
+      k.address != 0 && cbs.ref.len == 0,
+      fallback: 'unable to parse key',
+    );
+
     final key = _EvpPKey.wrap(k);
 
     _checkData(
@@ -37,8 +43,14 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
 
 _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
   return _Scope.sync((scope) {
-    final k = ssl.EVP_parse_public_key(scope.createCBS(keyData));
-    _checkData(k.address != 0, fallback: 'unable to parse key');
+    final cbs = scope.createCBS(keyData);
+    final k = ssl.EVP_parse_public_key(cbs);
+
+    _checkData(
+      k.address != 0 && cbs.ref.len == 0,
+      fallback: 'unable to parse key',
+    );
+
     final key = _EvpPKey.wrap(k);
 
     _checkData(
