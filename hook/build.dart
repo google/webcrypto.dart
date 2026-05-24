@@ -19,6 +19,8 @@ import 'package:hooks/hooks.dart';
 import 'package:native_toolchain_cmake/native_toolchain_cmake.dart';
 
 const _assetName = 'webcrypto.dart';
+const _prebuiltRoot = 'prebuilt';
+const _forceSourceBuildMarker = '.ci_force_source_build';
 
 Future<void> main(List<String> args) async {
   await build(args, (input, output) async {
@@ -31,12 +33,43 @@ Future<void> main(List<String> args) async {
     }
 
     final packageRoot = input.packageRoot;
+    final config = input.config.code;
     final installDir = input.outputDirectory.resolve('install/');
     final sourceDir = packageRoot.resolve('src/');
+    final forceSourceBuild = _shouldForceSourceBuild(packageRoot);
+    final prebuilt = forceSourceBuild
+        ? null
+        : _findPrebuiltAsset(packageRoot, config);
+
+    if (forceSourceBuild) {
+      stdout.writeln('webcrypto: forcing source build for CI validation.');
+    }
+
+    if (prebuilt != null) {
+      stdout.writeln(
+        'webcrypto: using prebuilt native asset for '
+        '${config.targetOS}-${config.targetArchitecture}.',
+      );
+
+      final stagedPrebuilt = await _stagePrebuiltAsset(
+        input: input,
+        prebuilt: prebuilt,
+      );
+      output.assets.code.add(
+        CodeAsset(
+          package: input.packageName,
+          name: _assetName,
+          linkMode: DynamicLoadingBundled(),
+          file: stagedPrebuilt,
+        ),
+      );
+      output.dependencies.add(prebuilt);
+      return;
+    }
 
     stdout.writeln(
       'webcrypto: building native asset for '
-      '${input.config.code.targetOS}-${input.config.code.targetArchitecture}.',
+      '${config.targetOS}-${config.targetArchitecture}.',
     );
 
     final builder = CMakeBuilder.create(
@@ -67,6 +100,38 @@ Future<void> main(List<String> args) async {
 
     output.dependencies.addAll(_buildDependencies(packageRoot));
   });
+}
+
+Uri? _findPrebuiltAsset(Uri packageRoot, CodeConfig config) {
+  final fileName = config.targetOS.dylibFileName('webcrypto');
+  final prebuilt = packageRoot.resolve(
+    '$_prebuiltRoot/'
+    '${config.targetOS.name}/'
+    '${config.targetArchitecture.name}/'
+    '$fileName',
+  );
+  return File.fromUri(prebuilt).existsSync() ? prebuilt : null;
+}
+
+bool _shouldForceSourceBuild(Uri packageRoot) =>
+    File.fromUri(packageRoot.resolve(_forceSourceBuildMarker)).existsSync();
+
+Future<Uri> _stagePrebuiltAsset({
+  required BuildInput input,
+  required Uri prebuilt,
+}) async {
+  final targetDir = input.outputDirectoryShared.resolve(
+    '$_prebuiltRoot/'
+    '${input.config.code.targetOS.name}/'
+    '${input.config.code.targetArchitecture.name}/',
+  );
+  final targetDirectory = Directory.fromUri(targetDir);
+  await targetDirectory.create(recursive: true);
+
+  final fileName = prebuilt.pathSegments.last;
+  final staged = targetDir.resolve(fileName);
+  await File.fromUri(prebuilt).copy(staged.toFilePath());
+  return staged;
 }
 
 final _buildDependencyExtensions = {
