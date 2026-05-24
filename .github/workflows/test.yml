@@ -58,6 +58,17 @@ jobs:
       - uses: dart-lang/setup-dart@v1
       - run: dart pub get --no-example
       - run: xvfb-run dart test -p vm,chrome,firefox -c dart2js,dart2wasm
+  linux-source-build:
+    name: Linux source build / Chrome / Firefox
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - name: Force source builds for hook validation
+        run: touch .ci_force_source_build
+      - run: dart pub get --no-example
+      - run: xvfb-run dart test -p vm,chrome,firefox -c dart2js,dart2wasm
   macos:
     name: MacOS desktop / Chrome
     runs-on: macos-15 # Test with xcode 16

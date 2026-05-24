@@ -1,0 +1,73 @@
+name: build-prebuilt-assets
+
+on:
+  workflow_dispatch:
+
+# This workflow only produces artifacts. Maintainers can review and commit the
+# resulting prebuilts in a follow-up PR or release-prep change.
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build prebuilt asset (${{ matrix.asset_os }} / ${{ matrix.asset_arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            asset_os: linux
+            asset_arch: x64
+            library_name: libwebcrypto.so
+          - runner: windows-latest
+            asset_os: windows
+            asset_arch: x64
+            library_name: webcrypto.dll
+          - runner: macos-13
+            asset_os: macos
+            asset_arch: x64
+            library_name: libwebcrypto.dylib
+          - runner: macos-15
+            asset_os: macos
+            asset_arch: arm64
+            library_name: libwebcrypto.dylib
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install NASM
+        if: runner.os == 'Windows'
+        uses: ilammy/setup-nasm@v1
+
+      - name: Configure Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build
+
+      - name: Build native library
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          build_dir="$PWD/build/prebuilt"
+          install_dir="$PWD/build/prebuilt-install"
+          rm -rf "$build_dir" "$install_dir"
+
+          cmake -S src -B "$build_dir" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$install_dir"
+
+          cmake --build "$build_dir" --config Release --target install
+
+          staged_dir="prebuilt/${{ matrix.asset_os }}/${{ matrix.asset_arch }}"
+          mkdir -p "$staged_dir"
+          cp "$install_dir/${{ matrix.library_name }}" "$staged_dir/${{ matrix.library_name }}"
+
+      - name: Upload prebuilt artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webcrypto-prebuilt-${{ matrix.asset_os }}-${{ matrix.asset_arch }}
+          path: prebuilt/${{ matrix.asset_os }}/${{ matrix.asset_arch }}/${{ matrix.library_name }}
