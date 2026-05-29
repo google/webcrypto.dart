@@ -21,7 +21,8 @@ structs:
   dependency-only: opaque
 functions:
   include:
-    - webcrypto_lookup_symbol
+    - webcrypto_get_CBB_size
+    - webcrypto_get_EVP_PKEY_free_address
 preamble: |
   // Copyright 2021 Google LLC
   //

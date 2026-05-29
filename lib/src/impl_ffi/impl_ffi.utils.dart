@@ -25,7 +25,7 @@ class _EvpPKey implements ffi.Finalizable {
   static const _externalSizeEstimate = 4096;
 
   static final _finalizer = ffi.NativeFinalizer(
-    ssl.addresses.EVP_PKEY_free.cast(),
+    nativeEvpPkeyFreeAddress().cast(),
   );
 
   final ffi.Pointer<EVP_PKEY> _pkey;

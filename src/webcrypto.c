@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-#include <assert.h>
+#include <openssl/bytestring.h>
+#include <openssl/evp.h>
 
-#include "symbols.h"
 #include "webcrypto.h"
-
-WEBCRYPTO_EXPORT void* webcrypto_lookup_symbol(int32_t index) {
-  return _webcrypto_symbol_table[index];
-}
 
 WEBCRYPTO_EXPORT size_t webcrypto_get_CBB_size(void) {
   return sizeof(CBB);
+}
+
+WEBCRYPTO_EXPORT void* webcrypto_get_EVP_PKEY_free_address(void) {
+  return (void*)&EVP_PKEY_free;
 }
