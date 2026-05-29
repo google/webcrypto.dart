@@ -13,38 +13,19 @@
 # limitations under the License.
 
 ### List of BoringSSL symbols used
-# This file is the source of truth for which BoringSSL symbols can be used from
-# in the Dart code using`dart:ffi`.
+# This file is the source of truth for which prefixed BoringSSL entry points
+# `package:webcrypto` binds directly with `dart:ffi`.
 #
-# Symbols have to be looked up using the `webcrypto_lookup_symbol(index)`
-# function defined in `webcrypto.c`, using `index` from the `Symbol` enum
-# defined in `lib/src/boringssl/symbols.generated.dart`.
+# The vendored BoringSSL build is compiled with `BORINGSSL_PREFIX=webcrypto`,
+# so symbols listed here are exported from the bundled native asset as
+# `webcrypto_<symbol>`.
 #
-# This ensures that we have no symbol conflicts with other versions of BoringSSL
-# or OpenSSL that might be linked into the final application, because we only
-# expose the `webcrypto_lookup_symbol` symbol.
+# `tool/generate_direct_bindings.dart` uses this list together with
+# `lib/src/third_party/boringssl/generated_bindings.dart` to generate the direct
+# `@Native(..., assetId: ...)` binding layer in
+# `lib/src/boringssl/lookup/direct_bindings.generated.dart`.
 #
-# On most platforms, like Android, the BoringSSL sources and `webcrypto.c`
-# is compiled to a dynamic library `webcrypto.so`, in this case symbol conflicts
-# is unlikely (if loaded correctly).
-#
-# But on iOS the BoringSSL sources and `webcrypto.c` is compiled into a static
-# library and linked into the final application binary. Symbol conflicts are
-# averted here because BoringSSL is compiled with `-fvisibility=hidden` and,
-# thus, only the `webcrypto_lookup_symbol` symbol is visible when the static
-# library is linked into the final application.
-#
-# Having fewer symbol names in the final application binary (and shared library)
-# also reduces the overall code size. Though symbol names only take up ~2kb.
-#
-# The following files:
-#  - `src/symbols.generated.c`
-#  - `lib/src/boringssl/lookup/symbols.generated.dart`
-# will be generated using `tool/generate_symbols_table.dart`, using the symbols
-# listed in this file.
-#
-# Keep consistent with lib/src/third_party/boringssl/ffigen.yaml and
-# lib/src/boringssl/bindings/ffigen.yaml.
+# Keep consistent with lib/src/third_party/boringssl/ffigen.yaml.
 - BN_bin2bn
 - BN_bn2bin_padded
 - BN_free
@@ -57,7 +38,6 @@
 - CBB_init
 - CBB_len
 - CBB_zero
-- CBS_init
 - CRYPTO_memcmp
 - ECDH_compute_key
 - ECDSA_SIG_free
