@@ -72,7 +72,9 @@ Future<void> main() async {
     }
   }
 
-  print(' - Writing ${outputUri.pathSegments.last} for ${bindings.length} symbols');
+  print(
+    ' - Writing ${outputUri.pathSegments.last} for ${bindings.length} symbols',
+  );
   await File.fromUri(outputUri).writeAsString(_render(bindings));
 
   print(' - Writing ${exportsUri.pathSegments.last}');

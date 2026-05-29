@@ -40,8 +40,7 @@ int nativeWebcryptoGetCbbSize() => _nativeWebcryptoGetCbbSize();
 
 /// Gets the native address of `EVP_PKEY_free` for [NativeFinalizer].
 Pointer<NativeFunction<Void Function(Pointer<EVP_PKEY>)>>
-    nativeEvpPkeyFreeAddress() =>
-        _nativeWebcryptoGetEvpPkeyFreeAddress().cast();
+nativeEvpPkeyFreeAddress() => _nativeWebcryptoGetEvpPkeyFreeAddress().cast();
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.

@@ -30,7 +30,12 @@ import '../jsonwebkey.dart' show JsonWebKey;
 import '../webcrypto/webcrypto.dart';
 import '../impl_interface/impl_interface.dart';
 import '../boringssl/lookup/lookup.dart'
-    show ssl, nativeWebcryptoGetCbbSize, nativeEvpPkeyFreeAddress, ERR_GET_LIB, ERR_GET_REASON;
+    show
+        ssl,
+        nativeWebcryptoGetCbbSize,
+        nativeEvpPkeyFreeAddress,
+        ERR_GET_LIB,
+        ERR_GET_REASON;
 
 part 'impl_ffi.aescbc.dart';
 part 'impl_ffi.aesctr.dart';

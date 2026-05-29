@@ -36,20 +36,17 @@ class WebcryptoBoringSsl {
     return _native_BN_bin2bn(in1, len, ret);
   }
 
-  @ffi.Native<ffi.Pointer<BIGNUM> Function(
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<BIGNUM>,
-          )>(
-    symbol: 'webcrypto_BN_bin2bn',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Pointer<BIGNUM> Function(
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<BIGNUM>,
+    )
+  >(symbol: 'webcrypto_BN_bin2bn', assetId: _assetId)
   external static ffi.Pointer<BIGNUM> _native_BN_bin2bn(
-
     ffi.Pointer<ffi.Uint8> in1,
     int len,
     ffi.Pointer<BIGNUM> ret,
-  
   );
 
   int BN_bn2bin_padded(
@@ -60,20 +57,13 @@ class WebcryptoBoringSsl {
     return _native_BN_bn2bin_padded(out, len, in1);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<BIGNUM>,
-          )>(
-    symbol: 'webcrypto_BN_bn2bin_padded',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<ffi.Uint8>, ffi.Size, ffi.Pointer<BIGNUM>)
+  >(symbol: 'webcrypto_BN_bn2bin_padded', assetId: _assetId)
   external static int _native_BN_bn2bin_padded(
-
     ffi.Pointer<ffi.Uint8> out,
     int len,
     ffi.Pointer<BIGNUM> in1,
-  
   );
 
   void BN_free(ffi.Pointer<BIGNUM> bn) {
@@ -84,9 +74,7 @@ class WebcryptoBoringSsl {
     symbol: 'webcrypto_BN_free',
     assetId: _assetId,
   )
-  external static void _native_BN_free(
-ffi.Pointer<BIGNUM> bn
-  );
+  external static void _native_BN_free(ffi.Pointer<BIGNUM> bn);
 
   ffi.Pointer<BIGNUM> BN_new() {
     return _native_BN_new();
@@ -96,9 +84,7 @@ ffi.Pointer<BIGNUM> bn
     symbol: 'webcrypto_BN_new',
     assetId: _assetId,
   )
-  external static ffi.Pointer<BIGNUM> _native_BN_new(
-
-  );
+  external static ffi.Pointer<BIGNUM> _native_BN_new();
 
   int BN_num_bytes(ffi.Pointer<BIGNUM> bn) {
     return _native_BN_num_bytes(bn);
@@ -108,9 +94,7 @@ ffi.Pointer<BIGNUM> bn
     symbol: 'webcrypto_BN_num_bytes',
     assetId: _assetId,
   )
-  external static int _native_BN_num_bytes(
-ffi.Pointer<BIGNUM> bn
-  );
+  external static int _native_BN_num_bytes(ffi.Pointer<BIGNUM> bn);
 
   int BN_set_word(ffi.Pointer<BIGNUM> bn, int value) {
     return _native_BN_set_word(bn, value);
@@ -120,9 +104,7 @@ ffi.Pointer<BIGNUM> bn
     symbol: 'webcrypto_BN_set_word',
     assetId: _assetId,
   )
-  external static int _native_BN_set_word(
-ffi.Pointer<BIGNUM> bn, int value
-  );
+  external static int _native_BN_set_word(ffi.Pointer<BIGNUM> bn, int value);
 
   void CBB_cleanup(ffi.Pointer<CBB> cbb) {
     return _native_CBB_cleanup(cbb);
@@ -132,9 +114,7 @@ ffi.Pointer<BIGNUM> bn, int value
     symbol: 'webcrypto_CBB_cleanup',
     assetId: _assetId,
   )
-  external static void _native_CBB_cleanup(
-ffi.Pointer<CBB> cbb
-  );
+  external static void _native_CBB_cleanup(ffi.Pointer<CBB> cbb);
 
   ffi.Pointer<ffi.Uint8> CBB_data(ffi.Pointer<CBB> cbb) {
     return _native_CBB_data(cbb);
@@ -144,9 +124,7 @@ ffi.Pointer<CBB> cbb
     symbol: 'webcrypto_CBB_data',
     assetId: _assetId,
   )
-  external static ffi.Pointer<ffi.Uint8> _native_CBB_data(
-ffi.Pointer<CBB> cbb
-  );
+  external static ffi.Pointer<ffi.Uint8> _native_CBB_data(ffi.Pointer<CBB> cbb);
 
   int CBB_flush(ffi.Pointer<CBB> cbb) {
     return _native_CBB_flush(cbb);
@@ -156,9 +134,7 @@ ffi.Pointer<CBB> cbb
     symbol: 'webcrypto_CBB_flush',
     assetId: _assetId,
   )
-  external static int _native_CBB_flush(
-ffi.Pointer<CBB> cbb
-  );
+  external static int _native_CBB_flush(ffi.Pointer<CBB> cbb);
 
   int CBB_init(ffi.Pointer<CBB> cbb, int initial_capacity) {
     return _native_CBB_init(cbb, initial_capacity);
@@ -169,7 +145,8 @@ ffi.Pointer<CBB> cbb
     assetId: _assetId,
   )
   external static int _native_CBB_init(
-ffi.Pointer<CBB> cbb, int initial_capacity
+    ffi.Pointer<CBB> cbb,
+    int initial_capacity,
   );
 
   int CBB_len(ffi.Pointer<CBB> cbb) {
@@ -180,9 +157,7 @@ ffi.Pointer<CBB> cbb, int initial_capacity
     symbol: 'webcrypto_CBB_len',
     assetId: _assetId,
   )
-  external static int _native_CBB_len(
-ffi.Pointer<CBB> cbb
-  );
+  external static int _native_CBB_len(ffi.Pointer<CBB> cbb);
 
   void CBB_zero(ffi.Pointer<CBB> cbb) {
     return _native_CBB_zero(cbb);
@@ -192,24 +167,19 @@ ffi.Pointer<CBB> cbb
     symbol: 'webcrypto_CBB_zero',
     assetId: _assetId,
   )
-  external static void _native_CBB_zero(
-ffi.Pointer<CBB> cbb
-  );
+  external static void _native_CBB_zero(ffi.Pointer<CBB> cbb);
 
   int CRYPTO_memcmp(ffi.Pointer<ffi.Void> a, ffi.Pointer<ffi.Void> b, int len) {
     return _native_CRYPTO_memcmp(a, b, len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_CRYPTO_memcmp',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, ffi.Size)
+  >(symbol: 'webcrypto_CRYPTO_memcmp', assetId: _assetId)
   external static int _native_CRYPTO_memcmp(
-ffi.Pointer<ffi.Void> a, ffi.Pointer<ffi.Void> b, int len
+    ffi.Pointer<ffi.Void> a,
+    ffi.Pointer<ffi.Void> b,
+    int len,
   );
 
   int ECDH_compute_key(
@@ -232,27 +202,25 @@ ffi.Pointer<ffi.Void> a, ffi.Pointer<ffi.Void> b, int len
     return _native_ECDH_compute_key(out, outlen, pub_key, priv_key, kdf);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Size,
-            ffi.Pointer<EC_POINT>,
-            ffi.Pointer<EC_KEY>,
-            ffi.Pointer<
-              ffi.NativeFunction<
-                ffi.Pointer<ffi.Void> Function(
-                  ffi.Pointer<ffi.Void> in1,
-                  ffi.Size inlen,
-                  ffi.Pointer<ffi.Void> out,
-                  ffi.Pointer<ffi.Size> outlen,
-                )
-              >
-            >,
-          )>(
-    symbol: 'webcrypto_ECDH_compute_key',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Size,
+      ffi.Pointer<EC_POINT>,
+      ffi.Pointer<EC_KEY>,
+      ffi.Pointer<
+        ffi.NativeFunction<
+          ffi.Pointer<ffi.Void> Function(
+            ffi.Pointer<ffi.Void> in1,
+            ffi.Size inlen,
+            ffi.Pointer<ffi.Void> out,
+            ffi.Pointer<ffi.Size> outlen,
+          )
+        >
+      >,
+    )
+  >(symbol: 'webcrypto_ECDH_compute_key', assetId: _assetId)
   external static int _native_ECDH_compute_key(
-
     ffi.Pointer<ffi.Void> out,
     int outlen,
     ffi.Pointer<EC_POINT> pub_key,
@@ -268,7 +236,6 @@ ffi.Pointer<ffi.Void> a, ffi.Pointer<ffi.Void> b, int len
       >
     >
     kdf,
-  
   );
 
   void ECDSA_SIG_free(ffi.Pointer<ECDSA_SIG> sig) {
@@ -279,9 +246,7 @@ ffi.Pointer<ffi.Void> a, ffi.Pointer<ffi.Void> b, int len
     symbol: 'webcrypto_ECDSA_SIG_free',
     assetId: _assetId,
   )
-  external static void _native_ECDSA_SIG_free(
-ffi.Pointer<ECDSA_SIG> sig
-  );
+  external static void _native_ECDSA_SIG_free(ffi.Pointer<ECDSA_SIG> sig);
 
   void ECDSA_SIG_get0(
     ffi.Pointer<ECDSA_SIG> sig,
@@ -291,20 +256,17 @@ ffi.Pointer<ECDSA_SIG> sig
     return _native_ECDSA_SIG_get0(sig, out_r, out_s);
   }
 
-  @ffi.Native<ffi.Void Function(
-            ffi.Pointer<ECDSA_SIG>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-          )>(
-    symbol: 'webcrypto_ECDSA_SIG_get0',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Void Function(
+      ffi.Pointer<ECDSA_SIG>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+    )
+  >(symbol: 'webcrypto_ECDSA_SIG_get0', assetId: _assetId)
   external static void _native_ECDSA_SIG_get0(
-
     ffi.Pointer<ECDSA_SIG> sig,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_r,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_s,
-  
   );
 
   int ECDSA_SIG_marshal(ffi.Pointer<CBB> cbb, ffi.Pointer<ECDSA_SIG> sig) {
@@ -316,7 +278,8 @@ ffi.Pointer<ECDSA_SIG> sig
     assetId: _assetId,
   )
   external static int _native_ECDSA_SIG_marshal(
-ffi.Pointer<CBB> cbb, ffi.Pointer<ECDSA_SIG> sig
+    ffi.Pointer<CBB> cbb,
+    ffi.Pointer<ECDSA_SIG> sig,
   );
 
   ffi.Pointer<ECDSA_SIG> ECDSA_SIG_new() {
@@ -327,9 +290,7 @@ ffi.Pointer<CBB> cbb, ffi.Pointer<ECDSA_SIG> sig
     symbol: 'webcrypto_ECDSA_SIG_new',
     assetId: _assetId,
   )
-  external static ffi.Pointer<ECDSA_SIG> _native_ECDSA_SIG_new(
-
-  );
+  external static ffi.Pointer<ECDSA_SIG> _native_ECDSA_SIG_new();
 
   ffi.Pointer<ECDSA_SIG> ECDSA_SIG_parse(ffi.Pointer<CBS> cbs) {
     return _native_ECDSA_SIG_parse(cbs);
@@ -340,7 +301,7 @@ ffi.Pointer<CBB> cbb, ffi.Pointer<ECDSA_SIG> sig
     assetId: _assetId,
   )
   external static ffi.Pointer<ECDSA_SIG> _native_ECDSA_SIG_parse(
-ffi.Pointer<CBS> cbs
+    ffi.Pointer<CBS> cbs,
   );
 
   ffi.Pointer<BIGNUM> EC_GROUP_get0_order(ffi.Pointer<EC_GROUP> group) {
@@ -352,7 +313,7 @@ ffi.Pointer<CBS> cbs
     assetId: _assetId,
   )
   external static ffi.Pointer<BIGNUM> _native_EC_GROUP_get0_order(
-ffi.Pointer<EC_GROUP> group
+    ffi.Pointer<EC_GROUP> group,
   );
 
   int EC_GROUP_get_curve_name(ffi.Pointer<EC_GROUP> group) {
@@ -364,7 +325,7 @@ ffi.Pointer<EC_GROUP> group
     assetId: _assetId,
   )
   external static int _native_EC_GROUP_get_curve_name(
-ffi.Pointer<EC_GROUP> group
+    ffi.Pointer<EC_GROUP> group,
   );
 
   int EC_GROUP_get_degree(ffi.Pointer<EC_GROUP> group) {
@@ -375,9 +336,7 @@ ffi.Pointer<EC_GROUP> group
     symbol: 'webcrypto_EC_GROUP_get_degree',
     assetId: _assetId,
   )
-  external static int _native_EC_GROUP_get_degree(
-ffi.Pointer<EC_GROUP> group
-  );
+  external static int _native_EC_GROUP_get_degree(ffi.Pointer<EC_GROUP> group);
 
   int EC_KEY_check_key(ffi.Pointer<EC_KEY> key) {
     return _native_EC_KEY_check_key(key);
@@ -387,9 +346,7 @@ ffi.Pointer<EC_GROUP> group
     symbol: 'webcrypto_EC_KEY_check_key',
     assetId: _assetId,
   )
-  external static int _native_EC_KEY_check_key(
-ffi.Pointer<EC_KEY> key
-  );
+  external static int _native_EC_KEY_check_key(ffi.Pointer<EC_KEY> key);
 
   void EC_KEY_free(ffi.Pointer<EC_KEY> key) {
     return _native_EC_KEY_free(key);
@@ -399,9 +356,7 @@ ffi.Pointer<EC_KEY> key
     symbol: 'webcrypto_EC_KEY_free',
     assetId: _assetId,
   )
-  external static void _native_EC_KEY_free(
-ffi.Pointer<EC_KEY> key
-  );
+  external static void _native_EC_KEY_free(ffi.Pointer<EC_KEY> key);
 
   int EC_KEY_generate_key(ffi.Pointer<EC_KEY> key) {
     return _native_EC_KEY_generate_key(key);
@@ -411,9 +366,7 @@ ffi.Pointer<EC_KEY> key
     symbol: 'webcrypto_EC_KEY_generate_key',
     assetId: _assetId,
   )
-  external static int _native_EC_KEY_generate_key(
-ffi.Pointer<EC_KEY> key
-  );
+  external static int _native_EC_KEY_generate_key(ffi.Pointer<EC_KEY> key);
 
   ffi.Pointer<EC_GROUP> EC_KEY_get0_group(ffi.Pointer<EC_KEY> key) {
     return _native_EC_KEY_get0_group(key);
@@ -424,7 +377,7 @@ ffi.Pointer<EC_KEY> key
     assetId: _assetId,
   )
   external static ffi.Pointer<EC_GROUP> _native_EC_KEY_get0_group(
-ffi.Pointer<EC_KEY> key
+    ffi.Pointer<EC_KEY> key,
   );
 
   ffi.Pointer<BIGNUM> EC_KEY_get0_private_key(ffi.Pointer<EC_KEY> key) {
@@ -436,7 +389,7 @@ ffi.Pointer<EC_KEY> key
     assetId: _assetId,
   )
   external static ffi.Pointer<BIGNUM> _native_EC_KEY_get0_private_key(
-ffi.Pointer<EC_KEY> key
+    ffi.Pointer<EC_KEY> key,
   );
 
   ffi.Pointer<EC_POINT> EC_KEY_get0_public_key(ffi.Pointer<EC_KEY> key) {
@@ -448,7 +401,7 @@ ffi.Pointer<EC_KEY> key
     assetId: _assetId,
   )
   external static ffi.Pointer<EC_POINT> _native_EC_KEY_get0_public_key(
-ffi.Pointer<EC_KEY> key
+    ffi.Pointer<EC_KEY> key,
   );
 
   int EC_KEY_get_enc_flags(ffi.Pointer<EC_KEY> key) {
@@ -459,9 +412,7 @@ ffi.Pointer<EC_KEY> key
     symbol: 'webcrypto_EC_KEY_get_enc_flags',
     assetId: _assetId,
   )
-  external static int _native_EC_KEY_get_enc_flags(
-ffi.Pointer<EC_KEY> key
-  );
+  external static int _native_EC_KEY_get_enc_flags(ffi.Pointer<EC_KEY> key);
 
   ffi.Pointer<EC_KEY> EC_KEY_new_by_curve_name(int nid) {
     return _native_EC_KEY_new_by_curve_name(nid);
@@ -471,9 +422,7 @@ ffi.Pointer<EC_KEY> key
     symbol: 'webcrypto_EC_KEY_new_by_curve_name',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EC_KEY> _native_EC_KEY_new_by_curve_name(
-int nid
-  );
+  external static ffi.Pointer<EC_KEY> _native_EC_KEY_new_by_curve_name(int nid);
 
   void EC_KEY_set_enc_flags(ffi.Pointer<EC_KEY> key, int flags) {
     return _native_EC_KEY_set_enc_flags(key, flags);
@@ -484,7 +433,8 @@ int nid
     assetId: _assetId,
   )
   external static void _native_EC_KEY_set_enc_flags(
-ffi.Pointer<EC_KEY> key, int flags
+    ffi.Pointer<EC_KEY> key,
+    int flags,
   );
 
   int EC_KEY_set_private_key(
@@ -499,10 +449,8 @@ ffi.Pointer<EC_KEY> key, int flags
     assetId: _assetId,
   )
   external static int _native_EC_KEY_set_private_key(
-
     ffi.Pointer<EC_KEY> key,
     ffi.Pointer<BIGNUM> priv,
-  
   );
 
   int EC_KEY_set_public_key(
@@ -517,10 +465,8 @@ ffi.Pointer<EC_KEY> key, int flags
     assetId: _assetId,
   )
   external static int _native_EC_KEY_set_public_key(
-
     ffi.Pointer<EC_KEY> key,
     ffi.Pointer<EC_POINT> pub,
-  
   );
 
   int EC_KEY_set_public_key_affine_coordinates(
@@ -531,20 +477,20 @@ ffi.Pointer<EC_KEY> key, int flags
     return _native_EC_KEY_set_public_key_affine_coordinates(key, x, y);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EC_KEY>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-          )>(
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EC_KEY>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+    )
+  >(
     symbol: 'webcrypto_EC_KEY_set_public_key_affine_coordinates',
     assetId: _assetId,
   )
   external static int _native_EC_KEY_set_public_key_affine_coordinates(
-
     ffi.Pointer<EC_KEY> key,
     ffi.Pointer<BIGNUM> x,
     ffi.Pointer<BIGNUM> y,
-  
   );
 
   void EC_POINT_free(ffi.Pointer<EC_POINT> point) {
@@ -555,9 +501,7 @@ ffi.Pointer<EC_KEY> key, int flags
     symbol: 'webcrypto_EC_POINT_free',
     assetId: _assetId,
   )
-  external static void _native_EC_POINT_free(
-ffi.Pointer<EC_POINT> point
-  );
+  external static void _native_EC_POINT_free(ffi.Pointer<EC_POINT> point);
 
   int EC_POINT_get_affine_coordinates_GFp(
     ffi.Pointer<EC_GROUP> group,
@@ -569,24 +513,21 @@ ffi.Pointer<EC_POINT> point
     return _native_EC_POINT_get_affine_coordinates_GFp(group, point, x, y, ctx);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EC_GROUP>,
-            ffi.Pointer<EC_POINT>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BN_CTX>,
-          )>(
-    symbol: 'webcrypto_EC_POINT_get_affine_coordinates_GFp',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EC_GROUP>,
+      ffi.Pointer<EC_POINT>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BN_CTX>,
+    )
+  >(symbol: 'webcrypto_EC_POINT_get_affine_coordinates_GFp', assetId: _assetId)
   external static int _native_EC_POINT_get_affine_coordinates_GFp(
-
     ffi.Pointer<EC_GROUP> group,
     ffi.Pointer<EC_POINT> point,
     ffi.Pointer<BIGNUM> x,
     ffi.Pointer<BIGNUM> y,
     ffi.Pointer<BN_CTX> ctx,
-  
   );
 
   ffi.Pointer<EC_POINT> EC_POINT_new(ffi.Pointer<EC_GROUP> group) {
@@ -598,7 +539,7 @@ ffi.Pointer<EC_POINT> point
     assetId: _assetId,
   )
   external static ffi.Pointer<EC_POINT> _native_EC_POINT_new(
-ffi.Pointer<EC_GROUP> group
+    ffi.Pointer<EC_GROUP> group,
   );
 
   int EC_POINT_oct2point(
@@ -611,24 +552,21 @@ ffi.Pointer<EC_GROUP> group
     return _native_EC_POINT_oct2point(group, point, buf, len, ctx);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EC_GROUP>,
-            ffi.Pointer<EC_POINT>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<BN_CTX>,
-          )>(
-    symbol: 'webcrypto_EC_POINT_oct2point',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EC_GROUP>,
+      ffi.Pointer<EC_POINT>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<BN_CTX>,
+    )
+  >(symbol: 'webcrypto_EC_POINT_oct2point', assetId: _assetId)
   external static int _native_EC_POINT_oct2point(
-
     ffi.Pointer<EC_GROUP> group,
     ffi.Pointer<EC_POINT> point,
     ffi.Pointer<ffi.Uint8> buf,
     int len,
     ffi.Pointer<BN_CTX> ctx,
-  
   );
 
   int EC_POINT_point2cbb(
@@ -641,24 +579,21 @@ ffi.Pointer<EC_GROUP> group
     return _native_EC_POINT_point2cbb(out, group, point, form, ctx);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<CBB>,
-            ffi.Pointer<EC_GROUP>,
-            ffi.Pointer<EC_POINT>,
-            ffi.Int32,
-            ffi.Pointer<BN_CTX>,
-          )>(
-    symbol: 'webcrypto_EC_POINT_point2cbb',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<CBB>,
+      ffi.Pointer<EC_GROUP>,
+      ffi.Pointer<EC_POINT>,
+      ffi.Int32,
+      ffi.Pointer<BN_CTX>,
+    )
+  >(symbol: 'webcrypto_EC_POINT_point2cbb', assetId: _assetId)
   external static int _native_EC_POINT_point2cbb(
-
     ffi.Pointer<CBB> out,
     ffi.Pointer<EC_GROUP> group,
     ffi.Pointer<EC_POINT> point,
     int form,
     ffi.Pointer<BN_CTX> ctx,
-  
   );
 
   void ERR_clear_error() {
@@ -669,9 +604,7 @@ ffi.Pointer<EC_GROUP> group
     symbol: 'webcrypto_ERR_clear_error',
     assetId: _assetId,
   )
-  external static void _native_ERR_clear_error(
-
-  );
+  external static void _native_ERR_clear_error();
 
   ffi.Pointer<ffi.Char> ERR_error_string_n(
     int packed_error,
@@ -681,20 +614,13 @@ ffi.Pointer<EC_GROUP> group
     return _native_ERR_error_string_n(packed_error, buf, len);
   }
 
-  @ffi.Native<ffi.Pointer<ffi.Char> Function(
-            ffi.Uint32,
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_ERR_error_string_n',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Pointer<ffi.Char> Function(ffi.Uint32, ffi.Pointer<ffi.Char>, ffi.Size)
+  >(symbol: 'webcrypto_ERR_error_string_n', assetId: _assetId)
   external static ffi.Pointer<ffi.Char> _native_ERR_error_string_n(
-
     int packed_error,
     ffi.Pointer<ffi.Char> buf,
     int len,
-  
   );
 
   int ERR_get_error() {
@@ -705,9 +631,7 @@ ffi.Pointer<EC_GROUP> group
     symbol: 'webcrypto_ERR_get_error',
     assetId: _assetId,
   )
-  external static int _native_ERR_get_error(
-
-  );
+  external static int _native_ERR_get_error();
 
   int ERR_peek_error() {
     return _native_ERR_peek_error();
@@ -717,9 +641,7 @@ ffi.Pointer<EC_GROUP> group
     symbol: 'webcrypto_ERR_peek_error',
     assetId: _assetId,
   )
-  external static int _native_ERR_peek_error(
-
-  );
+  external static int _native_ERR_peek_error();
 
   ffi.Pointer<EVP_AEAD> EVP_aead_aes_128_gcm() {
     return _native_EVP_aead_aes_128_gcm();
@@ -729,9 +651,7 @@ ffi.Pointer<EC_GROUP> group
     symbol: 'webcrypto_EVP_aead_aes_128_gcm',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_AEAD> _native_EVP_aead_aes_128_gcm(
-
-  );
+  external static ffi.Pointer<EVP_AEAD> _native_EVP_aead_aes_128_gcm();
 
   ffi.Pointer<EVP_AEAD> EVP_aead_aes_256_gcm() {
     return _native_EVP_aead_aes_256_gcm();
@@ -741,9 +661,7 @@ ffi.Pointer<EC_GROUP> group
     symbol: 'webcrypto_EVP_aead_aes_256_gcm',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_AEAD> _native_EVP_aead_aes_256_gcm(
-
-  );
+  external static ffi.Pointer<EVP_AEAD> _native_EVP_aead_aes_256_gcm();
 
   void EVP_AEAD_CTX_free(ffi.Pointer<EVP_AEAD_CTX> ctx) {
     return _native_EVP_AEAD_CTX_free(ctx);
@@ -753,9 +671,7 @@ ffi.Pointer<EC_GROUP> group
     symbol: 'webcrypto_EVP_AEAD_CTX_free',
     assetId: _assetId,
   )
-  external static void _native_EVP_AEAD_CTX_free(
-ffi.Pointer<EVP_AEAD_CTX> ctx
-  );
+  external static void _native_EVP_AEAD_CTX_free(ffi.Pointer<EVP_AEAD_CTX> ctx);
 
   ffi.Pointer<EVP_AEAD_CTX> EVP_AEAD_CTX_new(
     ffi.Pointer<EVP_AEAD> aead,
@@ -766,22 +682,19 @@ ffi.Pointer<EVP_AEAD_CTX> ctx
     return _native_EVP_AEAD_CTX_new(aead, key, key_len, tag_len);
   }
 
-  @ffi.Native<ffi.Pointer<EVP_AEAD_CTX> Function(
-            ffi.Pointer<EVP_AEAD>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_AEAD_CTX_new',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Pointer<EVP_AEAD_CTX> Function(
+      ffi.Pointer<EVP_AEAD>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Size,
+    )
+  >(symbol: 'webcrypto_EVP_AEAD_CTX_new', assetId: _assetId)
   external static ffi.Pointer<EVP_AEAD_CTX> _native_EVP_AEAD_CTX_new(
-
     ffi.Pointer<EVP_AEAD> aead,
     ffi.Pointer<ffi.Uint8> key,
     int key_len,
     int tag_len,
-  
   );
 
   int EVP_AEAD_CTX_open(
@@ -796,7 +709,8 @@ ffi.Pointer<EVP_AEAD_CTX> ctx
     ffi.Pointer<ffi.Uint8> ad,
     int ad_len,
   ) {
-    return _native_EVP_AEAD_CTX_open(ctx,
+    return _native_EVP_AEAD_CTX_open(
+      ctx,
       out,
       out_len,
       max_out_len,
@@ -805,26 +719,25 @@ ffi.Pointer<EVP_AEAD_CTX> ctx
       in1,
       in_len,
       ad,
-      ad_len,);
+      ad_len,
+    );
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_AEAD_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.Size>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_AEAD_CTX_open',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_AEAD_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.Size>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+    )
+  >(symbol: 'webcrypto_EVP_AEAD_CTX_open', assetId: _assetId)
   external static int _native_EVP_AEAD_CTX_open(
-
     ffi.Pointer<EVP_AEAD_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Size> out_len,
@@ -835,7 +748,6 @@ ffi.Pointer<EVP_AEAD_CTX> ctx
     int in_len,
     ffi.Pointer<ffi.Uint8> ad,
     int ad_len,
-  
   );
 
   int EVP_AEAD_CTX_seal(
@@ -850,7 +762,8 @@ ffi.Pointer<EVP_AEAD_CTX> ctx
     ffi.Pointer<ffi.Uint8> ad,
     int ad_len,
   ) {
-    return _native_EVP_AEAD_CTX_seal(ctx,
+    return _native_EVP_AEAD_CTX_seal(
+      ctx,
       out,
       out_len,
       max_out_len,
@@ -859,26 +772,25 @@ ffi.Pointer<EVP_AEAD_CTX> ctx
       in1,
       in_len,
       ad,
-      ad_len,);
+      ad_len,
+    );
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_AEAD_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.Size>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_AEAD_CTX_seal',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_AEAD_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.Size>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+    )
+  >(symbol: 'webcrypto_EVP_AEAD_CTX_seal', assetId: _assetId)
   external static int _native_EVP_AEAD_CTX_seal(
-
     ffi.Pointer<EVP_AEAD_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Size> out_len,
@@ -889,7 +801,6 @@ ffi.Pointer<EVP_AEAD_CTX> ctx
     int in_len,
     ffi.Pointer<ffi.Uint8> ad,
     int ad_len,
-  
   );
 
   int EVP_AEAD_max_overhead(ffi.Pointer<EVP_AEAD> aead) {
@@ -900,9 +811,7 @@ ffi.Pointer<EVP_AEAD_CTX> ctx
     symbol: 'webcrypto_EVP_AEAD_max_overhead',
     assetId: _assetId,
   )
-  external static int _native_EVP_AEAD_max_overhead(
-ffi.Pointer<EVP_AEAD> aead
-  );
+  external static int _native_EVP_AEAD_max_overhead(ffi.Pointer<EVP_AEAD> aead);
 
   ffi.Pointer<EVP_CIPHER> EVP_aes_128_cbc() {
     return _native_EVP_aes_128_cbc();
@@ -912,9 +821,7 @@ ffi.Pointer<EVP_AEAD> aead
     symbol: 'webcrypto_EVP_aes_128_cbc',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_CIPHER> _native_EVP_aes_128_cbc(
-
-  );
+  external static ffi.Pointer<EVP_CIPHER> _native_EVP_aes_128_cbc();
 
   ffi.Pointer<EVP_CIPHER> EVP_aes_128_ctr() {
     return _native_EVP_aes_128_ctr();
@@ -924,9 +831,7 @@ ffi.Pointer<EVP_AEAD> aead
     symbol: 'webcrypto_EVP_aes_128_ctr',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_CIPHER> _native_EVP_aes_128_ctr(
-
-  );
+  external static ffi.Pointer<EVP_CIPHER> _native_EVP_aes_128_ctr();
 
   ffi.Pointer<EVP_CIPHER> EVP_aes_256_cbc() {
     return _native_EVP_aes_256_cbc();
@@ -936,9 +841,7 @@ ffi.Pointer<EVP_AEAD> aead
     symbol: 'webcrypto_EVP_aes_256_cbc',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_CIPHER> _native_EVP_aes_256_cbc(
-
-  );
+  external static ffi.Pointer<EVP_CIPHER> _native_EVP_aes_256_cbc();
 
   ffi.Pointer<EVP_CIPHER> EVP_aes_256_ctr() {
     return _native_EVP_aes_256_ctr();
@@ -948,9 +851,7 @@ ffi.Pointer<EVP_AEAD> aead
     symbol: 'webcrypto_EVP_aes_256_ctr',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_CIPHER> _native_EVP_aes_256_ctr(
-
-  );
+  external static ffi.Pointer<EVP_CIPHER> _native_EVP_aes_256_ctr();
 
   void EVP_CIPHER_CTX_free(ffi.Pointer<EVP_CIPHER_CTX> ctx) {
     return _native_EVP_CIPHER_CTX_free(ctx);
@@ -961,7 +862,7 @@ ffi.Pointer<EVP_AEAD> aead
     assetId: _assetId,
   )
   external static void _native_EVP_CIPHER_CTX_free(
-ffi.Pointer<EVP_CIPHER_CTX> ctx
+    ffi.Pointer<EVP_CIPHER_CTX> ctx,
   );
 
   ffi.Pointer<EVP_CIPHER_CTX> EVP_CIPHER_CTX_new() {
@@ -972,9 +873,7 @@ ffi.Pointer<EVP_CIPHER_CTX> ctx
     symbol: 'webcrypto_EVP_CIPHER_CTX_new',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_CIPHER_CTX> _native_EVP_CIPHER_CTX_new(
-
-  );
+  external static ffi.Pointer<EVP_CIPHER_CTX> _native_EVP_CIPHER_CTX_new();
 
   int EVP_CipherFinal_ex(
     ffi.Pointer<EVP_CIPHER_CTX> ctx,
@@ -984,20 +883,17 @@ ffi.Pointer<EVP_CIPHER_CTX> ctx
     return _native_EVP_CipherFinal_ex(ctx, out, out_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_CIPHER_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.Int>,
-          )>(
-    symbol: 'webcrypto_EVP_CipherFinal_ex',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_CIPHER_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.Int>,
+    )
+  >(symbol: 'webcrypto_EVP_CipherFinal_ex', assetId: _assetId)
   external static int _native_EVP_CipherFinal_ex(
-
     ffi.Pointer<EVP_CIPHER_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Int> out_len,
-  
   );
 
   int EVP_CipherInit_ex(
@@ -1011,26 +907,23 @@ ffi.Pointer<EVP_CIPHER_CTX> ctx
     return _native_EVP_CipherInit_ex(ctx, cipher, engine, key, iv, enc);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_CIPHER_CTX>,
-            ffi.Pointer<EVP_CIPHER>,
-            ffi.Pointer<ENGINE>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Int,
-          )>(
-    symbol: 'webcrypto_EVP_CipherInit_ex',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_CIPHER_CTX>,
+      ffi.Pointer<EVP_CIPHER>,
+      ffi.Pointer<ENGINE>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Int,
+    )
+  >(symbol: 'webcrypto_EVP_CipherInit_ex', assetId: _assetId)
   external static int _native_EVP_CipherInit_ex(
-
     ffi.Pointer<EVP_CIPHER_CTX> ctx,
     ffi.Pointer<EVP_CIPHER> cipher,
     ffi.Pointer<ENGINE> engine,
     ffi.Pointer<ffi.Uint8> key,
     ffi.Pointer<ffi.Uint8> iv,
     int enc,
-  
   );
 
   int EVP_CIPHER_iv_length(ffi.Pointer<EVP_CIPHER> cipher) {
@@ -1042,7 +935,7 @@ ffi.Pointer<EVP_CIPHER_CTX> ctx
     assetId: _assetId,
   )
   external static int _native_EVP_CIPHER_iv_length(
-ffi.Pointer<EVP_CIPHER> cipher
+    ffi.Pointer<EVP_CIPHER> cipher,
   );
 
   int EVP_CipherUpdate(
@@ -1055,24 +948,21 @@ ffi.Pointer<EVP_CIPHER> cipher
     return _native_EVP_CipherUpdate(ctx, out, out_len, in1, in_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_CIPHER_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.Int>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Int,
-          )>(
-    symbol: 'webcrypto_EVP_CipherUpdate',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_CIPHER_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.Int>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Int,
+    )
+  >(symbol: 'webcrypto_EVP_CipherUpdate', assetId: _assetId)
   external static int _native_EVP_CipherUpdate(
-
     ffi.Pointer<EVP_CIPHER_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Int> out_len,
     ffi.Pointer<ffi.Uint8> in1,
     int in_len,
-  
   );
 
   int EVP_DigestFinal(
@@ -1083,20 +973,17 @@ ffi.Pointer<EVP_CIPHER> cipher
     return _native_EVP_DigestFinal(ctx, md_out, out_size);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_MD_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.UnsignedInt>,
-          )>(
-    symbol: 'webcrypto_EVP_DigestFinal',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_MD_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.UnsignedInt>,
+    )
+  >(symbol: 'webcrypto_EVP_DigestFinal', assetId: _assetId)
   external static int _native_EVP_DigestFinal(
-
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Uint8> md_out,
     ffi.Pointer<ffi.UnsignedInt> out_size,
-  
   );
 
   int EVP_DigestInit(ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type) {
@@ -1108,7 +995,8 @@ ffi.Pointer<EVP_CIPHER> cipher
     assetId: _assetId,
   )
   external static int _native_EVP_DigestInit(
-ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
+    ffi.Pointer<EVP_MD_CTX> ctx,
+    ffi.Pointer<EVP_MD> type,
   );
 
   int EVP_DigestSignFinal(
@@ -1119,20 +1007,17 @@ ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
     return _native_EVP_DigestSignFinal(ctx, out_sig, out_sig_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_MD_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.Size>,
-          )>(
-    symbol: 'webcrypto_EVP_DigestSignFinal',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_MD_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.Size>,
+    )
+  >(symbol: 'webcrypto_EVP_DigestSignFinal', assetId: _assetId)
   external static int _native_EVP_DigestSignFinal(
-
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out_sig,
     ffi.Pointer<ffi.Size> out_sig_len,
-  
   );
 
   int EVP_DigestSignInit(
@@ -1145,24 +1030,21 @@ ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
     return _native_EVP_DigestSignInit(ctx, pctx, type, e, pkey);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_MD_CTX>,
-            ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>>,
-            ffi.Pointer<EVP_MD>,
-            ffi.Pointer<ENGINE>,
-            ffi.Pointer<EVP_PKEY>,
-          )>(
-    symbol: 'webcrypto_EVP_DigestSignInit',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_MD_CTX>,
+      ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>>,
+      ffi.Pointer<EVP_MD>,
+      ffi.Pointer<ENGINE>,
+      ffi.Pointer<EVP_PKEY>,
+    )
+  >(symbol: 'webcrypto_EVP_DigestSignInit', assetId: _assetId)
   external static int _native_EVP_DigestSignInit(
-
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx,
     ffi.Pointer<EVP_MD> type,
     ffi.Pointer<ENGINE> e,
     ffi.Pointer<EVP_PKEY> pkey,
-  
   );
 
   int EVP_DigestSignUpdate(
@@ -1173,20 +1055,13 @@ ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
     return _native_EVP_DigestSignUpdate(ctx, data, len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_MD_CTX>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_DigestSignUpdate',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
+  >(symbol: 'webcrypto_EVP_DigestSignUpdate', assetId: _assetId)
   external static int _native_EVP_DigestSignUpdate(
-
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Void> data,
     int len,
-  
   );
 
   int EVP_DigestUpdate(
@@ -1197,20 +1072,13 @@ ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
     return _native_EVP_DigestUpdate(ctx, data, len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_MD_CTX>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_DigestUpdate',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
+  >(symbol: 'webcrypto_EVP_DigestUpdate', assetId: _assetId)
   external static int _native_EVP_DigestUpdate(
-
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Void> data,
     int len,
-  
   );
 
   int EVP_DigestVerifyFinal(
@@ -1221,20 +1089,13 @@ ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
     return _native_EVP_DigestVerifyFinal(ctx, sig, sig_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_MD_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_DigestVerifyFinal',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Uint8>, ffi.Size)
+  >(symbol: 'webcrypto_EVP_DigestVerifyFinal', assetId: _assetId)
   external static int _native_EVP_DigestVerifyFinal(
-
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Uint8> sig,
     int sig_len,
-  
   );
 
   int EVP_DigestVerifyInit(
@@ -1247,24 +1108,21 @@ ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
     return _native_EVP_DigestVerifyInit(ctx, pctx, type, e, pkey);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_MD_CTX>,
-            ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>>,
-            ffi.Pointer<EVP_MD>,
-            ffi.Pointer<ENGINE>,
-            ffi.Pointer<EVP_PKEY>,
-          )>(
-    symbol: 'webcrypto_EVP_DigestVerifyInit',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_MD_CTX>,
+      ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>>,
+      ffi.Pointer<EVP_MD>,
+      ffi.Pointer<ENGINE>,
+      ffi.Pointer<EVP_PKEY>,
+    )
+  >(symbol: 'webcrypto_EVP_DigestVerifyInit', assetId: _assetId)
   external static int _native_EVP_DigestVerifyInit(
-
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Pointer<EVP_PKEY_CTX>> pctx,
     ffi.Pointer<EVP_MD> type,
     ffi.Pointer<ENGINE> e,
     ffi.Pointer<EVP_PKEY> pkey,
-  
   );
 
   int EVP_DigestVerifyUpdate(
@@ -1275,20 +1133,13 @@ ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
     return _native_EVP_DigestVerifyUpdate(ctx, data, len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_MD_CTX>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_DigestVerifyUpdate',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
+  >(symbol: 'webcrypto_EVP_DigestVerifyUpdate', assetId: _assetId)
   external static int _native_EVP_DigestVerifyUpdate(
-
     ffi.Pointer<EVP_MD_CTX> ctx,
     ffi.Pointer<ffi.Void> data,
     int len,
-  
   );
 
   int EVP_marshal_private_key(ffi.Pointer<CBB> cbb, ffi.Pointer<EVP_PKEY> key) {
@@ -1300,7 +1151,8 @@ ffi.Pointer<EVP_MD_CTX> ctx, ffi.Pointer<EVP_MD> type
     assetId: _assetId,
   )
   external static int _native_EVP_marshal_private_key(
-ffi.Pointer<CBB> cbb, ffi.Pointer<EVP_PKEY> key
+    ffi.Pointer<CBB> cbb,
+    ffi.Pointer<EVP_PKEY> key,
   );
 
   int EVP_marshal_public_key(ffi.Pointer<CBB> cbb, ffi.Pointer<EVP_PKEY> key) {
@@ -1312,7 +1164,8 @@ ffi.Pointer<CBB> cbb, ffi.Pointer<EVP_PKEY> key
     assetId: _assetId,
   )
   external static int _native_EVP_marshal_public_key(
-ffi.Pointer<CBB> cbb, ffi.Pointer<EVP_PKEY> key
+    ffi.Pointer<CBB> cbb,
+    ffi.Pointer<EVP_PKEY> key,
   );
 
   void EVP_MD_CTX_free(ffi.Pointer<EVP_MD_CTX> ctx) {
@@ -1323,9 +1176,7 @@ ffi.Pointer<CBB> cbb, ffi.Pointer<EVP_PKEY> key
     symbol: 'webcrypto_EVP_MD_CTX_free',
     assetId: _assetId,
   )
-  external static void _native_EVP_MD_CTX_free(
-ffi.Pointer<EVP_MD_CTX> ctx
-  );
+  external static void _native_EVP_MD_CTX_free(ffi.Pointer<EVP_MD_CTX> ctx);
 
   ffi.Pointer<EVP_MD_CTX> EVP_MD_CTX_new() {
     return _native_EVP_MD_CTX_new();
@@ -1335,9 +1186,7 @@ ffi.Pointer<EVP_MD_CTX> ctx
     symbol: 'webcrypto_EVP_MD_CTX_new',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_MD_CTX> _native_EVP_MD_CTX_new(
-
-  );
+  external static ffi.Pointer<EVP_MD_CTX> _native_EVP_MD_CTX_new();
 
   int EVP_MD_CTX_size(ffi.Pointer<EVP_MD_CTX> ctx) {
     return _native_EVP_MD_CTX_size(ctx);
@@ -1347,9 +1196,7 @@ ffi.Pointer<EVP_MD_CTX> ctx
     symbol: 'webcrypto_EVP_MD_CTX_size',
     assetId: _assetId,
   )
-  external static int _native_EVP_MD_CTX_size(
-ffi.Pointer<EVP_MD_CTX> ctx
-  );
+  external static int _native_EVP_MD_CTX_size(ffi.Pointer<EVP_MD_CTX> ctx);
 
   ffi.Pointer<EVP_PKEY> EVP_parse_private_key(ffi.Pointer<CBS> cbs) {
     return _native_EVP_parse_private_key(cbs);
@@ -1360,7 +1207,7 @@ ffi.Pointer<EVP_MD_CTX> ctx
     assetId: _assetId,
   )
   external static ffi.Pointer<EVP_PKEY> _native_EVP_parse_private_key(
-ffi.Pointer<CBS> cbs
+    ffi.Pointer<CBS> cbs,
   );
 
   ffi.Pointer<EVP_PKEY> EVP_parse_public_key(ffi.Pointer<CBS> cbs) {
@@ -1372,7 +1219,7 @@ ffi.Pointer<CBS> cbs
     assetId: _assetId,
   )
   external static ffi.Pointer<EVP_PKEY> _native_EVP_parse_public_key(
-ffi.Pointer<CBS> cbs
+    ffi.Pointer<CBS> cbs,
   );
 
   void EVP_PKEY_CTX_free(ffi.Pointer<EVP_PKEY_CTX> ctx) {
@@ -1383,9 +1230,7 @@ ffi.Pointer<CBS> cbs
     symbol: 'webcrypto_EVP_PKEY_CTX_free',
     assetId: _assetId,
   )
-  external static void _native_EVP_PKEY_CTX_free(
-ffi.Pointer<EVP_PKEY_CTX> ctx
-  );
+  external static void _native_EVP_PKEY_CTX_free(ffi.Pointer<EVP_PKEY_CTX> ctx);
 
   ffi.Pointer<EVP_PKEY_CTX> EVP_PKEY_CTX_new(
     ffi.Pointer<EVP_PKEY> pkey,
@@ -1394,18 +1239,15 @@ ffi.Pointer<EVP_PKEY_CTX> ctx
     return _native_EVP_PKEY_CTX_new(pkey, e);
   }
 
-  @ffi.Native<ffi.Pointer<EVP_PKEY_CTX> Function(
-            ffi.Pointer<EVP_PKEY>,
-            ffi.Pointer<ENGINE>,
-          )>(
-    symbol: 'webcrypto_EVP_PKEY_CTX_new',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Pointer<EVP_PKEY_CTX> Function(
+      ffi.Pointer<EVP_PKEY>,
+      ffi.Pointer<ENGINE>,
+    )
+  >(symbol: 'webcrypto_EVP_PKEY_CTX_new', assetId: _assetId)
   external static ffi.Pointer<EVP_PKEY_CTX> _native_EVP_PKEY_CTX_new(
-
     ffi.Pointer<EVP_PKEY> pkey,
     ffi.Pointer<ENGINE> e,
-  
   );
 
   int EVP_PKEY_CTX_set0_rsa_oaep_label(
@@ -1416,20 +1258,17 @@ ffi.Pointer<EVP_PKEY_CTX> ctx
     return _native_EVP_PKEY_CTX_set0_rsa_oaep_label(ctx, label, label_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_PKEY_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_PKEY_CTX_set0_rsa_oaep_label',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_PKEY_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+    )
+  >(symbol: 'webcrypto_EVP_PKEY_CTX_set0_rsa_oaep_label', assetId: _assetId)
   external static int _native_EVP_PKEY_CTX_set0_rsa_oaep_label(
-
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     ffi.Pointer<ffi.Uint8> label,
     int label_len,
-  
   );
 
   int EVP_PKEY_CTX_set_rsa_mgf1_md(
@@ -1444,10 +1283,8 @@ ffi.Pointer<EVP_PKEY_CTX> ctx
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_CTX_set_rsa_mgf1_md(
-
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     ffi.Pointer<EVP_MD> md,
-  
   );
 
   int EVP_PKEY_CTX_set_rsa_oaep_md(
@@ -1462,10 +1299,8 @@ ffi.Pointer<EVP_PKEY_CTX> ctx
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_CTX_set_rsa_oaep_md(
-
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     ffi.Pointer<EVP_MD> md,
-  
   );
 
   int EVP_PKEY_CTX_set_rsa_padding(ffi.Pointer<EVP_PKEY_CTX> ctx, int padding) {
@@ -1477,7 +1312,8 @@ ffi.Pointer<EVP_PKEY_CTX> ctx
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_CTX_set_rsa_padding(
-ffi.Pointer<EVP_PKEY_CTX> ctx, int padding
+    ffi.Pointer<EVP_PKEY_CTX> ctx,
+    int padding,
   );
 
   int EVP_PKEY_CTX_set_rsa_pss_saltlen(
@@ -1492,10 +1328,8 @@ ffi.Pointer<EVP_PKEY_CTX> ctx, int padding
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_CTX_set_rsa_pss_saltlen(
-
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     int salt_len,
-  
   );
 
   int EVP_PKEY_decrypt(
@@ -1508,24 +1342,21 @@ ffi.Pointer<EVP_PKEY_CTX> ctx, int padding
     return _native_EVP_PKEY_decrypt(ctx, out, out_len, in1, in_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_PKEY_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.Size>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_PKEY_decrypt',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_PKEY_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.Size>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+    )
+  >(symbol: 'webcrypto_EVP_PKEY_decrypt', assetId: _assetId)
   external static int _native_EVP_PKEY_decrypt(
-
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Size> out_len,
     ffi.Pointer<ffi.Uint8> in1,
     int in_len,
-  
   );
 
   int EVP_PKEY_decrypt_init(ffi.Pointer<EVP_PKEY_CTX> ctx) {
@@ -1537,7 +1368,7 @@ ffi.Pointer<EVP_PKEY_CTX> ctx, int padding
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_decrypt_init(
-ffi.Pointer<EVP_PKEY_CTX> ctx
+    ffi.Pointer<EVP_PKEY_CTX> ctx,
   );
 
   int EVP_PKEY_encrypt(
@@ -1550,24 +1381,21 @@ ffi.Pointer<EVP_PKEY_CTX> ctx
     return _native_EVP_PKEY_encrypt(ctx, out, out_len, in1, in_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<EVP_PKEY_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.Size>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_EVP_PKEY_encrypt',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<EVP_PKEY_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.Size>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+    )
+  >(symbol: 'webcrypto_EVP_PKEY_encrypt', assetId: _assetId)
   external static int _native_EVP_PKEY_encrypt(
-
     ffi.Pointer<EVP_PKEY_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.Size> out_len,
     ffi.Pointer<ffi.Uint8> in1,
     int in_len,
-  
   );
 
   int EVP_PKEY_encrypt_init(ffi.Pointer<EVP_PKEY_CTX> ctx) {
@@ -1579,7 +1407,7 @@ ffi.Pointer<EVP_PKEY_CTX> ctx
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_encrypt_init(
-ffi.Pointer<EVP_PKEY_CTX> ctx
+    ffi.Pointer<EVP_PKEY_CTX> ctx,
   );
 
   void EVP_PKEY_free(ffi.Pointer<EVP_PKEY> pkey) {
@@ -1590,9 +1418,7 @@ ffi.Pointer<EVP_PKEY_CTX> ctx
     symbol: 'webcrypto_EVP_PKEY_free',
     assetId: _assetId,
   )
-  external static void _native_EVP_PKEY_free(
-ffi.Pointer<EVP_PKEY> pkey
-  );
+  external static void _native_EVP_PKEY_free(ffi.Pointer<EVP_PKEY> pkey);
 
   ffi.Pointer<EC_KEY> EVP_PKEY_get1_EC_KEY(ffi.Pointer<EVP_PKEY> pkey) {
     return _native_EVP_PKEY_get1_EC_KEY(pkey);
@@ -1603,7 +1429,7 @@ ffi.Pointer<EVP_PKEY> pkey
     assetId: _assetId,
   )
   external static ffi.Pointer<EC_KEY> _native_EVP_PKEY_get1_EC_KEY(
-ffi.Pointer<EVP_PKEY> pkey
+    ffi.Pointer<EVP_PKEY> pkey,
   );
 
   ffi.Pointer<RSA> EVP_PKEY_get1_RSA(ffi.Pointer<EVP_PKEY> pkey) {
@@ -1615,7 +1441,7 @@ ffi.Pointer<EVP_PKEY> pkey
     assetId: _assetId,
   )
   external static ffi.Pointer<RSA> _native_EVP_PKEY_get1_RSA(
-ffi.Pointer<EVP_PKEY> pkey
+    ffi.Pointer<EVP_PKEY> pkey,
   );
 
   int EVP_PKEY_id(ffi.Pointer<EVP_PKEY> pkey) {
@@ -1626,9 +1452,7 @@ ffi.Pointer<EVP_PKEY> pkey
     symbol: 'webcrypto_EVP_PKEY_id',
     assetId: _assetId,
   )
-  external static int _native_EVP_PKEY_id(
-ffi.Pointer<EVP_PKEY> pkey
-  );
+  external static int _native_EVP_PKEY_id(ffi.Pointer<EVP_PKEY> pkey);
 
   ffi.Pointer<EVP_PKEY> EVP_PKEY_new() {
     return _native_EVP_PKEY_new();
@@ -1638,9 +1462,7 @@ ffi.Pointer<EVP_PKEY> pkey
     symbol: 'webcrypto_EVP_PKEY_new',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_PKEY> _native_EVP_PKEY_new(
-
-  );
+  external static ffi.Pointer<EVP_PKEY> _native_EVP_PKEY_new();
 
   int EVP_PKEY_set1_EC_KEY(
     ffi.Pointer<EVP_PKEY> pkey,
@@ -1654,10 +1476,8 @@ ffi.Pointer<EVP_PKEY> pkey
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_set1_EC_KEY(
-
     ffi.Pointer<EVP_PKEY> pkey,
     ffi.Pointer<EC_KEY> key,
-  
   );
 
   int EVP_PKEY_set1_RSA(ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key) {
@@ -1669,7 +1489,8 @@ ffi.Pointer<EVP_PKEY> pkey
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_set1_RSA(
-ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
+    ffi.Pointer<EVP_PKEY> pkey,
+    ffi.Pointer<RSA> key,
   );
 
   ffi.Pointer<EVP_MD> EVP_sha1() {
@@ -1680,9 +1501,7 @@ ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
     symbol: 'webcrypto_EVP_sha1',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_MD> _native_EVP_sha1(
-
-  );
+  external static ffi.Pointer<EVP_MD> _native_EVP_sha1();
 
   ffi.Pointer<EVP_MD> EVP_sha256() {
     return _native_EVP_sha256();
@@ -1692,9 +1511,7 @@ ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
     symbol: 'webcrypto_EVP_sha256',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_MD> _native_EVP_sha256(
-
-  );
+  external static ffi.Pointer<EVP_MD> _native_EVP_sha256();
 
   ffi.Pointer<EVP_MD> EVP_sha384() {
     return _native_EVP_sha384();
@@ -1704,9 +1521,7 @@ ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
     symbol: 'webcrypto_EVP_sha384',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_MD> _native_EVP_sha384(
-
-  );
+  external static ffi.Pointer<EVP_MD> _native_EVP_sha384();
 
   ffi.Pointer<EVP_MD> EVP_sha512() {
     return _native_EVP_sha512();
@@ -1716,9 +1531,7 @@ ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
     symbol: 'webcrypto_EVP_sha512',
     assetId: _assetId,
   )
-  external static ffi.Pointer<EVP_MD> _native_EVP_sha512(
-
-  );
+  external static ffi.Pointer<EVP_MD> _native_EVP_sha512();
 
   int HKDF(
     ffi.Pointer<ffi.Uint8> out_key,
@@ -1731,7 +1544,8 @@ ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
     ffi.Pointer<ffi.Uint8> info,
     int info_len,
   ) {
-    return _native_HKDF(out_key,
+    return _native_HKDF(
+      out_key,
       out_len,
       digest,
       secret,
@@ -1739,25 +1553,24 @@ ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
       salt,
       salt_len,
       info,
-      info_len,);
+      info_len,
+    );
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<EVP_MD>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_HKDF',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<EVP_MD>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+    )
+  >(symbol: 'webcrypto_HKDF', assetId: _assetId)
   external static int _native_HKDF(
-
     ffi.Pointer<ffi.Uint8> out_key,
     int out_len,
     ffi.Pointer<EVP_MD> digest,
@@ -1767,7 +1580,6 @@ ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
     int salt_len,
     ffi.Pointer<ffi.Uint8> info,
     int info_len,
-  
   );
 
   void HMAC_CTX_free(ffi.Pointer<HMAC_CTX> ctx) {
@@ -1778,9 +1590,7 @@ ffi.Pointer<EVP_PKEY> pkey, ffi.Pointer<RSA> key
     symbol: 'webcrypto_HMAC_CTX_free',
     assetId: _assetId,
   )
-  external static void _native_HMAC_CTX_free(
-ffi.Pointer<HMAC_CTX> ctx
-  );
+  external static void _native_HMAC_CTX_free(ffi.Pointer<HMAC_CTX> ctx);
 
   ffi.Pointer<HMAC_CTX> HMAC_CTX_new() {
     return _native_HMAC_CTX_new();
@@ -1790,9 +1600,7 @@ ffi.Pointer<HMAC_CTX> ctx
     symbol: 'webcrypto_HMAC_CTX_new',
     assetId: _assetId,
   )
-  external static ffi.Pointer<HMAC_CTX> _native_HMAC_CTX_new(
-
-  );
+  external static ffi.Pointer<HMAC_CTX> _native_HMAC_CTX_new();
 
   int HMAC_Final(
     ffi.Pointer<HMAC_CTX> ctx,
@@ -1802,20 +1610,17 @@ ffi.Pointer<HMAC_CTX> ctx
     return _native_HMAC_Final(ctx, out, out_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<HMAC_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Pointer<ffi.UnsignedInt>,
-          )>(
-    symbol: 'webcrypto_HMAC_Final',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<HMAC_CTX>,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Pointer<ffi.UnsignedInt>,
+    )
+  >(symbol: 'webcrypto_HMAC_Final', assetId: _assetId)
   external static int _native_HMAC_Final(
-
     ffi.Pointer<HMAC_CTX> ctx,
     ffi.Pointer<ffi.Uint8> out,
     ffi.Pointer<ffi.UnsignedInt> out_len,
-  
   );
 
   int HMAC_Init_ex(
@@ -1828,24 +1633,21 @@ ffi.Pointer<HMAC_CTX> ctx
     return _native_HMAC_Init_ex(ctx, key, key_len, md, impl);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<HMAC_CTX>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Size,
-            ffi.Pointer<EVP_MD>,
-            ffi.Pointer<ENGINE>,
-          )>(
-    symbol: 'webcrypto_HMAC_Init_ex',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<HMAC_CTX>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Size,
+      ffi.Pointer<EVP_MD>,
+      ffi.Pointer<ENGINE>,
+    )
+  >(symbol: 'webcrypto_HMAC_Init_ex', assetId: _assetId)
   external static int _native_HMAC_Init_ex(
-
     ffi.Pointer<HMAC_CTX> ctx,
     ffi.Pointer<ffi.Void> key,
     int key_len,
     ffi.Pointer<EVP_MD> md,
     ffi.Pointer<ENGINE> impl,
-  
   );
 
   int HMAC_size(ffi.Pointer<HMAC_CTX> ctx) {
@@ -1856,9 +1658,7 @@ ffi.Pointer<HMAC_CTX> ctx
     symbol: 'webcrypto_HMAC_size',
     assetId: _assetId,
   )
-  external static int _native_HMAC_size(
-ffi.Pointer<HMAC_CTX> ctx
-  );
+  external static int _native_HMAC_size(ffi.Pointer<HMAC_CTX> ctx);
 
   int HMAC_Update(
     ffi.Pointer<HMAC_CTX> ctx,
@@ -1868,20 +1668,13 @@ ffi.Pointer<HMAC_CTX> ctx
     return _native_HMAC_Update(ctx, data, data_len);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<HMAC_CTX>,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-          )>(
-    symbol: 'webcrypto_HMAC_Update',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<HMAC_CTX>, ffi.Pointer<ffi.Uint8>, ffi.Size)
+  >(symbol: 'webcrypto_HMAC_Update', assetId: _assetId)
   external static int _native_HMAC_Update(
-
     ffi.Pointer<HMAC_CTX> ctx,
     ffi.Pointer<ffi.Uint8> data,
     int data_len,
-  
   );
 
   ffi.Pointer<ffi.Void> OPENSSL_malloc(int size) {
@@ -1892,9 +1685,7 @@ ffi.Pointer<HMAC_CTX> ctx
     symbol: 'webcrypto_OPENSSL_malloc',
     assetId: _assetId,
   )
-  external static ffi.Pointer<ffi.Void> _native_OPENSSL_malloc(
-int size
-  );
+  external static ffi.Pointer<ffi.Void> _native_OPENSSL_malloc(int size);
 
   int PKCS5_PBKDF2_HMAC(
     ffi.Pointer<ffi.Char> password,
@@ -1906,31 +1697,31 @@ int size
     int key_len,
     ffi.Pointer<ffi.Uint8> out_key,
   ) {
-    return _native_PKCS5_PBKDF2_HMAC(password,
+    return _native_PKCS5_PBKDF2_HMAC(
+      password,
       password_len,
       salt,
       salt_len,
       iterations,
       digest,
       key_len,
-      out_key,);
+      out_key,
+    );
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<ffi.Char>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-            ffi.Size,
-            ffi.Uint32,
-            ffi.Pointer<EVP_MD>,
-            ffi.Size,
-            ffi.Pointer<ffi.Uint8>,
-          )>(
-    symbol: 'webcrypto_PKCS5_PBKDF2_HMAC',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<ffi.Char>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+      ffi.Size,
+      ffi.Uint32,
+      ffi.Pointer<EVP_MD>,
+      ffi.Size,
+      ffi.Pointer<ffi.Uint8>,
+    )
+  >(symbol: 'webcrypto_PKCS5_PBKDF2_HMAC', assetId: _assetId)
   external static int _native_PKCS5_PBKDF2_HMAC(
-
     ffi.Pointer<ffi.Char> password,
     int password_len,
     ffi.Pointer<ffi.Uint8> salt,
@@ -1939,7 +1730,6 @@ int size
     ffi.Pointer<EVP_MD> digest,
     int key_len,
     ffi.Pointer<ffi.Uint8> out_key,
-  
   );
 
   int RAND_bytes(ffi.Pointer<ffi.Uint8> buf, int len) {
@@ -1950,9 +1740,7 @@ int size
     symbol: 'webcrypto_RAND_bytes',
     assetId: _assetId,
   )
-  external static int _native_RAND_bytes(
-ffi.Pointer<ffi.Uint8> buf, int len
-  );
+  external static int _native_RAND_bytes(ffi.Pointer<ffi.Uint8> buf, int len);
 
   int RSA_check_key(ffi.Pointer<RSA> rsa) {
     return _native_RSA_check_key(rsa);
@@ -1962,9 +1750,7 @@ ffi.Pointer<ffi.Uint8> buf, int len
     symbol: 'webcrypto_RSA_check_key',
     assetId: _assetId,
   )
-  external static int _native_RSA_check_key(
-ffi.Pointer<RSA> rsa
-  );
+  external static int _native_RSA_check_key(ffi.Pointer<RSA> rsa);
 
   void RSA_free(ffi.Pointer<RSA> rsa) {
     return _native_RSA_free(rsa);
@@ -1974,9 +1760,7 @@ ffi.Pointer<RSA> rsa
     symbol: 'webcrypto_RSA_free',
     assetId: _assetId,
   )
-  external static void _native_RSA_free(
-ffi.Pointer<RSA> rsa
-  );
+  external static void _native_RSA_free(ffi.Pointer<RSA> rsa);
 
   int RSA_generate_key_ex(
     ffi.Pointer<RSA> rsa,
@@ -1987,22 +1771,19 @@ ffi.Pointer<RSA> rsa
     return _native_RSA_generate_key_ex(rsa, bits, e, cb);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<RSA>,
-            ffi.Int,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BN_GENCB>,
-          )>(
-    symbol: 'webcrypto_RSA_generate_key_ex',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<RSA>,
+      ffi.Int,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BN_GENCB>,
+    )
+  >(symbol: 'webcrypto_RSA_generate_key_ex', assetId: _assetId)
   external static int _native_RSA_generate_key_ex(
-
     ffi.Pointer<RSA> rsa,
     int bits,
     ffi.Pointer<BIGNUM> e,
     ffi.Pointer<BN_GENCB> cb,
-  
   );
 
   void RSA_get0_crt_params(
@@ -2014,22 +1795,19 @@ ffi.Pointer<RSA> rsa
     return _native_RSA_get0_crt_params(rsa, out_dmp1, out_dmq1, out_iqmp);
   }
 
-  @ffi.Native<ffi.Void Function(
-            ffi.Pointer<RSA>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-          )>(
-    symbol: 'webcrypto_RSA_get0_crt_params',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Void Function(
+      ffi.Pointer<RSA>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+    )
+  >(symbol: 'webcrypto_RSA_get0_crt_params', assetId: _assetId)
   external static void _native_RSA_get0_crt_params(
-
     ffi.Pointer<RSA> rsa,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmp1,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_dmq1,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_iqmp,
-  
   );
 
   void RSA_get0_factors(
@@ -2040,20 +1818,17 @@ ffi.Pointer<RSA> rsa
     return _native_RSA_get0_factors(rsa, out_p, out_q);
   }
 
-  @ffi.Native<ffi.Void Function(
-            ffi.Pointer<RSA>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-          )>(
-    symbol: 'webcrypto_RSA_get0_factors',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Void Function(
+      ffi.Pointer<RSA>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+    )
+  >(symbol: 'webcrypto_RSA_get0_factors', assetId: _assetId)
   external static void _native_RSA_get0_factors(
-
     ffi.Pointer<RSA> rsa,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_p,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_q,
-  
   );
 
   void RSA_get0_key(
@@ -2065,22 +1840,19 @@ ffi.Pointer<RSA> rsa
     return _native_RSA_get0_key(rsa, out_n, out_e, out_d);
   }
 
-  @ffi.Native<ffi.Void Function(
-            ffi.Pointer<RSA>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-            ffi.Pointer<ffi.Pointer<BIGNUM>>,
-          )>(
-    symbol: 'webcrypto_RSA_get0_key',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Void Function(
+      ffi.Pointer<RSA>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+      ffi.Pointer<ffi.Pointer<BIGNUM>>,
+    )
+  >(symbol: 'webcrypto_RSA_get0_key', assetId: _assetId)
   external static void _native_RSA_get0_key(
-
     ffi.Pointer<RSA> rsa,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_n,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_e,
     ffi.Pointer<ffi.Pointer<BIGNUM>> out_d,
-  
   );
 
   ffi.Pointer<RSA> RSA_new() {
@@ -2091,9 +1863,7 @@ ffi.Pointer<RSA> rsa
     symbol: 'webcrypto_RSA_new',
     assetId: _assetId,
   )
-  external static ffi.Pointer<RSA> _native_RSA_new(
-
-  );
+  external static ffi.Pointer<RSA> _native_RSA_new();
 
   ffi.Pointer<RSA> RSAPublicKey_dup(ffi.Pointer<RSA> rsa) {
     return _native_RSAPublicKey_dup(rsa);
@@ -2104,7 +1874,7 @@ ffi.Pointer<RSA> rsa
     assetId: _assetId,
   )
   external static ffi.Pointer<RSA> _native_RSAPublicKey_dup(
-ffi.Pointer<RSA> rsa
+    ffi.Pointer<RSA> rsa,
   );
 
   int RSA_set0_crt_params(
@@ -2116,22 +1886,19 @@ ffi.Pointer<RSA> rsa
     return _native_RSA_set0_crt_params(rsa, dmp1, dmq1, iqmp);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<RSA>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-          )>(
-    symbol: 'webcrypto_RSA_set0_crt_params',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<RSA>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+    )
+  >(symbol: 'webcrypto_RSA_set0_crt_params', assetId: _assetId)
   external static int _native_RSA_set0_crt_params(
-
     ffi.Pointer<RSA> rsa,
     ffi.Pointer<BIGNUM> dmp1,
     ffi.Pointer<BIGNUM> dmq1,
     ffi.Pointer<BIGNUM> iqmp,
-  
   );
 
   int RSA_set0_factors(
@@ -2142,20 +1909,13 @@ ffi.Pointer<RSA> rsa
     return _native_RSA_set0_factors(rsa, p, q);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<RSA>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-          )>(
-    symbol: 'webcrypto_RSA_set0_factors',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<RSA>, ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>)
+  >(symbol: 'webcrypto_RSA_set0_factors', assetId: _assetId)
   external static int _native_RSA_set0_factors(
-
     ffi.Pointer<RSA> rsa,
     ffi.Pointer<BIGNUM> p,
     ffi.Pointer<BIGNUM> q,
-  
   );
 
   int RSA_set0_key(
@@ -2167,22 +1927,19 @@ ffi.Pointer<RSA> rsa
     return _native_RSA_set0_key(rsa, n, e, d);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<RSA>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-          )>(
-    symbol: 'webcrypto_RSA_set0_key',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<RSA>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+    )
+  >(symbol: 'webcrypto_RSA_set0_key', assetId: _assetId)
   external static int _native_RSA_set0_key(
-
     ffi.Pointer<RSA> rsa,
     ffi.Pointer<BIGNUM> n,
     ffi.Pointer<BIGNUM> e,
     ffi.Pointer<BIGNUM> d,
-  
   );
 
   void OPENSSL_free(ffi.Pointer<ffi.Void> ptr) {
@@ -2193,9 +1950,7 @@ ffi.Pointer<RSA> rsa
     symbol: 'webcrypto_OPENSSL_free',
     assetId: _assetId,
   )
-  external static void _native_OPENSSL_free(
-ffi.Pointer<ffi.Void> ptr
-  );
+  external static void _native_OPENSSL_free(ffi.Pointer<ffi.Void> ptr);
 
   ffi.Pointer<ffi.Void> OPENSSL_memdup(ffi.Pointer<ffi.Void> data, int size) {
     return _native_OPENSSL_memdup(data, size);
@@ -2206,7 +1961,8 @@ ffi.Pointer<ffi.Void> ptr
     assetId: _assetId,
   )
   external static ffi.Pointer<ffi.Void> _native_OPENSSL_memdup(
-ffi.Pointer<ffi.Void> data, int size
+    ffi.Pointer<ffi.Void> data,
+    int size,
   );
 
   int EVP_MD_size(ffi.Pointer<EVP_MD> md) {
@@ -2217,9 +1973,7 @@ ffi.Pointer<ffi.Void> data, int size
     symbol: 'webcrypto_EVP_MD_size',
     assetId: _assetId,
   )
-  external static int _native_EVP_MD_size(
-ffi.Pointer<EVP_MD> md
-  );
+  external static int _native_EVP_MD_size(ffi.Pointer<EVP_MD> md);
 
   int EVP_AEAD_nonce_length(ffi.Pointer<EVP_AEAD> aead) {
     return _native_EVP_AEAD_nonce_length(aead);
@@ -2229,9 +1983,7 @@ ffi.Pointer<EVP_MD> md
     symbol: 'webcrypto_EVP_AEAD_nonce_length',
     assetId: _assetId,
   )
-  external static int _native_EVP_AEAD_nonce_length(
-ffi.Pointer<EVP_AEAD> aead
-  );
+  external static int _native_EVP_AEAD_nonce_length(ffi.Pointer<EVP_AEAD> aead);
 
   int EVP_AEAD_max_tag_len(ffi.Pointer<EVP_AEAD> aead) {
     return _native_EVP_AEAD_max_tag_len(aead);
@@ -2241,9 +1993,7 @@ ffi.Pointer<EVP_AEAD> aead
     symbol: 'webcrypto_EVP_AEAD_max_tag_len',
     assetId: _assetId,
   )
-  external static int _native_EVP_AEAD_max_tag_len(
-ffi.Pointer<EVP_AEAD> aead
-  );
+  external static int _native_EVP_AEAD_max_tag_len(ffi.Pointer<EVP_AEAD> aead);
 
   int EVP_AEAD_key_length(ffi.Pointer<EVP_AEAD> aead) {
     return _native_EVP_AEAD_key_length(aead);
@@ -2253,9 +2003,7 @@ ffi.Pointer<EVP_AEAD> aead
     symbol: 'webcrypto_EVP_AEAD_key_length',
     assetId: _assetId,
   )
-  external static int _native_EVP_AEAD_key_length(
-ffi.Pointer<EVP_AEAD> aead
-  );
+  external static int _native_EVP_AEAD_key_length(ffi.Pointer<EVP_AEAD> aead);
 
   ffi.Pointer<BIGNUM> BN_value_one() {
     return _native_BN_value_one();
@@ -2265,9 +2013,7 @@ ffi.Pointer<EVP_AEAD> aead
     symbol: 'webcrypto_BN_value_one',
     assetId: _assetId,
   )
-  external static ffi.Pointer<BIGNUM> _native_BN_value_one(
-
-  );
+  external static ffi.Pointer<BIGNUM> _native_BN_value_one();
 
   int BN_add(
     ffi.Pointer<BIGNUM> r,
@@ -2277,20 +2023,17 @@ ffi.Pointer<EVP_AEAD> aead
     return _native_BN_add(r, a, b);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-          )>(
-    symbol: 'webcrypto_BN_add',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+    )
+  >(symbol: 'webcrypto_BN_add', assetId: _assetId)
   external static int _native_BN_add(
-
     ffi.Pointer<BIGNUM> r,
     ffi.Pointer<BIGNUM> a,
     ffi.Pointer<BIGNUM> b,
-  
   );
 
   int BN_sub(
@@ -2301,20 +2044,17 @@ ffi.Pointer<EVP_AEAD> aead
     return _native_BN_sub(r, a, b);
   }
 
-  @ffi.Native<ffi.Int Function(
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-            ffi.Pointer<BIGNUM>,
-          )>(
-    symbol: 'webcrypto_BN_sub',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+      ffi.Pointer<BIGNUM>,
+    )
+  >(symbol: 'webcrypto_BN_sub', assetId: _assetId)
   external static int _native_BN_sub(
-
     ffi.Pointer<BIGNUM> r,
     ffi.Pointer<BIGNUM> a,
     ffi.Pointer<BIGNUM> b,
-  
   );
 
   int BN_cmp(ffi.Pointer<BIGNUM> a, ffi.Pointer<BIGNUM> b) {
@@ -2326,19 +2066,21 @@ ffi.Pointer<EVP_AEAD> aead
     assetId: _assetId,
   )
   external static int _native_BN_cmp(
-ffi.Pointer<BIGNUM> a, ffi.Pointer<BIGNUM> b
+    ffi.Pointer<BIGNUM> a,
+    ffi.Pointer<BIGNUM> b,
   );
 
   int BN_lshift(ffi.Pointer<BIGNUM> r, ffi.Pointer<BIGNUM> a, int n) {
     return _native_BN_lshift(r, a, n);
   }
 
-  @ffi.Native<ffi.Int Function(ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>, ffi.Int)>(
-    symbol: 'webcrypto_BN_lshift',
-    assetId: _assetId,
-  )
+  @ffi.Native<
+    ffi.Int Function(ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>, ffi.Int)
+  >(symbol: 'webcrypto_BN_lshift', assetId: _assetId)
   external static int _native_BN_lshift(
-ffi.Pointer<BIGNUM> r, ffi.Pointer<BIGNUM> a, int n
+    ffi.Pointer<BIGNUM> r,
+    ffi.Pointer<BIGNUM> a,
+    int n,
   );
 
   int EVP_CIPHER_block_size(ffi.Pointer<EVP_CIPHER> cipher) {
@@ -2350,7 +2092,7 @@ ffi.Pointer<BIGNUM> r, ffi.Pointer<BIGNUM> a, int n
     assetId: _assetId,
   )
   external static int _native_EVP_CIPHER_block_size(
-ffi.Pointer<EVP_CIPHER> cipher
+    ffi.Pointer<EVP_CIPHER> cipher,
   );
 
   ffi.Pointer<EC_GROUP> EC_GROUP_new_by_curve_name(int nid) {
@@ -2362,7 +2104,7 @@ ffi.Pointer<EVP_CIPHER> cipher
     assetId: _assetId,
   )
   external static ffi.Pointer<EC_GROUP> _native_EC_GROUP_new_by_curve_name(
-int nid
+    int nid,
   );
 
   void EC_GROUP_free(ffi.Pointer<EC_GROUP> group) {
@@ -2373,9 +2115,7 @@ int nid
     symbol: 'webcrypto_EC_GROUP_free',
     assetId: _assetId,
   )
-  external static void _native_EC_GROUP_free(
-ffi.Pointer<EC_GROUP> group
-  );
+  external static void _native_EC_GROUP_free(ffi.Pointer<EC_GROUP> group);
 
   int EVP_PKEY_set_type(ffi.Pointer<EVP_PKEY> pkey, int type) {
     return _native_EVP_PKEY_set_type(pkey, type);
@@ -2386,7 +2126,8 @@ ffi.Pointer<EC_GROUP> group
     assetId: _assetId,
   )
   external static int _native_EVP_PKEY_set_type(
-ffi.Pointer<EVP_PKEY> pkey, int type
+    ffi.Pointer<EVP_PKEY> pkey,
+    int type,
   );
 
   int BORINGSSL_self_test() {
@@ -2397,8 +2138,5 @@ ffi.Pointer<EVP_PKEY> pkey, int type
     symbol: 'webcrypto_BORINGSSL_self_test',
     assetId: _assetId,
   )
-  external static int _native_BORINGSSL_self_test(
-
-  );
-
+  external static int _native_BORINGSSL_self_test();
 }
