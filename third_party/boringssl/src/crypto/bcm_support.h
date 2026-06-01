@@ -32,10 +32,6 @@ void CRYPTO_init_sysrand();
 // system.
 void CRYPTO_sysrand(uint8_t *buf, size_t len);
 
-// RAND_need_entropy is called whenever the BCM module has stopped because it
-// has run out of entropy.
-void RAND_need_entropy(size_t bytes_needed);
-
 // crypto_get_fork_generation returns the fork generation number for the current
 // process, or zero if not supported on the platform. The fork generation number
 // is a non-zero, strictly-monotonic counter with the property that, if queried

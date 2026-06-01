@@ -167,7 +167,6 @@ set(crypto_sources
   ${BORINGSSL_ROOT}src/crypto/rand/forkunsafe.cc
   ${BORINGSSL_ROOT}src/crypto/rand/getentropy.cc
   ${BORINGSSL_ROOT}src/crypto/rand/ios.cc
-  ${BORINGSSL_ROOT}src/crypto/rand/passive.cc
   ${BORINGSSL_ROOT}src/crypto/rand/rand.cc
   ${BORINGSSL_ROOT}src/crypto/rand/trusty.cc
   ${BORINGSSL_ROOT}src/crypto/rand/urandom.cc

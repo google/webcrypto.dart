@@ -56,6 +56,16 @@ OPENSSL_EXPORT int CTR_DRBG_init(CTR_DRBG_STATE *drbg, int df,
                                  const uint8_t *personalization,
                                  size_t personalization_len);
 
+// BSSL_ENTROPY_DAEMON_RESPONSE_LEN is the number of bytes that the Android
+// entropy daemon replies with.
+#define BSSL_ENTROPY_DAEMON_RESPONSE_LEN (48 * 10 + 16)
+
+// bssl_get_seed_from_daemon fetches up to `*inout_entropy_len` bytes of
+// entropy from the Android entropy daemon, writing them to `*out_entropy`.
+// On successful exit, `*inout_entropy_len` contains the number of bytes
+// written. Returns one on success and zero on error.
+int bssl_get_seed_from_daemon(uint8_t *out_entropy, size_t *inout_entropy_len);
+
 #if defined(OPENSSL_X86_64) && !defined(OPENSSL_NO_ASM)
 
 inline int have_rdrand() { return CRYPTO_is_RDRAND_capable(); }

@@ -73,12 +73,6 @@ inline bcm_status_t bcm_as_not_approved_status(int result) {
 
 #endif  // BORINGSSL_FIPS
 
-// BCM_rand_load_entropy supplies |entropy_len| bytes of entropy to the BCM
-// module. The |want_additional_input| parameter is true iff the entropy was
-// obtained from a source other than the system, e.g. directly from the CPU.
-bcm_infallible BCM_rand_load_entropy(const uint8_t *entropy, size_t entropy_len,
-                                     int want_additional_input);
-
 // BCM_rand_bytes is the same as the public |RAND_bytes| function, other
 // than returning a bcm_infallible status indicator.
 bcm_infallible BCM_rand_bytes(uint8_t *out, size_t out_len);
