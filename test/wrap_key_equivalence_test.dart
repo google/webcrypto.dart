@@ -1,5 +1,5 @@
 @TestOn('browser')
-@Tags(['experimental'])
+@Tags(['browser-interop'])
 library;
 
 import 'dart:convert';
