@@ -66,7 +66,7 @@ Web Cryptography APIs see `doc/webcrypto-parity.md`.
 
  * `deriveKey` is not supported, however, keys can always be created from
     `derivedBits` which is supported.
- * `wrapKey` is not supported, however, keys can be exported an encrypted.
+ * `wrapKey` is not supported, however, keys can be exported and encrypted.
  * `unwrapKey` is not supported, however, keys can be decrypted and imported.
  * `AES-KW` is not supported because it does not support `encrypt`/`decrypt`.
 
