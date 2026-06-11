@@ -21,31 +21,16 @@
 // ignore_for_file: type=lint
 import 'dart:ffi' as ffi;
 
-/// Bindings to src/webcrypto.h.
-class WebCrypto {
-  /// Holds the symbol lookup function.
-  final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-  _lookup;
+/// Helper function to get the size of CBB structure for FFI allocation.
+@ffi.Native<ffi.Size Function()>(
+  symbol: 'webcrypto_get_CBB_size',
+  assetId: 'package:webcrypto/webcrypto.dart',
+)
+external int webcrypto_get_CBB_size();
 
-  /// The symbols are looked up in [dynamicLibrary].
-  WebCrypto(ffi.DynamicLibrary dynamicLibrary)
-    : _lookup = dynamicLibrary.lookup;
-
-  /// The symbols are looked up with [lookup].
-  WebCrypto.fromLookup(
-    ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
-  ) : _lookup = lookup;
-
-  /// Function to lookup BoringSSL symbols based on index in the Sym enum.
-  /// See src/symbols.yaml for details.
-  ffi.Pointer<ffi.Void> webcrypto_lookup_symbol(int index) {
-    return _webcrypto_lookup_symbol(index);
-  }
-
-  late final _webcrypto_lookup_symbolPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
-        'webcrypto_lookup_symbol',
-      );
-  late final _webcrypto_lookup_symbol = _webcrypto_lookup_symbolPtr
-      .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-}
+/// Helper function to retrieve the address of EVP_PKEY_free for NativeFinalizer.
+@ffi.Native<ffi.Pointer<ffi.Void> Function()>(
+  symbol: 'webcrypto_get_EVP_PKEY_free_address',
+  assetId: 'package:webcrypto/webcrypto.dart',
+)
+external ffi.Pointer<ffi.Void> webcrypto_get_EVP_PKEY_free_address();

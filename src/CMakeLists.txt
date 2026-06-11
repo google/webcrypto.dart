@@ -151,16 +151,6 @@ add_library(
   ${crypto_sources_${PLATFORM}_${ARCH}}
 )
 
-if(WIN32)
-  target_sources(
-    webcrypto
-
-    PRIVATE
-
-    ../src/webcrypto_exports.def
-  )
-endif()
-
 target_include_directories(
   webcrypto
 

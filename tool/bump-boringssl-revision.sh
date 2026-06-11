@@ -464,10 +464,6 @@ main() {
     cd "$ROOT"
     dart pub get --no-example
 
-    section "Generating direct bindings"
-    log_info "Running generate_direct_bindings.dart..."
-    dart "$DIR/generate_direct_bindings.dart"
-
     section "Updating FFI bindings"
     log_info "Running update-bindings.sh..."
     bash "$DIR/update-bindings.sh"

@@ -16,31 +16,16 @@
 
 import 'dart:ffi';
 
+import '../bindings/generated_bindings.dart' as webcrypto;
 import '../../third_party/boringssl/generated_bindings.dart';
 
-import 'direct_bindings.generated.dart';
-
-@Native<Size Function()>(
-  symbol: 'webcrypto_get_CBB_size',
-  assetId: 'package:webcrypto/webcrypto.dart',
-)
-external int _nativeWebcryptoGetCbbSize();
-
-@Native<Pointer<Void> Function()>(
-  symbol: 'webcrypto_get_EVP_PKEY_free_address',
-  assetId: 'package:webcrypto/webcrypto.dart',
-)
-external Pointer<Void> _nativeWebcryptoGetEvpPkeyFreeAddress();
-
-/// Gives access to BoringSSL symbols exported directly from the bundled asset.
-final WebcryptoBoringSsl ssl = const WebcryptoBoringSsl();
-
 /// Gets the native `sizeof(CBB)` value from the bundled helper library.
-int nativeWebcryptoGetCbbSize() => _nativeWebcryptoGetCbbSize();
+int nativeWebcryptoGetCbbSize() => webcrypto.webcrypto_get_CBB_size();
 
 /// Gets the native address of `EVP_PKEY_free` for [NativeFinalizer].
 Pointer<NativeFunction<Void Function(Pointer<EVP_PKEY>)>>
-nativeEvpPkeyFreeAddress() => _nativeWebcryptoGetEvpPkeyFreeAddress().cast();
+nativeEvpPkeyFreeAddress() =>
+    webcrypto.webcrypto_get_EVP_PKEY_free_address().cast();
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.

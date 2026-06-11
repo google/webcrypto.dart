@@ -24,4 +24,3 @@ dart pub get --no-example
 
 dart run ffigen --config=lib/src/boringssl/bindings/ffigen.yaml
 dart run ffigen --config=lib/src/third_party/boringssl/ffigen.yaml
-dart tool/generate_direct_bindings.dart

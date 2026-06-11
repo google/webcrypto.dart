@@ -20,10 +20,8 @@
 # so symbols listed here are exported from the bundled native asset as
 # `webcrypto_<symbol>`.
 #
-# `tool/generate_direct_bindings.dart` uses this list together with
-# `lib/src/third_party/boringssl/generated_bindings.dart` to generate the direct
-# `@Native(..., assetId: ...)` binding layer in
-# `lib/src/boringssl/lookup/direct_bindings.generated.dart`.
+# `package:ffigen` parses the prefixed declarations and generates direct
+# `@Native(..., assetId: ...)` bindings.
 #
 # Keep consistent with lib/src/third_party/boringssl/ffigen.yaml.
 - BN_bin2bn
