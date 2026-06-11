@@ -16,4 +16,4 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     # Cannot analyze subprojects
-    - example/**
+    - example/webcrypto_demo_flutter_app/**
