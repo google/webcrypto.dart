@@ -19,12 +19,9 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
     final cbs = scope.createCBS(keyData);
     final k = ssl.EVP_parse_private_key(cbs);
 
-    _checkData(
-      k.address != 0 && cbs.ref.len == 0,
-      fallback: 'unable to parse key',
-    );
-
+    _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
+    _checkData(cbs.ref.len == 0, fallback: 'unable to parse key');
 
     _checkData(
       ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_RSA,
@@ -46,12 +43,9 @@ _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
     final cbs = scope.createCBS(keyData);
     final k = ssl.EVP_parse_public_key(cbs);
 
-    _checkData(
-      k.address != 0 && cbs.ref.len == 0,
-      fallback: 'unable to parse key',
-    );
-
+    _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
+    _checkData(cbs.ref.len == 0, fallback: 'unable to parse key');
 
     _checkData(
       ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_RSA,

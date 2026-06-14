@@ -36,6 +36,9 @@ const _rsaSpki =
     'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvMwlvFjmKNqMCD6pOBEB2UgWALe1VZZwti7hSDQVdVBUC+ANyLJRH/NsvSgFOz5CfT5vuho0+w6N52qlaUmu3KZK3ZtKxfYddu4TMPdvkvfEPMltP4iyE67H9CQ0fyrAodINaB+bQzNKwMMbrQ9kTlYNcN3bmx6LkVem7kj+2F8dL4KSYy2U/ZdzOgU5p6sSSJP/VtsH7iCy5oaVLVUrlDMpGGmf/lFs/EM7NmVGiqwNeOS6ojfYOC3Vm9K3+6ykRgW6dBVAzDZKttcH9tQ1YR0ndAhTJQ31wW0G/kpv5gxu+biaSaQ81kzS5rHhZr/o8zg5/RhMIwF0q+Au9RKmVwIDAQAB';
 
 List<({String name, Future<void> Function() test})> tests() {
+  if (!_isFfi) {
+    return const [];
+  }
   final tests = <({String name, Future<void> Function() test})>[];
   void test(String name, Future<void> Function() fn) =>
       tests.add((name: name, test: fn));
@@ -54,9 +57,7 @@ List<({String name, Future<void> Function() test})> tests() {
     } on FormatException {
       threw = true;
     }
-    if (_isFfi) {
-      check(threw, 'Should throw FormatException for trailing bytes');
-    }
+    check(threw, 'Should throw FormatException for trailing bytes');
   });
 
   test('Ecdsa: importSpkiKey rejects trailing bytes', () async {
@@ -86,9 +87,7 @@ List<({String name, Future<void> Function() test})> tests() {
     } on FormatException {
       threw = true;
     }
-    if (_isFfi) {
-      check(threw, 'Should throw FormatException for trailing bytes');
-    }
+    check(threw, 'Should throw FormatException for trailing bytes');
   });
 
   test('RsaPss: importSpkiKey rejects trailing bytes', () async {

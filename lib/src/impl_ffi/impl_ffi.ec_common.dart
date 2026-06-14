@@ -92,12 +92,10 @@ _EvpPKey _importPkcs8EcPrivateKey(List<int> keyData, EllipticCurve curve) {
     final cbs = scope.createCBS(keyData);
     final k = ssl.EVP_parse_private_key(cbs);
 
-    _checkData(
-      k.address != 0 && cbs.ref.len == 0,
-      fallback: 'unable to parse key',
-    );
-
+    _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
+    _checkData(cbs.ref.len == 0, fallback: 'unable to parse key');
+
     _validateEllipticCurveKey(key, curve);
     return key;
   });
@@ -108,12 +106,10 @@ _EvpPKey _importSpkiEcPublicKey(List<int> keyData, EllipticCurve curve) {
     final cbs = scope.createCBS(keyData);
     final k = ssl.EVP_parse_public_key(cbs);
 
-    _checkData(
-      k.address != 0 && cbs.ref.len == 0,
-      fallback: 'unable to parse key',
-    );
-
+    _checkData(k.address != 0, fallback: 'unable to parse key');
     final key = _EvpPKey.wrap(k);
+    _checkData(cbs.ref.len == 0, fallback: 'unable to parse key');
+
     _validateEllipticCurveKey(key, curve);
 
     return key;
