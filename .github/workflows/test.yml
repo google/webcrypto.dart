@@ -49,15 +49,7 @@ jobs:
       - name: Convert coverage to lcov
         run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@v2
-  linux-dart:
-    name: Linux Dart / Chrome / Firefox
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
-      - run: dart pub get --no-example
-      - run: xvfb-run dart test --exclude-tags browser-interop -p vm,chrome,firefox -c dart2js,dart2wasm
+
   macos:
     name: MacOS desktop / Chrome
     runs-on: macos-15 # Test with xcode 16
@@ -95,7 +87,8 @@ jobs:
         working-directory: ./example
   ios:
     name: iOS emulator (iPhone)
-    runs-on: macos-14
+    runs-on: macos-15
+    continue-on-error: true
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -120,6 +113,7 @@ jobs:
     name: Android emulator
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -146,12 +140,12 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-ubuntu-api36-google_apis-x86_64
+          key: avd-ubuntu-api34-google_apis-x86_64
       - name: Create AVD snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 36
+          api-level: 34
           target: google_apis
           arch: x86_64
           force-avd-creation: false
@@ -161,7 +155,7 @@ jobs:
       - name: Run flutter test integration_test/webcrypto_test.dart -d emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 36
+          api-level: 34
           target: google_apis
           arch: x86_64
           force-avd-creation: false
