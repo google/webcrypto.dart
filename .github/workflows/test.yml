@@ -44,7 +44,7 @@ jobs:
       - run: flutter pub get
       - run: xvfb-run dart test --exclude-tags browser-interop -p vm,chrome,firefox -c dart2js,dart2wasm --coverage ./coverage
       - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
-        working-directory: ./example
+        working-directory: ./example/flutter_webcrypto_demo
       # Report collected coverage
       - name: Convert coverage to lcov
         run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
@@ -74,7 +74,7 @@ jobs:
       - run: flutter pub get
       - run: dart test --exclude-tags browser-interop -p vm,chrome -c dart2js,dart2wasm
       - run: flutter test integration_test/webcrypto_test.dart -d macos --timeout 5m
-        working-directory: ./example
+        working-directory: ./example/flutter_webcrypto_demo
   windows:
     name: Windows desktop / Chrome / Firefox
     runs-on: windows-latest
@@ -92,7 +92,7 @@ jobs:
       - run: flutter pub get
       - run: dart test --exclude-tags browser-interop -p vm,chrome,firefox
       - run: flutter test integration_test/webcrypto_test.dart -d windows
-        working-directory: ./example
+        working-directory: ./example/flutter_webcrypto_demo
   ios:
     name: iOS emulator (iPhone)
     runs-on: macos-14
@@ -115,7 +115,7 @@ jobs:
         with:
           timeout_minutes: 20
           max_attempts: 2
-          command: cd example && flutter test integration_test/webcrypto_test.dart -d iphone --timeout 60s
+          command: cd example/flutter_webcrypto_demo && flutter test integration_test/webcrypto_test.dart -d iphone --timeout 60s
   android:
     name: Android emulator
     runs-on: ubuntu-latest
@@ -156,7 +156,7 @@ jobs:
           arch: x86_64
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          working-directory: ./example
+          working-directory: ./example/flutter_webcrypto_demo
           script: echo "Generated AVD snapshot for caching."
       - name: Run flutter test integration_test/webcrypto_test.dart -d emulator
         uses: reactivecircus/android-emulator-runner@v2
@@ -166,7 +166,7 @@ jobs:
           arch: x86_64
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          working-directory: ./example
+          working-directory: ./example/flutter_webcrypto_demo
           script: >-
             flutter test integration_test/webcrypto_test.dart -d emulator --timeout 5m ||
             flutter test integration_test/webcrypto_test.dart -d emulator --timeout 5m ||
