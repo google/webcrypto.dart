@@ -155,9 +155,25 @@ _EvpPKey _importJwkEcPrivateOrPublicKey(
     jwk.use == null || jwk.use == expectedUse,
     message: 'JWK property "use" should be "$expectedUse", if present',
   );
-
-  // TODO: Reject keys with key_ops in inconsistent with isPrivateKey
-  //       Also in the js implementation...
+  if (jwk.key_ops != null) {
+    final allowedOps = expectedUse == 'sig'
+        ? <String>{'sign', 'verify'}
+        : <String>{
+            'encrypt',
+            'decrypt',
+            'wrapKey',
+            'unwrapKey',
+            'deriveKey',
+            'deriveBits',
+          };
+    for (final op in jwk.key_ops!) {
+      _checkData(
+        allowedOps.contains(op),
+        message: 'JWK key_ops entry "$op" is not consistent with use '
+            '"$expectedUse"',
+      );
+    }
+  }
 
   return _Scope.sync((scope) {
     final ec = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));

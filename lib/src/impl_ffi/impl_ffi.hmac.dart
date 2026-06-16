@@ -57,6 +57,16 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   checkJwk(k.kty == 'oct', 'kty', 'must be "oct"');
   checkJwk(k.k != null, 'k', 'must be present');
   checkJwk(k.use == null || k.use == 'sig', 'use', 'must be "sig", if present');
+  if (k.key_ops != null) {
+    const allowedOps = <String>{'sign', 'verify'};
+    for (final op in k.key_ops!) {
+      checkJwk(
+        allowedOps.contains(op),
+        op,
+        'is not consistent with use "sig"',
+      );
+    }
+  }
   final expectedAlg = h.hmacJwkAlg;
   checkJwk(
     k.alg == null || k.alg == expectedAlg,
