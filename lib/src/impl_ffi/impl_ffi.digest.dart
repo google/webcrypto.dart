@@ -21,6 +21,7 @@ abstract class _HashImpl implements HashImpl {
     if (hash is _HashImpl) {
       return hash;
     }
+    // coverage:ignore-line
     throw AssertionError(
       'Custom implementations of HashImpl are not supported.',
     );

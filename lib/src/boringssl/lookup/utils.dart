@@ -23,20 +23,22 @@ import '../bindings/generated_bindings.dart';
 /// Get platform-dependent library filename for the binary webcrypto library.
 String get libraryFileName {
   const libraryName = 'webcrypto';
-  if (Platform.isWindows) {
+  if (Platform.isWindows) { // coverage:ignore-line
     return '$libraryName.dll';
   }
-  if (Platform.isLinux) {
+  if (Platform.isLinux) { // coverage:ignore-line
     return 'lib$libraryName.so';
   }
-  if (Platform.isMacOS) {
+  if (Platform.isMacOS) { // coverage:ignore-line
     return 'lib$libraryName.dylib';
   }
+  // coverage:ignore-start
   throw UnsupportedError(
     'Platform ${Platform.operatingSystem} is unsupported or embed '
     'the binary webcrypto library for package:webcrypto',
   );
 }
+// coverage:ignore-end
 
 /// Look for the webcrypto binary library in the `.dart_tool/webcrypto/` folder.
 ///

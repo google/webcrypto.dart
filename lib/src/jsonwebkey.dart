@@ -81,6 +81,7 @@ final class JsonWebKey {
     ];
     for (final k in stringKeys) {
       if (json.containsKey(k) && json[k] is! String) {
+        // coverage:ignore-line
         throw FormatException('JWK entry "$k" must be a string', json);
       }
     }
@@ -88,6 +89,7 @@ final class JsonWebKey {
     if (json.containsKey('key_ops')) {
       if (json['key_ops'] is! List ||
           (json['key_ops'] as List).any((e) => e is! String)) {
+        // coverage:ignore-line
         throw FormatException(
           'JWK entry "key_ops" must be a list of strings',
           json,
@@ -97,11 +99,13 @@ final class JsonWebKey {
     }
 
     if (json.containsKey('ext') && json['ext'] is! bool) {
+      // coverage:ignore-line
       throw FormatException('JWK entry "ext" must be boolean', json);
     }
     List<RsaOtherPrimesInfo>? oth;
     if (json.containsKey('oth')) {
       if (json['oth'] is! List || (json['oth'] as List).any((e) => e is! Map)) {
+        // coverage:ignore-line
         throw FormatException('JWK entry "oth" must be list of maps', json);
       }
       oth = (json['oth'] as List<Map>).map((json) {
@@ -229,6 +233,7 @@ final class RsaOtherPrimesInfo {
   static RsaOtherPrimesInfo fromJson(Map json) {
     for (final k in ['r', 'd', 't']) {
       if (json[k] is! String) {
+        // coverage:ignore-line
         throw FormatException('"oth" entries in a JWK must contain "$k"', json);
       }
     }

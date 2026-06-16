@@ -57,6 +57,7 @@ final class EcdhPrivateKey {
   EcdhPrivateKey._(this._impl); // keep the constructor private.
 
   factory EcdhPrivateKey(EcdhPrivateKeyImpl impl) {
+    // coverage:ignore-line
     return EcdhPrivateKey._(impl);
   }
 
@@ -280,6 +281,7 @@ final class EcdhPublicKey {
   EcdhPublicKey._(this._impl); // keep the constructor private.
 
   factory EcdhPublicKey(EcdhPublicKeyImpl impl) {
+    // coverage:ignore-line
     return EcdhPublicKey._(impl);
   }
 

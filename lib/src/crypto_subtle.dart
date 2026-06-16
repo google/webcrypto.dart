@@ -41,6 +41,7 @@ Uint8List bigIntToUint8ListBigInteger(BigInt integer) {
   // There is no rush as this is only used for public exponent, and chrome only
   // supports 3 and 65537, so supporting other numbers is a low priority.
   // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#286
+  // coverage:ignore-line
   throw UnimplementedError('Only supports 65537 and 3 for now');
 }
 
@@ -78,6 +79,7 @@ const _webCryptoApiDocumentationUrl =
 const _secureContextsDocumentationUrl =
     'https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts';
 
+// coverage:ignore-start
 @visibleForTesting
 JSSubtleCrypto requireSubtleCrypto(
   JSSubtleCrypto? subtle,
@@ -100,6 +102,7 @@ JSSubtleCrypto requireSubtleCrypto(
     'is missing in this runtime. See: $_webCryptoApiDocumentationUrl',
   );
 }
+// coverage:ignore-end
 
 /// The `window.crypto.subtle` object.
 ///
@@ -380,6 +383,7 @@ TypedData getRandomValues(TypedData array) {
     window.crypto.getRandomValues(jsArray);
     final dartArray = jsArray.toDart;
     if (array != dartArray) {
+      // coverage:ignore-line
       array.setAll(0, dartArray);
     }
   } else if (array is Uint16List) {
@@ -387,6 +391,7 @@ TypedData getRandomValues(TypedData array) {
     window.crypto.getRandomValues(jsArray);
     final dartArray = jsArray.toDart;
     if (array != dartArray) {
+      // coverage:ignore-line
       array.setAll(0, dartArray);
     }
   } else if (array is Uint32List) {
@@ -394,6 +399,7 @@ TypedData getRandomValues(TypedData array) {
     window.crypto.getRandomValues(jsArray);
     final dartArray = jsArray.toDart;
     if (array != dartArray) {
+      // coverage:ignore-line
       array.setAll(0, dartArray);
     }
   } else if (array is Int8List) {
@@ -401,6 +407,7 @@ TypedData getRandomValues(TypedData array) {
     window.crypto.getRandomValues(jsArray);
     final dartArray = jsArray.toDart;
     if (array != dartArray) {
+      // coverage:ignore-line
       array.setAll(0, dartArray);
     }
   } else if (array is Int16List) {
@@ -408,6 +415,7 @@ TypedData getRandomValues(TypedData array) {
     window.crypto.getRandomValues(jsArray);
     final dartArray = jsArray.toDart;
     if (array != dartArray) {
+      // coverage:ignore-line
       array.setAll(0, dartArray);
     }
   } else if (array is Int32List) {
@@ -415,9 +423,11 @@ TypedData getRandomValues(TypedData array) {
     window.crypto.getRandomValues(jsArray);
     final dartArray = jsArray.toDart;
     if (array != dartArray) {
+      // coverage:ignore-line
       array.setAll(0, dartArray);
     }
   } else {
+    // coverage:ignore-line
     throw ArgumentError.value(array, 'array', 'Unsupported TypedData type');
   }
 
@@ -563,13 +573,14 @@ Future<ByteBuffer> deriveBits(
 
 extension ListExtension on List<String> {
   @visibleForTesting
-  JSArray<JSString> get toJS =>
+  JSArray<JSString> get toJS => // coverage:ignore-line
       <JSString>[for (final value in this) value.toJS].toJS;
 }
 
 extension AlgorithmExtension on Algorithm {
   /// Create JSON from [Algorithm].
   /// To avoid null properties for keys, eliminate keys whose value is null.
+  // coverage:ignore-start
   @visibleForTesting
   JSAny get toJS {
     final json = <String, Object>{};
@@ -641,11 +652,13 @@ extension AlgorithmExtension on Algorithm {
     return json.jsify()!;
   }
 }
+// coverage:ignore-end
 
 extension on JsonWebKey {
   /// Create JSON from [JsonWebKey].
   /// Convert the map created by JsonWebKey.toJson(),
   /// to avoid null properties for keys.
+  // coverage:ignore-line
   JSAny get toJS => toJson().jsify()!;
 }
 

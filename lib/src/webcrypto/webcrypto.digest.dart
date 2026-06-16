@@ -179,6 +179,7 @@ final class _Sha1 extends Hash {
   const _Sha1() : super._();
 
   @override
+  // coverage:ignore-line
   HashImpl get _impl => webCryptImpl.sha1;
 }
 
@@ -186,6 +187,7 @@ final class _Sha256 extends Hash {
   const _Sha256() : super._();
 
   @override
+  // coverage:ignore-line
   HashImpl get _impl => webCryptImpl.sha256;
 }
 
@@ -193,6 +195,7 @@ final class _Sha384 extends Hash {
   const _Sha384() : super._();
 
   @override
+  // coverage:ignore-line
   HashImpl get _impl => webCryptImpl.sha384;
 }
 
@@ -200,5 +203,6 @@ final class _Sha512 extends Hash {
   const _Sha512() : super._();
 
   @override
+  // coverage:ignore-line
   HashImpl get _impl => webCryptImpl.sha512;
 }

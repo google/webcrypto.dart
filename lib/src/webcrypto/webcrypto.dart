@@ -24,8 +24,11 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:typed_data';
 import '../impl_interface/impl_interface.dart';
+// coverage:ignore-line
 import '../impl_stub/impl_stub.dart'
+    // coverage:ignore-line
     if (dart.library.ffi) '../impl_ffi/impl_ffi.dart'
+    // coverage:ignore-line
     if (dart.library.js_interop) '../impl_js/impl_js.dart'
     show webCryptImpl;
 

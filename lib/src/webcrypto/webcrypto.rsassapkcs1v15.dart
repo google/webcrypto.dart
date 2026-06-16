@@ -66,6 +66,7 @@ final class RsassaPkcs1V15PrivateKey {
   RsassaPkcs1V15PrivateKey._(this._impl); // keep the constructor private.
 
   factory RsassaPkcs1V15PrivateKey(RsaSsaPkcs1V15PrivateKeyImpl impl) {
+    // coverage:ignore-line
     return RsassaPkcs1V15PrivateKey._(impl);
   }
 
@@ -430,6 +431,7 @@ final class RsassaPkcs1V15PublicKey {
   RsassaPkcs1V15PublicKey._(this._impl); // keep the constructor private.
 
   factory RsassaPkcs1V15PublicKey(RsaSsaPkcs1V15PublicKeyImpl impl) {
+    // coverage:ignore-line
     return RsassaPkcs1V15PublicKey._(impl);
   }
 

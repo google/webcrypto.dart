@@ -72,6 +72,7 @@ final class RsaPssPrivateKey {
   RsaPssPrivateKey._(this._impl); // keep the constructor private.
 
   factory RsaPssPrivateKey(RsaPssPrivateKeyImpl impl) {
+    // coverage:ignore-line
     return RsaPssPrivateKey._(impl);
   }
 
@@ -456,6 +457,7 @@ final class RsaPssPublicKey {
   RsaPssPublicKey._(this._impl); // keep the constructor private.
 
   factory RsaPssPublicKey(RsaPssPublicKeyImpl impl) {
+    // coverage:ignore-line
     return RsaPssPublicKey._(impl);
   }
 

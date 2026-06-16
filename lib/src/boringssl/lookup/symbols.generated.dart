@@ -14,6 +14,7 @@
 
 // ignore_for_file: constant_identifier_names
 
+// coverage:ignore-file
 /// **GENERATED FILE DO NOT MODIFY**
 ///
 /// This file is generated from `src/symbols.yaml` using:

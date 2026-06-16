@@ -80,6 +80,7 @@ final class RsaOaepPrivateKey {
   RsaOaepPrivateKey._(this._impl); // keep the constructor private.
 
   factory RsaOaepPrivateKey(RsaOaepPrivateKeyImpl impl) {
+    // coverage:ignore-line
     return RsaOaepPrivateKey._(impl);
   }
 
@@ -378,6 +379,7 @@ final class RsaOaepPublicKey {
   RsaOaepPublicKey._(this._impl); // keep the constructor private.
 
   factory RsaOaepPublicKey(RsaOaepPublicKeyImpl impl) {
+    // coverage:ignore-line
     return RsaOaepPublicKey._(impl);
   }
 

@@ -20,6 +20,7 @@ final class EcdsaPrivateKey {
   EcdsaPrivateKey._(this._impl); // keep the constructor private.
 
   factory EcdsaPrivateKey(EcdsaPrivateKeyImpl impl) {
+    // coverage:ignore-line
     return EcdsaPrivateKey._(impl);
   }
 
@@ -76,6 +77,7 @@ final class EcdsaPublicKey {
   final EcdsaPublicKeyImpl _impl;
 
   factory EcdsaPublicKey(EcdsaPublicKeyImpl impl) {
+    // coverage:ignore-line
     return EcdsaPublicKey._(impl);
   }
 

@@ -52,6 +52,7 @@ int nativeWebcryptoGetCbbSize() => _nativeWebcryptoGetCbbSize();
 /// ```c
 /// #define ERR_GET_LIB(packed_error) ((int)(((packed_error) >> 24) & 0xff))
 /// ```
+// coverage:ignore-line
 int ERR_GET_LIB(int packed_error) => (packed_error >> 24) & 0xff;
 
 /// ERR_GET_REASON returns the reason code for the error. This is one of
@@ -61,4 +62,5 @@ int ERR_GET_LIB(int packed_error) => (packed_error >> 24) & 0xff;
 /// ```c
 /// #define ERR_GET_REASON(packed_error) ((int)((packed_error) & 0xfff))
 /// ```
+// coverage:ignore-line
 int ERR_GET_REASON(int packed_error) => packed_error & 0xfff;

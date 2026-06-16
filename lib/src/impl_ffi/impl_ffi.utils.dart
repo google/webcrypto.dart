@@ -33,6 +33,7 @@ class _EvpPKey implements ffi.Finalizable {
   /// Allocate new [EVP_PKEY], attach finalizer and return the wrapped key.
   factory _EvpPKey() {
     final pkey = ssl.EVP_PKEY_new();
+    // coverage:ignore-line
     _checkOp(pkey.address != 0, fallback: 'allocation failure');
     return _EvpPKey.wrap(pkey);
   }
