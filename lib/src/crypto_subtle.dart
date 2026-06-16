@@ -71,6 +71,9 @@ extension type JSCrypto(JSObject _) implements JSObject {
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
   external JSTypedArray getRandomValues(JSTypedArray array);
+
+  /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
+  external String randomUUID();
 }
 
 const _webCryptoApiDocumentationUrl =
@@ -672,6 +675,10 @@ extension on JSJsonWebKey {
         .toList(),
     k: k,
   );
+}
+
+String randomUUID() {
+  return window.crypto.randomUUID();
 }
 
 // TODO: crypto.subtle.unwrapKey

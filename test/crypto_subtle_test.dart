@@ -104,6 +104,36 @@ void main() {
     });
   });
 
+  group('randomUUID', () {
+    test('returns a valid version 4 UUID', () {
+      final uuid = randomUUID();
+      expect(uuid, isA<String>());
+      // Format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+      expect(uuid.length, 36);
+      expect(uuid[14], '4');
+      expect('89ab'.contains(uuid[19]), isTrue);
+      final parts = uuid.split('-');
+      expect(parts.length, 5);
+      expect(parts[0].length, 8);
+      expect(parts[1].length, 4);
+      expect(parts[2].length, 4);
+      expect(parts[3].length, 4);
+      expect(parts[4].length, 12);
+      // All hex digits
+      for (final part in parts) {
+        expect(int.tryParse(part, radix: 16), isNotNull);
+      }
+    });
+
+    test('generates unique UUIDs', () {
+      final uuids = <String>{};
+      for (var i = 0; i < 100; i++) {
+        uuids.add(randomUUID());
+      }
+      expect(uuids.length, 100);
+    });
+  });
+
   group('crypto', () {
     test('subtle API is available in secure contexts', () {
       if (subtle.window.isSecureContext) {
