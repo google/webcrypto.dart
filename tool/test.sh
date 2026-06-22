@@ -35,7 +35,7 @@ dart pub get --no-example
 section 'dart test (vm,chrome,firefox)'
 run_with_xvfb dart test -p vm,chrome,firefox
 
-cd "$DIR/../example"
+cd "$DIR/../example/webcrypto_demo_flutter_app"
 
 section 'Running "flutter pub get" in example/'
 flutter pub get
