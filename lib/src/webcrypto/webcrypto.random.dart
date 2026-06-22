@@ -25,14 +25,16 @@ part of 'webcrypto.dart';
 /// import 'dart:typed_data' show Uint8List;
 /// import 'package:webcrypto/webcrypto.dart';
 ///
-/// // Allocated a byte array of 64 bytes.
-/// final bytes = Uint8List(64);
+/// void main() {
+///   // Allocate a byte array of 64 bytes.
+///   final bytes = Uint8List(64);
 ///
-/// // Fill with random bytes.
-/// fillRandomBytes(bytes);
+///   // Fill with random bytes.
+///   fillRandomBytes(bytes);
 ///
-/// // Print base64 encoded random bytes.
-/// print(base64.encode(bytes));
+///   // Print base64 encoded random bytes.
+///   print(base64.encode(bytes));
+/// }
 /// ```
 void fillRandomBytes(
   TypedData destination,

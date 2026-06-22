@@ -112,6 +112,9 @@ export+encrypt and decrypt+import and it has complex typing, this package shall
 omit this functionality. Adding these operations in the future only impact
 developers who have custom implementations of `CryptoKey` subclasses.
 
+See also [wrap-key.md](wrap-key.md) for a tutorial showing how to express these
+operations with the current API.
+
 ## Notes on the `'AES-KW'` Algorithm
 The `'AES-KW'` algorithm only supports the `crypto.sutble.wrapKey` and
 `crypto.sutble.unwrapKey` operations, which we have argued to omit in the
