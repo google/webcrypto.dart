@@ -67,7 +67,7 @@ functions:
   rename:
     'webcrypto_(.*)': '$1'
   include:
-    # Keep consistent with src/symbols.yaml.
+    # Source of truth for BoringSSL entry points bound from Dart.
     - webcrypto_BN_bin2bn
     - webcrypto_BN_bn2bin_padded
     - webcrypto_BN_free
