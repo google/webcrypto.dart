@@ -17,9 +17,6 @@
 import 'dart:io' show Platform, Directory, File;
 import 'dart:ffi';
 
-import 'symbols.generated.dart';
-import '../bindings/generated_bindings.dart';
-
 /// Get platform-dependent library filename for the binary webcrypto library.
 String get libraryFileName {
   const libraryName = 'webcrypto';
@@ -53,16 +50,7 @@ lookupLibraryInDotDartTool() {
   );
   if (libraryFile.existsSync()) {
     final library = DynamicLibrary.open(libraryFile.path);
-
-    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcrypto = WebCrypto(library);
-    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
-
-    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    Pointer<T> lookup<T extends NativeType>(String s) =>
-        webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
-
-    return lookup;
+    return library.lookup;
   }
   return null;
 }

@@ -464,10 +464,6 @@ main() {
     cd "$ROOT"
     dart pub get --no-example
 
-    section "Generating symbols table"
-    log_info "Running generate_symbols_table.dart..."
-    dart "$DIR/generate_symbols_table.dart"
-
     section "Updating FFI bindings"
     log_info "Running update-bindings.sh..."
     bash "$DIR/update-bindings.sh"
