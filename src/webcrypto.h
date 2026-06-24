@@ -31,8 +31,4 @@
 // Helper function to get the size of CBB structure for FFI allocation.
 WEBCRYPTO_EXPORT size_t webcrypto_get_CBB_size(void);
 
-// NativeFinalizer needs a raw function pointer, which ffigen does not emit for
-// functions generated as direct @Native bindings.
-WEBCRYPTO_EXPORT void* webcrypto_get_EVP_PKEY_free_address(void);
-
 #endif  // WEBCRYPTO_H

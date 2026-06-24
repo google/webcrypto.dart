@@ -15,17 +15,8 @@
  */
 
 #include <openssl/bytestring.h>
-#include <openssl/evp.h>
-
 #include "webcrypto.h"
 
 WEBCRYPTO_EXPORT size_t webcrypto_get_CBB_size(void) {
   return sizeof(CBB);
-}
-
-// NativeFinalizer requires a raw native function pointer. ffigen ignores
-// symbol-address entries for functions emitted as direct @Native bindings, so
-// expose this one address explicitly.
-WEBCRYPTO_EXPORT void* webcrypto_get_EVP_PKEY_free_address(void) {
-  return (void*)&EVP_PKEY_free;
 }

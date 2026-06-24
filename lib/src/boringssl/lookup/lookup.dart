@@ -14,18 +14,10 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:ffi';
-
 import '../bindings/generated_bindings.dart' as webcrypto;
-import '../../third_party/boringssl/generated_bindings.dart';
 
 /// Gets the native `sizeof(CBB)` value from the bundled helper library.
 int nativeWebcryptoGetCbbSize() => webcrypto.webcrypto_get_CBB_size();
-
-/// Gets the native address of `EVP_PKEY_free` for [NativeFinalizer].
-Pointer<NativeFunction<Void Function(Pointer<EVP_PKEY>)>>
-nativeEvpPkeyFreeAddress() =>
-    webcrypto.webcrypto_get_EVP_PKEY_free_address().cast();
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.

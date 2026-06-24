@@ -24,7 +24,6 @@ structs:
 functions:
   include:
     - webcrypto_get_CBB_size
-    - webcrypto_get_EVP_PKEY_free_address
 preamble: |
   // Copyright 2021 Google LLC
   //

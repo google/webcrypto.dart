@@ -27,10 +27,3 @@ import 'dart:ffi' as ffi;
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int webcrypto_get_CBB_size();
-
-/// Helper function to retrieve the address of EVP_PKEY_free for NativeFinalizer.
-@ffi.Native<ffi.Pointer<ffi.Void> Function()>(
-  symbol: 'webcrypto_get_EVP_PKEY_free_address',
-  assetId: 'package:webcrypto/webcrypto.dart',
-)
-external ffi.Pointer<ffi.Void> webcrypto_get_EVP_PKEY_free_address();
