@@ -6,7 +6,7 @@ exploration.
 To regenerate them, run from the package root:
 
 ```sh
-tool/update-jca-bindings.sh
+bash tool/update-jca-bindings.sh
 ```
 
 Requirements:
