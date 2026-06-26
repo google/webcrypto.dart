@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:test/test.dart' show setUpAll, test;
-import 'package:webcrypto/src/testing/testing.dart';
-
-import 'src/jni_test_setup.dart'
-    if (dart.library.io) 'src/jni_test_setup_io.dart';
-
-void main() {
-  setUpAll(spawnJniForDesktopTests);
-
-  runAllTests(test);
-}
+void spawnJniForDesktopTests() {}
