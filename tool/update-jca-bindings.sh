@@ -20,7 +20,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd "$DIR/.."
 
+# Requires Flutter SDK and Android SDK platform 36. The JNIgen config is pinned
+# to API 36 so generated platform bindings are reproducible across machines.
 dart pub get --no-example
 
-dart run ffigen --config=lib/src/boringssl/bindings/ffigen.yaml
-dart run ffigen --config=lib/src/third_party/boringssl/ffigen.yaml
+dart run jnigen --config=lib/src/third_party/jca/jnigen.yaml
