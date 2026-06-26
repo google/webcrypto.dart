@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,29 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: webcrypto
-version: 0.6.1
-description: Cross-platform implementation of Web Cryptography APIs for Dart.
-repository: https://github.com/google/webcrypto.dart
+set -e
 
-environment:
-  sdk: ^3.10.0
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-dependencies:
-  ffi: ^2.0.0
-  hooks: ^1.0.0
-  code_assets: ^1.0.0
-  native_toolchain_cmake: ^0.2.4
-  jni: ^0.15.2
-  meta: ^1.3.0
+cd "$DIR/.."
 
-dev_dependencies:
-  ffigen: ^11.0.0
-  jnigen: ^0.15.0
-  test: ^1.30.0
-  yaml: ^3.0.0
-  flutter_lints: ^6.0.0
-  coverage: any # we only need format_coverage, don't care what version
+# Requires Flutter SDK and Android SDK Platform 36. The JNIgen config is pinned
+# to Android API 36 so generated platform bindings are reproducible across
+# machines.
+dart pub get --no-example
 
-topics:
- - crypto
+dart run jnigen --config=lib/src/third_party/jca/jnigen.yaml
