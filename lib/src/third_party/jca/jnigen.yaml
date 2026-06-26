@@ -21,8 +21,8 @@ output:
 summarizer:
   backend: asm
 android_sdk_config:
-  # Keep this pinned so generated bindings do not depend on whichever Android
-  # SDK happens to be the local default.
+  # Keep this API level pinned so generated bindings do not depend on whichever
+  # Android SDK platform happens to be the local default.
   versions:
     - '36'
 classes:
