@@ -42,13 +42,14 @@ final class _HashImpl implements HashImpl {
 
   @override
   Future<Uint8List> digestStream(Stream<List<int>> data) async {
-    final algorithm = jni.JString.fromString(_jcaName);
-    final digest = MessageDigest.getInstance(algorithm);
-    algorithm.release();
-
-    if (digest == null) {
-      throw operationError('JCA MessageDigest($_jcaName) is unavailable');
-    }
+    final digest = jni.using((arena) {
+      final algorithm = jni.JString.fromString(_jcaName)..releasedBy(arena);
+      final digest = MessageDigest.getInstance(algorithm);
+      if (digest == null) {
+        throw operationError('JCA MessageDigest($_jcaName) is unavailable');
+      }
+      return digest;
+    });
 
     try {
       await for (final chunk in data) {

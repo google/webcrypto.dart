@@ -16,22 +16,37 @@ import 'dart:io';
 
 import 'package:jni/jni.dart';
 
+const _desktopJniSetupMessage =
+    'Run `dart run jni:setup` before running desktop JNI tests.';
+
+String? get jniHelperSetupSkipReason {
+  if (Platform.isAndroid) {
+    return null;
+  }
+
+  return _desktopJniHelperFile.existsSync() ? null : _desktopJniSetupMessage;
+}
+
 void spawnJniForDesktopTests() {
+  final setupError = jniHelperSetupSkipReason;
+  if (setupError != null) {
+    throw StateError(setupError);
+  }
+
   if (Platform.isAndroid) {
     return;
   }
 
-  final helperDir = Directory('build/jni_libs');
+  Jni.spawnIfNotExists(dylibDir: _desktopJniHelperDir.path);
+}
+
+Directory get _desktopJniHelperDir => Directory('build/jni_libs');
+
+File get _desktopJniHelperFile {
   final helperName = Platform.isWindows
       ? 'dartjni.dll'
       : Platform.isMacOS
       ? 'libdartjni.dylib'
       : 'libdartjni.so';
-  // Keep regular non-JNI test runs usable; `dart run jni:setup` opts desktop
-  // tests into the JNI helper needed by the android-jca exploration backend.
-  if (!File.fromUri(helperDir.uri.resolve(helperName)).existsSync()) {
-    return;
-  }
-
-  Jni.spawnIfNotExists(dylibDir: helperDir.path);
+  return File.fromUri(_desktopJniHelperDir.uri.resolve(helperName));
 }

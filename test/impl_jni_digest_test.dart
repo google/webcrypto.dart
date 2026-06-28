@@ -16,31 +16,23 @@
 library;
 
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:jni/jni.dart';
 import 'package:test/test.dart';
 import 'package:webcrypto/src/impl_ffi/impl_ffi.dart' as ffi_impl;
 import 'package:webcrypto/src/impl_jni/impl_jni.dart' as jni_impl;
 
+import 'src/jni_test_setup.dart'
+    if (dart.library.io) 'src/jni_test_setup_io.dart';
+
 void main() {
+  final skipReason = jniHelperSetupSkipReason;
+
   setUpAll(() {
-    if (Platform.isAndroid) {
+    if (skipReason != null) {
       return;
     }
 
-    final helperDir = Directory('build/jni_libs');
-    final helperName = Platform.isWindows
-        ? 'dartjni.dll'
-        : Platform.isMacOS
-        ? 'libdartjni.dylib'
-        : 'libdartjni.so';
-    if (!File.fromUri(helperDir.uri.resolve(helperName)).existsSync()) {
-      markTestSkipped('Run `dart run jni:setup` before desktop JNI tests.');
-      return;
-    }
-
-    Jni.spawnIfNotExists(dylibDir: helperDir.path);
+    spawnJniForDesktopTests();
   });
 
   test('JCA digest matches known SHA-256 vector', () async {
@@ -53,7 +45,7 @@ void main() {
       base64Encode(digest),
       'r6J7RNQ7Aqn+pB0TztwuQBbPz4fF2/mQ5ZNmmqjOKG0=',
     );
-  });
+  }, skip: skipReason);
 
   test('JCA digest stream matches known SHA-512 vector', () async {
     final data = utf8.encode('hello-world');
@@ -70,5 +62,5 @@ void main() {
       'au78KRIqOWLJDvg09sqtADO//NYpQbemIFppXMOeJ2fbd3inrXbRc6CDueFLIQ3AISkj'
       '9IGyhceEqx/jQNf/TQ==',
     );
-  });
+  }, skip: skipReason);
 }
