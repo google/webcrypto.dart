@@ -14,6 +14,49 @@
 
 part of 'impl_jni.dart';
 
+void _checkData(bool condition, String message) {
+  if (!condition) {
+    throw FormatException(message);
+  }
+}
+
+Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int? lengthInBits]) {
+  final bytes = Uint8List.fromList(data);
+  if (lengthInBits == null) {
+    return bytes;
+  }
+
+  final startFrom = lengthInBits ~/ 8;
+  var remainder = lengthInBits % 8;
+  for (var i = startFrom; i < bytes.length; i++) {
+    final mask = 0xff & (0xff << (8 - remainder));
+    bytes[i] = bytes[i] & mask;
+    remainder = 8;
+  }
+  return bytes;
+}
+
+Uint8List _jwkDecodeBase64UrlNoPadding(String unpadded, String prop) {
+  try {
+    final padded = unpadded.padRight(
+      unpadded.length + ((4 - (unpadded.length % 4)) % 4),
+      '=',
+    );
+    return base64Url.decode(padded);
+  } on FormatException {
+    throw FormatException(
+      'JWK property "$prop" is not url-safe base64 without padding',
+      unpadded,
+    );
+  }
+}
+
+String _jwkEncodeBase64UrlNoPadding(List<int> data) {
+  final padded = base64Url.encode(data);
+  final paddingStart = padded.indexOf('=');
+  return paddingStart == -1 ? padded : padded.substring(0, paddingStart);
+}
+
 extension _JByteArrayCopy on jni.JByteArray {
   /// Copies this JVM byte array into Dart-owned memory.
   ///
@@ -25,4 +68,23 @@ extension _JByteArrayCopy on jni.JByteArray {
     final view = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.length);
     return Uint8List.fromList(view);
   }
+}
+
+Uint8List _randomBytes(int length) {
+  final output = Uint8List(length);
+  _fillRandomBytes(output);
+  return output;
+}
+
+void _fillRandomBytes(TypedData destination) {
+  final output = destination.buffer.asUint8List(
+    destination.offsetInBytes,
+    destination.lengthInBytes,
+  );
+  jni.using((arena) {
+    final random = SecureRandom()..releasedBy(arena);
+    final bytes = jni.JByteArray(output.length)..releasedBy(arena);
+    random.nextBytes(bytes);
+    output.setAll(0, bytes.copyToDartBytes());
+  });
 }

@@ -18,7 +18,5 @@ final class _RandomImpl implements RandomImpl {
   const _RandomImpl();
 
   @override
-  void fillRandomBytes(TypedData destination) {
-    throw UnimplementedError('Not implemented');
-  }
+  void fillRandomBytes(TypedData destination) => _fillRandomBytes(destination);
 }
