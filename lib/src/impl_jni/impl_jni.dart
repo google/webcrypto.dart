@@ -20,11 +20,13 @@
 library;
 
 import 'dart:async';
+import 'dart:convert' show base64Url;
 import 'dart:typed_data';
 
 import 'package:jni/jni.dart' as jni;
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';
 
+import '../jsonwebkey.dart' show JsonWebKey;
 import '../third_party/jca/generated_bindings.dart';
 
 part 'impl_jni.aescbc.dart';
