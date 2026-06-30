@@ -30,6 +30,7 @@ import 'webcrypto/rsassapkcs1v15.dart' as rsassapkcs1v15;
 // Other test files, that don't use TestRunner
 import 'webcrypto/random.dart' as random;
 import 'webcrypto/digest.dart' as digest;
+import 'ecdh/derive_bits.dart' as ecdh_derive_bits;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
 
 /// Test runners from all test files except `digest.dart` and
@@ -59,6 +60,7 @@ void runAllTests(
     for (final r in _testRunners) ...r.tests(),
     ...random.tests(),
     ...digest.tests(),
+    ...ecdh_derive_bits.tests(),
     ...issue_60_trailing_bytes.tests(),
   ];
 
