@@ -11,3 +11,17 @@ To run the Android JNI/JCA digest smoke test:
 flutter test integration_test/jni_digest_test.dart \
   -d emulator-name
 ```
+
+To run the Android JNI/JCA HMAC smoke test:
+
+```sh
+flutter test integration_test/jni_hmac_test.dart \
+  -d emulator-name
+```
+
+To run the Android JNI/JCA AES-GCM smoke test:
+
+```sh
+flutter test integration_test/jni_aesgcm_test.dart \
+  -d emulator-name
+```
