@@ -58,6 +58,28 @@ jobs:
       - uses: dart-lang/setup-dart@v1
       - run: dart pub get --no-example
       - run: xvfb-run dart test --exclude-tags browser-interop -p vm,chrome,firefox -c dart2js,dart2wasm
+  linux-ffi-memory-safety:
+    name: Linux FFI memory safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - name: Install Valgrind
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y valgrind
+      - run: dart pub get --no-example
+      - name: Run FFI memory-safety tests under Valgrind
+        run: >-
+          valgrind
+          --tool=memcheck
+          --leak-check=full
+          --show-leak-kinds=definite,possible
+          --errors-for-leak-kinds=definite
+          --track-origins=yes
+          --error-exitcode=1
+          dart test -p vm test/ffi_memory_safety_test.dart
   macos:
     name: MacOS desktop / Chrome
     runs-on: macos-15 # Test with xcode 16
