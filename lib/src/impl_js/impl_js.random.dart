@@ -32,4 +32,9 @@ final class _RandomImpl implements RandomImpl {
       throw _translateJavaScriptException();
     }
   }
+
+  @override
+  String randomUUID() {
+    return subtle.randomUUID();
+  }
 }

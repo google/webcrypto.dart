@@ -53,3 +53,26 @@ void fillRandomBytes(
 
   webCryptImpl.random.fillRandomBytes(destination);
 }
+
+/// Generate a random UUID v4 string.
+///
+/// Uses cryptographically secure random number generation to produce a
+/// version 4 UUID as specified in [RFC 4122][1].
+///
+/// Returns a string in the format `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`
+/// where `x` is any hexadecimal digit and `y` is one of `8`, `9`, `a`, or `b`.
+///
+/// **Example**
+/// ```dart
+/// import 'package:webcrypto/webcrypto.dart';
+///
+/// void main() {
+///   final uuid = randomUUID();
+///   print(uuid); // e.g. "550e8400-e29b-41d4-a716-446655440000"
+/// }
+/// ```
+///
+/// [1]: https://datatracker.ietf.org/doc/html/rfc4122
+String randomUUID() {
+  return webCryptImpl.random.randomUUID();
+}

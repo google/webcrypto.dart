@@ -21,4 +21,9 @@ final class _RandomImpl implements RandomImpl {
   void fillRandomBytes(TypedData destination) {
     throw UnimplementedError('Not implemented');
   }
+
+  @override
+  String randomUUID() {
+    throw UnimplementedError('Not implemented');
+  }
 }
