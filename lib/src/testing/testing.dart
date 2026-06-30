@@ -30,8 +30,8 @@ import 'webcrypto/rsassapkcs1v15.dart' as rsassapkcs1v15;
 // Other test files, that don't use TestRunner
 import 'webcrypto/random.dart' as random;
 import 'webcrypto/digest.dart' as digest;
-import 'regression/jwk_use_key_ops_conflict.dart'
-    as jwk_use_key_ops_conflict;
+import 'regression/jwk_use_key_ops_conflict.dart' as jwk_use_key_ops_conflict;
+import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
 
 /// Test runners from all test files except `digest.dart` and
 /// `random.dart`, which do not use [TestRunner].
@@ -61,6 +61,7 @@ void runAllTests(
     ...random.tests(),
     ...digest.tests(),
     ...jwk_use_key_ops_conflict.tests(),
+    ...issue_60_trailing_bytes.tests(),
   ];
 
   for (final (:name, :test) in allTests) {

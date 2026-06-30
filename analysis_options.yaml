@@ -16,4 +16,8 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     # Cannot analyze subprojects
-    - example/**
+    - example/webcrypto_demo_flutter_app/**
+  errors:
+    # TODO: Remove when analyzer supports the dartdoc `{@example ...}` directive.
+    # https://github.com/dart-lang/sdk/issues/63504
+    doc_directive_unknown: ignore

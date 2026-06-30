@@ -2,6 +2,8 @@ name: BoringSsl
 description: 'Bindings to BoringSSL.'
 language: c
 output: 'generated_bindings.dart'
+ffi-native:
+  assetId: 'package:webcrypto/webcrypto.dart'
 headers:
   entry-points:
     - '../../../../third_party/boringssl/src/include/openssl/aead.h'
@@ -11,9 +13,9 @@ headers:
     - '../../../../third_party/boringssl/src/include/openssl/cipher.h'
     - '../../../../third_party/boringssl/src/include/openssl/crypto.h'
     - '../../../../third_party/boringssl/src/include/openssl/digest.h'
-    - '../../../../third_party/boringssl/src/include/openssl/ec_key.h'
     - '../../../../third_party/boringssl/src/include/openssl/ec.h'
     - '../../../../third_party/boringssl/src/include/openssl/ecdh.h'
+    - '../../../../third_party/boringssl/src/include/openssl/ec_key.h'
     - '../../../../third_party/boringssl/src/include/openssl/ecdsa.h'
     - '../../../../third_party/boringssl/src/include/openssl/err.h'
     - '../../../../third_party/boringssl/src/include/openssl/evp.h'
@@ -22,7 +24,12 @@ headers:
     - '../../../../third_party/boringssl/src/include/openssl/mem.h'
     - '../../../../third_party/boringssl/src/include/openssl/rand.h'
     - '../../../../third_party/boringssl/src/include/openssl/rsa.h'
-compiler-opts: '-Ithird_party/boringssl/src/include'
+compiler-opts:
+  - '-Ithird_party/boringssl/src/include'
+  # Make Clang see BoringSSL's prefixed declarations instead of recording the
+  # original names with `#pragma redefine_extname`.
+  - '-DBORINGSSL_PREFIX=webcrypto'
+  - '-U__PRAGMA_REDEFINE_EXTNAME'
 comments:
   style: any
   length: full
@@ -57,151 +64,149 @@ unions:
 globals:
   include: []
 functions:
+  rename:
+    'webcrypto_(.*)': '$1'
   include:
-    # Keep consistent with src/symbols.yaml.
-    - BN_bin2bn
-    - BN_bn2bin_padded
-    - BN_free
-    - BN_new
-    - BN_num_bytes
-    - BN_set_word
-    - CBB_cleanup
-    - CBB_data
-    - CBB_flush
-    - CBB_init
-    - CBB_len
-    - CBB_zero
-    - CBS_init
-    - CRYPTO_memcmp
-    - ECDH_compute_key
-    - ECDSA_SIG_free
-    - ECDSA_SIG_get0
-    - ECDSA_SIG_marshal
-    - ECDSA_SIG_new
-    - ECDSA_SIG_parse
-    - EC_GROUP_get0_order
-    - EC_GROUP_get_curve_name
-    - EC_GROUP_get_degree
-    - EC_KEY_check_key
-    - EC_KEY_free
-    - EC_KEY_generate_key
-    - EC_KEY_get0_group
-    - EC_KEY_get0_private_key
-    - EC_KEY_get0_public_key
-    - EC_KEY_get_enc_flags
-    - EC_KEY_new_by_curve_name
-    - EC_KEY_set_enc_flags
-    - EC_KEY_set_private_key
-    - EC_KEY_set_public_key
-    - EC_KEY_set_public_key_affine_coordinates
-    - EC_POINT_free
-    - EC_POINT_get_affine_coordinates_GFp
-    - EC_POINT_new
-    - EC_POINT_oct2point
-    - EC_POINT_point2cbb
-    - ERR_clear_error
-    - ERR_error_string_n
-    - ERR_get_error
-    - ERR_peek_error
-    - EVP_aead_aes_128_gcm
-    - EVP_aead_aes_256_gcm
-    - EVP_AEAD_CTX_free
-    - EVP_AEAD_CTX_new
-    - EVP_AEAD_CTX_open
-    - EVP_AEAD_CTX_seal
-    - EVP_AEAD_max_overhead
-    - EVP_aes_128_cbc
-    - EVP_aes_128_ctr
-    - EVP_aes_256_cbc
-    - EVP_aes_256_ctr
-    - EVP_CIPHER_CTX_free
-    - EVP_CIPHER_CTX_new
-    - EVP_CipherFinal_ex
-    - EVP_CipherInit_ex
-    - EVP_CIPHER_iv_length
-    - EVP_CipherUpdate
-    - EVP_DigestFinal
-    - EVP_DigestInit
-    - EVP_DigestSignFinal
-    - EVP_DigestSignInit
-    - EVP_DigestSignUpdate
-    - EVP_DigestUpdate
-    - EVP_DigestVerifyFinal
-    - EVP_DigestVerifyInit
-    - EVP_DigestVerifyUpdate
-    - EVP_marshal_private_key
-    - EVP_marshal_public_key
-    - EVP_MD_CTX_free
-    - EVP_MD_CTX_new
-    - EVP_MD_CTX_size
-    - EVP_parse_private_key
-    - EVP_parse_public_key
-    - EVP_PKEY_CTX_free
-    - EVP_PKEY_CTX_new
-    - EVP_PKEY_CTX_set0_rsa_oaep_label
-    - EVP_PKEY_CTX_set_rsa_mgf1_md
-    - EVP_PKEY_CTX_set_rsa_oaep_md
-    - EVP_PKEY_CTX_set_rsa_padding
-    - EVP_PKEY_CTX_set_rsa_pss_saltlen
-    - EVP_PKEY_decrypt
-    - EVP_PKEY_decrypt_init
-    - EVP_PKEY_encrypt
-    - EVP_PKEY_encrypt_init
-    - EVP_PKEY_free
-    - EVP_PKEY_get1_EC_KEY
-    - EVP_PKEY_get1_RSA
-    - EVP_PKEY_id
-    - EVP_PKEY_new
-    - EVP_PKEY_set1_EC_KEY
-    - EVP_PKEY_set1_RSA
-    - EVP_sha1
-    - EVP_sha256
-    - EVP_sha384
-    - EVP_sha512
-    - HKDF
-    - HMAC_CTX_free
-    - HMAC_CTX_new
-    - HMAC_Final
-    - HMAC_Init_ex
-    - HMAC_size
-    - HMAC_Update
-    - OPENSSL_malloc
-    - PKCS5_PBKDF2_HMAC
-    - RAND_bytes
-    - RSA_check_key
-    - RSA_free
-    - RSA_generate_key_ex
-    - RSA_get0_crt_params
-    - RSA_get0_factors
-    - RSA_get0_key
-    - RSA_new
-    - RSAPublicKey_dup
-    - RSA_set0_crt_params
-    - RSA_set0_factors
-    - RSA_set0_key
+    # Source of truth for BoringSSL entry points bound from Dart.
+    - webcrypto_BN_bin2bn
+    - webcrypto_BN_bn2bin_padded
+    - webcrypto_BN_free
+    - webcrypto_BN_new
+    - webcrypto_BN_num_bytes
+    - webcrypto_BN_set_word
+    - webcrypto_CBB_cleanup
+    - webcrypto_CBB_data
+    - webcrypto_CBB_flush
+    - webcrypto_CBB_init
+    - webcrypto_CBB_len
+    - webcrypto_CBB_zero
+    - webcrypto_CRYPTO_memcmp
+    - webcrypto_ECDH_compute_key
+    - webcrypto_ECDSA_SIG_free
+    - webcrypto_ECDSA_SIG_get0
+    - webcrypto_ECDSA_SIG_marshal
+    - webcrypto_ECDSA_SIG_new
+    - webcrypto_ECDSA_SIG_parse
+    - webcrypto_EC_GROUP_get0_order
+    - webcrypto_EC_GROUP_get_curve_name
+    - webcrypto_EC_GROUP_get_degree
+    - webcrypto_EC_KEY_check_key
+    - webcrypto_EC_KEY_free
+    - webcrypto_EC_KEY_generate_key
+    - webcrypto_EC_KEY_get0_group
+    - webcrypto_EC_KEY_get0_private_key
+    - webcrypto_EC_KEY_get0_public_key
+    - webcrypto_EC_KEY_get_enc_flags
+    - webcrypto_EC_KEY_new_by_curve_name
+    - webcrypto_EC_KEY_set_enc_flags
+    - webcrypto_EC_KEY_set_private_key
+    - webcrypto_EC_KEY_set_public_key
+    - webcrypto_EC_KEY_set_public_key_affine_coordinates
+    - webcrypto_EC_POINT_free
+    - webcrypto_EC_POINT_get_affine_coordinates_GFp
+    - webcrypto_EC_POINT_new
+    - webcrypto_EC_POINT_oct2point
+    - webcrypto_EC_POINT_point2cbb
+    - webcrypto_ERR_clear_error
+    - webcrypto_ERR_error_string_n
+    - webcrypto_ERR_get_error
+    - webcrypto_ERR_peek_error
+    - webcrypto_EVP_aead_aes_128_gcm
+    - webcrypto_EVP_aead_aes_256_gcm
+    - webcrypto_EVP_AEAD_CTX_free
+    - webcrypto_EVP_AEAD_CTX_new
+    - webcrypto_EVP_AEAD_CTX_open
+    - webcrypto_EVP_AEAD_CTX_seal
+    - webcrypto_EVP_AEAD_max_overhead
+    - webcrypto_EVP_aes_128_cbc
+    - webcrypto_EVP_aes_128_ctr
+    - webcrypto_EVP_aes_256_cbc
+    - webcrypto_EVP_aes_256_ctr
+    - webcrypto_EVP_CIPHER_CTX_free
+    - webcrypto_EVP_CIPHER_CTX_new
+    - webcrypto_EVP_CipherFinal_ex
+    - webcrypto_EVP_CipherInit_ex
+    - webcrypto_EVP_CIPHER_iv_length
+    - webcrypto_EVP_CipherUpdate
+    - webcrypto_EVP_DigestFinal
+    - webcrypto_EVP_DigestInit
+    - webcrypto_EVP_DigestSignFinal
+    - webcrypto_EVP_DigestSignInit
+    - webcrypto_EVP_DigestSignUpdate
+    - webcrypto_EVP_DigestUpdate
+    - webcrypto_EVP_DigestVerifyFinal
+    - webcrypto_EVP_DigestVerifyInit
+    - webcrypto_EVP_DigestVerifyUpdate
+    - webcrypto_EVP_marshal_private_key
+    - webcrypto_EVP_marshal_public_key
+    - webcrypto_EVP_MD_CTX_free
+    - webcrypto_EVP_MD_CTX_new
+    - webcrypto_EVP_MD_CTX_size
+    - webcrypto_EVP_parse_private_key
+    - webcrypto_EVP_parse_public_key
+    - webcrypto_EVP_PKEY_CTX_free
+    - webcrypto_EVP_PKEY_CTX_new
+    - webcrypto_EVP_PKEY_CTX_set0_rsa_oaep_label
+    - webcrypto_EVP_PKEY_CTX_set_rsa_mgf1_md
+    - webcrypto_EVP_PKEY_CTX_set_rsa_oaep_md
+    - webcrypto_EVP_PKEY_CTX_set_rsa_padding
+    - webcrypto_EVP_PKEY_CTX_set_rsa_pss_saltlen
+    - webcrypto_EVP_PKEY_decrypt
+    - webcrypto_EVP_PKEY_decrypt_init
+    - webcrypto_EVP_PKEY_encrypt
+    - webcrypto_EVP_PKEY_encrypt_init
+    - webcrypto_EVP_PKEY_free
+    - webcrypto_EVP_PKEY_get1_EC_KEY
+    - webcrypto_EVP_PKEY_get1_RSA
+    - webcrypto_EVP_PKEY_id
+    - webcrypto_EVP_PKEY_new
+    - webcrypto_EVP_PKEY_set1_EC_KEY
+    - webcrypto_EVP_PKEY_set1_RSA
+    - webcrypto_EVP_sha1
+    - webcrypto_EVP_sha256
+    - webcrypto_EVP_sha384
+    - webcrypto_EVP_sha512
+    - webcrypto_HKDF
+    - webcrypto_HMAC_CTX_free
+    - webcrypto_HMAC_CTX_new
+    - webcrypto_HMAC_Final
+    - webcrypto_HMAC_Init_ex
+    - webcrypto_HMAC_size
+    - webcrypto_HMAC_Update
+    - webcrypto_OPENSSL_malloc
+    - webcrypto_PKCS5_PBKDF2_HMAC
+    - webcrypto_RAND_bytes
+    - webcrypto_RSA_check_key
+    - webcrypto_RSA_free
+    - webcrypto_RSA_generate_key_ex
+    - webcrypto_RSA_get0_crt_params
+    - webcrypto_RSA_get0_factors
+    - webcrypto_RSA_get0_key
+    - webcrypto_RSA_new
+    - webcrypto_RSAPublicKey_dup
+    - webcrypto_RSA_set0_crt_params
+    - webcrypto_RSA_set0_factors
+    - webcrypto_RSA_set0_key
     # These are referenced, just need to be sorted right.
-    - OPENSSL_free
-    - OPENSSL_memdup
-    - EVP_MD_size
+    - webcrypto_OPENSSL_free
+    - webcrypto_OPENSSL_memdup
+    - webcrypto_EVP_MD_size
     # Not used but maybe they should be:
-    - EVP_AEAD_nonce_length
-    - EVP_AEAD_max_tag_len
+    - webcrypto_EVP_AEAD_nonce_length
+    - webcrypto_EVP_AEAD_max_tag_len
     # Not used by nice to have, maybe, or maybe we remove / comment them out
-    - EVP_AEAD_key_length
-    - BN_value_one
-    - BN_add
-    - BN_sub
-    - BN_cmp
-    - BN_lshift
-    - EVP_CIPHER_block_size
-    - EC_GROUP_new_by_curve_name
-    - EC_GROUP_free
-    - EVP_PKEY_set_type
+    - webcrypto_EVP_AEAD_key_length
+    - webcrypto_BN_value_one
+    - webcrypto_BN_add
+    - webcrypto_BN_sub
+    - webcrypto_BN_cmp
+    - webcrypto_BN_lshift
+    - webcrypto_EVP_CIPHER_block_size
+    - webcrypto_EC_GROUP_new_by_curve_name
+    - webcrypto_EC_GROUP_free
+    - webcrypto_EVP_PKEY_set_type
     # Self testing only..
-    - BORINGSSL_self_test
-  symbol-address:
-    include:
-      - EVP_PKEY_free
+    - webcrypto_BORINGSSL_self_test
 preamble: |
   /* ====================================================================
    * Copyright (c) 1998-2001 The OpenSSL Project.  All rights reserved.

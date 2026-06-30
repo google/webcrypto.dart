@@ -17,9 +17,6 @@
 import 'dart:io' show Platform, Directory, File;
 import 'dart:ffi';
 
-import 'symbols.generated.dart';
-import '../bindings/generated_bindings.dart';
-
 /// Get platform-dependent library filename for the binary webcrypto library.
 String get libraryFileName {
   const libraryName = 'webcrypto';
@@ -53,25 +50,16 @@ lookupLibraryInDotDartTool() {
   );
   if (libraryFile.existsSync()) {
     final library = DynamicLibrary.open(libraryFile.path);
-
-    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcrypto = WebCrypto(library);
-    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
-
-    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    Pointer<T> lookup<T extends NativeType>(String s) =>
-        webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
-
-    return lookup;
+    return library.lookup;
   }
   return null;
 }
 
 /// Find the `.dart_tool/` folder, returns `null` if unable to find it.
 Uri? _findDotDartTool() {
-  // HACK: We have no good mechanism for finding the library created by:
-  //         flutter pub run webcrypto:setup
-  //       So we search relative to the script path and CWD.
+  // HACK: We have no good mechanism for finding the legacy
+  // `.dart_tool/webcrypto/` output, so we search relative to the script path
+  // and CWD.
 
   // Find script directory
   Uri root = Platform.script.resolve('./');
