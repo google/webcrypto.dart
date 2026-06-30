@@ -146,6 +146,8 @@ int CBS_get_u32le(CBS *cbs, uint32_t *out) {
   return 1;
 }
 
+int CBS_get_u48(CBS *cbs, uint64_t *out) { return cbs_get_u(cbs, out, 6); }
+
 int CBS_get_u64(CBS *cbs, uint64_t *out) { return cbs_get_u(cbs, out, 8); }
 
 int CBS_get_u64le(CBS *cbs, uint64_t *out) {
@@ -188,7 +190,7 @@ static int cbs_get_length_prefixed(CBS *cbs, CBS *out, size_t len_len) {
   if (!cbs_get_u(cbs, &len, len_len)) {
     return 0;
   }
-  // If |len_len| <= 3 then we know that |len| will fit into a |size_t|, even on
+  // If `len_len` <= 3 then we know that `len` will fit into a `size_t`, even on
   // 32-bit systems.
   assert(len_len <= 3);
   return CBS_get_bytes(cbs, out, len);
@@ -275,8 +277,8 @@ int CBS_get_u64_decimal(CBS *cbs, uint64_t *out) {
   return seen_digit;
 }
 
-// parse_base128_integer reads a big-endian base-128 integer from |cbs| and sets
-// |*out| to the result. This is the encoding used in DER for both high tag
+// parse_base128_integer reads a big-endian base-128 integer from `cbs` and sets
+// `*out` to the result. This is the encoding used in DER for both high tag
 // number form and OID components.
 static int parse_base128_integer(CBS *cbs, uint64_t *out) {
   uint64_t v = 0;
@@ -411,7 +413,7 @@ static int cbs_get_any_asn1_element(CBS *cbs, CBS *out, CBS_ASN1_TAG *out_tag,
     // ITU-T X.690 section 10.1 (DER length forms) requires encoding the
     // length with the minimum number of octets. BER could, technically, have
     // 125 superfluous zero bytes. We do not attempt to handle that and still
-    // require that the length fit in a |uint32_t| for BER.
+    // require that the length fit in a `uint32_t` for BER.
     if (len64 < 128) {
       // Length should have used short-form encoding.
       if (ber_ok) {
@@ -504,10 +506,20 @@ int CBS_get_asn1_element(CBS *cbs, CBS *out, CBS_ASN1_TAG tag_value) {
   return cbs_get_asn1(cbs, out, tag_value, 0 /* include header */);
 }
 
-int CBS_peek_asn1_tag(const CBS *cbs, CBS_ASN1_TAG tag_value) {
+CBS_ASN1_TAG CBS_peek_any_asn1_tag(const CBS *cbs) {
   CBS copy = *cbs;
-  CBS_ASN1_TAG actual_tag;
-  return parse_asn1_tag(&copy, &actual_tag) && tag_value == actual_tag;
+  CBS_ASN1_TAG tag;
+  if (!parse_asn1_tag(&copy, &tag)) {
+    return 0;
+  }
+  return tag;
+}
+
+int CBS_peek_asn1_tag(const CBS *cbs, CBS_ASN1_TAG tag_value) {
+  CBS_ASN1_TAG actual_tag = CBS_peek_any_asn1_tag(cbs);
+  // The caller should never pass zero as |tag_value|, but return zero if they
+  // did.
+  return actual_tag != 0 && actual_tag == tag_value;
 }
 
 int CBS_get_asn1_uint64(CBS *cbs, uint64_t *out) {
@@ -735,8 +747,8 @@ int CBS_is_valid_asn1_oid(const CBS *cbs) {
   uint8_t v, prev = 0;
   while (CBS_get_u8(&copy, &v)) {
     // OID encodings are a sequence of minimally-encoded base-128 integers (see
-    // |parse_base128_integer|). If |prev|'s MSB was clear, it was the last byte
-    // of an integer (or |v| is the first byte). |v| is then the first byte of
+    // `parse_base128_integer`). If `prev`'s MSB was clear, it was the last byte
+    // of an integer (or `v` is the first byte). `v` is then the first byte of
     // the next integer. If first byte of an integer is 0x80, it is not
     // minimally-encoded.
     if ((prev & 0x80) == 0 && v == 0x80) {
@@ -918,10 +930,10 @@ static int CBS_parse_rfc5280_time_internal(const CBS *cbs, int is_gentime,
     case 'Z':
       break;  // We correctly have 'Z' on the end as per spec.
     case '+':
-      offset_sign = 1;
+      offset_sign = -1;
       break;  // Should not be allowed per RFC 5280.
     case '-':
-      offset_sign = -1;
+      offset_sign = 1;
       break;  // Should not be allowed per RFC 5280.
     default:
       return 0;  // Reject anything else after the time.
@@ -930,7 +942,7 @@ static int CBS_parse_rfc5280_time_internal(const CBS *cbs, int is_gentime,
   // If allow_timezone_offset is non-zero, allow for a four digit timezone
   // offset to be specified even though this is not allowed by RFC 5280. We are
   // permissive of this for UTCTimes due to the unfortunate existence of
-  // artisinally rolled long lived certificates that were baked into places that
+  // artisanally rolled long lived certificates that were baked into places that
   // are now difficult to change. These certificates were generated with the
   // 'openssl' command that permissively allowed the creation of certificates
   // with notBefore and notAfter times specified as strings for direct
