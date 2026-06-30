@@ -206,15 +206,16 @@ final class EcdhPrivateKey {
   /// two parties.
   ///
   /// [length] specifies the length of the derived secret in bits.
+  /// The maximum length depends on the [EllipticCurve] used:
+  ///   * [EllipticCurve.p256] — up to 256 bits.
+  ///   * [EllipticCurve.p384] — up to 384 bits.
+  ///   * [EllipticCurve.p521] — up to 528 bits.
+  ///
   /// [publicKey] is [EcdhPublicKey] from the other party's ECDH key pair.
   ///
   /// Returns a [Uint8List] containing the derived shared secret.
   ///
   /// {@macro EcdhPrivateKey:example}
-  // Note some webcrypto implementations (chrome, not firefox) supports passing
-  // null for length (in this primitive). However, you can always know the right
-  // length from the curve. Note p512 can provide up to: 528 bits!!!
-  //
   // See: https://www.rfc-editor.org/rfc/rfc6090#section-4
   // Notice that this is not uniformly distributed, see also:
   // https://www.rfc-editor.org/rfc/rfc6090#appendix-B

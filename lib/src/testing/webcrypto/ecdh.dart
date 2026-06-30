@@ -59,13 +59,32 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
 );
 
 void main() async {
-  log('generate ECDH test case');
+  log('generate ECDH test cases');
+
+  // P-256: up to 256 bits (32 bytes)
   await runner.generate(
     generateKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
     importKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
     deriveParams: {},
     maxDeriveLength: 32,
   );
+
+  // P-384: up to 384 bits (48 bytes)
+  await runner.generate(
+    generateKeyParams: {'curve': curveToJson(EllipticCurve.p384)},
+    importKeyParams: {'curve': curveToJson(EllipticCurve.p384)},
+    deriveParams: {},
+    maxDeriveLength: 48,
+  );
+
+  // P-521: up to 528 bits (66 bytes)
+  await runner.generate(
+    generateKeyParams: {'curve': curveToJson(EllipticCurve.p521)},
+    importKeyParams: {'curve': curveToJson(EllipticCurve.p521)},
+    deriveParams: {},
+    maxDeriveLength: 66,
+  );
+
   log('--------------------');
 
   await runner.tests().runTests();
