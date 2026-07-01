@@ -147,6 +147,34 @@ final _usagesDecrypt = ['decrypt'];
 final _usagesEncrypt = ['encrypt'];
 final _usagesDeriveBits = ['deriveBits'];
 
+/// Validate that [jwk]'s `use` and `key_ops` are consistent with each other.
+///
+/// If both `use` and `key_ops` are present, every entry in `key_ops` must be
+/// consistent with the value of `use` per the JWK specification (RFC 7517).
+void _checkJwkUseAndKeyOps(subtle.JsonWebKey jwk) {
+  if (jwk.use != null && jwk.key_ops != null) {
+    final allowedOps = jwk.use == 'sig'
+        ? <String>{'sign', 'verify'}
+        : <String>{
+            'encrypt',
+            'decrypt',
+            'wrapKey',
+            'unwrapKey',
+            'deriveKey',
+            'deriveBits',
+          };
+    for (final op in jwk.key_ops!) {
+      if (!allowedOps.contains(op)) {
+        throw ArgumentError.value(
+          jwk,
+          'jwk',
+          'key_ops contains "$op" which is inconsistent with use "${jwk.use}"',
+        );
+      }
+    }
+  }
+}
+
 /// Adapt `crypto.subtle.importKey` to Dart types for JWK.
 Future<subtle.JSCryptoKey> _importJsonWebKey(
   Map<String, dynamic> jwk,
@@ -156,11 +184,15 @@ Future<subtle.JSCryptoKey> _importJsonWebKey(
 ) {
   return _handleDomException(() async {
     final jwkObj = subtle.JsonWebKey.fromJson(jwk);
-    // TODO: Validate expected 'use' the way we have it in the FFI implementation
 
-    // Remove 'key_ops' and 'ext' as this library doesn't configuring
-    // _usages_ and _extractable_.
-    // Notice that we also strip 'key_ops' and 'ext' in [_exportJsonWebKey].
+    // Validate consistency of 'use' and 'key_ops' before stripping.
+    _checkJwkUseAndKeyOps(jwkObj);
+
+    // Remove 'use', 'key_ops', and 'ext' as this library doesn't configure
+    // _usages_ and _extractable_. The browser's usages are driven by the
+    // explicit `usages` parameter passed to importKey.
+    // Notice that we also strip these in [_exportJsonWebKey].
+    jwkObj.use = null;
     jwkObj.key_ops = null;
     jwkObj.ext = null;
     final k = await subtle.importJsonWebKey(

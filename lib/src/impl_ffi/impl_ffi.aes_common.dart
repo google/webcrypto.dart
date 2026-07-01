@@ -38,6 +38,23 @@ Uint8List _aesImportJwkKey(
   checkJwk(k.kty == 'oct', 'kty', 'must be "oct"');
   checkJwk(k.k != null, 'k', 'must be present');
   checkJwk(k.use == null || k.use == 'enc', 'use', 'must be "enc", if present');
+  if (k.key_ops != null) {
+    const allowedOps = <String>{
+      'encrypt',
+      'decrypt',
+      'wrapKey',
+      'unwrapKey',
+      'deriveKey',
+      'deriveBits',
+    };
+    for (final op in k.key_ops!) {
+      checkJwk(
+        allowedOps.contains(op),
+        op,
+        'is not consistent with use "enc"',
+      );
+    }
+  }
 
   final keyData = _jwkDecodeBase64UrlNoPadding(k.k!, 'k');
   if (keyData.length == 24) {

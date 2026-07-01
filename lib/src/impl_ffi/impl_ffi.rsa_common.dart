@@ -86,13 +86,25 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
       'use',
       'must be "$expectedUse", if present',
     );
-
-    // TODO: Consider rejecting private keys with 'use', as it's only valid for
-    //       public keys according to the RFC -- maybe read the RFC again to be
-    //       perfectly sure this is correct behavior.
-    //       Also the web crypto spec on this, which says to reject invalid 'use'
-    // TODO: Consider rejecting keys with key_ops inconsistent with isPrivateKey
-    //       See also JWK import logic for EC keys
+    if (jwk.key_ops != null) {
+      final allowedOps = expectedUse == 'sig'
+          ? <String>{'sign', 'verify'}
+          : <String>{
+              'encrypt',
+              'decrypt',
+              'wrapKey',
+              'unwrapKey',
+              'deriveKey',
+              'deriveBits',
+            };
+      for (final op in jwk.key_ops!) {
+        checkJwk(
+          allowedOps.contains(op),
+          op,
+          'is not consistent with use "$expectedUse"',
+        );
+      }
+    }
 
     ffi.Pointer<BIGNUM> readBN(String value, String prop) {
       final bin = _jwkDecodeBase64UrlNoPadding(value, prop);
