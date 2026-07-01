@@ -4335,6 +4335,197 @@ final class $GCMParameterSpec$Type$ extends jni$_.JType<GCMParameterSpec> {
   }
 }
 
+/// from: `javax.crypto.spec.IvParameterSpec`
+class IvParameterSpec extends jni$_.JObject {
+  @jni$_.internal
+  @core$_.override
+  final jni$_.JType<IvParameterSpec> $type;
+
+  @jni$_.internal
+  IvParameterSpec.fromReference(jni$_.JReference reference)
+    : $type = type,
+      super.fromReference(reference);
+
+  static final _class = jni$_.JClass.forName(
+    r'javax/crypto/spec/IvParameterSpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<IvParameterSpec?> nullableType =
+      $IvParameterSpec$NullableType$();
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<IvParameterSpec> type = $IvParameterSpec$Type$();
+  static final _id_new$ = _class.constructorId(r'([B)V');
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory IvParameterSpec(jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return IvParameterSpec.fromReference(
+      _new$(
+        _class.reference.pointer,
+        _id_new$ as jni$_.JMethodIDPtr,
+        _$bs.pointer,
+      ).reference,
+    );
+  }
+
+  static final _id_new$1 = _class.constructorId(r'([BII)V');
+
+  static final _new$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Int32, jni$_.Int32)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              int,
+              int,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs, int i, int i1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory IvParameterSpec.new$1(jni$_.JByteArray? bs, int i, int i1) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return IvParameterSpec.fromReference(
+      _new$1(
+        _class.reference.pointer,
+        _id_new$1 as jni$_.JMethodIDPtr,
+        _$bs.pointer,
+        i,
+        i1,
+      ).reference,
+    );
+  }
+
+  static final _id_getIV = _class.instanceMethodId(r'getIV', r'()[B');
+
+  static final _getIV =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public byte[] getIV()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? getIV() {
+    return _getIV(
+      reference.pointer,
+      _id_getIV as jni$_.JMethodIDPtr,
+    ).object<jni$_.JByteArray?>(const jni$_.$JByteArray$NullableType$());
+  }
+}
+
+final class $IvParameterSpec$NullableType$
+    extends jni$_.JType<IvParameterSpec?> {
+  @jni$_.internal
+  const $IvParameterSpec$NullableType$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljavax/crypto/spec/IvParameterSpec;';
+
+  @jni$_.internal
+  @core$_.override
+  IvParameterSpec? fromReference(jni$_.JReference reference) =>
+      reference.isNull ? null : IvParameterSpec.fromReference(reference);
+  @jni$_.internal
+  @core$_.override
+  jni$_.JType get superType => const jni$_.$JObject$NullableType$();
+
+  @jni$_.internal
+  @core$_.override
+  jni$_.JType<IvParameterSpec?> get nullableType => this;
+
+  @jni$_.internal
+  @core$_.override
+  final superCount = 1;
+
+  @core$_.override
+  int get hashCode => ($IvParameterSpec$NullableType$).hashCode;
+
+  @core$_.override
+  bool operator ==(Object other) {
+    return other.runtimeType == ($IvParameterSpec$NullableType$) &&
+        other is $IvParameterSpec$NullableType$;
+  }
+}
+
+final class $IvParameterSpec$Type$ extends jni$_.JType<IvParameterSpec> {
+  @jni$_.internal
+  const $IvParameterSpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljavax/crypto/spec/IvParameterSpec;';
+
+  @jni$_.internal
+  @core$_.override
+  IvParameterSpec fromReference(jni$_.JReference reference) =>
+      IvParameterSpec.fromReference(reference);
+  @jni$_.internal
+  @core$_.override
+  jni$_.JType get superType => const jni$_.$JObject$NullableType$();
+
+  @jni$_.internal
+  @core$_.override
+  jni$_.JType<IvParameterSpec?> get nullableType =>
+      const $IvParameterSpec$NullableType$();
+
+  @jni$_.internal
+  @core$_.override
+  final superCount = 1;
+
+  @core$_.override
+  int get hashCode => ($IvParameterSpec$Type$).hashCode;
+
+  @core$_.override
+  bool operator ==(Object other) {
+    return other.runtimeType == ($IvParameterSpec$Type$) &&
+        other is $IvParameterSpec$Type$;
+  }
+}
+
 /// from: `javax.crypto.spec.SecretKeySpec`
 class SecretKeySpec extends jni$_.JObject {
   @jni$_.internal
