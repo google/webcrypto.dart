@@ -32,4 +32,5 @@ classes:
   - javax.crypto.KeyGenerator
   - javax.crypto.Mac
   - javax.crypto.spec.GCMParameterSpec
+  - javax.crypto.spec.IvParameterSpec
   - javax.crypto.spec.SecretKeySpec
