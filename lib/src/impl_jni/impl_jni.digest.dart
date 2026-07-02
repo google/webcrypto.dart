@@ -22,14 +22,14 @@ final class _HashImpl implements HashImpl {
   @override
   Future<Uint8List> digestBytes(List<int> data) async {
     return jni.using((arena) {
-      final algorithm = jni.JString.fromString(_jcaName)..releasedBy(arena);
+      final algorithm = _jcaName.toJString()..releasedBy(arena);
       final digest = MessageDigest.getInstance(algorithm);
       if (digest == null) {
         throw operationError('JCA MessageDigest($_jcaName) is unavailable');
       }
       digest.releasedBy(arena);
 
-      final input = jni.JByteArray.from(data)..releasedBy(arena);
+      final input = jni.JByteArray.of(data)..releasedBy(arena);
       final result = digest.digest$2(input);
       if (result == null) {
         throw operationError('JCA MessageDigest($_jcaName) returned null');
@@ -43,7 +43,7 @@ final class _HashImpl implements HashImpl {
   @override
   Future<Uint8List> digestStream(Stream<List<int>> data) async {
     final digest = jni.using((arena) {
-      final algorithm = jni.JString.fromString(_jcaName)..releasedBy(arena);
+      final algorithm = _jcaName.toJString()..releasedBy(arena);
       final digest = MessageDigest.getInstance(algorithm);
       if (digest == null) {
         throw operationError('JCA MessageDigest($_jcaName) is unavailable');
@@ -54,7 +54,7 @@ final class _HashImpl implements HashImpl {
     try {
       await for (final chunk in data) {
         jni.using((arena) {
-          final input = jni.JByteArray.from(chunk)..releasedBy(arena);
+          final input = jni.JByteArray.of(chunk)..releasedBy(arena);
           digest.update$2(input);
         });
       }
