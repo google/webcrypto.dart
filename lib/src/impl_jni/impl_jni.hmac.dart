@@ -14,6 +14,8 @@
 
 part of 'impl_jni.dart';
 
+const _hmacStreamBufferLength = 4096;
+
 _HashImpl _hmacHashFromHash(HashImpl hash) {
   if (hash is _HashImpl) {
     return hash;
@@ -28,7 +30,7 @@ extension _HmacHashMetadata on _HashImpl {
       'SHA-256' => 'HmacSHA256',
       'SHA-384' => 'HmacSHA384',
       'SHA-512' => 'HmacSHA512',
-      _ => throw StateError('Unsupported hash algorithm: $_jcaName'),
+      _ => throw AssertionError('Unsupported hash algorithm: $_jcaName'),
     };
   }
 
@@ -38,7 +40,7 @@ extension _HmacHashMetadata on _HashImpl {
       'SHA-256' => 'HS256',
       'SHA-384' => 'HS384',
       'SHA-512' => 'HS512',
-      _ => throw StateError('Unsupported hash algorithm: $_jcaName'),
+      _ => throw AssertionError('Unsupported hash algorithm: $_jcaName'),
     };
   }
 
@@ -48,7 +50,7 @@ extension _HmacHashMetadata on _HashImpl {
       'SHA-256' => 256,
       'SHA-384' => 384,
       'SHA-512' => 512,
-      _ => throw StateError('Unsupported hash algorithm: $_jcaName'),
+      _ => throw AssertionError('Unsupported hash algorithm: $_jcaName'),
     };
   }
 }
@@ -112,56 +114,37 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
 
   @override
   Future<Uint8List> signBytes(List<int> data) async {
-    final mac = _createMac();
-    try {
-      final result = jni.using((arena) {
-        final input = jni.JByteArray.from(data)..releasedBy(arena);
-        final result = mac.doFinal$2(input);
-        if (result == null) {
-          throw operationError('JCA Mac(${_hash._hmacJcaName}) returned null');
-        }
-        result.releasedBy(arena);
-        return result.copyToDartBytes();
-      });
-      return result;
-    } finally {
-      mac.release();
-    }
+    return jni.using((arena) {
+      final mac = _createMac(arena);
+      final input = arena.copyToJByteArray(data);
+      return _copyMacResult(arena, mac.doFinal$2(input));
+    });
   }
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) async {
-    final mac = _createMac();
+    final arena = jni.Arena();
     try {
+      final mac = _createMac(arena);
+      final buffer = jni.JByteArray(_hmacStreamBufferLength)..releasedBy(arena);
       await for (final chunk in data) {
-        jni.using((arena) {
-          final input = jni.JByteArray.from(chunk)..releasedBy(arena);
-          mac.update$1(input);
-        });
+        _updateMacWithChunk(mac, buffer, chunk);
       }
 
-      final result = mac.doFinal();
-      if (result == null) {
-        throw operationError('JCA Mac(${_hash._hmacJcaName}) returned null');
-      }
-      try {
-        return result.copyToDartBytes();
-      } finally {
-        result.release();
-      }
+      return _copyMacResult(arena, mac.doFinal());
     } finally {
-      mac.release();
+      arena.releaseAll();
     }
   }
 
   @override
   Future<bool> verifyBytes(List<int> signature, List<int> data) async {
-    return _constantTimeEquals(signature, await signBytes(data));
+    return _verifySignature(await signBytes(data), signature);
   }
 
   @override
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) async {
-    return _constantTimeEquals(signature, await signStream(data));
+    return _verifySignature(await signStream(data), signature);
   }
 
   @override
@@ -177,37 +160,46 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
     ).toJson();
   }
 
-  Mac _createMac() {
+  Mac _createMac(jni.Arena arena) {
+    final algorithm = _hash._hmacJcaName.toJString()..releasedBy(arena);
+    final keyData = arena.copyToJByteArray(_keyData);
+    final key = SecretKeySpec(keyData, algorithm)..releasedBy(arena);
+
+    final mac = Mac.getInstance(algorithm);
+    if (mac == null) {
+      throw AssertionError('JCA Mac(${_hash._hmacJcaName}) returned null');
+    }
+    mac.releasedBy(arena);
+    mac.init(key);
+    return mac;
+  }
+
+  void _updateMacWithChunk(Mac mac, jni.JByteArray buffer, List<int> chunk) {
+    var offset = 0;
+    while (offset < chunk.length) {
+      final remaining = chunk.length - offset;
+      final length = remaining < _hmacStreamBufferLength
+          ? remaining
+          : _hmacStreamBufferLength;
+      buffer.setRange(0, length, chunk, offset);
+      mac.update$2(buffer, 0, length);
+      offset += length;
+    }
+  }
+
+  Uint8List _copyMacResult(jni.Arena arena, jni.JByteArray? result) {
+    if (result == null) {
+      throw AssertionError('JCA Mac(${_hash._hmacJcaName}) returned null');
+    }
+    result.releasedBy(arena);
+    return result.copyToDartBytes();
+  }
+
+  bool _verifySignature(Uint8List computedMac, List<int> suppliedSignature) {
     return jni.using((arena) {
-      final algorithm = jni.JString.fromString(_hash._hmacJcaName)
-        ..releasedBy(arena);
-      final keyData = jni.JByteArray.from(_keyData)..releasedBy(arena);
-      final key = SecretKeySpec(keyData, algorithm)..releasedBy(arena);
-
-      final mac = Mac.getInstance(algorithm);
-      if (mac == null) {
-        throw operationError('JCA Mac(${_hash._hmacJcaName}) is unavailable');
-      }
-
-      try {
-        mac.init(key);
-      } catch (_) {
-        mac.release();
-        rethrow;
-      }
-      return mac;
+      final computed = arena.copyToJByteArray(computedMac);
+      final supplied = arena.copyToJByteArray(suppliedSignature);
+      return MessageDigest.isEqual(computed, supplied);
     });
   }
-}
-
-bool _constantTimeEquals(List<int> a, List<int> b) {
-  if (a.length != b.length) {
-    return false;
-  }
-
-  var diff = 0;
-  for (var i = 0; i < a.length; i++) {
-    diff |= a[i] ^ b[i];
-  }
-  return diff == 0;
 }

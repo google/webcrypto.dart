@@ -62,6 +62,7 @@ void main() {
     final badSignature = Uint8List.fromList(signature);
     badSignature[badSignature.length - 1] ^= 0x01;
     expect(await key.verifyBytes(badSignature, data), isFalse);
+    expect(await key.verifyBytes(signature.sublist(1), data), isFalse);
   }, skip: skipReason);
 
   test('JCA HMAC-SHA-512 stream signing matches FFI', () async {

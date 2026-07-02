@@ -51,18 +51,20 @@ Uint8List _jwkDecodeBase64UrlNoPadding(String unpadded, String prop) {
   }
 }
 
-String _jwkEncodeBase64UrlNoPadding(List<int> data) {
+String _jwkEncodeBase64UrlNoPadding(Uint8List data) {
   final padded = base64Url.encode(data);
   final paddingStart = padded.indexOf('=');
   return paddingStart == -1 ? padded : padded.substring(0, paddingStart);
 }
 
+extension _JniArenaByteArray on jni.Arena {
+  jni.JByteArray copyToJByteArray(Iterable<int> data) {
+    return jni.JByteArray.of(data)..releasedBy(this);
+  }
+}
+
 extension _JByteArrayCopy on jni.JByteArray {
   /// Copies this JVM byte array into Dart-owned memory.
-  ///
-  /// `getRange` returns a typed list backed by a native buffer whose lifetime
-  /// is finalizer-driven. Copy once more before releasing the Java array so
-  /// webcrypto callers receive a normal Dart-managed [Uint8List].
   Uint8List copyToDartBytes() {
     final bytes = getRange(0, length);
     final view = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.length);
@@ -81,10 +83,22 @@ void _fillRandomBytes(TypedData destination) {
     destination.offsetInBytes,
     destination.lengthInBytes,
   );
+  if (output.isEmpty) {
+    return;
+  }
+
   jni.using((arena) {
     final random = SecureRandom()..releasedBy(arena);
-    final bytes = jni.JByteArray(output.length)..releasedBy(arena);
-    random.nextBytes(bytes);
-    output.setAll(0, bytes.copyToDartBytes());
+    final bufferLength = output.length < 4096 ? output.length : 4096;
+    final bytes = jni.JByteArray(bufferLength)..releasedBy(arena);
+
+    var offset = 0;
+    while (offset < output.length) {
+      random.nextBytes(bytes);
+      final remaining = output.length - offset;
+      final chunkLength = remaining < bufferLength ? remaining : bufferLength;
+      output.setRange(offset, offset + chunkLength, bytes.copyToDartBytes());
+      offset += chunkLength;
+    }
   });
 }
