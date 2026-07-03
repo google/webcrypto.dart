@@ -167,28 +167,38 @@ void main() {
     test('getRandomValues: too long', () {
       try {
         subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS);
-      } on subtle.JSDomException catch (e) {
-        // dart2js throws QuotaExceededError
-        expect(e.name, 'QuotaExceededError');
-      } on Error catch (e) {
-        expect(
-          e.toString(),
-          anyOf('JavaScriptError', startsWith('QuotaExceededError:')),
-        );
+      } catch (e) {
+        final jsError = e as JSAny?;
+        if (jsError != null && jsError.isA<subtle.JSDomException>()) {
+          // dart2js throws QuotaExceededError
+          expect((jsError as subtle.JSDomException).name, 'QuotaExceededError');
+        } else if (e is Error) {
+          expect(
+            e.toString(),
+            anyOf('JavaScriptError', startsWith('QuotaExceededError:')),
+          );
+        } else {
+          rethrow;
+        }
       }
     });
 
     test('getRandomValues: not supported type', () {
       try {
         subtle.window.crypto.getRandomValues(Float32List(32).toJS);
-      } on subtle.JSDomException catch (e) {
-        // dart2js throws TypeMismatchError
-        expect(e.name, 'TypeMismatchError');
-      } on Error catch (e) {
-        expect(
-          e.toString(),
-          anyOf('JavaScriptError', startsWith('TypeMismatchError:')),
-        );
+      } catch (e) {
+        final jsError = e as JSAny?;
+        if (jsError != null && jsError.isA<subtle.JSDomException>()) {
+          // dart2js throws TypeMismatchError
+          expect((jsError as subtle.JSDomException).name, 'TypeMismatchError');
+        } else if (e is Error) {
+          expect(
+            e.toString(),
+            anyOf('JavaScriptError', startsWith('TypeMismatchError:')),
+          );
+        } else {
+          rethrow;
+        }
       }
     });
   });

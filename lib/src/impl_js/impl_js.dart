@@ -15,6 +15,7 @@
 library impl_js;
 
 import 'dart:async';
+import 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';
