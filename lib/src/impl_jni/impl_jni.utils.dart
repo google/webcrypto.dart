@@ -70,6 +70,16 @@ extension _JByteArrayCopy on jni.JByteArray {
     final view = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.length);
     return Uint8List.fromList(view);
   }
+
+  void copyRangeToDart(
+    Uint8List destination,
+    int destinationOffset,
+    int length,
+  ) {
+    final bytes = getRange(0, length);
+    final view = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.length);
+    destination.setRange(destinationOffset, destinationOffset + length, view);
+  }
 }
 
 Uint8List _randomBytes(int length) {
@@ -90,14 +100,21 @@ void _fillRandomBytes(TypedData destination) {
   jni.using((arena) {
     final random = SecureRandom()..releasedBy(arena);
     final bufferLength = output.length < 4096 ? output.length : 4096;
-    final bytes = jni.JByteArray(bufferLength)..releasedBy(arena);
+    final fullBuffer = jni.JByteArray(bufferLength)..releasedBy(arena);
 
+    // TODO: Should revisit bulk input/output transfer helpers with JByteBuffer for
+    // JCA APIs that accept ByteBuffer directly. SecureRandom.nextBytes only accepts
+    // byte[].
     var offset = 0;
     while (offset < output.length) {
-      random.nextBytes(bytes);
       final remaining = output.length - offset;
       final chunkLength = remaining < bufferLength ? remaining : bufferLength;
-      output.setRange(offset, offset + chunkLength, bytes.copyToDartBytes());
+      final bytes = chunkLength == bufferLength
+          ? fullBuffer
+          : (jni.JByteArray(chunkLength)..releasedBy(arena));
+
+      random.nextBytes(bytes);
+      bytes.copyRangeToDart(output, offset, chunkLength);
       offset += chunkLength;
     }
   });
