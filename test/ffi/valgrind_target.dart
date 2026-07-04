@@ -17,6 +17,9 @@ import 'dart:typed_data';
 
 import 'package:webcrypto/webcrypto.dart';
 
+/// Exercises FFI ownership and cleanup paths while Valgrind inspects the
+/// process. This deliberately avoids `package:test` so the monitored process
+/// contains only the crypto workload and its memory-pressure allocations.
 Future<void> main() async {
   await _exerciseSymmetricOperations();
   await _exerciseAsymmetricKeyOwnership();

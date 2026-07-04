@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// Runs [valgrind_target.dart] under Valgrind when the test suite runs on
+/// Linux. Other platforms, and Linux environments without Valgrind, skip it.
 @TestOn('vm')
 @Timeout(Duration(minutes: 3))
 library;
