@@ -14,7 +14,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-library impl_ffi;
+library;
 
 import 'dart:async';
 import 'dart:ffi' show Allocator;
