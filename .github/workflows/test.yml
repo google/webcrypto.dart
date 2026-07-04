@@ -71,15 +71,7 @@ jobs:
           sudo apt-get install -y valgrind
       - run: dart pub get --no-example
       - name: Run FFI memory-safety tests under Valgrind
-        run: >-
-          valgrind
-          --tool=memcheck
-          --leak-check=full
-          --show-leak-kinds=definite,possible
-          --errors-for-leak-kinds=definite
-          --track-origins=yes
-          --error-exitcode=1
-          dart test -p vm test/ffi_memory_safety_test.dart
+        run: dart test -p vm test/ffi/valgrind_test.dart
   macos:
     name: MacOS desktop / Chrome
     runs-on: macos-15 # Test with xcode 16
