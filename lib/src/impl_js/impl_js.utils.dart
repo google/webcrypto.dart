@@ -132,10 +132,10 @@ Future<T> _handleDomException<T>(
   try {
     return await fn();
   } catch (e) {
-    final jsError = e as JSAny?;
-    if (jsError != null && jsError.isA<subtle.JSDomException>()) {
+    // ignore: invalid_runtime_check_with_js_interop_types
+    if (e is JSAny && e.isA<subtle.JSDomException>()) {
       throw _translateDomException(
-        jsError as subtle.JSDomException,
+        e as subtle.JSDomException,
         invalidAccessErrorIsArgumentError: invalidAccessErrorIsArgumentError,
       );
     }

@@ -22,8 +22,8 @@ final class _RandomImpl implements RandomImpl {
     try {
       subtle.getRandomValues(destination);
     } catch (e) {
-      final jsError = e as JSAny?;
-      if (jsError != null && jsError.isA<subtle.JSDomException>()) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (e is JSAny && e.isA<subtle.JSDomException>()) {
         throw _translateDomException(e as subtle.JSDomException);
       }
       if (e is Error) {

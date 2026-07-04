@@ -168,10 +168,10 @@ void main() {
       try {
         subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS);
       } catch (e) {
-        final jsError = e as JSAny?;
-        if (jsError != null && jsError.isA<subtle.JSDomException>()) {
+        // ignore: invalid_runtime_check_with_js_interop_types
+        if (e is JSAny && e.isA<subtle.JSDomException>()) {
           // dart2js throws QuotaExceededError
-          expect((jsError as subtle.JSDomException).name, 'QuotaExceededError');
+          expect((e as subtle.JSDomException).name, 'QuotaExceededError');
         } else if (e is Error) {
           expect(
             e.toString(),
@@ -187,10 +187,10 @@ void main() {
       try {
         subtle.window.crypto.getRandomValues(Float32List(32).toJS);
       } catch (e) {
-        final jsError = e as JSAny?;
-        if (jsError != null && jsError.isA<subtle.JSDomException>()) {
+        // ignore: invalid_runtime_check_with_js_interop_types
+        if (e is JSAny && e.isA<subtle.JSDomException>()) {
           // dart2js throws TypeMismatchError
-          expect((jsError as subtle.JSDomException).name, 'TypeMismatchError');
+          expect((e as subtle.JSDomException).name, 'TypeMismatchError');
         } else if (e is Error) {
           expect(
             e.toString(),
