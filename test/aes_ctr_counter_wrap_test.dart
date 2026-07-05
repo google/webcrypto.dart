@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
@@ -36,5 +37,22 @@ void main() {
     final ciphertextB = await key.encryptBytes(Uint8List(16), counterB, 32);
 
     expect(ciphertextA.sublist(16, 32), isNot(equals(ciphertextB)));
+  });
+
+  test('AES-CTR handles input larger than the internal buffer', () async {
+    final key = await AesCtrSecretKey.importRawKey(Uint8List(16));
+    final plaintext = Uint8List(4097);
+    final counter = Uint8List(16);
+
+    final ciphertext = await key.encryptBytes(plaintext, counter, 128);
+    final decrypted = await key.decryptBytes(ciphertext, counter, 128);
+    final streamedCiphertext = await key
+        .encryptStream(Stream.value(plaintext), counter, 128)
+        .expand((chunk) => chunk)
+        .toList();
+
+    expect(ciphertext, hasLength(plaintext.length));
+    expect(decrypted, equals(plaintext));
+    expect(streamedCiphertext, equals(ciphertext));
   });
 }
