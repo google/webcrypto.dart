@@ -212,7 +212,7 @@ inline uint16_t reduce_once(uint16_t x) {
   // We usually add value barriers to selects because Clang turns consecutive
   // selects with the same condition into a branch instead of CMOV/CSEL. This
   // condition does not occur in ML-KEM, so omitting it seems to be safe so far,
-  // but see |scalar_centered_binomial_distribution_eta_2_with_prf|.
+  // but see `scalar_centered_binomial_distribution_eta_2_with_prf`.
   return (mask & x) | (~mask & subtracted);
 }
 
@@ -236,9 +236,9 @@ inline void vector_zero(vector<RANK> *out) {
 // In place number theoretic transform of a given scalar.
 // Note that MLKEM's kPrime 3329 does not have a 512th root of unity, so this
 // transform leaves off the last iteration of the usual FFT code, with the 128
-// relevant roots of unity being stored in |kNTTRoots|. This means the output
+// relevant roots of unity being stored in `kNTTRoots`. This means the output
 // should be seen as 128 elements in GF(3329^2), with the coefficients of the
-// elements being consecutive entries in |s->c|.
+// elements being consecutive entries in `s->c`.
 inline void scalar_ntt(scalar *s) {
   // Manually unrolled loop to maximize vectorization.
 #define ITER(step, offset)                                   \
@@ -278,7 +278,7 @@ inline void vector_ntt(vector<RANK> *a) {
 // entries of s->v being interpreted as elements of GF(3329^2). Just as with the
 // number theoretic transform, this leaves off the first step of the normal iFFT
 // to account for the fact that 3329 does not have a 512th root of unity, using
-// the precomputed 128 roots of unity stored in |kInverseNTTRoots|.
+// the precomputed 128 roots of unity stored in `kInverseNTTRoots`.
 void scalar_inverse_ntt(scalar *s) {
   // Manually unrolled loop to maximize vectorization.
 #define ITER(step, offset)                                            \
@@ -334,7 +334,7 @@ inline void scalar_sub(scalar *lhs, const scalar *rhs) {
 // 3329 does not have a 512th root of unity, this means we have to interpret
 // the 2*ith and (2*i+1)th entries of the scalar as elements of GF(3329)[X]/(X^2
 // - 17^(2*bitreverse(i)+1)) The value of 17^(2*bitreverse(i)+1) mod 3329 is
-// stored in the precomputed |kModRoots| table. Note that our Barrett transform
+// stored in the precomputed `kModRoots` table. Note that our Barrett transform
 // only allows us to multiply two reduced numbers together, so we need some
 // intermediate reduction steps, even if an uint64_t could hold 3 multiplied
 // numbers.
@@ -452,10 +452,10 @@ static void scalar_centered_binomial_distribution_eta_2(
 
     uint16_t value = (byte & 1) + ((byte >> 1) & 1);
     value -= ((byte >> 2) & 1) + ((byte >> 3) & 1);
-    // Add |kPrime| if |value| underflowed. See |reduce_once| for a discussion
+    // Add `kPrime` if `value` underflowed. See `reduce_once` for a discussion
     // on why the value barrier is omitted. While this could have been written
     // reduce_once(value + kPrime), this is one extra addition and small range
-    // of |value| tempts some versions of Clang to emit a branch.
+    // of `value` tempts some versions of Clang to emit a branch.
     uint16_t mask = 0u - (value >> 15);
     out->c[i] = ((value + kPrime) & mask) | (value & ~mask);
 
@@ -469,7 +469,7 @@ static void scalar_centered_binomial_distribution_eta_2(
 }
 
 // Algorithm 8 from the spec, with eta fixed to two and the PRF call
-// included. Creates binominally distributed elements by sampling 2*|eta| bits,
+// included. Creates binominally distributed elements by sampling 2*`eta` bits,
 // and setting the coefficient to the count of the first bits minus the count of
 // the second bits, resulting in a centered binomial distribution. Since eta is
 // two this gives -2/2 with a probability of 1/16, -1/1 with probability 1/4,
@@ -505,8 +505,8 @@ static void scalar_centered_binomial_distribution_eta_2_with_prf_x2(
 #endif
 
 // Generates a secret vector by using
-// |scalar_centered_binomial_distribution_eta_2_with_prf|, using the given seed
-// appending and incrementing |counter| for entry of the vector.
+// `scalar_centered_binomial_distribution_eta_2_with_prf`, using the given seed
+// appending and incrementing `counter` for entry of the vector.
 template <int RANK>
 void vector_generate_secret_eta_2(vector<RANK> *out, uint8_t *counter,
                                   const uint8_t seed[32]) {
@@ -576,9 +576,9 @@ void matrix_expand(matrix<RANK> *out, const uint8_t rho[32]) {
   }
 }
 
-// Encodes a scalar of 256 |BITS|-bit words into 32*|BITS| bytes by splitting
+// Encodes a scalar of 256 `BITS`-bit words into 32*`BITS` bytes by splitting
 // and joining into bytes using LSB-first bit order (i.e. opposite to standard
-// reading order). See below for examples. If an input is >= 1 << |BITS|, the
+// reading order). See below for examples. If an input is >= 1 << `BITS`, the
 // result is undefined.
 template <int BITS>
 void scalar_encode(uint8_t *out, const scalar *s);
@@ -704,7 +704,7 @@ void scalar_encode<1>(uint8_t out[32], const scalar *s) {
   }
 }
 
-// Encodes an entire vector into 32*|RANK|*|bits| bytes. Note that since 256
+// Encodes an entire vector into 32*`RANK`*`bits` bytes. Note that since 256
 // (DEGREE) is divisible by 8, the individual vector entries will always fill a
 // whole number of bytes, so we do not need to worry about bit packing here.
 template <int bits, int RANK>
@@ -714,14 +714,15 @@ void vector_encode(uint8_t *out, const vector<RANK> *a) {
   }
 }
 
-// The inverse of |scalar_encode|. Returns 1 iff the encoded scalar is valid,
-// i.e. all components are < |kPrime|. Otherwise, returns 0 and the value of
-// |out| is undefined.
+// scalar_decode parses `DEGREE * BITS` bits from `in` into `DEGREE` values in
+// `out`. This is the inverse of `scalar_encode`. This is only defined for `BITS
+// < 12`. Otherwise, the decoding is fallible and must use `scalar_decode_12`
+// instead.
 template <int BITS>
-int scalar_decode(scalar *out, const uint8_t *in);
+void scalar_decode(scalar *out, const uint8_t *in);
 
 template <>
-int scalar_decode<10>(scalar *out, const uint8_t in[320]) {
+void scalar_decode<10>(scalar *out, const uint8_t in[320]) {
   for (int i = 0; i < DEGREE; i += 4) {
     uint16_t s0 = (uint16_t)(in[0] | ((in[1] & 0x03) << 8));
     uint16_t s1 = (uint16_t)((in[1] >> 2) | ((in[2] & 0x0f) << 6));
@@ -733,28 +734,10 @@ int scalar_decode<10>(scalar *out, const uint8_t in[320]) {
     out->c[i + 3] = s3;
     in += 5;
   }
-  return 1;
 }
 
 template <>
-int scalar_decode<12>(scalar *out, const uint8_t in[384]) {
-  for (int i = 0; i < DEGREE; i += 2) {
-    uint16_t s0 = (uint16_t)(in[0] | ((in[1] & 0x0f) << 8));
-    uint16_t s1 = (uint16_t)((in[1] >> 4) | (in[2] << 4));
-    if (constant_time_declassify_int((s0 | s1) >= kPrime)) {
-      if (s0 >= kPrime || s1 >= kPrime) {
-        return 0;
-      }
-    }
-    out->c[i] = s0;
-    out->c[i + 1] = s1;
-    in += 3;
-  }
-  return 1;
-}
-
-template <>
-int scalar_decode<4>(scalar *out, const uint8_t in[128]) {
+void scalar_decode<4>(scalar *out, const uint8_t in[128]) {
   for (int i = 0; i < DEGREE; i += 2) {
     uint16_t s0 = (uint16_t)(in[0] & 0x0f);
     uint16_t s1 = (uint16_t)(in[0] >> 4);
@@ -763,14 +746,10 @@ int scalar_decode<4>(scalar *out, const uint8_t in[128]) {
     out->c[i + 1] = s1;
     in += 1;
   }
-  return 1;
 }
 
-// scalar_decode parses |DEGREE * bits| bits from |in| into |DEGREE| values in
-// |out|. It returns one on success and zero if any parsed value is >=
-// |kPrime|.
 template <>
-int scalar_decode<11>(scalar *out, const uint8_t in[352]) {
+void scalar_decode<11>(scalar *out, const uint8_t in[352]) {
   for (int i = 0; i < DEGREE; i += 8) {
     uint16_t s0 = (uint16_t)(in[0] | ((in[1] & 0x07) << 8));
     uint16_t s1 = (uint16_t)((in[1] >> 3) | ((in[2] & 0x3f) << 5));
@@ -792,11 +771,10 @@ int scalar_decode<11>(scalar *out, const uint8_t in[352]) {
     out->c[i + 7] = s7;
     in += 11;
   }
-  return 1;
 }
 
 template <>
-int scalar_decode<5>(scalar *out, const uint8_t in[160]) {
+void scalar_decode<5>(scalar *out, const uint8_t in[160]) {
   for (int i = 0; i < DEGREE; i += 8) {
     uint16_t s0 = (uint16_t)(in[0] & 0x1f);
     uint16_t s1 = (uint16_t)((in[0] >> 5) | ((in[1] & 0x03) << 3));
@@ -817,38 +795,66 @@ int scalar_decode<5>(scalar *out, const uint8_t in[160]) {
     out->c[i + 7] = s7;
     in += 5;
   }
-  return 1;
 }
 
 template <>
-int scalar_decode<1>(scalar *out, const uint8_t in[32]) {
+void scalar_decode<1>(scalar *out, const uint8_t in[32]) {
   for (int i = 0; i < DEGREE; i += 8) {
     uint8_t in_byte = in[i / 8];
     for (int j = 0; j < 8; j++) {
       out->c[i + j] = (in_byte >> j) & 1;
     }
   }
+}
+
+// The inverse of `scalar_encode<12>`. Returns 1 iff the encoded scalar is
+// valid, i.e. all components are < `kPrime`. Otherwise, returns 0 and the value
+// of `out` is undefined.
+int scalar_decode_12(scalar *out, const uint8_t in[384]) {
+  for (int i = 0; i < DEGREE; i += 2) {
+    uint16_t s0 = (uint16_t)(in[0] | ((in[1] & 0x0f) << 8));
+    uint16_t s1 = (uint16_t)((in[1] >> 4) | (in[2] << 4));
+    // This is only used with secret input when parsing the test-only
+    // semi-expanded format. Leaking information about invalid inputs is OK.
+    if (constant_time_declassify_int(s0 >= kPrime) ||
+        constant_time_declassify_int(s1 >= kPrime)) {
+      return 0;
+    }
+    out->c[i] = s0;
+    out->c[i + 1] = s1;
+    in += 3;
+  }
   return 1;
 }
 
-// Decodes 32*|RANK|*|bits| bytes from |in| into |out|. It returns one on
-// success or zero if any parsed value is >= |kPrime|.
+// Decodes 32*`RANK`*`bits` bytes from `in` into `out`. This only supports `bits
+// < 12`, necessary for decoding to be infallible.
 template <int bits, int RANK>
-inline int vector_decode(vector<RANK> *out, const uint8_t *in) {
+inline void vector_decode(vector<RANK> *out, const uint8_t *in) {
+  static_assert(bits < 12);
   for (int i = 0; i < RANK; i++) {
-    if (!scalar_decode<bits>(&out->v[i], in + i * bits * DEGREE / 8)) {
+    scalar_decode<bits>(&out->v[i], in + i * bits * DEGREE / 8);
+  }
+}
+
+// Decodes 32*`RANK`*12 bytes from `in` into `out` It returns one on success or
+// zero if any parsed value is >= `kPrime`.
+template <int RANK>
+inline int vector_decode_12(vector<RANK> *out, const uint8_t *in) {
+  for (int i = 0; i < RANK; i++) {
+    if (!scalar_decode_12(&out->v[i], in + i * 12 * DEGREE / 8)) {
       return 0;
     }
   }
   return 1;
 }
 
-// Compresses (lossily) an input |x| mod 3329 into |bits| many bits by grouping
+// Compresses (lossily) an input `x` mod 3329 into `bits` many bits by grouping
 // numbers close to each other together. The formula used is
-// round(2^|bits|/kPrime*x) mod 2^|bits|.
+// round(2^`bits`/kPrime*x) mod 2^`bits`.
 // Uses Barrett reduction to achieve constant time. Since we need both the
 // remainder (for rounding) and the quotient (as the result), we cannot use
-// |reduce| here, but need to do the Barrett reduction directly.
+// `reduce` here, but need to do the Barrett reduction directly.
 inline uint16_t compress(uint16_t x, int bits) {
   uint32_t shifted = (uint32_t)x << bits;
   uint64_t product = (uint64_t)shifted * kBarrettMultiplier;
@@ -865,19 +871,19 @@ inline uint16_t compress(uint16_t x, int bits) {
   return quotient & ((1 << bits) - 1);
 }
 
-// Decompresses |x| by using an equi-distant representative. The formula is
-// round(kPrime/2^|bits|*x). Note that 2^|bits| being the divisor allows us to
+// Decompresses `x` by using an equi-distant representative. The formula is
+// round(kPrime/2^`bits`*x). Note that 2^`bits` being the divisor allows us to
 // implement this logic using only bit operations.
 inline uint16_t decompress(uint16_t x, int bits) {
   uint32_t product = (uint32_t)x * kPrime;
   uint32_t power = 1 << bits;
-  // This is |product| % power, since |power| is a power of 2.
+  // This is `product` % power, since `power` is a power of 2.
   uint32_t remainder = product & (power - 1);
-  // This is |product| / power, since |power| is a power of 2.
+  // This is `product` / power, since `power` is a power of 2.
   uint32_t lower = product >> bits;
-  // The rounding logic works since the first half of numbers mod |power| have a
-  // 0 as first bit, and the second half has a 1 as first bit, since |power| is
-  // a power of 2. As a 12 bit number, |remainder| is always positive, so we
+  // The rounding logic works since the first half of numbers mod `power` have a
+  // 0 as first bit, and the second half has a 1 as first bit, since `power` is
+  // a power of 2. As a 12 bit number, `remainder` is always positive, so we
   // will shift in 0s for a right shift.
   return lower + (remainder >> (bits - 1));
 }
@@ -1012,7 +1018,7 @@ void mlkem_generate_key_external_seed(uint8_t *out_encoded_public_key,
 }
 
 // Encrypts a message with given randomness to
-// the ciphertext in |out|. Without applying the Fujisaki-Okamoto transform this
+// the ciphertext in `out`. Without applying the Fujisaki-Okamoto transform this
 // would not result in a CCA secure scheme, since lattice schemes are vulnerable
 // to decryption failure oracles.
 template <int RANK>
@@ -1085,14 +1091,14 @@ void mlkem_decap(uint8_t out_shared_secret[MLKEM_SHARED_SECRET_BYTES],
   mlkem_decap_no_self_test(out_shared_secret, ciphertext, priv);
 }
 
-// mlkem_parse_public_key_with_trailing_data parses |in| into |pub| but leaves
-// trailing data in |in| for the caller.
+// mlkem_parse_public_key_with_trailing_data parses `in` into `pub` but leaves
+// trailing data in `in` for the caller.
 template <int RANK>
 int mlkem_parse_public_key_with_trailing_data(public_key<RANK> *pub, CBS *in) {
   CBS orig_in = *in;
   CBS t_bytes;
   if (!CBS_get_bytes(in, &t_bytes, encoded_vector_size(RANK)) ||
-      !vector_decode<kLog2Prime>(&pub->t, CBS_data(&t_bytes)) ||
+      !vector_decode_12(&pub->t, CBS_data(&t_bytes)) ||
       !CBS_copy_bytes(in, pub->rho, sizeof(pub->rho))) {
     return 0;
   }
@@ -1116,7 +1122,7 @@ template <int RANK>
 int mlkem_parse_private_key(private_key<RANK> *priv, CBS *in) {
   CBS s_bytes, public_key_hash;
   if (!CBS_get_bytes(in, &s_bytes, encoded_vector_size(RANK)) ||
-      !vector_decode<kLog2Prime>(&priv->s, CBS_data(&s_bytes)) ||
+      !vector_decode_12(&priv->s, CBS_data(&s_bytes)) ||
       !mlkem_parse_public_key_with_trailing_data(&priv->pub, in) ||
       // We compute the public key hash ourselves, but check it matched.
       !CBS_get_bytes(in, &public_key_hash, sizeof(priv->pub.public_key_hash)) ||
@@ -1527,8 +1533,8 @@ const MLKEM1024_public_key *bssl::BCM_mlkem1024_public_of_private(
   return mlkem::public_key_1024_to_external(&priv->pub);
 }
 
-// Calls |MLKEM768_encap_external_entropy| with random bytes from
-// |BCM_rand_bytes|
+// Calls `MLKEM768_encap_external_entropy` with random bytes from
+// `BCM_rand_bytes`
 bcm_infallible bssl::BCM_mlkem768_encap(
     uint8_t out_ciphertext[MLKEM768_CIPHERTEXT_BYTES],
     uint8_t out_shared_secret[MLKEM_SHARED_SECRET_BYTES],

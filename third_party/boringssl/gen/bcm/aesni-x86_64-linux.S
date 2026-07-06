@@ -2080,6 +2080,7 @@ _CET_ENDBR
 	ret
 .cfi_endproc	
 
+.size	aes_hw_set_encrypt_key_base,.-aes_hw_set_encrypt_key_base
 
 .align	16
 .Lkey_expansion_128:
@@ -2159,7 +2160,6 @@ _CET_ENDBR
 	xorps	%xmm1,%xmm2
 	ret
 .cfi_endproc	
-.size	aes_hw_set_encrypt_key_base,.-aes_hw_set_encrypt_key_base
 
 .globl	aes_hw_set_encrypt_key_alt
 .hidden aes_hw_set_encrypt_key_alt
@@ -2369,7 +2369,9 @@ _CET_ENDBR
 
 .size	aes_hw_set_encrypt_key_alt,.-aes_hw_set_encrypt_key_alt
 .section	.rodata
+
 .align	64
+aesni_constants:
 .Lbswap_mask:
 .byte	15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
 .Lincrement32:
