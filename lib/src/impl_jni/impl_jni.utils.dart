@@ -14,10 +14,16 @@
 
 part of 'impl_jni.dart';
 
+const _defaultChunkSize = 4096;
+
 void _checkData(bool condition, String message) {
   if (!condition) {
     throw FormatException(message);
   }
+}
+
+Uint8List _asUint8List(List<int> data) {
+  return data is Uint8List ? data : Uint8List.fromList(data);
 }
 
 Uint8List _asUint8ListZeroedToBitLength(List<int> data, [int? lengthInBits]) {
@@ -58,7 +64,7 @@ String _jwkEncodeBase64UrlNoPadding(Uint8List data) {
 }
 
 extension _JniArenaByteArray on jni.Arena {
-  jni.JByteArray copyToJByteArray(Iterable<int> data) {
+  jni.JByteArray copyToJByteArray(Uint8List data) {
     return jni.JByteArray.of(data)..releasedBy(this);
   }
 }
@@ -67,7 +73,7 @@ extension _JByteArrayCopy on jni.JByteArray {
   /// Copies this JVM byte array into Dart-owned memory.
   Uint8List copyToDartBytes() {
     final bytes = getRange(0, length);
-    final view = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.length);
+    final view = Uint8List.sublistView(bytes);
     return Uint8List.fromList(view);
   }
 
@@ -77,7 +83,7 @@ extension _JByteArrayCopy on jni.JByteArray {
     int length,
   ) {
     final bytes = getRange(0, length);
-    final view = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.length);
+    final view = Uint8List.sublistView(bytes);
     destination.setRange(destinationOffset, destinationOffset + length, view);
   }
 }
@@ -99,7 +105,9 @@ void _fillRandomBytes(TypedData destination) {
 
   jni.using((arena) {
     final random = SecureRandom()..releasedBy(arena);
-    final bufferLength = output.length < 4096 ? output.length : 4096;
+    final bufferLength = output.length < _defaultChunkSize
+        ? output.length
+        : _defaultChunkSize;
     final fullBuffer = jni.JByteArray(bufferLength)..releasedBy(arena);
 
     // TODO: Should revisit bulk input/output transfer helpers with JByteBuffer for
