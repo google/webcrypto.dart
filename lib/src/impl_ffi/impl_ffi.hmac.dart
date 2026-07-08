@@ -43,6 +43,24 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importRawKey(
   );
 }
 
+void _checkHmacJwkLength(List<int> keyData, int length) {
+  _checkData(
+    length >= 0 &&
+        length <= keyData.length * 8 &&
+        length > (keyData.length - 1) * 8,
+    message: 'JWK property "k" does not match expected length',
+  );
+
+  final remainder = length % 8;
+  if (remainder != 0) {
+    final unusedBitsMask = 0xff >> remainder;
+    _checkData(
+      keyData.last & unusedBitsMask == 0,
+      message: 'JWK property "k" has non-zero unused bits',
+    );
+  }
+}
+
 Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash, {
@@ -65,8 +83,11 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   );
 
   final keyData = _jwkDecodeBase64UrlNoPadding(k.k!, 'k');
+  if (length != null) {
+    _checkHmacJwkLength(keyData, length);
+  }
 
-  return hmacSecretKey_importRawKey(keyData, hash, length: length);
+  return _HmacSecretKeyImpl(keyData, h);
 }
 
 Future<HmacSecretKeyImpl> hmacSecretKey_generateKey(

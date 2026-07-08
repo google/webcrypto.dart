@@ -15,6 +15,7 @@
 library impl_js;
 
 import 'dart:async';
+import 'dart:convert' show base64Url;
 import 'dart:typed_data';
 
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';

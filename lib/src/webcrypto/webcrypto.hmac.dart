@@ -71,12 +71,6 @@ final class HmacSecretKey {
     }
   }
 
-  static List<int> _decodeBase64UrlNoPadding(String unpadded) {
-    final end = unpadded.length;
-    final pad = (4 - end % 4) % 4;
-    return base64Url.decode(unpadded.padRight(end + pad, '='));
-  }
-
   /// Import [HmacSecretKey] from raw [keyData].
   ///
   /// Creates an [HmacSecretKey] using [keyData] as secret key, and running
@@ -174,15 +168,6 @@ final class HmacSecretKey {
     Hash hash, {
     int? length,
   }) async {
-    // These limitations are given in Web Cryptography Spec:
-    // https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
-    if (length != null && jwk['k'] is String) {
-      _checkLength(
-        length,
-        _decodeBase64UrlNoPadding(jwk['k'] as String).length,
-      );
-    }
-
     final impl = await webCryptImpl.hmacSecretKey.importJsonWebKey(
       jwk,
       hash._impl,

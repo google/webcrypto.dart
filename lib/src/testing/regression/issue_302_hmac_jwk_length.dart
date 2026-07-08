@@ -22,15 +22,10 @@ List<({String name, Future<void> Function() test})> tests() {
   void test(String name, Future<void> Function() fn) =>
       tests.add((name: name, test: fn));
 
-  test('Hmac: importJsonWebKey honors length', () async {
-    final keyData = [0xff, 0xe0];
-    final jwk = {'kty': 'oct', 'alg': 'HS256', 'k': '_-A'};
+  test('Hmac: importJsonWebKey accepts matching length', () async {
+    final keyData = [0xff, 0x80];
+    final jwk = {'kty': 'oct', 'alg': 'HS256', 'k': '_4A'};
 
-    final rawKey = await HmacSecretKey.importRawKey(
-      keyData,
-      Hash.sha256,
-      length: 9,
-    );
     final jwkKey = await HmacSecretKey.importJsonWebKey(
       jwk,
       Hash.sha256,
@@ -38,27 +33,33 @@ List<({String name, Future<void> Function() test})> tests() {
     );
 
     check(
-      equalBytes(await rawKey.exportRawKey(), await jwkKey.exportRawKey()),
-      'JWK import should zero unused bits the same way as raw import',
-    );
-
-    final data = [1, 2, 3, 4];
-    check(
-      equalBytes(await rawKey.signBytes(data), await jwkKey.signBytes(data)),
-      'JWK import should use the requested HMAC key length for signing',
+      equalBytes(await jwkKey.exportRawKey(), keyData),
+      'JWK import should preserve key data that matches length',
     );
   });
 
-  test('Hmac: importJsonWebKey validates length', () async {
+  test('Hmac: importJsonWebKey rejects non-zero unused bits', () async {
     final jwk = {'kty': 'oct', 'alg': 'HS256', 'k': '_-A'};
 
     bool threw = false;
     try {
-      await HmacSecretKey.importJsonWebKey(jwk, Hash.sha256, length: 7);
-    } on ArgumentError {
+      await HmacSecretKey.importJsonWebKey(jwk, Hash.sha256, length: 9);
+    } on FormatException {
       threw = true;
     }
-    check(threw, 'Should throw ArgumentError for invalid HMAC key length');
+    check(threw, 'Should throw FormatException for non-zero unused bits');
+  });
+
+  test('Hmac: importJsonWebKey validates length', () async {
+    final jwk = {'kty': 'oct', 'alg': 'HS256', 'k': '_4A'};
+
+    bool threw = false;
+    try {
+      await HmacSecretKey.importJsonWebKey(jwk, Hash.sha256, length: 7);
+    } on FormatException {
+      threw = true;
+    }
+    check(threw, 'Should throw FormatException for invalid HMAC key length');
   });
 
   return tests;
