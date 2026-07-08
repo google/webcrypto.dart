@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library aesctr_test;
+library;
 
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
