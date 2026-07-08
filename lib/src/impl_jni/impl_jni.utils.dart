@@ -71,8 +71,10 @@ extension _JniArenaByteArray on jni.Arena {
 
 extension _JByteArrayCopy on jni.JByteArray {
   /// Copies this JVM byte array into Dart-owned memory.
-  Uint8List copyToDartBytes() {
-    final bytes = getRange(0, length);
+  Uint8List copyToDartBytes({int? length}) {
+    final byteCount = length ?? this.length;
+    RangeError.checkValueInInterval(byteCount, 0, this.length, 'length');
+    final bytes = getRange(0, byteCount);
     final view = Uint8List.sublistView(bytes);
     return Uint8List.fromList(view);
   }
