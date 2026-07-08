@@ -28,6 +28,8 @@ import 'src/jni_test_setup.dart'
 
 void main() {
   final skipReason = jniHelperSetupSkipReason;
+  const requiredTagLengths = <int>[96, 104, 112, 120, 128];
+  const providerDependentTagLengths = <int>[32, 64];
 
   setUpAll(() {
     if (skipReason != null) {
@@ -107,6 +109,117 @@ void main() {
       throwsA(isA<OperationError>()),
     );
   }, skip: skipReason);
+
+  test('JCA AES-GCM supports required provider tag lengths', () async {
+    final keyData = base64Decode(
+      'uIfV8fgL3cR69VFEZBwFVKZYAEWRGl3k6JlT6mGAd1o=',
+    );
+    final iv = base64Decode('AAEECRAZJDFAUWR5kKnE4Q==');
+    final additionalData = base64Decode(
+      'AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=',
+    );
+    final plaintext = base64Decode(
+      'bnNlY3RldHVyCmFsaXF1ZXQsIGRvbG9yIGF1Z3VlIG1vbGVzdGk=',
+    );
+
+    final key = await jni_impl.webCryptImpl.aesGcmSecretKey.importRawKey(
+      keyData,
+    );
+    final ffiKey = await ffi_impl.webCryptImpl.aesGcmSecretKey.importRawKey(
+      keyData,
+    );
+
+    for (final tagLength in requiredTagLengths) {
+      final ciphertext = await key.encryptBytes(
+        plaintext,
+        iv,
+        additionalData: additionalData,
+        tagLength: tagLength,
+      );
+      final ffiCiphertext = await ffiKey.encryptBytes(
+        plaintext,
+        iv,
+        additionalData: additionalData,
+        tagLength: tagLength,
+      );
+
+      expect(ciphertext, ffiCiphertext, reason: 'tagLength=$tagLength');
+      expect(
+        ciphertext,
+        hasLength(plaintext.length + tagLength ~/ 8),
+        reason: 'tagLength=$tagLength',
+      );
+      expect(
+        await key.decryptBytes(
+          ciphertext,
+          iv,
+          additionalData: additionalData,
+          tagLength: tagLength,
+        ),
+        plaintext,
+        reason: 'tagLength=$tagLength',
+      );
+    }
+  }, skip: skipReason);
+
+  test(
+    'JCA AES-GCM reports provider-dependent short tags explicitly',
+    () async {
+      final keyData = base64Decode(
+        'uIfV8fgL3cR69VFEZBwFVKZYAEWRGl3k6JlT6mGAd1o=',
+      );
+      final iv = base64Decode('AAEECRAZJDFAUWR5kKnE4Q==');
+      final additionalData = base64Decode(
+        'AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=',
+      );
+      final plaintext = base64Decode(
+        'bnNlY3RldHVyCmFsaXF1ZXQsIGRvbG9yIGF1Z3VlIG1vbGVzdGk=',
+      );
+
+      final key = await jni_impl.webCryptImpl.aesGcmSecretKey.importRawKey(
+        keyData,
+      );
+      final ffiKey = await ffi_impl.webCryptImpl.aesGcmSecretKey.importRawKey(
+        keyData,
+      );
+
+      for (final tagLength in providerDependentTagLengths) {
+        final ffiCiphertext = await ffiKey.encryptBytes(
+          plaintext,
+          iv,
+          additionalData: additionalData,
+          tagLength: tagLength,
+        );
+
+        try {
+          final ciphertext = await key.encryptBytes(
+            plaintext,
+            iv,
+            additionalData: additionalData,
+            tagLength: tagLength,
+          );
+          expect(ciphertext, ffiCiphertext, reason: 'tagLength=$tagLength');
+          expect(
+            await key.decryptBytes(
+              ciphertext,
+              iv,
+              additionalData: additionalData,
+              tagLength: tagLength,
+            ),
+            plaintext,
+            reason: 'tagLength=$tagLength',
+          );
+        } on UnsupportedError catch (e) {
+          expect(
+            e.message,
+            contains('tagLength=$tagLength'),
+            reason: 'tagLength=$tagLength',
+          );
+        }
+      }
+    },
+    skip: skipReason,
+  );
 
   test('JCA AES-GCM exports and imports JSON Web Keys', () async {
     final keyData = Uint8List.fromList(List<int>.generate(32, (i) => i));

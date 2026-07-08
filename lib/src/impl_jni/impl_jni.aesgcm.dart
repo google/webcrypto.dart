@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,13 +18,12 @@ const _aesGcmTransformation = 'AES/GCM/NoPadding';
 
 Future<Uint8List> _aesGcmEncryptDecrypt(
   Uint8List keyData,
-  List<int> data,
-  List<int> iv,
-  List<int>? additionalData,
+  Uint8List data,
+  Uint8List iv,
+  Uint8List? additionalData,
   int tagLength,
   bool isEncrypt,
 ) async {
-  final aad = additionalData ?? const <int>[];
   if (isEncrypt && data.length > (1 << 39) - 256) {
     // More than this is not allowed by Web Crypto.
     throw operationError('data may not be more than 2^39 - 256 bytes');
@@ -39,6 +38,9 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
     throw operationError('tagLength must be 32, 64, 96, 104, 112, 120 or 128');
   }
 
+  // TODO: Some JCA providers reject short AES-GCM tags even though Web Crypto permits
+  // them. Revisit the ideal cross-backend behavior once more primitives and
+  // provider compatibility gaps are known.
   try {
     return jni.using((arena) {
       final algorithm = 'AES'.toJString()..releasedBy(arena);
@@ -46,7 +48,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
         ..releasedBy(arena);
       final keyBytes = arena.copyToJByteArray(keyData);
       final secretKey = SecretKeySpec(keyBytes, algorithm)..releasedBy(arena);
-      final ivBytes = arena.copyToJByteArray(_asUint8List(iv));
+      final ivBytes = arena.copyToJByteArray(iv);
       final parameters = GCMParameterSpec(tagLength, ivBytes)
         ..releasedBy(arena);
 
@@ -64,12 +66,12 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
         parameters,
       );
 
-      if (aad.isNotEmpty) {
-        final aadBytes = arena.copyToJByteArray(_asUint8List(aad));
+      if (additionalData != null && additionalData.isNotEmpty) {
+        final aadBytes = arena.copyToJByteArray(additionalData);
         cipher.updateAAD(aadBytes);
       }
 
-      final input = arena.copyToJByteArray(_asUint8List(data));
+      final input = arena.copyToJByteArray(data);
       final output = cipher.doFinal$2(input);
       if (output == null) {
         throw operationError(
@@ -82,10 +84,29 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
   } on OperationError {
     rethrow;
   } on jni.JThrowable catch (e) {
-    final message = e.message;
-    e.release();
+    late final String message;
+    try {
+      message = e.message;
+    } finally {
+      // The Java throwable is attacker-triggerable for authentication failure,
+      // so do not leave its global reference for finalizer-driven cleanup.
+      e.release();
+    }
+    if ((tagLength == 32 || tagLength == 64) &&
+        _isUnsupportedAesGcmTagLength(message)) {
+      throw UnsupportedError(
+        'The JCA provider does not support AES-GCM tagLength=$tagLength: '
+        '$message',
+      );
+    }
     throw operationError('JCA Cipher($_aesGcmTransformation) failed: $message');
   }
+}
+
+bool _isUnsupportedAesGcmTagLength(String message) {
+  final normalized = message.toLowerCase();
+  return normalized.contains('unsupported tlen') ||
+      normalized.contains('unsupported tag length');
 }
 
 final class _StaticAesGcmSecretKeyImpl implements StaticAesGcmSecretKeyImpl {
@@ -119,9 +140,9 @@ final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
     int? tagLength = 128,
   }) async => _aesGcmEncryptDecrypt(
     _keyData,
-    data,
-    iv,
-    additionalData,
+    _asUint8List(data),
+    _asUint8List(iv),
+    additionalData == null ? null : _asUint8List(additionalData),
     tagLength ?? 128,
     true,
   );
@@ -134,9 +155,9 @@ final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
     int? tagLength = 128,
   }) async => _aesGcmEncryptDecrypt(
     _keyData,
-    data,
-    iv,
-    additionalData,
+    _asUint8List(data),
+    _asUint8List(iv),
+    additionalData == null ? null : _asUint8List(additionalData),
     tagLength ?? 128,
     false,
   );
