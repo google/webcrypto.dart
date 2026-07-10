@@ -8,6 +8,8 @@
   Flutter plugin scaffolding.
 * Improved web error handling when `window.crypto.subtle` is unavailable in
   insecure contexts by throwing a clearer `UnsupportedError` with guidance.
+* Fixed native AES-CTR encryption and decryption for inputs larger than the
+  internal chunk buffer.
 * Added documentation for performing `deriveKey` using `deriveBits` and
   `importRaw`.
 
