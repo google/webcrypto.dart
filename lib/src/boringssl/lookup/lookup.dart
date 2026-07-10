@@ -14,37 +14,10 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:ffi';
-
-import '../../third_party/boringssl/generated_bindings.dart';
-
-import 'symbols.generated.dart';
-
-export 'symbols.generated.dart' show Sym;
-
-@Native<Pointer<Void> Function(Int32)>(
-  symbol: 'webcrypto_lookup_symbol',
-  assetId: 'package:webcrypto/webcrypto.dart',
-)
-external Pointer<Void> _nativeWebcryptoLookupSymbol(int index);
-
-@Native<Size Function()>(
-  symbol: 'webcrypto_get_CBB_size',
-  assetId: 'package:webcrypto/webcrypto.dart',
-)
-external int _nativeWebcryptoGetCbbSize();
-
-/// Resolve lookup from the bundled native asset for `package:webcrypto`.
-Pointer<T> lookup<T extends NativeType>(String symbolName) {
-  final sym = symFromString(symbolName);
-  return _nativeWebcryptoLookupSymbol(sym.index).cast<T>();
-}
-
-/// Gives access to BoringSSL symbols.
-final BoringSsl ssl = BoringSsl.fromLookup(lookup);
+import '../bindings/generated_bindings.dart' as webcrypto;
 
 /// Gets the native `sizeof(CBB)` value from the bundled helper library.
-int nativeWebcryptoGetCbbSize() => _nativeWebcryptoGetCbbSize();
+int nativeWebcryptoGetCbbSize() => webcrypto.webcrypto_get_CBB_size();
 
 /// ERR_GET_LIB returns the library code for the error. This is one of the
 /// ERR_LIB_* values.

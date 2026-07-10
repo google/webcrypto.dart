@@ -32,14 +32,14 @@ final runner = TestRunner.symmetric<AesGcmSecretKey>(
     data,
     bytesFromJson(encryptParams, 'iv')!,
     additionalData: bytesFromJson(encryptParams, 'additionalData'),
-    tagLength: encryptParams['length'] ?? 128,
+    tagLength: encryptParams['tagLength'] ?? 128,
   ),
   encryptStream: null, // not supported
   decryptBytes: (key, data, decryptParams) => key.decryptBytes(
     data,
     bytesFromJson(decryptParams, 'iv')!,
     additionalData: bytesFromJson(decryptParams, 'additionalData'),
-    tagLength: decryptParams['length'] ?? 128,
+    tagLength: decryptParams['tagLength'] ?? 128,
   ),
   decryptStream: null, // not supported
   testData: _testData,
@@ -120,7 +120,7 @@ final _testData = [
       "k": "vK_zU373WhzeojGh-qTDeQ",
     },
     "plaintext": "cmFlc2VudCBwcmV0aXVtIG4=",
-    "ciphertext": "nelv0lgfowMjxTivj6R+MY8wpgejuOmZMVmlOFiFglov",
+    "ciphertext": "nelv0lgfowMjxTivj6R+MY8wpgejuOmZMQ==",
     "importKeyParams": {},
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
@@ -139,7 +139,7 @@ final _testData = [
     "plaintext":
         "cnRhIGVyYXQuIFZlc3RpYnVsdW0gaW4gcG9ydHRpdG9yIHRlbGx1cy4KQWVuZWFuIGRpY3R1bSBkYXA=",
     "ciphertext":
-        "rArO1JFccmd1hA5laU2FDaTkzuIvYGUEJcb1YLZun3ujGSq1+FqzMcpAvH8G2LBUT+1fTQE2bKbfXRSKpx5Swf2Gpzj3OeIRJmGK",
+        "rArO1JFccmd1hA5laU2FDaTkzuIvYGUEJcb1YLZun3ujGSq1+FqzMcpAvH8G2LBUT+1fTQE2bKbfXRSKpx5Swf2Gpw==",
     "importKeyParams": {},
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
@@ -156,7 +156,7 @@ final _testData = [
       "k": "QROjT6fk9NlF5im-libUqw",
     },
     "plaintext": "dHVyCmFsaXF1ZXQsIGRvbG9yIA==",
-    "ciphertext": "eE4yhoSZIoIaTIn30tRZdONgB1SixHisBgVeBUWR7MllYSg=",
+    "ciphertext": "eE4yhoSZIoIaTIn30tRZdONgB1SixHisBgVe",
     "importKeyParams": {},
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
@@ -174,8 +174,7 @@ final _testData = [
       "k": "uIfV8fgL3cR69VFEZBwFVKZYAEWRGl3k6JlT6mGAd1o",
     },
     "plaintext": "bnNlY3RldHVyCmFsaXF1ZXQsIGRvbG9yIGF1Z3VlIG1vbGVzdGk=",
-    "ciphertext":
-        "zxdrW+0Znsxkm6C1tOAEOGOKw4e4LvlQaoL47GrTL7VTCZicg1TRmdPeAwSnIIpIU+qztQA/",
+    "ciphertext": "zxdrW+0Znsxkm6C1tOAEOGOKw4e4LvlQaoL47GrTL7VTCZicg1TRmdPe",
     "importKeyParams": {},
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
@@ -193,7 +192,7 @@ final _testData = [
     },
     "plaintext": "ZG9sb3IgYW50ZSBzaXQgYW1ldCBzYXBpZW4uIFN1c3BlbmRpc3NlIHJo",
     "ciphertext":
-        "NUV6Pcucshq2CUxOwM/isGmafoeInE2NOpiPXjqyz2Aqp/fJW8ufiDB2SuPdvcheHWhRrBRzA7O93w==",
+        "NUV6Pcucshq2CUxOwM/isGmafoeInE2NOpiPXjqyz2Aqp/fJW8ufiDB2SuPdvQ==",
     "importKeyParams": {},
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",
@@ -212,7 +211,7 @@ final _testData = [
     "plaintext":
         "bSBlZmZpY2l0dXIgcmlzdXMsIG5lYyBncmF2aWRhIHB1cnVzIGNvbmd1ZSBzZWQuIEFlbmVhbiBxdWlzIG5p",
     "ciphertext":
-        "oR2a9eomXCftPdvZsK0XiolAnvCClLDCRVBpiaqETvXMMJfkqiJCmCofl8At/UjlaO/x8oYsK7caKXreYEUunExo1gq/IMALPLJMm8euzQ==",
+        "oR2a9eomXCftPdvZsK0XiolAnvCClLDCRVBpiaqETvXMMJfkqiJCmCofl8At/UjlaO/x8oYsK7caKXreYEUunExo1g==",
     "importKeyParams": {},
     "encryptDecryptParams": {
       "iv": "AAEECRAZJDFAUWR5kKnE4Q==",

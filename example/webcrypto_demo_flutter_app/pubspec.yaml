@@ -16,8 +16,8 @@ dependencies:
     #   webcrypto: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
     # The example app is bundled with the plugin so we use a path dependency on
-    # the parent directory to use the current plugin's version.
-    path: ../
+    # the repository root (two levels up) to use the current plugin's version.
+    path: ../../
 
 dev_dependencies:
   flutter_test:

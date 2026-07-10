@@ -49,6 +49,7 @@ include(
 # Tradeoff performance for smaller binary size, see:
 # https://boringssl.googlesource.com/boringssl/+/HEAD/BUILDING.md#binary-size
 add_definitions(-DOPENSSL_SMALL)
+add_definitions(-DBORINGSSL_PREFIX=webcrypto)
 
 # Logic from CMakeLists.txt in BoringSSL
 if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
@@ -140,13 +141,12 @@ endif()
 
 add_library(
   webcrypto
-  
+
   # Build a shared library
   SHARED
-  
+
   # Source files
   ../src/webcrypto.c
-  ../src/symbols.generated.c
   ${crypto_sources}
   ${crypto_sources_${PLATFORM}_${ARCH}}
 )
@@ -157,6 +157,7 @@ target_include_directories(
   PRIVATE
 
   ../third_party/boringssl/src/include/
+  ../third_party/boringssl/src/gen/
 )
 
 set_target_properties(
@@ -166,6 +167,7 @@ set_target_properties(
   
   C_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN 1
+  WINDOWS_EXPORT_ALL_SYMBOLS TRUE
 )
 
 install(
