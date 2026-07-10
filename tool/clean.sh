@@ -24,14 +24,14 @@ ROOT="$DIR/.."
 rm -rf "$ROOT/.dart_tool/"
 rm -rf "$ROOT/build/"
 
-if [ -d "$ROOT/example/" ]; then
+if [ -d "$ROOT/example/webcrypto_demo_flutter_app/" ]; then
   (
-    cd "$ROOT/example/"
+    cd "$ROOT/example/webcrypto_demo_flutter_app/"
     flutter clean
   )
-  rm -rf "$ROOT/example/.dart_tool/"
-  rm -rf "$ROOT/example/build/"
-  rm -rf "$ROOT/example/android/.gradle/"
-  rm -f "$ROOT/example/.packages"
+  rm -rf "$ROOT/example/webcrypto_demo_flutter_app/.dart_tool/"
+  rm -rf "$ROOT/example/webcrypto_demo_flutter_app/build/"
+  rm -rf "$ROOT/example/webcrypto_demo_flutter_app/android/.gradle/"
+  rm -f "$ROOT/example/webcrypto_demo_flutter_app/.packages"
 fi
 

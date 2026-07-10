@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library impl_js;
+library;
 
 import 'dart:async';
+import 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';

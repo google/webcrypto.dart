@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
@@ -37,4 +38,37 @@ void main() {
 
     expect(ciphertextA.sublist(16, 32), isNot(equals(ciphertextB)));
   });
+
+  test('AES-CTR keeps large byte encryption length stable', () async {
+    final key = await AesCtrSecretKey.importRawKey(Uint8List(16));
+    final plaintext = Uint8List(4097);
+    final counter = Uint8List(16);
+
+    final ciphertext = await key.encryptBytes(plaintext, counter, 128);
+    final decrypted = await key.decryptBytes(ciphertext, counter, 128);
+
+    expect(ciphertext, hasLength(plaintext.length));
+    expect(decrypted, equals(plaintext));
+  });
+
+  test('AES-CTR stream encryption matches large byte encryption', () async {
+    final key = await AesCtrSecretKey.importRawKey(Uint8List(16));
+    final plaintext = Uint8List(4097);
+    final counter = Uint8List(16);
+
+    final ciphertext = await key.encryptBytes(plaintext, counter, 128);
+    final streamedCiphertext = await _collectBytes(
+      key.encryptStream(Stream.value(plaintext), counter, 128),
+    );
+
+    expect(streamedCiphertext, equals(ciphertext));
+  });
+}
+
+Future<Uint8List> _collectBytes(Stream<List<int>> stream) async {
+  final builder = BytesBuilder(copy: false);
+  await for (final chunk in stream) {
+    builder.add(chunk);
+  }
+  return builder.takeBytes();
 }
