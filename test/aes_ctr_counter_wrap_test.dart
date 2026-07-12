@@ -18,7 +18,20 @@ import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 
+import 'src/jni_test_setup.dart'
+    if (dart.library.io) 'src/jni_test_setup_io.dart';
+
 void main() {
+  final skipReason = jniHelperSetupSkipReason;
+
+  setUpAll(() {
+    if (skipReason != null) {
+      return;
+    }
+
+    spawnJniForDesktopTests();
+  });
+
   test('AES-CTR 32-bit counter wrap does not carry into nonce', () async {
     final key = await AesCtrSecretKey.importRawKey(
       Uint8List.fromList(List<int>.generate(16, (i) => i)),
@@ -37,7 +50,7 @@ void main() {
     final ciphertextB = await key.encryptBytes(Uint8List(16), counterB, 32);
 
     expect(ciphertextA.sublist(16, 32), isNot(equals(ciphertextB)));
-  });
+  }, skip: skipReason);
 
   test('AES-CTR keeps large byte encryption length stable', () async {
     final key = await AesCtrSecretKey.importRawKey(Uint8List(16));
@@ -49,7 +62,7 @@ void main() {
 
     expect(ciphertext, hasLength(plaintext.length));
     expect(decrypted, equals(plaintext));
-  });
+  }, skip: skipReason);
 
   test('AES-CTR stream encryption matches large byte encryption', () async {
     final key = await AesCtrSecretKey.importRawKey(Uint8List(16));
@@ -62,7 +75,7 @@ void main() {
     );
 
     expect(streamedCiphertext, equals(ciphertext));
-  });
+  }, skip: skipReason);
 }
 
 Future<Uint8List> _collectBytes(Stream<List<int>> stream) async {

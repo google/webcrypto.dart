@@ -21,6 +21,7 @@ library;
 
 import 'dart:async';
 import 'dart:convert' show base64Url;
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:jni/jni.dart' as jni;
