@@ -72,9 +72,7 @@ Future<Uint8List> _aesCbcEncryptDecryptBytes(
   } on OperationError {
     rethrow;
   } on jni.JThrowable catch (e) {
-    final message = e.message;
-    e.release();
-    throw operationError('JCA Cipher($_aesCbcTransformation) failed: $message');
+    throw _aesCbcOperationError(e);
   } finally {
     cipher?.release();
   }
@@ -124,13 +122,21 @@ Stream<Uint8List> _aesCbcEncryptDecryptStream(
   } on OperationError {
     rethrow;
   } on jni.JThrowable catch (e) {
-    final message = e.message;
-    e.release();
-    throw operationError('JCA Cipher($_aesCbcTransformation) failed: $message');
+    throw _aesCbcOperationError(e);
   } finally {
     cipher?.release();
     arena.releaseAll();
   }
+}
+
+OperationError _aesCbcOperationError(jni.JThrowable throwable) {
+  late final String message;
+  try {
+    message = throwable.message;
+  } finally {
+    throwable.release();
+  }
+  return operationError('JCA Cipher($_aesCbcTransformation) failed: $message');
 }
 
 final class _StaticAesCbcSecretKeyImpl implements StaticAesCbcSecretKeyImpl {
