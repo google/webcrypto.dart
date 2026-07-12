@@ -163,7 +163,7 @@ void main() {
   }, skip: skipReason);
 
   test(
-    'JCA AES-GCM reports provider-dependent short tags explicitly',
+    'JCA AES-GCM reports provider-dependent short tags for encrypt and decrypt',
     () async {
       final keyData = base64Decode(
         'uIfV8fgL3cR69VFEZBwFVKZYAEWRGl3k6JlT6mGAd1o=',
@@ -199,9 +199,14 @@ void main() {
             tagLength: tagLength,
           );
           expect(ciphertext, ffiCiphertext, reason: 'tagLength=$tagLength');
+        } on UnsupportedError catch (e) {
+          _expectProviderDependentTagLengthUnsupported(e, tagLength);
+        }
+
+        try {
           expect(
             await key.decryptBytes(
-              ciphertext,
+              ffiCiphertext,
               iv,
               additionalData: additionalData,
               tagLength: tagLength,
@@ -210,11 +215,7 @@ void main() {
             reason: 'tagLength=$tagLength',
           );
         } on UnsupportedError catch (e) {
-          expect(
-            e.message,
-            contains('tagLength=$tagLength'),
-            reason: 'tagLength=$tagLength',
-          );
+          _expectProviderDependentTagLengthUnsupported(e, tagLength);
         }
       }
     },
@@ -245,4 +246,15 @@ void main() {
     expect(await key128.exportRawKey(), hasLength(16));
     expect(await key256.exportRawKey(), hasLength(32));
   }, skip: skipReason);
+}
+
+void _expectProviderDependentTagLengthUnsupported(
+  UnsupportedError error,
+  int tagLength,
+) {
+  expect(
+    error.message,
+    contains('tagLength=$tagLength'),
+    reason: 'tagLength=$tagLength',
+  );
 }
