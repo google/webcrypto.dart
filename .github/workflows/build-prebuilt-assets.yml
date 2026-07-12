@@ -1,0 +1,58 @@
+name: build-prebuilt-assets
+
+on:
+  workflow_dispatch:
+
+env:
+  PUB_ENVIRONMENT: bot.github
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x64
+            os: ubuntu-latest
+            configure_args: ''
+          - target: macos-arm64
+            os: macos-14
+            configure_args: ''
+          - target: macos-x64
+            os: macos-13
+            configure_args: ''
+          - target: windows-x64
+            os: windows-latest
+            configure_args: '-A x64'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/setup-nasm@v1
+        if: runner.os == 'Windows'
+
+      - name: Build prebuilt asset
+        shell: pwsh
+        run: |
+          $install = Join-Path $env:GITHUB_WORKSPACE "prebuilt/${{ matrix.target }}"
+          $configureArgs = @(
+            '-S', 'src',
+            '-B', 'build/prebuilt',
+            '-DCMAKE_BUILD_TYPE=Release',
+            "-DCMAKE_INSTALL_PREFIX=$install"
+          )
+          if ('${{ matrix.configure_args }}' -ne '') {
+            $configureArgs += '${{ matrix.configure_args }}'.Split(' ')
+          }
+          cmake @configureArgs
+          cmake --build build/prebuilt --config Release --target install
+
+      - name: Upload prebuilt asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: webcrypto-${{ matrix.target }}
+          path: prebuilt/${{ matrix.target }}/*
+          if-no-files-found: error

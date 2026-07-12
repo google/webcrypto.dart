@@ -19,6 +19,8 @@ import 'package:hooks/hooks.dart';
 import 'package:native_toolchain_cmake/native_toolchain_cmake.dart';
 
 const _assetName = 'webcrypto.dart';
+const _libraryName = 'webcrypto';
+const _forceSourceBuildDefine = 'force_source_build';
 
 Future<void> main(List<String> args) async {
   await build(args, (input, output) async {
@@ -33,14 +35,32 @@ Future<void> main(List<String> args) async {
     final packageRoot = input.packageRoot;
     final installDir = input.outputDirectory.resolve('install/');
     final sourceDir = packageRoot.resolve('src/');
+    final prebuiltAsset = _prebuiltAsset(input);
+
+    if (!_forceSourceBuild(input) && prebuiltAsset.existsSync()) {
+      stdout.writeln(
+        'webcrypto: using prebuilt native asset for '
+        '${_targetName(input)}.',
+      );
+      output.assets.code.add(
+        CodeAsset(
+          package: input.packageName,
+          name: _assetName,
+          linkMode: DynamicLoadingBundled(),
+          file: prebuiltAsset.uri,
+        ),
+      );
+      output.dependencies.add(prebuiltAsset.uri);
+      return;
+    }
 
     stdout.writeln(
       'webcrypto: building native asset for '
-      '${input.config.code.targetOS}-${input.config.code.targetArchitecture}.',
+      '${_targetName(input)}.',
     );
 
     final builder = CMakeBuilder.create(
-      name: 'webcrypto',
+      name: _libraryName,
       sourceDir: sourceDir,
       defines: {
         'CMAKE_BUILD_TYPE': 'Release',
@@ -67,6 +87,31 @@ Future<void> main(List<String> args) async {
 
     output.dependencies.addAll(_buildDependencies(packageRoot));
   });
+}
+
+bool _forceSourceBuild(BuildInput input) {
+  final value = input.userDefines[_forceSourceBuildDefine];
+  return value == true || value == 'true';
+}
+
+File _prebuiltAsset(BuildInput input) {
+  final targetOS = input.config.code.targetOS;
+  final libraryFileName = targetOS.dylibFileName(_libraryName);
+  return File.fromUri(
+    input.packageRoot.resolve(
+      'prebuilt/${_targetName(input)}/$libraryFileName',
+    ),
+  );
+}
+
+String _targetName(BuildInput input) {
+  final code = input.config.code;
+  final os = code.targetOS;
+  final arch = code.targetArchitecture;
+  if (os == OS.iOS) {
+    return '${os.name}-${code.iOS.targetSdk.type}-${arch.name}';
+  }
+  return '${os.name}-${arch.name}';
 }
 
 final _buildDependencyExtensions = {
