@@ -26,11 +26,27 @@ android_sdk_config:
   versions:
     - '36'
 classes:
+  - java.math.BigInteger
+  - java.security.Key
+  - java.security.KeyFactory
+  - java.security.KeyPair
+  - java.security.KeyPairGenerator
   - java.security.MessageDigest
   - java.security.SecureRandom
+  - java.security.Signature
+  - java.security.interfaces.RSAKey
+  - java.security.interfaces.RSAPrivateCrtKey
+  - java.security.interfaces.RSAPrivateKey
+  - java.security.interfaces.RSAPublicKey
+  - java.security.spec.PKCS8EncodedKeySpec
+  - java.security.spec.RSAKeyGenParameterSpec
+  - java.security.spec.RSAPrivateCrtKeySpec
+  - java.security.spec.RSAPublicKeySpec
+  - java.security.spec.X509EncodedKeySpec
   - javax.crypto.Cipher
   - javax.crypto.KeyGenerator
   - javax.crypto.Mac
+  - javax.crypto.SecretKey
   - javax.crypto.spec.GCMParameterSpec
   - javax.crypto.spec.IvParameterSpec
   - javax.crypto.spec.SecretKeySpec
