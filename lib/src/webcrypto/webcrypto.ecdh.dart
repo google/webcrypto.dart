@@ -282,8 +282,30 @@ final class EcdhPublicKey {
   factory EcdhPublicKey(EcdhPublicKeyImpl impl) {
     return EcdhPublicKey._(impl);
   }
-
-  /// TODO: find out of this works on Firefox
+/// Import [EcdhPublicKey] from raw elliptic curve point.
+  ///
+  /// Creates an [EcdhPublicKey] from [keyData] given as the raw
+  /// elliptic curve point in uncompressed format. The [curve] specified
+  /// must match the curve used to generate [keyData].
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  ///
+  /// Future<void> main() async {
+  ///   // Generate a key pair.
+  ///   final keyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+  ///
+  ///   // Export the public key as a raw key.
+  ///   final rawPublicKey = await keyPair.publicKey.exportRawKey();
+  ///
+  ///   // Import the raw key back as an EcdhPublicKey.
+  ///   final publicKey = await EcdhPublicKey.importRawKey(
+  ///     rawPublicKey,
+  ///     EllipticCurve.p256,
+  ///   );
+  /// }
+  /// ```
   static Future<EcdhPublicKey> importRawKey(
     List<int> keyData,
     EllipticCurve curve,
@@ -292,6 +314,33 @@ final class EcdhPublicKey {
     return EcdhPublicKey._(impl);
   }
 
+ /// Import [EcdhPublicKey] in the [SPKI][1] format.
+  ///
+  /// Creates an [EcdhPublicKey] from [keyData] given as the DER encoded
+  /// _SubjectPublicKeyInfo_ structure specified in [RFC 5280][1].
+  /// The [curve] specified must match the curve used in [keyData].
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  ///
+  /// Future<void> main() async {
+  ///   // Generate a key pair.
+  ///   final keyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+  ///
+  ///   // Export the public key as SPKI.
+  ///   final spkiPublicKey = await keyPair.publicKey.exportSpkiKey();
+  ///
+  ///   // Import the SPKI key back as an EcdhPublicKey.
+  ///   final publicKey = await EcdhPublicKey.importSpkiKey(
+  ///     spkiPublicKey,
+  ///     EllipticCurve.p256,
+  ///   );
+  /// }
+  /// ```
+  ///
+  /// [1]: https://www.rfc-editor.org/rfc/rfc5280
+  ///
   /// ## Compatibility
   /// TODO: explain that Chrome can't import SPKI keys from Firefox < 72.
   ///       This is a bug in Chrome / BoringSSL (and package:webcrypto)
@@ -373,6 +422,23 @@ final class EcdhPublicKey {
     return EcdhPublicKey._(impl);
   }
 
+ /// Export the [EcdhPublicKey] as a raw elliptic curve point.
+  ///
+  /// Returns the raw elliptic curve point in uncompressed format as a
+  /// list of bytes.
+  ///
+  /// **Example**
+  /// ```dart
+  /// import 'package:webcrypto/webcrypto.dart';
+  ///
+  /// Future<void> main() async {
+  ///   // Generate a key pair.
+  ///   final keyPair = await EcdhPrivateKey.generateKey(EllipticCurve.p256);
+  ///
+  ///   // Export the public key as a raw key.
+  ///   final rawPublicKey = await keyPair.publicKey.exportRawKey();
+  /// }
+  /// ```
   Future<Uint8List> exportRawKey() => _impl.exportRawKey();
 
   /// Note: Due to bug in Chrome/BoringSSL, SPKI keys exported from Firefox < 72
