@@ -40,6 +40,2987 @@ import 'package:jni/jni.dart' as jni$_;
 
 const _$jniVersionCheck = jni$_.JniVersionCheck(1, 0);
 
+/// from: `java.math.BigInteger`
+extension type BigInteger._(jni$_.JObject _$this)
+    implements jni$_.JNumber, jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'java/math/BigInteger');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<BigInteger> type = $BigInteger$Type$();
+  static final _id_ZERO = _class.staticFieldId(
+    r'ZERO',
+    r'Ljava/math/BigInteger;',
+  );
+
+  /// from: `static public final java.math.BigInteger ZERO`
+  /// The returned object must be released after use, by calling the [release] method.
+  static BigInteger? get ZERO =>
+      _id_ZERO.getNullable(_class, BigInteger.type) as BigInteger?;
+
+  static final _id_ONE = _class.staticFieldId(
+    r'ONE',
+    r'Ljava/math/BigInteger;',
+  );
+
+  /// from: `static public final java.math.BigInteger ONE`
+  /// The returned object must be released after use, by calling the [release] method.
+  static BigInteger? get ONE =>
+      _id_ONE.getNullable(_class, BigInteger.type) as BigInteger?;
+
+  static final _id_TWO = _class.staticFieldId(
+    r'TWO',
+    r'Ljava/math/BigInteger;',
+  );
+
+  /// from: `static public final java.math.BigInteger TWO`
+  /// The returned object must be released after use, by calling the [release] method.
+  static BigInteger? get TWO =>
+      _id_TWO.getNullable(_class, BigInteger.type) as BigInteger?;
+
+  static final _id_TEN = _class.staticFieldId(
+    r'TEN',
+    r'Ljava/math/BigInteger;',
+  );
+
+  /// from: `static public final java.math.BigInteger TEN`
+  /// The returned object must be released after use, by calling the [release] method.
+  static BigInteger? get TEN =>
+      _id_TEN.getNullable(_class, BigInteger.type) as BigInteger?;
+
+  static final _id_new$ = _class.constructorId(r'([BII)V');
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Int32, jni$_.Int32)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs, int i, int i1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory BigInteger(jni$_.JByteArray? bs, core$_.int i, core$_.int i1) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$bs.pointer,
+      i,
+      i1,
+    ).object<BigInteger>();
+  }
+
+  static final _id_new$1 = _class.constructorId(r'([B)V');
+
+  static final _new$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory BigInteger.new$1(jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _new$1(
+      _class.reference.pointer,
+      _id_new$1.pointer,
+      _$bs.pointer,
+    ).object<BigInteger>();
+  }
+
+  static final _id_new$2 = _class.constructorId(r'(I[BII)V');
+
+  static final _new$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Int32,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Int32,
+                    jni$_.Int32,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public void <init>(int i, byte[] bs, int i1, int i2)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory BigInteger.new$2(
+    core$_.int i,
+    jni$_.JByteArray? bs,
+    core$_.int i1,
+    core$_.int i2,
+  ) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _new$2(
+      _class.reference.pointer,
+      _id_new$2.pointer,
+      i,
+      _$bs.pointer,
+      i1,
+      i2,
+    ).object<BigInteger>();
+  }
+
+  static final _id_new$3 = _class.constructorId(r'(I[B)V');
+
+  static final _new$3 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32, jni$_.Pointer<jni$_.Void>)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(int i, byte[] bs)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory BigInteger.new$3(core$_.int i, jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _new$3(
+      _class.reference.pointer,
+      _id_new$3.pointer,
+      i,
+      _$bs.pointer,
+    ).object<BigInteger>();
+  }
+
+  static final _id_new$4 = _class.constructorId(r'(Ljava/lang/String;I)V');
+
+  static final _new$4 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>, jni$_.Int32)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public void <init>(java.lang.String string, int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory BigInteger.new$4(jni$_.JString? string, core$_.int i) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _new$4(
+      _class.reference.pointer,
+      _id_new$4.pointer,
+      _$string.pointer,
+      i,
+    ).object<BigInteger>();
+  }
+
+  static final _id_new$5 = _class.constructorId(r'(Ljava/lang/String;)V');
+
+  static final _new$5 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory BigInteger.new$5(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _new$5(
+      _class.reference.pointer,
+      _id_new$5.pointer,
+      _$string.pointer,
+    ).object<BigInteger>();
+  }
+
+  static final _id_new$6 = _class.constructorId(r'(ILjava/util/Random;)V');
+
+  static final _new$6 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32, jni$_.Pointer<jni$_.Void>)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(int i, java.util.Random random)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory BigInteger.new$6(core$_.int i, jni$_.JObject? random) {
+    final _$random = random?.reference ?? jni$_.jNullReference;
+    return _new$6(
+      _class.reference.pointer,
+      _id_new$6.pointer,
+      i,
+      _$random.pointer,
+    ).object<BigInteger>();
+  }
+
+  static final _id_new$7 = _class.constructorId(r'(IILjava/util/Random;)V');
+
+  static final _new$7 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Int32, jni$_.Int32, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+              core$_.int,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(int i, int i1, java.util.Random random)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory BigInteger.new$7(core$_.int i, core$_.int i1, jni$_.JObject? random) {
+    final _$random = random?.reference ?? jni$_.jNullReference;
+    return _new$7(
+      _class.reference.pointer,
+      _id_new$7.pointer,
+      i,
+      i1,
+      _$random.pointer,
+    ).object<BigInteger>();
+  }
+
+  static final _id_probablePrime = _class.staticMethodId(
+    r'probablePrime',
+    r'(ILjava/util/Random;)Ljava/math/BigInteger;',
+  );
+
+  static final _probablePrime =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32, jni$_.Pointer<jni$_.Void>)>,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.math.BigInteger probablePrime(int i, java.util.Random random)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static BigInteger? probablePrime(core$_.int i, jni$_.JObject? random) {
+    final _$random = random?.reference ?? jni$_.jNullReference;
+    return _probablePrime(
+      _class.reference.pointer,
+      _id_probablePrime.pointer,
+      i,
+      _$random.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_valueOf = _class.staticMethodId(
+    r'valueOf',
+    r'(J)Ljava/math/BigInteger;',
+  );
+
+  static final _valueOf =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int64,)>,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `static public java.math.BigInteger valueOf(long j)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static BigInteger? valueOf(core$_.int j) {
+    return _valueOf(
+      _class.reference.pointer,
+      _id_valueOf.pointer,
+      j,
+    ).object<BigInteger?>();
+  }
+}
+
+extension BigInteger$$Methods on BigInteger {
+  static final _id_nextProbablePrime = BigInteger._class.instanceMethodId(
+    r'nextProbablePrime',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _nextProbablePrime =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger nextProbablePrime()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? nextProbablePrime() {
+    return _nextProbablePrime(
+      reference.pointer,
+      _id_nextProbablePrime.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_add = BigInteger._class.instanceMethodId(
+    r'add',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _add =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger add(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? add(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _add(
+      reference.pointer,
+      _id_add.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_subtract = BigInteger._class.instanceMethodId(
+    r'subtract',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _subtract =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger subtract(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? subtract(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _subtract(
+      reference.pointer,
+      _id_subtract.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_multiply = BigInteger._class.instanceMethodId(
+    r'multiply',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _multiply =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger multiply(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? multiply(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _multiply(
+      reference.pointer,
+      _id_multiply.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_divide = BigInteger._class.instanceMethodId(
+    r'divide',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _divide =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger divide(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? divide(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _divide(
+      reference.pointer,
+      _id_divide.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_divideAndRemainder = BigInteger._class.instanceMethodId(
+    r'divideAndRemainder',
+    r'(Ljava/math/BigInteger;)[Ljava/math/BigInteger;',
+  );
+
+  static final _divideAndRemainder =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger[] divideAndRemainder(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JArray<BigInteger?>? divideAndRemainder(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _divideAndRemainder(
+      reference.pointer,
+      _id_divideAndRemainder.pointer,
+      _$bigInteger.pointer,
+    ).object<jni$_.JArray<BigInteger?>?>();
+  }
+
+  static final _id_remainder = BigInteger._class.instanceMethodId(
+    r'remainder',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _remainder =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger remainder(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? remainder(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _remainder(
+      reference.pointer,
+      _id_remainder.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_pow = BigInteger._class.instanceMethodId(
+    r'pow',
+    r'(I)Ljava/math/BigInteger;',
+  );
+
+  static final _pow =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger pow(int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? pow(core$_.int i) {
+    return _pow(reference.pointer, _id_pow.pointer, i).object<BigInteger?>();
+  }
+
+  static final _id_sqrt = BigInteger._class.instanceMethodId(
+    r'sqrt',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _sqrt =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger sqrt()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? sqrt() {
+    return _sqrt(reference.pointer, _id_sqrt.pointer).object<BigInteger?>();
+  }
+
+  static final _id_sqrtAndRemainder = BigInteger._class.instanceMethodId(
+    r'sqrtAndRemainder',
+    r'()[Ljava/math/BigInteger;',
+  );
+
+  static final _sqrtAndRemainder =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger[] sqrtAndRemainder()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JArray<BigInteger?>? sqrtAndRemainder() {
+    return _sqrtAndRemainder(
+      reference.pointer,
+      _id_sqrtAndRemainder.pointer,
+    ).object<jni$_.JArray<BigInteger?>?>();
+  }
+
+  static final _id_gcd = BigInteger._class.instanceMethodId(
+    r'gcd',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _gcd =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger gcd(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? gcd(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _gcd(
+      reference.pointer,
+      _id_gcd.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_abs = BigInteger._class.instanceMethodId(
+    r'abs',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _abs =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger abs()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? abs() {
+    return _abs(reference.pointer, _id_abs.pointer).object<BigInteger?>();
+  }
+
+  static final _id_negate = BigInteger._class.instanceMethodId(
+    r'negate',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _negate =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger negate()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? negate() {
+    return _negate(reference.pointer, _id_negate.pointer).object<BigInteger?>();
+  }
+
+  static final _id_signum = BigInteger._class.instanceMethodId(
+    r'signum',
+    r'()I',
+  );
+
+  static final _signum =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int signum()`
+  core$_.int signum() {
+    return _signum(reference.pointer, _id_signum.pointer).integer;
+  }
+
+  static final _id_mod = BigInteger._class.instanceMethodId(
+    r'mod',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _mod =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger mod(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? mod(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _mod(
+      reference.pointer,
+      _id_mod.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_modPow = BigInteger._class.instanceMethodId(
+    r'modPow',
+    r'(Ljava/math/BigInteger;Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _modPow =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger modPow(java.math.BigInteger bigInteger, java.math.BigInteger bigInteger1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? modPow(BigInteger? bigInteger, BigInteger? bigInteger1) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    final _$bigInteger1 = bigInteger1?.reference ?? jni$_.jNullReference;
+    return _modPow(
+      reference.pointer,
+      _id_modPow.pointer,
+      _$bigInteger.pointer,
+      _$bigInteger1.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_modInverse = BigInteger._class.instanceMethodId(
+    r'modInverse',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _modInverse =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger modInverse(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? modInverse(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _modInverse(
+      reference.pointer,
+      _id_modInverse.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_shiftLeft = BigInteger._class.instanceMethodId(
+    r'shiftLeft',
+    r'(I)Ljava/math/BigInteger;',
+  );
+
+  static final _shiftLeft =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger shiftLeft(int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? shiftLeft(core$_.int i) {
+    return _shiftLeft(
+      reference.pointer,
+      _id_shiftLeft.pointer,
+      i,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_shiftRight = BigInteger._class.instanceMethodId(
+    r'shiftRight',
+    r'(I)Ljava/math/BigInteger;',
+  );
+
+  static final _shiftRight =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger shiftRight(int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? shiftRight(core$_.int i) {
+    return _shiftRight(
+      reference.pointer,
+      _id_shiftRight.pointer,
+      i,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_and = BigInteger._class.instanceMethodId(
+    r'and',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _and =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger and(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? and(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _and(
+      reference.pointer,
+      _id_and.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_or = BigInteger._class.instanceMethodId(
+    r'or',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _or =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger or(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? or(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _or(
+      reference.pointer,
+      _id_or.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_xor = BigInteger._class.instanceMethodId(
+    r'xor',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _xor =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger xor(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? xor(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _xor(
+      reference.pointer,
+      _id_xor.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_not = BigInteger._class.instanceMethodId(
+    r'not',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _not =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger not()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? not() {
+    return _not(reference.pointer, _id_not.pointer).object<BigInteger?>();
+  }
+
+  static final _id_andNot = BigInteger._class.instanceMethodId(
+    r'andNot',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _andNot =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger andNot(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? andNot(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _andNot(
+      reference.pointer,
+      _id_andNot.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_testBit = BigInteger._class.instanceMethodId(
+    r'testBit',
+    r'(I)Z',
+  );
+
+  static final _testBit =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallBooleanMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public boolean testBit(int i)`
+  core$_.bool testBit(core$_.int i) {
+    return _testBit(reference.pointer, _id_testBit.pointer, i).boolean;
+  }
+
+  static final _id_setBit = BigInteger._class.instanceMethodId(
+    r'setBit',
+    r'(I)Ljava/math/BigInteger;',
+  );
+
+  static final _setBit =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger setBit(int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? setBit(core$_.int i) {
+    return _setBit(
+      reference.pointer,
+      _id_setBit.pointer,
+      i,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_clearBit = BigInteger._class.instanceMethodId(
+    r'clearBit',
+    r'(I)Ljava/math/BigInteger;',
+  );
+
+  static final _clearBit =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger clearBit(int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? clearBit(core$_.int i) {
+    return _clearBit(
+      reference.pointer,
+      _id_clearBit.pointer,
+      i,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_flipBit = BigInteger._class.instanceMethodId(
+    r'flipBit',
+    r'(I)Ljava/math/BigInteger;',
+  );
+
+  static final _flipBit =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger flipBit(int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? flipBit(core$_.int i) {
+    return _flipBit(
+      reference.pointer,
+      _id_flipBit.pointer,
+      i,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$lowestSetBit = BigInteger._class.instanceMethodId(
+    r'getLowestSetBit',
+    r'()I',
+  );
+
+  static final _get$lowestSetBit =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int getLowestSetBit()`
+  core$_.int get lowestSetBit {
+    return _get$lowestSetBit(
+      reference.pointer,
+      _id_get$lowestSetBit.pointer,
+    ).integer;
+  }
+
+  static final _id_bitLength = BigInteger._class.instanceMethodId(
+    r'bitLength',
+    r'()I',
+  );
+
+  static final _bitLength =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int bitLength()`
+  core$_.int bitLength() {
+    return _bitLength(reference.pointer, _id_bitLength.pointer).integer;
+  }
+
+  static final _id_bitCount = BigInteger._class.instanceMethodId(
+    r'bitCount',
+    r'()I',
+  );
+
+  static final _bitCount =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int bitCount()`
+  core$_.int bitCount() {
+    return _bitCount(reference.pointer, _id_bitCount.pointer).integer;
+  }
+
+  static final _id_isProbablePrime = BigInteger._class.instanceMethodId(
+    r'isProbablePrime',
+    r'(I)Z',
+  );
+
+  static final _isProbablePrime =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallBooleanMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public boolean isProbablePrime(int i)`
+  core$_.bool isProbablePrime(core$_.int i) {
+    return _isProbablePrime(
+      reference.pointer,
+      _id_isProbablePrime.pointer,
+      i,
+    ).boolean;
+  }
+
+  static final _id_compareTo = BigInteger._class.instanceMethodId(
+    r'compareTo',
+    r'(Ljava/math/BigInteger;)I',
+  );
+
+  static final _compareTo =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public int compareTo(java.math.BigInteger bigInteger)`
+  core$_.int compareTo(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _compareTo(
+      reference.pointer,
+      _id_compareTo.pointer,
+      _$bigInteger.pointer,
+    ).integer;
+  }
+
+  static final _id_equals = BigInteger._class.instanceMethodId(
+    r'equals',
+    r'(Ljava/lang/Object;)Z',
+  );
+
+  static final _equals =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallBooleanMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public boolean equals(java.lang.Object object)`
+  core$_.bool equals(jni$_.JObject? object) {
+    final _$object = object?.reference ?? jni$_.jNullReference;
+    return _equals(
+      reference.pointer,
+      _id_equals.pointer,
+      _$object.pointer,
+    ).boolean;
+  }
+
+  static final _id_min = BigInteger._class.instanceMethodId(
+    r'min',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _min =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger min(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? min(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _min(
+      reference.pointer,
+      _id_min.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_max = BigInteger._class.instanceMethodId(
+    r'max',
+    r'(Ljava/math/BigInteger;)Ljava/math/BigInteger;',
+  );
+
+  static final _max =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger max(java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? max(BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _max(
+      reference.pointer,
+      _id_max.pointer,
+      _$bigInteger.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_hashCode$1 = BigInteger._class.instanceMethodId(
+    r'hashCode',
+    r'()I',
+  );
+
+  static final _hashCode$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int hashCode()`
+  core$_.int hashCode$1() {
+    return _hashCode$1(reference.pointer, _id_hashCode$1.pointer).integer;
+  }
+
+  static final _id_toString$1 = BigInteger._class.instanceMethodId(
+    r'toString',
+    r'(I)Ljava/lang/String;',
+  );
+
+  static final _toString$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public java.lang.String toString(int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? toString$1(core$_.int i) {
+    return _toString$1(
+      reference.pointer,
+      _id_toString$1.pointer,
+      i,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_toString$2 = BigInteger._class.instanceMethodId(
+    r'toString',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _toString$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String toString()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? toString$2() {
+    return _toString$2(
+      reference.pointer,
+      _id_toString$2.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_toByteArray = BigInteger._class.instanceMethodId(
+    r'toByteArray',
+    r'()[B',
+  );
+
+  static final _toByteArray =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public byte[] toByteArray()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? toByteArray() {
+    return _toByteArray(
+      reference.pointer,
+      _id_toByteArray.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+
+  static final _id_intValue = BigInteger._class.instanceMethodId(
+    r'intValue',
+    r'()I',
+  );
+
+  static final _intValue =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int intValue()`
+  core$_.int intValue() {
+    return _intValue(reference.pointer, _id_intValue.pointer).integer;
+  }
+
+  static final _id_longValue = BigInteger._class.instanceMethodId(
+    r'longValue',
+    r'()J',
+  );
+
+  static final _longValue =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallLongMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public long longValue()`
+  core$_.int longValue() {
+    return _longValue(reference.pointer, _id_longValue.pointer).long;
+  }
+
+  static final _id_floatValue = BigInteger._class.instanceMethodId(
+    r'floatValue',
+    r'()F',
+  );
+
+  static final _floatValue =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallFloatMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public float floatValue()`
+  core$_.double floatValue() {
+    return _floatValue(reference.pointer, _id_floatValue.pointer).float;
+  }
+
+  static final _id_doubleValue = BigInteger._class.instanceMethodId(
+    r'doubleValue',
+    r'()D',
+  );
+
+  static final _doubleValue =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallDoubleMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public double doubleValue()`
+  core$_.double doubleValue() {
+    return _doubleValue(reference.pointer, _id_doubleValue.pointer).doubleFloat;
+  }
+
+  static final _id_longValueExact = BigInteger._class.instanceMethodId(
+    r'longValueExact',
+    r'()J',
+  );
+
+  static final _longValueExact =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallLongMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public long longValueExact()`
+  core$_.int longValueExact() {
+    return _longValueExact(reference.pointer, _id_longValueExact.pointer).long;
+  }
+
+  static final _id_intValueExact = BigInteger._class.instanceMethodId(
+    r'intValueExact',
+    r'()I',
+  );
+
+  static final _intValueExact =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int intValueExact()`
+  core$_.int intValueExact() {
+    return _intValueExact(reference.pointer, _id_intValueExact.pointer).integer;
+  }
+
+  static final _id_shortValueExact = BigInteger._class.instanceMethodId(
+    r'shortValueExact',
+    r'()S',
+  );
+
+  static final _shortValueExact =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallShortMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public short shortValueExact()`
+  core$_.int shortValueExact() {
+    return _shortValueExact(
+      reference.pointer,
+      _id_shortValueExact.pointer,
+    ).short;
+  }
+
+  static final _id_byteValueExact = BigInteger._class.instanceMethodId(
+    r'byteValueExact',
+    r'()B',
+  );
+
+  static final _byteValueExact =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallByteMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public byte byteValueExact()`
+  core$_.int byteValueExact() {
+    return _byteValueExact(reference.pointer, _id_byteValueExact.pointer).byte;
+  }
+
+  core$_.bool operator <(BigInteger? bigInteger) {
+    return compareTo(bigInteger) < 0;
+  }
+
+  core$_.bool operator <=(BigInteger? bigInteger) {
+    return compareTo(bigInteger) <= 0;
+  }
+
+  core$_.bool operator >(BigInteger? bigInteger) {
+    return compareTo(bigInteger) > 0;
+  }
+
+  core$_.bool operator >=(BigInteger? bigInteger) {
+    return compareTo(bigInteger) >= 0;
+  }
+}
+
+final class $BigInteger$Type$ extends jni$_.JType<BigInteger> {
+  @jni$_.internal
+  const $BigInteger$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/math/BigInteger;';
+}
+
+/// from: `java.security.Key`
+extension type Key._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'java/security/Key');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<Key> type = $Key$Type$();
+
+  /// from: `static public final long serialVersionUID`
+  static const serialVersionUID = 6603384152749567654;
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $Key> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getAlgorithm()Ljava/lang/String;') {
+        final $r = _$impls[$p]!.getAlgorithm();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getFormat()Ljava/lang/String;') {
+        final $r = _$impls[$p]!.getFormat();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getEncoded()[B') {
+        final $r = _$impls[$p]!.getEncoded();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(jni$_.JImplementer implementer, $Key $impl) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(r'java.security.Key', $p, _$invokePointer, []);
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory Key.implement($Key $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<Key>();
+  }
+}
+
+extension Key$$Methods on Key {
+  static final _id_getAlgorithm = Key._class.instanceMethodId(
+    r'getAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _getAlgorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.lang.String getAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? getAlgorithm() {
+    return _getAlgorithm(
+      reference.pointer,
+      _id_getAlgorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_getFormat = Key._class.instanceMethodId(
+    r'getFormat',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _getFormat =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.lang.String getFormat()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? getFormat() {
+    return _getFormat(
+      reference.pointer,
+      _id_getFormat.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_getEncoded = Key._class.instanceMethodId(
+    r'getEncoded',
+    r'()[B',
+  );
+
+  static final _getEncoded =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract byte[] getEncoded()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? getEncoded() {
+    return _getEncoded(
+      reference.pointer,
+      _id_getEncoded.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+}
+
+abstract base mixin class $Key {
+  factory $Key({
+    required jni$_.JString? Function() getAlgorithm,
+    required jni$_.JString? Function() getFormat,
+    required jni$_.JByteArray? Function() getEncoded,
+  }) = _$Key;
+
+  jni$_.JString? getAlgorithm();
+  jni$_.JString? getFormat();
+  jni$_.JByteArray? getEncoded();
+}
+
+final class _$Key with $Key {
+  _$Key({
+    required jni$_.JString? Function() getAlgorithm,
+    required jni$_.JString? Function() getFormat,
+    required jni$_.JByteArray? Function() getEncoded,
+  }) : _getAlgorithm = getAlgorithm,
+       _getFormat = getFormat,
+       _getEncoded = getEncoded;
+
+  final jni$_.JString? Function() _getAlgorithm;
+  final jni$_.JString? Function() _getFormat;
+  final jni$_.JByteArray? Function() _getEncoded;
+
+  jni$_.JString? getAlgorithm() {
+    return _getAlgorithm();
+  }
+
+  jni$_.JString? getFormat() {
+    return _getFormat();
+  }
+
+  jni$_.JByteArray? getEncoded() {
+    return _getEncoded();
+  }
+}
+
+final class $Key$Type$ extends jni$_.JType<Key> {
+  @jni$_.internal
+  const $Key$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/Key;';
+}
+
+/// from: `java.security.KeyFactory`
+extension type KeyFactory._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'java/security/KeyFactory');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<KeyFactory> type = $KeyFactory$Type$();
+  static final _id_getInstance = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;)Ljava/security/KeyFactory;',
+  );
+
+  static final _getInstance =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.KeyFactory getInstance(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyFactory? getInstance(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _getInstance(
+      _class.reference.pointer,
+      _id_getInstance.pointer,
+      _$string.pointer,
+    ).object<KeyFactory?>();
+  }
+
+  static final _id_getInstance$1 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyFactory;',
+  );
+
+  static final _getInstance$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.KeyFactory getInstance(java.lang.String string, java.lang.String string1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyFactory? getInstance$1(
+    jni$_.JString? string,
+    jni$_.JString? string1,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$string1 = string1?.reference ?? jni$_.jNullReference;
+    return _getInstance$1(
+      _class.reference.pointer,
+      _id_getInstance$1.pointer,
+      _$string.pointer,
+      _$string1.pointer,
+    ).object<KeyFactory?>();
+  }
+
+  static final _id_getInstance$2 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/security/Provider;)Ljava/security/KeyFactory;',
+  );
+
+  static final _getInstance$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.KeyFactory getInstance(java.lang.String string, java.security.Provider provider)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyFactory? getInstance$2(
+    jni$_.JString? string,
+    jni$_.JObject? provider,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$provider = provider?.reference ?? jni$_.jNullReference;
+    return _getInstance$2(
+      _class.reference.pointer,
+      _id_getInstance$2.pointer,
+      _$string.pointer,
+      _$provider.pointer,
+    ).object<KeyFactory?>();
+  }
+}
+
+extension KeyFactory$$Methods on KeyFactory {
+  static final _id_get$provider = KeyFactory._class.instanceMethodId(
+    r'getProvider',
+    r'()Ljava/security/Provider;',
+  );
+
+  static final _get$provider =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.security.Provider getProvider()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get provider {
+    return _get$provider(
+      reference.pointer,
+      _id_get$provider.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_get$algorithm = KeyFactory._class.instanceMethodId(
+    r'getAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$algorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.lang.String getAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get algorithm {
+    return _get$algorithm(
+      reference.pointer,
+      _id_get$algorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_generatePublic = KeyFactory._class.instanceMethodId(
+    r'generatePublic',
+    r'(Ljava/security/spec/KeySpec;)Ljava/security/PublicKey;',
+  );
+
+  static final _generatePublic =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final java.security.PublicKey generatePublic(java.security.spec.KeySpec keySpec)`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? generatePublic(jni$_.JObject? keySpec) {
+    final _$keySpec = keySpec?.reference ?? jni$_.jNullReference;
+    return _generatePublic(
+      reference.pointer,
+      _id_generatePublic.pointer,
+      _$keySpec.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_generatePrivate = KeyFactory._class.instanceMethodId(
+    r'generatePrivate',
+    r'(Ljava/security/spec/KeySpec;)Ljava/security/PrivateKey;',
+  );
+
+  static final _generatePrivate =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final java.security.PrivateKey generatePrivate(java.security.spec.KeySpec keySpec)`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? generatePrivate(jni$_.JObject? keySpec) {
+    final _$keySpec = keySpec?.reference ?? jni$_.jNullReference;
+    return _generatePrivate(
+      reference.pointer,
+      _id_generatePrivate.pointer,
+      _$keySpec.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_getKeySpec = KeyFactory._class.instanceMethodId(
+    r'getKeySpec',
+    r'(Ljava/security/Key;Ljava/lang/Class;)Ljava/security/spec/KeySpec;',
+  );
+
+  static final _getKeySpec =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final T getKeySpec(java.security.Key key, java.lang.Class<T> class)`
+  /// The returned object must be released after use, by calling the [release] method.
+  $T? getKeySpec<$T extends jni$_.JObject?>(Key? key, jni$_.JObject? class$) {
+    final _$key = key?.reference ?? jni$_.jNullReference;
+    final _$class$ = class$?.reference ?? jni$_.jNullReference;
+    return _getKeySpec(
+      reference.pointer,
+      _id_getKeySpec.pointer,
+      _$key.pointer,
+      _$class$.pointer,
+    ).object<$T?>();
+  }
+
+  static final _id_translateKey = KeyFactory._class.instanceMethodId(
+    r'translateKey',
+    r'(Ljava/security/Key;)Ljava/security/Key;',
+  );
+
+  static final _translateKey =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final java.security.Key translateKey(java.security.Key key)`
+  /// The returned object must be released after use, by calling the [release] method.
+  Key? translateKey(Key? key) {
+    final _$key = key?.reference ?? jni$_.jNullReference;
+    return _translateKey(
+      reference.pointer,
+      _id_translateKey.pointer,
+      _$key.pointer,
+    ).object<Key?>();
+  }
+}
+
+final class $KeyFactory$Type$ extends jni$_.JType<KeyFactory> {
+  @jni$_.internal
+  const $KeyFactory$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/KeyFactory;';
+}
+
+/// from: `java.security.KeyPair`
+extension type KeyPair._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'java/security/KeyPair');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<KeyPair> type = $KeyPair$Type$();
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/security/PublicKey;Ljava/security/PrivateKey;)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.security.PublicKey publicKey, java.security.PrivateKey privateKey)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory KeyPair(jni$_.JObject? publicKey, jni$_.JObject? privateKey) {
+    final _$publicKey = publicKey?.reference ?? jni$_.jNullReference;
+    final _$privateKey = privateKey?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$publicKey.pointer,
+      _$privateKey.pointer,
+    ).object<KeyPair>();
+  }
+}
+
+extension KeyPair$$Methods on KeyPair {
+  static final _id_get$public = KeyPair._class.instanceMethodId(
+    r'getPublic',
+    r'()Ljava/security/PublicKey;',
+  );
+
+  static final _get$public =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.PublicKey getPublic()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get public {
+    return _get$public(
+      reference.pointer,
+      _id_get$public.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_get$private = KeyPair._class.instanceMethodId(
+    r'getPrivate',
+    r'()Ljava/security/PrivateKey;',
+  );
+
+  static final _get$private =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.PrivateKey getPrivate()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get private {
+    return _get$private(
+      reference.pointer,
+      _id_get$private.pointer,
+    ).object<jni$_.JObject?>();
+  }
+}
+
+final class $KeyPair$Type$ extends jni$_.JType<KeyPair> {
+  @jni$_.internal
+  const $KeyPair$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/KeyPair;';
+}
+
+/// from: `java.security.KeyPairGenerator`
+extension type KeyPairGenerator._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'java/security/KeyPairGenerator');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<KeyPairGenerator> type = $KeyPairGenerator$Type$();
+  static final _id_getInstance = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;)Ljava/security/KeyPairGenerator;',
+  );
+
+  static final _getInstance =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.KeyPairGenerator getInstance(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyPairGenerator? getInstance(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _getInstance(
+      _class.reference.pointer,
+      _id_getInstance.pointer,
+      _$string.pointer,
+    ).object<KeyPairGenerator?>();
+  }
+
+  static final _id_getInstance$1 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyPairGenerator;',
+  );
+
+  static final _getInstance$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.KeyPairGenerator getInstance(java.lang.String string, java.lang.String string1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyPairGenerator? getInstance$1(
+    jni$_.JString? string,
+    jni$_.JString? string1,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$string1 = string1?.reference ?? jni$_.jNullReference;
+    return _getInstance$1(
+      _class.reference.pointer,
+      _id_getInstance$1.pointer,
+      _$string.pointer,
+      _$string1.pointer,
+    ).object<KeyPairGenerator?>();
+  }
+
+  static final _id_getInstance$2 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/security/Provider;)Ljava/security/KeyPairGenerator;',
+  );
+
+  static final _getInstance$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.KeyPairGenerator getInstance(java.lang.String string, java.security.Provider provider)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyPairGenerator? getInstance$2(
+    jni$_.JString? string,
+    jni$_.JObject? provider,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$provider = provider?.reference ?? jni$_.jNullReference;
+    return _getInstance$2(
+      _class.reference.pointer,
+      _id_getInstance$2.pointer,
+      _$string.pointer,
+      _$provider.pointer,
+    ).object<KeyPairGenerator?>();
+  }
+}
+
+extension KeyPairGenerator$$Methods on KeyPairGenerator {
+  static final _id_get$algorithm = KeyPairGenerator._class.instanceMethodId(
+    r'getAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$algorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String getAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get algorithm {
+    return _get$algorithm(
+      reference.pointer,
+      _id_get$algorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_get$provider = KeyPairGenerator._class.instanceMethodId(
+    r'getProvider',
+    r'()Ljava/security/Provider;',
+  );
+
+  static final _get$provider =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.security.Provider getProvider()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get provider {
+    return _get$provider(
+      reference.pointer,
+      _id_get$provider.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_initialize = KeyPairGenerator._class.instanceMethodId(
+    r'initialize',
+    r'(I)V',
+  );
+
+  static final _initialize =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public void initialize(int i)`
+  void initialize(core$_.int i) {
+    _initialize(reference.pointer, _id_initialize.pointer, i).check();
+  }
+
+  static final _id_initialize$1 = KeyPairGenerator._class.instanceMethodId(
+    r'initialize',
+    r'(ILjava/security/SecureRandom;)V',
+  );
+
+  static final _initialize$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32, jni$_.Pointer<jni$_.Void>)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void initialize(int i, java.security.SecureRandom secureRandom)`
+  void initialize$1(core$_.int i, SecureRandom? secureRandom) {
+    final _$secureRandom = secureRandom?.reference ?? jni$_.jNullReference;
+    _initialize$1(
+      reference.pointer,
+      _id_initialize$1.pointer,
+      i,
+      _$secureRandom.pointer,
+    ).check();
+  }
+
+  static final _id_initialize$2 = KeyPairGenerator._class.instanceMethodId(
+    r'initialize',
+    r'(Ljava/security/spec/AlgorithmParameterSpec;)V',
+  );
+
+  static final _initialize$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void initialize(java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
+  void initialize$2(jni$_.JObject? algorithmParameterSpec) {
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    _initialize$2(
+      reference.pointer,
+      _id_initialize$2.pointer,
+      _$algorithmParameterSpec.pointer,
+    ).check();
+  }
+
+  static final _id_initialize$3 = KeyPairGenerator._class.instanceMethodId(
+    r'initialize',
+    r'(Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;)V',
+  );
+
+  static final _initialize$3 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void initialize(java.security.spec.AlgorithmParameterSpec algorithmParameterSpec, java.security.SecureRandom secureRandom)`
+  void initialize$3(
+    jni$_.JObject? algorithmParameterSpec,
+    SecureRandom? secureRandom,
+  ) {
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    final _$secureRandom = secureRandom?.reference ?? jni$_.jNullReference;
+    _initialize$3(
+      reference.pointer,
+      _id_initialize$3.pointer,
+      _$algorithmParameterSpec.pointer,
+      _$secureRandom.pointer,
+    ).check();
+  }
+
+  static final _id_genKeyPair = KeyPairGenerator._class.instanceMethodId(
+    r'genKeyPair',
+    r'()Ljava/security/KeyPair;',
+  );
+
+  static final _genKeyPair =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.security.KeyPair genKeyPair()`
+  /// The returned object must be released after use, by calling the [release] method.
+  KeyPair? genKeyPair() {
+    return _genKeyPair(
+      reference.pointer,
+      _id_genKeyPair.pointer,
+    ).object<KeyPair?>();
+  }
+
+  static final _id_generateKeyPair = KeyPairGenerator._class.instanceMethodId(
+    r'generateKeyPair',
+    r'()Ljava/security/KeyPair;',
+  );
+
+  static final _generateKeyPair =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.KeyPair generateKeyPair()`
+  /// The returned object must be released after use, by calling the [release] method.
+  KeyPair? generateKeyPair() {
+    return _generateKeyPair(
+      reference.pointer,
+      _id_generateKeyPair.pointer,
+    ).object<KeyPair?>();
+  }
+}
+
+final class $KeyPairGenerator$Type$ extends jni$_.JType<KeyPairGenerator> {
+  @jni$_.internal
+  const $KeyPairGenerator$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/KeyPairGenerator;';
+}
+
 /// from: `java.security.MessageDigest`
 extension type MessageDigest._(jni$_.JObject _$this) implements jni$_.JObject {
   static final _class = jni$_.JClass.forName(r'java/security/MessageDigest');
@@ -1358,6 +4339,3040 @@ final class $SecureRandom$Type$ extends jni$_.JType<SecureRandom> {
   String get signature => r'Ljava/security/SecureRandom;';
 }
 
+/// from: `java.security.Signature`
+extension type Signature._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'java/security/Signature');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<Signature> type = $Signature$Type$();
+  static final _id_getInstance = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;)Ljava/security/Signature;',
+  );
+
+  static final _getInstance =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.Signature getInstance(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static Signature? getInstance(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _getInstance(
+      _class.reference.pointer,
+      _id_getInstance.pointer,
+      _$string.pointer,
+    ).object<Signature?>();
+  }
+
+  static final _id_getInstance$1 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/lang/String;)Ljava/security/Signature;',
+  );
+
+  static final _getInstance$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.Signature getInstance(java.lang.String string, java.lang.String string1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static Signature? getInstance$1(
+    jni$_.JString? string,
+    jni$_.JString? string1,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$string1 = string1?.reference ?? jni$_.jNullReference;
+    return _getInstance$1(
+      _class.reference.pointer,
+      _id_getInstance$1.pointer,
+      _$string.pointer,
+      _$string1.pointer,
+    ).object<Signature?>();
+  }
+
+  static final _id_getInstance$2 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/security/Provider;)Ljava/security/Signature;',
+  );
+
+  static final _getInstance$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.Signature getInstance(java.lang.String string, java.security.Provider provider)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static Signature? getInstance$2(
+    jni$_.JString? string,
+    jni$_.JObject? provider,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$provider = provider?.reference ?? jni$_.jNullReference;
+    return _getInstance$2(
+      _class.reference.pointer,
+      _id_getInstance$2.pointer,
+      _$string.pointer,
+      _$provider.pointer,
+    ).object<Signature?>();
+  }
+}
+
+extension Signature$$Methods on Signature {
+  static final _id_get$provider = Signature._class.instanceMethodId(
+    r'getProvider',
+    r'()Ljava/security/Provider;',
+  );
+
+  static final _get$provider =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.security.Provider getProvider()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get provider {
+    return _get$provider(
+      reference.pointer,
+      _id_get$provider.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_initVerify = Signature._class.instanceMethodId(
+    r'initVerify',
+    r'(Ljava/security/PublicKey;)V',
+  );
+
+  static final _initVerify =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void initVerify(java.security.PublicKey publicKey)`
+  void initVerify(jni$_.JObject? publicKey) {
+    final _$publicKey = publicKey?.reference ?? jni$_.jNullReference;
+    _initVerify(
+      reference.pointer,
+      _id_initVerify.pointer,
+      _$publicKey.pointer,
+    ).check();
+  }
+
+  static final _id_initVerify$1 = Signature._class.instanceMethodId(
+    r'initVerify',
+    r'(Ljava/security/cert/Certificate;)V',
+  );
+
+  static final _initVerify$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void initVerify(java.security.cert.Certificate certificate)`
+  void initVerify$1(jni$_.JObject? certificate) {
+    final _$certificate = certificate?.reference ?? jni$_.jNullReference;
+    _initVerify$1(
+      reference.pointer,
+      _id_initVerify$1.pointer,
+      _$certificate.pointer,
+    ).check();
+  }
+
+  static final _id_initSign = Signature._class.instanceMethodId(
+    r'initSign',
+    r'(Ljava/security/PrivateKey;)V',
+  );
+
+  static final _initSign =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void initSign(java.security.PrivateKey privateKey)`
+  void initSign(jni$_.JObject? privateKey) {
+    final _$privateKey = privateKey?.reference ?? jni$_.jNullReference;
+    _initSign(
+      reference.pointer,
+      _id_initSign.pointer,
+      _$privateKey.pointer,
+    ).check();
+  }
+
+  static final _id_initSign$1 = Signature._class.instanceMethodId(
+    r'initSign',
+    r'(Ljava/security/PrivateKey;Ljava/security/SecureRandom;)V',
+  );
+
+  static final _initSign$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void initSign(java.security.PrivateKey privateKey, java.security.SecureRandom secureRandom)`
+  void initSign$1(jni$_.JObject? privateKey, SecureRandom? secureRandom) {
+    final _$privateKey = privateKey?.reference ?? jni$_.jNullReference;
+    final _$secureRandom = secureRandom?.reference ?? jni$_.jNullReference;
+    _initSign$1(
+      reference.pointer,
+      _id_initSign$1.pointer,
+      _$privateKey.pointer,
+      _$secureRandom.pointer,
+    ).check();
+  }
+
+  static final _id_sign = Signature._class.instanceMethodId(r'sign', r'()[B');
+
+  static final _sign =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final byte[] sign()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? sign() {
+    return _sign(
+      reference.pointer,
+      _id_sign.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+
+  static final _id_sign$1 = Signature._class.instanceMethodId(
+    r'sign',
+    r'([BII)I',
+  );
+
+  static final _sign$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Int32, jni$_.Int32)
+                >,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public final int sign(byte[] bs, int i, int i1)`
+  core$_.int sign$1(jni$_.JByteArray? bs, core$_.int i, core$_.int i1) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _sign$1(
+      reference.pointer,
+      _id_sign$1.pointer,
+      _$bs.pointer,
+      i,
+      i1,
+    ).integer;
+  }
+
+  static final _id_verify = Signature._class.instanceMethodId(
+    r'verify',
+    r'([B)Z',
+  );
+
+  static final _verify =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallBooleanMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final boolean verify(byte[] bs)`
+  core$_.bool verify(jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _verify(reference.pointer, _id_verify.pointer, _$bs.pointer).boolean;
+  }
+
+  static final _id_verify$1 = Signature._class.instanceMethodId(
+    r'verify',
+    r'([BII)Z',
+  );
+
+  static final _verify$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Int32, jni$_.Int32)
+                >,
+              )
+            >
+          >('globalEnv_CallBooleanMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public final boolean verify(byte[] bs, int i, int i1)`
+  core$_.bool verify$1(jni$_.JByteArray? bs, core$_.int i, core$_.int i1) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _verify$1(
+      reference.pointer,
+      _id_verify$1.pointer,
+      _$bs.pointer,
+      i,
+      i1,
+    ).boolean;
+  }
+
+  static final _id_update = Signature._class.instanceMethodId(
+    r'update',
+    r'(B)V',
+  );
+
+  static final _update =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public final void update(byte b)`
+  void update(core$_.int b) {
+    _update(reference.pointer, _id_update.pointer, b).check();
+  }
+
+  static final _id_update$1 = Signature._class.instanceMethodId(
+    r'update',
+    r'([B)V',
+  );
+
+  static final _update$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void update(byte[] bs)`
+  void update$1(jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    _update$1(reference.pointer, _id_update$1.pointer, _$bs.pointer).check();
+  }
+
+  static final _id_update$2 = Signature._class.instanceMethodId(
+    r'update',
+    r'([BII)V',
+  );
+
+  static final _update$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Int32, jni$_.Int32)
+                >,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public final void update(byte[] bs, int i, int i1)`
+  void update$2(jni$_.JByteArray? bs, core$_.int i, core$_.int i1) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    _update$2(
+      reference.pointer,
+      _id_update$2.pointer,
+      _$bs.pointer,
+      i,
+      i1,
+    ).check();
+  }
+
+  static final _id_update$3 = Signature._class.instanceMethodId(
+    r'update',
+    r'(Ljava/nio/ByteBuffer;)V',
+  );
+
+  static final _update$3 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void update(java.nio.ByteBuffer byteBuffer)`
+  void update$3(jni$_.JByteBuffer? byteBuffer) {
+    final _$byteBuffer = byteBuffer?.reference ?? jni$_.jNullReference;
+    _update$3(
+      reference.pointer,
+      _id_update$3.pointer,
+      _$byteBuffer.pointer,
+    ).check();
+  }
+
+  static final _id_get$algorithm = Signature._class.instanceMethodId(
+    r'getAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$algorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.lang.String getAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get algorithm {
+    return _get$algorithm(
+      reference.pointer,
+      _id_get$algorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_toString$1 = Signature._class.instanceMethodId(
+    r'toString',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _toString$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String toString()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? toString$1() {
+    return _toString$1(
+      reference.pointer,
+      _id_toString$1.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_setParameter = Signature._class.instanceMethodId(
+    r'setParameter',
+    r'(Ljava/lang/String;Ljava/lang/Object;)V',
+  );
+
+  static final _setParameter =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void setParameter(java.lang.String string, java.lang.Object object)`
+  void setParameter(jni$_.JString? string, jni$_.JObject? object) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$object = object?.reference ?? jni$_.jNullReference;
+    _setParameter(
+      reference.pointer,
+      _id_setParameter.pointer,
+      _$string.pointer,
+      _$object.pointer,
+    ).check();
+  }
+
+  static final _id_set$parameter = Signature._class.instanceMethodId(
+    r'setParameter',
+    r'(Ljava/security/spec/AlgorithmParameterSpec;)V',
+  );
+
+  static final _set$parameter =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void setParameter(java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
+  set parameter(jni$_.JObject? algorithmParameterSpec) {
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    _set$parameter(
+      reference.pointer,
+      _id_set$parameter.pointer,
+      _$algorithmParameterSpec.pointer,
+    ).check();
+  }
+
+  static final _id_get$parameters = Signature._class.instanceMethodId(
+    r'getParameters',
+    r'()Ljava/security/AlgorithmParameters;',
+  );
+
+  static final _get$parameters =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.security.AlgorithmParameters getParameters()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get parameters {
+    return _get$parameters(
+      reference.pointer,
+      _id_get$parameters.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_getParameter = Signature._class.instanceMethodId(
+    r'getParameter',
+    r'(Ljava/lang/String;)Ljava/lang/Object;',
+  );
+
+  static final _getParameter =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final java.lang.Object getParameter(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? getParameter(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _getParameter(
+      reference.pointer,
+      _id_getParameter.pointer,
+      _$string.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_clone = Signature._class.instanceMethodId(
+    r'clone',
+    r'()Ljava/lang/Object;',
+  );
+
+  static final _clone =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.Object clone()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? clone() {
+    return _clone(
+      reference.pointer,
+      _id_clone.pointer,
+    ).object<jni$_.JObject?>();
+  }
+}
+
+final class $Signature$Type$ extends jni$_.JType<Signature> {
+  @jni$_.internal
+  const $Signature$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/Signature;';
+}
+
+/// from: `java.security.interfaces.RSAKey`
+extension type RSAKey._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/interfaces/RSAKey',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<RSAKey> type = $RSAKey$Type$();
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $RSAKey> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getModulus()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getModulus();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getParams()Ljava/security/spec/AlgorithmParameterSpec;') {
+        final $r = _$impls[$p]!.getParams();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(jni$_.JImplementer implementer, $RSAKey $impl) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(
+      r'java.security.interfaces.RSAKey',
+      $p,
+      _$invokePointer,
+      [],
+    );
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory RSAKey.implement($RSAKey $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<RSAKey>();
+  }
+}
+
+extension RSAKey$$Methods on RSAKey {
+  static final _id_getModulus = RSAKey._class.instanceMethodId(
+    r'getModulus',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getModulus =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getModulus()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getModulus() {
+    return _getModulus(
+      reference.pointer,
+      _id_getModulus.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getParams = RSAKey._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/AlgorithmParameterSpec;',
+  );
+
+  static final _getParams =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.AlgorithmParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? getParams() {
+    return _getParams(
+      reference.pointer,
+      _id_getParams.pointer,
+    ).object<jni$_.JObject?>();
+  }
+}
+
+abstract base mixin class $RSAKey {
+  factory $RSAKey({
+    required BigInteger? Function() getModulus,
+    required jni$_.JObject? Function() getParams,
+  }) = _$RSAKey;
+
+  BigInteger? getModulus();
+  jni$_.JObject? getParams();
+}
+
+final class _$RSAKey with $RSAKey {
+  _$RSAKey({
+    required BigInteger? Function() getModulus,
+    required jni$_.JObject? Function() getParams,
+  }) : _getModulus = getModulus,
+       _getParams = getParams;
+
+  final BigInteger? Function() _getModulus;
+  final jni$_.JObject? Function() _getParams;
+
+  BigInteger? getModulus() {
+    return _getModulus();
+  }
+
+  jni$_.JObject? getParams() {
+    return _getParams();
+  }
+}
+
+final class $RSAKey$Type$ extends jni$_.JType<RSAKey> {
+  @jni$_.internal
+  const $RSAKey$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/interfaces/RSAKey;';
+}
+
+/// from: `java.security.interfaces.RSAPrivateCrtKey`
+extension type RSAPrivateCrtKey._(jni$_.JObject _$this)
+    implements jni$_.JObject, RSAPrivateKey {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/interfaces/RSAPrivateCrtKey',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<RSAPrivateCrtKey> type = $RSAPrivateCrtKey$Type$();
+
+  /// from: `static public final long serialVersionUID`
+  static const serialVersionUID = -5682214253527700368;
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $RSAPrivateCrtKey> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getPublicExponent()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getPublicExponent();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getPrimeP()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getPrimeP();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getPrimeQ()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getPrimeQ();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getPrimeExponentP()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getPrimeExponentP();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getPrimeExponentQ()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getPrimeExponentQ();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getCrtCoefficient()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getCrtCoefficient();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getPrivateExponent()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getPrivateExponent();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getModulus()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getModulus();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getParams()Ljava/security/spec/AlgorithmParameterSpec;') {
+        final $r = _$impls[$p]!.getParams();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(
+    jni$_.JImplementer implementer,
+    $RSAPrivateCrtKey $impl,
+  ) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(
+      r'java.security.interfaces.RSAPrivateCrtKey',
+      $p,
+      _$invokePointer,
+      [],
+    );
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory RSAPrivateCrtKey.implement($RSAPrivateCrtKey $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<RSAPrivateCrtKey>();
+  }
+}
+
+extension RSAPrivateCrtKey$$Methods on RSAPrivateCrtKey {
+  static final _id_getPublicExponent = RSAPrivateCrtKey._class.instanceMethodId(
+    r'getPublicExponent',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getPublicExponent =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getPublicExponent()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getPublicExponent() {
+    return _getPublicExponent(
+      reference.pointer,
+      _id_getPublicExponent.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getPrimeP = RSAPrivateCrtKey._class.instanceMethodId(
+    r'getPrimeP',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getPrimeP =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getPrimeP()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getPrimeP() {
+    return _getPrimeP(
+      reference.pointer,
+      _id_getPrimeP.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getPrimeQ = RSAPrivateCrtKey._class.instanceMethodId(
+    r'getPrimeQ',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getPrimeQ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getPrimeQ()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getPrimeQ() {
+    return _getPrimeQ(
+      reference.pointer,
+      _id_getPrimeQ.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getPrimeExponentP = RSAPrivateCrtKey._class.instanceMethodId(
+    r'getPrimeExponentP',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getPrimeExponentP =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getPrimeExponentP()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getPrimeExponentP() {
+    return _getPrimeExponentP(
+      reference.pointer,
+      _id_getPrimeExponentP.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getPrimeExponentQ = RSAPrivateCrtKey._class.instanceMethodId(
+    r'getPrimeExponentQ',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getPrimeExponentQ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getPrimeExponentQ()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getPrimeExponentQ() {
+    return _getPrimeExponentQ(
+      reference.pointer,
+      _id_getPrimeExponentQ.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getCrtCoefficient = RSAPrivateCrtKey._class.instanceMethodId(
+    r'getCrtCoefficient',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getCrtCoefficient =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getCrtCoefficient()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getCrtCoefficient() {
+    return _getCrtCoefficient(
+      reference.pointer,
+      _id_getCrtCoefficient.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getPrivateExponent = RSAPrivateCrtKey._class
+      .instanceMethodId(r'getPrivateExponent', r'()Ljava/math/BigInteger;');
+
+  static final _getPrivateExponent =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getPrivateExponent()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getPrivateExponent() {
+    return _getPrivateExponent(
+      reference.pointer,
+      _id_getPrivateExponent.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getModulus = RSAPrivateCrtKey._class.instanceMethodId(
+    r'getModulus',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getModulus =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getModulus()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getModulus() {
+    return _getModulus(
+      reference.pointer,
+      _id_getModulus.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getParams = RSAPrivateCrtKey._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/AlgorithmParameterSpec;',
+  );
+
+  static final _getParams =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.AlgorithmParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? getParams() {
+    return _getParams(
+      reference.pointer,
+      _id_getParams.pointer,
+    ).object<jni$_.JObject?>();
+  }
+}
+
+abstract base mixin class $RSAPrivateCrtKey {
+  factory $RSAPrivateCrtKey({
+    required BigInteger? Function() getPublicExponent,
+    required BigInteger? Function() getPrimeP,
+    required BigInteger? Function() getPrimeQ,
+    required BigInteger? Function() getPrimeExponentP,
+    required BigInteger? Function() getPrimeExponentQ,
+    required BigInteger? Function() getCrtCoefficient,
+    required BigInteger? Function() getPrivateExponent,
+    required BigInteger? Function() getModulus,
+    required jni$_.JObject? Function() getParams,
+  }) = _$RSAPrivateCrtKey;
+
+  BigInteger? getPublicExponent();
+  BigInteger? getPrimeP();
+  BigInteger? getPrimeQ();
+  BigInteger? getPrimeExponentP();
+  BigInteger? getPrimeExponentQ();
+  BigInteger? getCrtCoefficient();
+  BigInteger? getPrivateExponent();
+  BigInteger? getModulus();
+  jni$_.JObject? getParams();
+}
+
+final class _$RSAPrivateCrtKey with $RSAPrivateCrtKey {
+  _$RSAPrivateCrtKey({
+    required BigInteger? Function() getPublicExponent,
+    required BigInteger? Function() getPrimeP,
+    required BigInteger? Function() getPrimeQ,
+    required BigInteger? Function() getPrimeExponentP,
+    required BigInteger? Function() getPrimeExponentQ,
+    required BigInteger? Function() getCrtCoefficient,
+    required BigInteger? Function() getPrivateExponent,
+    required BigInteger? Function() getModulus,
+    required jni$_.JObject? Function() getParams,
+  }) : _getPublicExponent = getPublicExponent,
+       _getPrimeP = getPrimeP,
+       _getPrimeQ = getPrimeQ,
+       _getPrimeExponentP = getPrimeExponentP,
+       _getPrimeExponentQ = getPrimeExponentQ,
+       _getCrtCoefficient = getCrtCoefficient,
+       _getPrivateExponent = getPrivateExponent,
+       _getModulus = getModulus,
+       _getParams = getParams;
+
+  final BigInteger? Function() _getPublicExponent;
+  final BigInteger? Function() _getPrimeP;
+  final BigInteger? Function() _getPrimeQ;
+  final BigInteger? Function() _getPrimeExponentP;
+  final BigInteger? Function() _getPrimeExponentQ;
+  final BigInteger? Function() _getCrtCoefficient;
+  final BigInteger? Function() _getPrivateExponent;
+  final BigInteger? Function() _getModulus;
+  final jni$_.JObject? Function() _getParams;
+
+  BigInteger? getPublicExponent() {
+    return _getPublicExponent();
+  }
+
+  BigInteger? getPrimeP() {
+    return _getPrimeP();
+  }
+
+  BigInteger? getPrimeQ() {
+    return _getPrimeQ();
+  }
+
+  BigInteger? getPrimeExponentP() {
+    return _getPrimeExponentP();
+  }
+
+  BigInteger? getPrimeExponentQ() {
+    return _getPrimeExponentQ();
+  }
+
+  BigInteger? getCrtCoefficient() {
+    return _getCrtCoefficient();
+  }
+
+  BigInteger? getPrivateExponent() {
+    return _getPrivateExponent();
+  }
+
+  BigInteger? getModulus() {
+    return _getModulus();
+  }
+
+  jni$_.JObject? getParams() {
+    return _getParams();
+  }
+}
+
+final class $RSAPrivateCrtKey$Type$ extends jni$_.JType<RSAPrivateCrtKey> {
+  @jni$_.internal
+  const $RSAPrivateCrtKey$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/interfaces/RSAPrivateCrtKey;';
+}
+
+/// from: `java.security.interfaces.RSAPrivateKey`
+extension type RSAPrivateKey._(jni$_.JObject _$this)
+    implements jni$_.JObject, RSAKey {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/interfaces/RSAPrivateKey',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<RSAPrivateKey> type = $RSAPrivateKey$Type$();
+
+  /// from: `static public final long serialVersionUID`
+  static const serialVersionUID = 5187144804936595022;
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $RSAPrivateKey> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getPrivateExponent()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getPrivateExponent();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getModulus()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getModulus();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getParams()Ljava/security/spec/AlgorithmParameterSpec;') {
+        final $r = _$impls[$p]!.getParams();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(
+    jni$_.JImplementer implementer,
+    $RSAPrivateKey $impl,
+  ) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(
+      r'java.security.interfaces.RSAPrivateKey',
+      $p,
+      _$invokePointer,
+      [],
+    );
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory RSAPrivateKey.implement($RSAPrivateKey $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<RSAPrivateKey>();
+  }
+}
+
+extension RSAPrivateKey$$Methods on RSAPrivateKey {
+  static final _id_getPrivateExponent = RSAPrivateKey._class.instanceMethodId(
+    r'getPrivateExponent',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getPrivateExponent =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getPrivateExponent()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getPrivateExponent() {
+    return _getPrivateExponent(
+      reference.pointer,
+      _id_getPrivateExponent.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getModulus = RSAPrivateKey._class.instanceMethodId(
+    r'getModulus',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getModulus =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getModulus()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getModulus() {
+    return _getModulus(
+      reference.pointer,
+      _id_getModulus.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getParams = RSAPrivateKey._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/AlgorithmParameterSpec;',
+  );
+
+  static final _getParams =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.AlgorithmParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? getParams() {
+    return _getParams(
+      reference.pointer,
+      _id_getParams.pointer,
+    ).object<jni$_.JObject?>();
+  }
+}
+
+abstract base mixin class $RSAPrivateKey {
+  factory $RSAPrivateKey({
+    required BigInteger? Function() getPrivateExponent,
+    required BigInteger? Function() getModulus,
+    required jni$_.JObject? Function() getParams,
+  }) = _$RSAPrivateKey;
+
+  BigInteger? getPrivateExponent();
+  BigInteger? getModulus();
+  jni$_.JObject? getParams();
+}
+
+final class _$RSAPrivateKey with $RSAPrivateKey {
+  _$RSAPrivateKey({
+    required BigInteger? Function() getPrivateExponent,
+    required BigInteger? Function() getModulus,
+    required jni$_.JObject? Function() getParams,
+  }) : _getPrivateExponent = getPrivateExponent,
+       _getModulus = getModulus,
+       _getParams = getParams;
+
+  final BigInteger? Function() _getPrivateExponent;
+  final BigInteger? Function() _getModulus;
+  final jni$_.JObject? Function() _getParams;
+
+  BigInteger? getPrivateExponent() {
+    return _getPrivateExponent();
+  }
+
+  BigInteger? getModulus() {
+    return _getModulus();
+  }
+
+  jni$_.JObject? getParams() {
+    return _getParams();
+  }
+}
+
+final class $RSAPrivateKey$Type$ extends jni$_.JType<RSAPrivateKey> {
+  @jni$_.internal
+  const $RSAPrivateKey$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/interfaces/RSAPrivateKey;';
+}
+
+/// from: `java.security.interfaces.RSAPublicKey`
+extension type RSAPublicKey._(jni$_.JObject _$this)
+    implements jni$_.JObject, RSAKey {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/interfaces/RSAPublicKey',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<RSAPublicKey> type = $RSAPublicKey$Type$();
+
+  /// from: `static public final long serialVersionUID`
+  static const serialVersionUID = -8727434096241101194;
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $RSAPublicKey> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getPublicExponent()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getPublicExponent();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getModulus()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getModulus();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getParams()Ljava/security/spec/AlgorithmParameterSpec;') {
+        final $r = _$impls[$p]!.getParams();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(jni$_.JImplementer implementer, $RSAPublicKey $impl) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(
+      r'java.security.interfaces.RSAPublicKey',
+      $p,
+      _$invokePointer,
+      [],
+    );
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory RSAPublicKey.implement($RSAPublicKey $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<RSAPublicKey>();
+  }
+}
+
+extension RSAPublicKey$$Methods on RSAPublicKey {
+  static final _id_getPublicExponent = RSAPublicKey._class.instanceMethodId(
+    r'getPublicExponent',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getPublicExponent =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getPublicExponent()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getPublicExponent() {
+    return _getPublicExponent(
+      reference.pointer,
+      _id_getPublicExponent.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getModulus = RSAPublicKey._class.instanceMethodId(
+    r'getModulus',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getModulus =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getModulus()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getModulus() {
+    return _getModulus(
+      reference.pointer,
+      _id_getModulus.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_getParams = RSAPublicKey._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/AlgorithmParameterSpec;',
+  );
+
+  static final _getParams =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.AlgorithmParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? getParams() {
+    return _getParams(
+      reference.pointer,
+      _id_getParams.pointer,
+    ).object<jni$_.JObject?>();
+  }
+}
+
+abstract base mixin class $RSAPublicKey {
+  factory $RSAPublicKey({
+    required BigInteger? Function() getPublicExponent,
+    required BigInteger? Function() getModulus,
+    required jni$_.JObject? Function() getParams,
+  }) = _$RSAPublicKey;
+
+  BigInteger? getPublicExponent();
+  BigInteger? getModulus();
+  jni$_.JObject? getParams();
+}
+
+final class _$RSAPublicKey with $RSAPublicKey {
+  _$RSAPublicKey({
+    required BigInteger? Function() getPublicExponent,
+    required BigInteger? Function() getModulus,
+    required jni$_.JObject? Function() getParams,
+  }) : _getPublicExponent = getPublicExponent,
+       _getModulus = getModulus,
+       _getParams = getParams;
+
+  final BigInteger? Function() _getPublicExponent;
+  final BigInteger? Function() _getModulus;
+  final jni$_.JObject? Function() _getParams;
+
+  BigInteger? getPublicExponent() {
+    return _getPublicExponent();
+  }
+
+  BigInteger? getModulus() {
+    return _getModulus();
+  }
+
+  jni$_.JObject? getParams() {
+    return _getParams();
+  }
+}
+
+final class $RSAPublicKey$Type$ extends jni$_.JType<RSAPublicKey> {
+  @jni$_.internal
+  const $RSAPublicKey$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/interfaces/RSAPublicKey;';
+}
+
+/// from: `java.security.spec.PKCS8EncodedKeySpec`
+extension type PKCS8EncodedKeySpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/PKCS8EncodedKeySpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<PKCS8EncodedKeySpec> type =
+      $PKCS8EncodedKeySpec$Type$();
+  static final _id_new$ = _class.constructorId(r'([B)V');
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory PKCS8EncodedKeySpec(jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$bs.pointer,
+    ).object<PKCS8EncodedKeySpec>();
+  }
+
+  static final _id_new$1 = _class.constructorId(r'([BLjava/lang/String;)V');
+
+  static final _new$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs, java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory PKCS8EncodedKeySpec.new$1(
+    jni$_.JByteArray? bs,
+    jni$_.JString? string,
+  ) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _new$1(
+      _class.reference.pointer,
+      _id_new$1.pointer,
+      _$bs.pointer,
+      _$string.pointer,
+    ).object<PKCS8EncodedKeySpec>();
+  }
+}
+
+extension PKCS8EncodedKeySpec$$Methods on PKCS8EncodedKeySpec {
+  static final _id_get$encoded = PKCS8EncodedKeySpec._class.instanceMethodId(
+    r'getEncoded',
+    r'()[B',
+  );
+
+  static final _get$encoded =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public byte[] getEncoded()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? get encoded {
+    return _get$encoded(
+      reference.pointer,
+      _id_get$encoded.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+
+  static final _id_get$format = PKCS8EncodedKeySpec._class.instanceMethodId(
+    r'getFormat',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$format =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.lang.String getFormat()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get format {
+    return _get$format(
+      reference.pointer,
+      _id_get$format.pointer,
+    ).object<jni$_.JString?>();
+  }
+}
+
+final class $PKCS8EncodedKeySpec$Type$
+    extends jni$_.JType<PKCS8EncodedKeySpec> {
+  @jni$_.internal
+  const $PKCS8EncodedKeySpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/PKCS8EncodedKeySpec;';
+}
+
+/// from: `java.security.spec.RSAKeyGenParameterSpec`
+extension type RSAKeyGenParameterSpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/RSAKeyGenParameterSpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<RSAKeyGenParameterSpec> type =
+      $RSAKeyGenParameterSpec$Type$();
+  static final _id_F0 = _class.staticFieldId(r'F0', r'Ljava/math/BigInteger;');
+
+  /// from: `static public final java.math.BigInteger F0`
+  /// The returned object must be released after use, by calling the [release] method.
+  static BigInteger? get F0 =>
+      _id_F0.getNullable(_class, BigInteger.type) as BigInteger?;
+
+  static final _id_F4 = _class.staticFieldId(r'F4', r'Ljava/math/BigInteger;');
+
+  /// from: `static public final java.math.BigInteger F4`
+  /// The returned object must be released after use, by calling the [release] method.
+  static BigInteger? get F4 =>
+      _id_F4.getNullable(_class, BigInteger.type) as BigInteger?;
+
+  static final _id_new$ = _class.constructorId(r'(ILjava/math/BigInteger;)V');
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32, jni$_.Pointer<jni$_.Void>)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(int i, java.math.BigInteger bigInteger)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory RSAKeyGenParameterSpec(core$_.int i, BigInteger? bigInteger) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      i,
+      _$bigInteger.pointer,
+    ).object<RSAKeyGenParameterSpec>();
+  }
+
+  static final _id_new$1 = _class.constructorId(
+    r'(ILjava/math/BigInteger;Ljava/security/spec/AlgorithmParameterSpec;)V',
+  );
+
+  static final _new$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Int32,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(int i, java.math.BigInteger bigInteger, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory RSAKeyGenParameterSpec.new$1(
+    core$_.int i,
+    BigInteger? bigInteger,
+    jni$_.JObject? algorithmParameterSpec,
+  ) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    return _new$1(
+      _class.reference.pointer,
+      _id_new$1.pointer,
+      i,
+      _$bigInteger.pointer,
+      _$algorithmParameterSpec.pointer,
+    ).object<RSAKeyGenParameterSpec>();
+  }
+}
+
+extension RSAKeyGenParameterSpec$$Methods on RSAKeyGenParameterSpec {
+  static final _id_get$keysize = RSAKeyGenParameterSpec._class.instanceMethodId(
+    r'getKeysize',
+    r'()I',
+  );
+
+  static final _get$keysize =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int getKeysize()`
+  core$_.int get keysize {
+    return _get$keysize(reference.pointer, _id_get$keysize.pointer).integer;
+  }
+
+  static final _id_get$publicExponent = RSAKeyGenParameterSpec._class
+      .instanceMethodId(r'getPublicExponent', r'()Ljava/math/BigInteger;');
+
+  static final _get$publicExponent =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getPublicExponent()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get publicExponent {
+    return _get$publicExponent(
+      reference.pointer,
+      _id_get$publicExponent.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$keyParams = RSAKeyGenParameterSpec._class
+      .instanceMethodId(
+        r'getKeyParams',
+        r'()Ljava/security/spec/AlgorithmParameterSpec;',
+      );
+
+  static final _get$keyParams =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.AlgorithmParameterSpec getKeyParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get keyParams {
+    return _get$keyParams(
+      reference.pointer,
+      _id_get$keyParams.pointer,
+    ).object<jni$_.JObject?>();
+  }
+}
+
+final class $RSAKeyGenParameterSpec$Type$
+    extends jni$_.JType<RSAKeyGenParameterSpec> {
+  @jni$_.internal
+  const $RSAKeyGenParameterSpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/RSAKeyGenParameterSpec;';
+}
+
+/// from: `java.security.spec.RSAPrivateCrtKeySpec`
+extension type RSAPrivateCrtKeySpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/RSAPrivateCrtKeySpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<RSAPrivateCrtKeySpec> type =
+      $RSAPrivateCrtKeySpec$Type$();
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.math.BigInteger bigInteger, java.math.BigInteger bigInteger1, java.math.BigInteger bigInteger2, java.math.BigInteger bigInteger3, java.math.BigInteger bigInteger4, java.math.BigInteger bigInteger5, java.math.BigInteger bigInteger6, java.math.BigInteger bigInteger7)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory RSAPrivateCrtKeySpec(
+    BigInteger? bigInteger,
+    BigInteger? bigInteger1,
+    BigInteger? bigInteger2,
+    BigInteger? bigInteger3,
+    BigInteger? bigInteger4,
+    BigInteger? bigInteger5,
+    BigInteger? bigInteger6,
+    BigInteger? bigInteger7,
+  ) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    final _$bigInteger1 = bigInteger1?.reference ?? jni$_.jNullReference;
+    final _$bigInteger2 = bigInteger2?.reference ?? jni$_.jNullReference;
+    final _$bigInteger3 = bigInteger3?.reference ?? jni$_.jNullReference;
+    final _$bigInteger4 = bigInteger4?.reference ?? jni$_.jNullReference;
+    final _$bigInteger5 = bigInteger5?.reference ?? jni$_.jNullReference;
+    final _$bigInteger6 = bigInteger6?.reference ?? jni$_.jNullReference;
+    final _$bigInteger7 = bigInteger7?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$bigInteger.pointer,
+      _$bigInteger1.pointer,
+      _$bigInteger2.pointer,
+      _$bigInteger3.pointer,
+      _$bigInteger4.pointer,
+      _$bigInteger5.pointer,
+      _$bigInteger6.pointer,
+      _$bigInteger7.pointer,
+    ).object<RSAPrivateCrtKeySpec>();
+  }
+
+  static final _id_new$1 = _class.constructorId(
+    r'(Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/security/spec/AlgorithmParameterSpec;)V',
+  );
+
+  static final _new$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.math.BigInteger bigInteger, java.math.BigInteger bigInteger1, java.math.BigInteger bigInteger2, java.math.BigInteger bigInteger3, java.math.BigInteger bigInteger4, java.math.BigInteger bigInteger5, java.math.BigInteger bigInteger6, java.math.BigInteger bigInteger7, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory RSAPrivateCrtKeySpec.new$1(
+    BigInteger? bigInteger,
+    BigInteger? bigInteger1,
+    BigInteger? bigInteger2,
+    BigInteger? bigInteger3,
+    BigInteger? bigInteger4,
+    BigInteger? bigInteger5,
+    BigInteger? bigInteger6,
+    BigInteger? bigInteger7,
+    jni$_.JObject? algorithmParameterSpec,
+  ) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    final _$bigInteger1 = bigInteger1?.reference ?? jni$_.jNullReference;
+    final _$bigInteger2 = bigInteger2?.reference ?? jni$_.jNullReference;
+    final _$bigInteger3 = bigInteger3?.reference ?? jni$_.jNullReference;
+    final _$bigInteger4 = bigInteger4?.reference ?? jni$_.jNullReference;
+    final _$bigInteger5 = bigInteger5?.reference ?? jni$_.jNullReference;
+    final _$bigInteger6 = bigInteger6?.reference ?? jni$_.jNullReference;
+    final _$bigInteger7 = bigInteger7?.reference ?? jni$_.jNullReference;
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    return _new$1(
+      _class.reference.pointer,
+      _id_new$1.pointer,
+      _$bigInteger.pointer,
+      _$bigInteger1.pointer,
+      _$bigInteger2.pointer,
+      _$bigInteger3.pointer,
+      _$bigInteger4.pointer,
+      _$bigInteger5.pointer,
+      _$bigInteger6.pointer,
+      _$bigInteger7.pointer,
+      _$algorithmParameterSpec.pointer,
+    ).object<RSAPrivateCrtKeySpec>();
+  }
+}
+
+extension RSAPrivateCrtKeySpec$$Methods on RSAPrivateCrtKeySpec {
+  static final _id_get$publicExponent = RSAPrivateCrtKeySpec._class
+      .instanceMethodId(r'getPublicExponent', r'()Ljava/math/BigInteger;');
+
+  static final _get$publicExponent =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getPublicExponent()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get publicExponent {
+    return _get$publicExponent(
+      reference.pointer,
+      _id_get$publicExponent.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$primeP = RSAPrivateCrtKeySpec._class.instanceMethodId(
+    r'getPrimeP',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _get$primeP =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getPrimeP()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get primeP {
+    return _get$primeP(
+      reference.pointer,
+      _id_get$primeP.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$primeQ = RSAPrivateCrtKeySpec._class.instanceMethodId(
+    r'getPrimeQ',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _get$primeQ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getPrimeQ()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get primeQ {
+    return _get$primeQ(
+      reference.pointer,
+      _id_get$primeQ.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$primeExponentP = RSAPrivateCrtKeySpec._class
+      .instanceMethodId(r'getPrimeExponentP', r'()Ljava/math/BigInteger;');
+
+  static final _get$primeExponentP =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getPrimeExponentP()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get primeExponentP {
+    return _get$primeExponentP(
+      reference.pointer,
+      _id_get$primeExponentP.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$primeExponentQ = RSAPrivateCrtKeySpec._class
+      .instanceMethodId(r'getPrimeExponentQ', r'()Ljava/math/BigInteger;');
+
+  static final _get$primeExponentQ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getPrimeExponentQ()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get primeExponentQ {
+    return _get$primeExponentQ(
+      reference.pointer,
+      _id_get$primeExponentQ.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$crtCoefficient = RSAPrivateCrtKeySpec._class
+      .instanceMethodId(r'getCrtCoefficient', r'()Ljava/math/BigInteger;');
+
+  static final _get$crtCoefficient =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getCrtCoefficient()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get crtCoefficient {
+    return _get$crtCoefficient(
+      reference.pointer,
+      _id_get$crtCoefficient.pointer,
+    ).object<BigInteger?>();
+  }
+}
+
+final class $RSAPrivateCrtKeySpec$Type$
+    extends jni$_.JType<RSAPrivateCrtKeySpec> {
+  @jni$_.internal
+  const $RSAPrivateCrtKeySpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/RSAPrivateCrtKeySpec;';
+}
+
+/// from: `java.security.spec.RSAPublicKeySpec`
+extension type RSAPublicKeySpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/RSAPublicKeySpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<RSAPublicKeySpec> type = $RSAPublicKeySpec$Type$();
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/math/BigInteger;Ljava/math/BigInteger;)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.math.BigInteger bigInteger, java.math.BigInteger bigInteger1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory RSAPublicKeySpec(BigInteger? bigInteger, BigInteger? bigInteger1) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    final _$bigInteger1 = bigInteger1?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$bigInteger.pointer,
+      _$bigInteger1.pointer,
+    ).object<RSAPublicKeySpec>();
+  }
+
+  static final _id_new$1 = _class.constructorId(
+    r'(Ljava/math/BigInteger;Ljava/math/BigInteger;Ljava/security/spec/AlgorithmParameterSpec;)V',
+  );
+
+  static final _new$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.math.BigInteger bigInteger, java.math.BigInteger bigInteger1, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory RSAPublicKeySpec.new$1(
+    BigInteger? bigInteger,
+    BigInteger? bigInteger1,
+    jni$_.JObject? algorithmParameterSpec,
+  ) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    final _$bigInteger1 = bigInteger1?.reference ?? jni$_.jNullReference;
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    return _new$1(
+      _class.reference.pointer,
+      _id_new$1.pointer,
+      _$bigInteger.pointer,
+      _$bigInteger1.pointer,
+      _$algorithmParameterSpec.pointer,
+    ).object<RSAPublicKeySpec>();
+  }
+}
+
+extension RSAPublicKeySpec$$Methods on RSAPublicKeySpec {
+  static final _id_get$modulus = RSAPublicKeySpec._class.instanceMethodId(
+    r'getModulus',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _get$modulus =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getModulus()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get modulus {
+    return _get$modulus(
+      reference.pointer,
+      _id_get$modulus.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$publicExponent = RSAPublicKeySpec._class
+      .instanceMethodId(r'getPublicExponent', r'()Ljava/math/BigInteger;');
+
+  static final _get$publicExponent =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getPublicExponent()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get publicExponent {
+    return _get$publicExponent(
+      reference.pointer,
+      _id_get$publicExponent.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$params = RSAPublicKeySpec._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/AlgorithmParameterSpec;',
+  );
+
+  static final _get$params =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.AlgorithmParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get params {
+    return _get$params(
+      reference.pointer,
+      _id_get$params.pointer,
+    ).object<jni$_.JObject?>();
+  }
+}
+
+final class $RSAPublicKeySpec$Type$ extends jni$_.JType<RSAPublicKeySpec> {
+  @jni$_.internal
+  const $RSAPublicKeySpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/RSAPublicKeySpec;';
+}
+
+/// from: `java.security.spec.X509EncodedKeySpec`
+extension type X509EncodedKeySpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/X509EncodedKeySpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<X509EncodedKeySpec> type =
+      $X509EncodedKeySpec$Type$();
+  static final _id_new$ = _class.constructorId(r'([B)V');
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory X509EncodedKeySpec(jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$bs.pointer,
+    ).object<X509EncodedKeySpec>();
+  }
+
+  static final _id_new$1 = _class.constructorId(r'([BLjava/lang/String;)V');
+
+  static final _new$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs, java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory X509EncodedKeySpec.new$1(
+    jni$_.JByteArray? bs,
+    jni$_.JString? string,
+  ) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _new$1(
+      _class.reference.pointer,
+      _id_new$1.pointer,
+      _$bs.pointer,
+      _$string.pointer,
+    ).object<X509EncodedKeySpec>();
+  }
+}
+
+extension X509EncodedKeySpec$$Methods on X509EncodedKeySpec {
+  static final _id_get$encoded = X509EncodedKeySpec._class.instanceMethodId(
+    r'getEncoded',
+    r'()[B',
+  );
+
+  static final _get$encoded =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public byte[] getEncoded()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? get encoded {
+    return _get$encoded(
+      reference.pointer,
+      _id_get$encoded.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+
+  static final _id_get$format = X509EncodedKeySpec._class.instanceMethodId(
+    r'getFormat',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$format =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.lang.String getFormat()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get format {
+    return _get$format(
+      reference.pointer,
+      _id_get$format.pointer,
+    ).object<jni$_.JString?>();
+  }
+}
+
+final class $X509EncodedKeySpec$Type$ extends jni$_.JType<X509EncodedKeySpec> {
+  @jni$_.internal
+  const $X509EncodedKeySpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/X509EncodedKeySpec;';
+}
+
 /// from: `javax.crypto.Cipher`
 extension type Cipher._(jni$_.JObject _$this) implements jni$_.JObject {
   static final _class = jni$_.JClass.forName(r'javax/crypto/Cipher');
@@ -1796,7 +7811,7 @@ extension Cipher$$Methods on Cipher {
           >();
 
   /// from: `public final void init(int i, java.security.Key key)`
-  void init(core$_.int i, jni$_.JObject? key) {
+  void init(core$_.int i, Key? key) {
     final _$key = key?.reference ?? jni$_.jNullReference;
     _init(reference.pointer, _id_init.pointer, i, _$key.pointer).check();
   }
@@ -1833,7 +7848,7 @@ extension Cipher$$Methods on Cipher {
           >();
 
   /// from: `public final void init(int i, java.security.Key key, java.security.SecureRandom secureRandom)`
-  void init$1(core$_.int i, jni$_.JObject? key, SecureRandom? secureRandom) {
+  void init$1(core$_.int i, Key? key, SecureRandom? secureRandom) {
     final _$key = key?.reference ?? jni$_.jNullReference;
     final _$secureRandom = secureRandom?.reference ?? jni$_.jNullReference;
     _init$1(
@@ -1877,11 +7892,7 @@ extension Cipher$$Methods on Cipher {
           >();
 
   /// from: `public final void init(int i, java.security.Key key, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
-  void init$2(
-    core$_.int i,
-    jni$_.JObject? key,
-    jni$_.JObject? algorithmParameterSpec,
-  ) {
+  void init$2(core$_.int i, Key? key, jni$_.JObject? algorithmParameterSpec) {
     final _$key = key?.reference ?? jni$_.jNullReference;
     final _$algorithmParameterSpec =
         algorithmParameterSpec?.reference ?? jni$_.jNullReference;
@@ -1930,7 +7941,7 @@ extension Cipher$$Methods on Cipher {
   /// from: `public final void init(int i, java.security.Key key, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec, java.security.SecureRandom secureRandom)`
   void init$3(
     core$_.int i,
-    jni$_.JObject? key,
+    Key? key,
     jni$_.JObject? algorithmParameterSpec,
     SecureRandom? secureRandom,
   ) {
@@ -1980,11 +7991,7 @@ extension Cipher$$Methods on Cipher {
           >();
 
   /// from: `public final void init(int i, java.security.Key key, java.security.AlgorithmParameters algorithmParameters)`
-  void init$4(
-    core$_.int i,
-    jni$_.JObject? key,
-    jni$_.JObject? algorithmParameters,
-  ) {
+  void init$4(core$_.int i, Key? key, jni$_.JObject? algorithmParameters) {
     final _$key = key?.reference ?? jni$_.jNullReference;
     final _$algorithmParameters =
         algorithmParameters?.reference ?? jni$_.jNullReference;
@@ -2033,7 +8040,7 @@ extension Cipher$$Methods on Cipher {
   /// from: `public final void init(int i, java.security.Key key, java.security.AlgorithmParameters algorithmParameters, java.security.SecureRandom secureRandom)`
   void init$5(
     core$_.int i,
-    jni$_.JObject? key,
+    Key? key,
     jni$_.JObject? algorithmParameters,
     SecureRandom? secureRandom,
   ) {
@@ -2678,7 +8685,7 @@ extension Cipher$$Methods on Cipher {
 
   /// from: `public final byte[] wrap(java.security.Key key)`
   /// The returned object must be released after use, by calling the [release] method.
-  jni$_.JByteArray? wrap(jni$_.JObject? key) {
+  jni$_.JByteArray? wrap(Key? key) {
     final _$key = key?.reference ?? jni$_.jNullReference;
     return _wrap(
       reference.pointer,
@@ -2720,11 +8727,7 @@ extension Cipher$$Methods on Cipher {
 
   /// from: `public final java.security.Key unwrap(byte[] bs, java.lang.String string, int i)`
   /// The returned object must be released after use, by calling the [release] method.
-  jni$_.JObject? unwrap(
-    jni$_.JByteArray? bs,
-    jni$_.JString? string,
-    core$_.int i,
-  ) {
+  Key? unwrap(jni$_.JByteArray? bs, jni$_.JString? string, core$_.int i) {
     final _$bs = bs?.reference ?? jni$_.jNullReference;
     final _$string = string?.reference ?? jni$_.jNullReference;
     return _unwrap(
@@ -2733,7 +8736,7 @@ extension Cipher$$Methods on Cipher {
       _$bs.pointer,
       _$string.pointer,
       i,
-    ).object<jni$_.JObject?>();
+    ).object<Key?>();
   }
 
   static final _id_updateAAD = Cipher._class.instanceMethodId(
@@ -3254,11 +9257,11 @@ extension KeyGenerator$$Methods on KeyGenerator {
 
   /// from: `public final javax.crypto.SecretKey generateKey()`
   /// The returned object must be released after use, by calling the [release] method.
-  jni$_.JObject? generateKey() {
+  SecretKey? generateKey() {
     return _generateKey(
       reference.pointer,
       _id_generateKey.pointer,
-    ).object<jni$_.JObject?>();
+    ).object<SecretKey?>();
   }
 }
 
@@ -3501,7 +9504,7 @@ extension Mac$$Methods on Mac {
           >();
 
   /// from: `public final void init(java.security.Key key)`
-  void init(jni$_.JObject? key) {
+  void init(Key? key) {
     final _$key = key?.reference ?? jni$_.jNullReference;
     _init(reference.pointer, _id_init.pointer, _$key.pointer).check();
   }
@@ -3533,7 +9536,7 @@ extension Mac$$Methods on Mac {
           >();
 
   /// from: `public final void init(java.security.Key key, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
-  void init$1(jni$_.JObject? key, jni$_.JObject? algorithmParameterSpec) {
+  void init$1(Key? key, jni$_.JObject? algorithmParameterSpec) {
     final _$key = key?.reference ?? jni$_.jNullReference;
     final _$algorithmParameterSpec =
         algorithmParameterSpec?.reference ?? jni$_.jNullReference;
@@ -3827,6 +9830,236 @@ final class $Mac$Type$ extends jni$_.JType<Mac> {
   String get signature => r'Ljavax/crypto/Mac;';
 }
 
+/// from: `javax.crypto.SecretKey`
+extension type SecretKey._(jni$_.JObject _$this) implements jni$_.JObject, Key {
+  static final _class = jni$_.JClass.forName(r'javax/crypto/SecretKey');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<SecretKey> type = $SecretKey$Type$();
+
+  /// from: `static public final long serialVersionUID`
+  static const serialVersionUID = -4795878709595146952;
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $SecretKey> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getAlgorithm()Ljava/lang/String;') {
+        final $r = _$impls[$p]!.getAlgorithm();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getFormat()Ljava/lang/String;') {
+        final $r = _$impls[$p]!.getFormat();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getEncoded()[B') {
+        final $r = _$impls[$p]!.getEncoded();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(jni$_.JImplementer implementer, $SecretKey $impl) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(r'javax.crypto.SecretKey', $p, _$invokePointer, []);
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory SecretKey.implement($SecretKey $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<SecretKey>();
+  }
+}
+
+extension SecretKey$$Methods on SecretKey {
+  static final _id_getAlgorithm = SecretKey._class.instanceMethodId(
+    r'getAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _getAlgorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.lang.String getAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? getAlgorithm() {
+    return _getAlgorithm(
+      reference.pointer,
+      _id_getAlgorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_getFormat = SecretKey._class.instanceMethodId(
+    r'getFormat',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _getFormat =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.lang.String getFormat()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? getFormat() {
+    return _getFormat(
+      reference.pointer,
+      _id_getFormat.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_getEncoded = SecretKey._class.instanceMethodId(
+    r'getEncoded',
+    r'()[B',
+  );
+
+  static final _getEncoded =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract byte[] getEncoded()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? getEncoded() {
+    return _getEncoded(
+      reference.pointer,
+      _id_getEncoded.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+}
+
+abstract base mixin class $SecretKey {
+  factory $SecretKey({
+    required jni$_.JString? Function() getAlgorithm,
+    required jni$_.JString? Function() getFormat,
+    required jni$_.JByteArray? Function() getEncoded,
+  }) = _$SecretKey;
+
+  jni$_.JString? getAlgorithm();
+  jni$_.JString? getFormat();
+  jni$_.JByteArray? getEncoded();
+}
+
+final class _$SecretKey with $SecretKey {
+  _$SecretKey({
+    required jni$_.JString? Function() getAlgorithm,
+    required jni$_.JString? Function() getFormat,
+    required jni$_.JByteArray? Function() getEncoded,
+  }) : _getAlgorithm = getAlgorithm,
+       _getFormat = getFormat,
+       _getEncoded = getEncoded;
+
+  final jni$_.JString? Function() _getAlgorithm;
+  final jni$_.JString? Function() _getFormat;
+  final jni$_.JByteArray? Function() _getEncoded;
+
+  jni$_.JString? getAlgorithm() {
+    return _getAlgorithm();
+  }
+
+  jni$_.JString? getFormat() {
+    return _getFormat();
+  }
+
+  jni$_.JByteArray? getEncoded() {
+    return _getEncoded();
+  }
+}
+
+final class $SecretKey$Type$ extends jni$_.JType<SecretKey> {
+  @jni$_.internal
+  const $SecretKey$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljavax/crypto/SecretKey;';
+}
+
 /// from: `javax.crypto.spec.GCMParameterSpec`
 extension type GCMParameterSpec._(jni$_.JObject _$this)
     implements jni$_.JObject {
@@ -4110,7 +10343,8 @@ final class $IvParameterSpec$Type$ extends jni$_.JType<IvParameterSpec> {
 }
 
 /// from: `javax.crypto.spec.SecretKeySpec`
-extension type SecretKeySpec._(jni$_.JObject _$this) implements jni$_.JObject {
+extension type SecretKeySpec._(jni$_.JObject _$this)
+    implements jni$_.JObject, SecretKey {
   static final _class = jni$_.JClass.forName(
     r'javax/crypto/spec/SecretKeySpec',
   );
