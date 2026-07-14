@@ -47,7 +47,7 @@ void main() {
     'JCA RSASSA-PKCS1-v1_5 keys and signatures interoperate with FFI',
     () async {
       final chunks = <Uint8List>[
-        utf8.encode('RSASSA-PKCS1-v1_5 '),
+        Uint8List.fromList(List<int>.generate(9000, (i) => i & 0xff)),
         utf8.encode('interoperability'),
       ];
       final pkcs8 = await privateKey.exportPkcs8Key();
@@ -91,6 +91,117 @@ void main() {
       isFalse,
     );
   }, skip: skipReason);
+
+  test('JCA RSA imports reject trailing DER data', () async {
+    final pkcs8 = await privateKey.exportPkcs8Key();
+    final spki = await publicKey.exportSpkiKey();
+
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PrivateKey.importPkcs8Key(
+        Uint8List.fromList([...pkcs8, 0]),
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PublicKey.importSpkiKey(
+        Uint8List.fromList([...spki, 0]),
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+  }, skip: skipReason);
+
+  test('JCA RSA public imports validate the modulus and exponent', () async {
+    final publicJwk = await publicKey.exportJsonWebKey();
+
+    final invalidExponent = Map<String, dynamic>.of(publicJwk)..['e'] = 'BA';
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PublicKey.importJsonWebKey(
+        invalidExponent,
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+
+    final oversizedExponent = Map<String, dynamic>.of(publicJwk)
+      ..['e'] = base64Url
+          .encode(<int>[0x02, 0x00, 0x00, 0x00, 0x01])
+          .replaceAll('=', '');
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PublicKey.importJsonWebKey(
+        oversizedExponent,
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+
+    final invalidModulus = Map<String, dynamic>.of(publicJwk)
+      ..['n'] = _clearLastBit(publicJwk['n'] as String);
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PublicKey.importJsonWebKey(
+        invalidModulus,
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+
+    final invalidSpki = Uint8List.fromList(await publicKey.exportSpkiKey())
+      ..last &= 0xfe;
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PublicKey.importSpkiKey(
+        invalidSpki,
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+  }, skip: skipReason);
+
+  test('JCA RSA private JWK import validates key components', () async {
+    final privateJwk = await privateKey.exportJsonWebKey();
+
+    final invalidExponent = Map<String, dynamic>.of(privateJwk)..['e'] = 'Aw';
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PrivateKey.importJsonWebKey(
+        invalidExponent,
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+
+    final invalidPrimeExponent = Map<String, dynamic>.of(privateJwk)
+      ..['dp'] = _flipLastBase64UrlByte(privateJwk['dp'] as String);
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PrivateKey.importJsonWebKey(
+        invalidPrimeExponent,
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+  }, skip: skipReason);
+
+  test(
+    'JCA RSASSA-PKCS1-v1_5 supports SHA-1 metadata and signatures',
+    () async {
+      final sha1Private = await jni_impl.webCryptImpl.rsaSsaPkcs1v15PrivateKey
+          .importPkcs8Key(
+            await privateKey.exportPkcs8Key(),
+            jni_impl.webCryptImpl.sha1,
+          );
+      final sha1Public = await jni_impl.webCryptImpl.rsaSsaPkcs1v15PublicKey
+          .importSpkiKey(
+            await publicKey.exportSpkiKey(),
+            jni_impl.webCryptImpl.sha1,
+          );
+      final data = utf8.encode('SHA-1 compatibility');
+      final signature = await sha1Private.signBytes(data);
+
+      expect(await sha1Public.verifyBytes(signature, data), isTrue);
+      expect((await sha1Private.exportJsonWebKey())['alg'], 'RS1');
+      expect((await sha1Public.exportJsonWebKey())['alg'], 'RS1');
+    },
+    skip: skipReason,
+  );
 
   test('JCA RSASSA-PKCS1-v1_5 exports and validates RSA JWK values', () async {
     final privateJwk = await privateKey.exportJsonWebKey();
@@ -143,4 +254,23 @@ String _prependZeroToBase64Url(String encoded) {
   );
   final bytes = base64Url.decode(padded);
   return base64Url.encode(<int>[0, ...bytes]).replaceAll('=', '');
+}
+
+String _flipLastBase64UrlByte(String encoded) {
+  final padded = encoded.padRight(
+    encoded.length + ((4 - encoded.length % 4) % 4),
+    '=',
+  );
+  final bytes = base64Url.decode(padded);
+  bytes[bytes.length - 1] ^= 0x01;
+  return base64Url.encode(bytes).replaceAll('=', '');
+}
+
+String _clearLastBit(String encoded) {
+  final padded = encoded.padRight(
+    encoded.length + ((4 - encoded.length % 4) % 4),
+    '=',
+  );
+  final bytes = base64Url.decode(padded)..last &= 0xfe;
+  return base64Url.encode(bytes).replaceAll('=', '');
 }

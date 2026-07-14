@@ -16,6 +16,13 @@ part of 'impl_jni.dart';
 
 typedef _RsaKeyPairData = ({Uint8List privateKeyData, Uint8List publicKeyData});
 
+// Keep imported-key limits aligned with rsa_check_public_key(), which backs
+// the FFI implementation's RSA_check_key() validation. See:
+// third_party/boringssl/src/crypto/fipsmodule/rsa/rsa_impl.cc.inc
+const _rsaMinModulusBits = 512;
+const _rsaMaxModulusBits = 16384;
+const _rsaMaxPublicExponentBits = 33;
+
 _HashImpl _rsaHashFromHash(HashImpl hash) {
   if (hash is _HashImpl) {
     return hash;
@@ -46,9 +53,10 @@ extension _RsaHashMetadata on _HashImpl {
 }
 
 Uint8List _importPkcs8RsaPrivateKey(Uint8List keyData) {
+  _validateRsaDerEncoding(keyData, 'PKCS#8 RSA private key');
   try {
     return jni.using((arena) {
-      final key = _rsaPrivateKeyFromPkcs8(arena, keyData);
+      final key = _rsaPrivateKeyFromPkcs8(arena, keyData, validate: true);
       return _copyEncodedRsaKey(arena, key, 'private');
     });
   } on jni.JThrowable catch (e) {
@@ -57,9 +65,10 @@ Uint8List _importPkcs8RsaPrivateKey(Uint8List keyData) {
 }
 
 Uint8List _importSpkiRsaPublicKey(Uint8List keyData) {
+  _validateRsaDerEncoding(keyData, 'SPKI RSA public key');
   try {
     return jni.using((arena) {
-      final key = _rsaPublicKeyFromSpki(arena, keyData);
+      final key = _rsaPublicKeyFromSpki(arena, keyData, validate: true);
       return _copyEncodedRsaKey(arena, key, 'public');
     });
   } on jni.JThrowable catch (e) {
@@ -102,6 +111,7 @@ Uint8List _importJwkRsaPrivateKey(
         throw AssertionError('JCA RSA KeyFactory returned a null private key');
       }
       key.releasedBy(arena);
+      _validateRsaPrivateKey(arena, key);
       return _copyEncodedRsaKey(arena, key, 'private');
     });
   } on jni.JThrowable catch (e) {
@@ -132,6 +142,7 @@ Uint8List _importJwkRsaPublicKey(
         throw AssertionError('JCA RSA KeyFactory returned a null public key');
       }
       key.releasedBy(arena);
+      _validateRsaPublicKey(arena, key);
       return _copyEncodedRsaKey(arena, key, 'public');
     });
   } on jni.JThrowable catch (e) {
@@ -281,7 +292,11 @@ _RsaKeyPairData _generateRsaKeyPairOnCurrentIsolate(
   }
 }
 
-jni.JObject _rsaPrivateKeyFromPkcs8(jni.Arena arena, Uint8List keyData) {
+jni.JObject _rsaPrivateKeyFromPkcs8(
+  jni.Arena arena,
+  Uint8List keyData, {
+  bool validate = false,
+}) {
   final keyFactory = _rsaKeyFactory(arena);
   final encoded = arena.copyToJByteArray(keyData);
   final keySpec = PKCS8EncodedKeySpec(encoded)..releasedBy(arena);
@@ -290,10 +305,17 @@ jni.JObject _rsaPrivateKeyFromPkcs8(jni.Arena arena, Uint8List keyData) {
     throw AssertionError('JCA RSA KeyFactory returned a null private key');
   }
   key.releasedBy(arena);
+  if (validate) {
+    _validateRsaPrivateKey(arena, key);
+  }
   return key;
 }
 
-jni.JObject _rsaPublicKeyFromSpki(jni.Arena arena, Uint8List keyData) {
+jni.JObject _rsaPublicKeyFromSpki(
+  jni.Arena arena,
+  Uint8List keyData, {
+  bool validate = false,
+}) {
   final keyFactory = _rsaKeyFactory(arena);
   final encoded = arena.copyToJByteArray(keyData);
   final keySpec = X509EncodedKeySpec(encoded)..releasedBy(arena);
@@ -302,6 +324,9 @@ jni.JObject _rsaPublicKeyFromSpki(jni.Arena arena, Uint8List keyData) {
     throw AssertionError('JCA RSA KeyFactory returned a null public key');
   }
   key.releasedBy(arena);
+  if (validate) {
+    _validateRsaPublicKey(arena, key);
+  }
   return key;
 }
 
@@ -330,11 +355,83 @@ BigInteger _rsaBigInteger(jni.Arena arena, Uint8List unsignedBytes) {
   return BigInteger.new$3(1, bytes)..releasedBy(arena);
 }
 
-String _encodeRsaBigInteger(jni.Arena arena, BigInteger? value, String name) {
-  if (value == null) {
-    throw AssertionError('JCA RSA key has no $name');
+void _validateRsaPrivateKey(jni.Arena arena, jni.JObject key) {
+  // JCA KeyFactory constructs provider key objects but can defer CRT
+  // consistency checks until the first private-key operation. Validate during
+  // import so malformed keys fail with the public API's FormatException
+  // instead of a later OperationError.
+  _checkData(
+    key.isA(RSAPrivateCrtKey.type),
+    'Invalid RSA private key: CRT parameters are required',
+  );
+  final rsaKey = key.as(RSAPrivateCrtKey.type)..releasedBy(arena);
+
+  _validateRsaPrivateComponents(
+    n: _readPositiveRsaBigInteger(arena, rsaKey.getModulus(), 'n'),
+    e: _readPositiveRsaBigInteger(arena, rsaKey.getPublicExponent(), 'e'),
+    d: _readPositiveRsaBigInteger(arena, rsaKey.getPrivateExponent(), 'd'),
+    p: _readPositiveRsaBigInteger(
+      arena,
+      rsaKey.getPrimeP(),
+      'p',
+      mustBePrime: true,
+    ),
+    q: _readPositiveRsaBigInteger(
+      arena,
+      rsaKey.getPrimeQ(),
+      'q',
+      mustBePrime: true,
+    ),
+    dp: _readPositiveRsaBigInteger(arena, rsaKey.getPrimeExponentP(), 'dp'),
+    dq: _readPositiveRsaBigInteger(arena, rsaKey.getPrimeExponentQ(), 'dq'),
+    qi: _readPositiveRsaBigInteger(arena, rsaKey.getCrtCoefficient(), 'qi'),
+  );
+}
+
+void _validateRsaPublicKey(jni.Arena arena, jni.JObject key) {
+  _checkData(
+    key.isA(RSAPublicKey.type),
+    'Invalid RSA public key: RSA parameters are required',
+  );
+  final rsaKey = key.as(RSAPublicKey.type)..releasedBy(arena);
+  _validateRsaPublicComponents(
+    n: _readPositiveRsaBigInteger(arena, rsaKey.getModulus(), 'n'),
+    e: _readPositiveRsaBigInteger(arena, rsaKey.getPublicExponent(), 'e'),
+  );
+}
+
+BigInt _readPositiveRsaBigInteger(
+  jni.Arena arena,
+  BigInteger? value,
+  String name, {
+  bool mustBePrime = false,
+}) {
+  _checkData(value != null, 'Invalid RSA key: $name is missing');
+  value!.releasedBy(arena);
+  _checkData(value.signum() > 0, 'Invalid RSA key: $name must be positive');
+  if (mustBePrime) {
+    // BigInteger specifies a false-positive probability of at most
+    // 2^-certainty for isProbablePrime().
+    // https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigInteger.html#isProbablePrime(int)
+    _checkData(
+      value.isProbablePrime(100),
+      'Invalid RSA private key: $name is not prime',
+    );
   }
-  value.releasedBy(arena);
+
+  final bytes = _copyUnsignedRsaBigInteger(arena, value, name);
+  var result = BigInt.zero;
+  for (final byte in bytes) {
+    result = (result << 8) | BigInt.from(byte);
+  }
+  return result;
+}
+
+Uint8List _copyUnsignedRsaBigInteger(
+  jni.Arena arena,
+  BigInteger value,
+  String name,
+) {
   final encoded = value.toByteArray();
   if (encoded == null) {
     throw AssertionError(
@@ -343,10 +440,70 @@ String _encodeRsaBigInteger(jni.Arena arena, BigInteger? value, String name) {
   }
   encoded.releasedBy(arena);
   final signedBytes = encoded.copyToDartBytes();
-  final unsignedBytes = signedBytes.length > 1 && signedBytes.first == 0
-      ? Uint8List.sublistView(signedBytes, 1)
-      : signedBytes;
-  return _jwkEncodeBase64UrlNoPadding(unsignedBytes);
+  final start = signedBytes.length > 1 && signedBytes.first == 0 ? 1 : 0;
+  return Uint8List.sublistView(signedBytes, start);
+}
+
+void _validateRsaPrivateComponents({
+  required BigInt n,
+  required BigInt e,
+  required BigInt d,
+  required BigInt p,
+  required BigInt q,
+  required BigInt dp,
+  required BigInt dq,
+  required BigInt qi,
+}) {
+  // Validate the two-prime RSA relationships from PKCS #1. The corresponding
+  // JWK fields are defined by JSON Web Algorithms:
+  // https://www.rfc-editor.org/rfc/rfc8017#section-3.2
+  // https://www.rfc-editor.org/rfc/rfc7518#section-6.3.2.2
+  // The FFI backend checks the same relationships with RSA_check_key(); see:
+  // third_party/boringssl/src/crypto/fipsmodule/rsa/rsa.cc.inc
+  final one = BigInt.one;
+  _validateRsaPublicComponents(n: n, e: e);
+  _checkData(p != q, 'Invalid RSA private key: p and q must differ');
+  _checkData(
+    p.isOdd && q.isOdd,
+    'Invalid RSA private key: p and q must be odd',
+  );
+  _checkData(n == p * q, 'Invalid RSA private key: n does not equal p * q');
+  _checkData(d > one && d < n, 'Invalid RSA private key: invalid d');
+
+  final pMinusOne = p - one;
+  final qMinusOne = q - one;
+  final lambda = (pMinusOne ~/ pMinusOne.gcd(qMinusOne)) * qMinusOne;
+  _checkData(
+    (d * e) % lambda == one,
+    'Invalid RSA private key: d and e are inconsistent',
+  );
+  _checkData(dp == d % pMinusOne, 'Invalid RSA private key: invalid dp');
+  _checkData(dq == d % qMinusOne, 'Invalid RSA private key: invalid dq');
+  _checkData(qi == q.modInverse(p), 'Invalid RSA private key: invalid qi');
+}
+
+void _validateRsaPublicComponents({required BigInt n, required BigInt e}) {
+  final one = BigInt.one;
+  _checkData(
+    n.bitLength >= _rsaMinModulusBits &&
+        n.bitLength <= _rsaMaxModulusBits &&
+        n.isOdd,
+    'Invalid RSA public key: invalid n',
+  );
+  _checkData(
+    e > one && e.isOdd && e.bitLength <= _rsaMaxPublicExponentBits && e < n,
+    'Invalid RSA public key: invalid e',
+  );
+}
+
+String _encodeRsaBigInteger(jni.Arena arena, BigInteger? value, String name) {
+  if (value == null) {
+    throw AssertionError('JCA RSA key has no $name');
+  }
+  value.releasedBy(arena);
+  return _jwkEncodeBase64UrlNoPadding(
+    _copyUnsignedRsaBigInteger(arena, value, name),
+  );
 }
 
 void _validateRsaJwk(
@@ -412,6 +569,40 @@ void _validateRsaKeyGenerationParameters(
       publicExponent != BigInt.from(65537)) {
     throw UnsupportedError('publicExponent is not supported; use 3 or 65537');
   }
+}
+
+void _validateRsaDerEncoding(Uint8List keyData, String name) {
+  // JCA KeyFactory accepts a valid key followed by unused bytes. Check the
+  // outer DER sequence length so the entire caller-provided input is consumed.
+  _checkData(
+    keyData.length >= 2 && keyData.first == 0x30,
+    '$name must be a DER-encoded sequence',
+  );
+
+  final firstLengthByte = keyData[1];
+  var headerLength = 2;
+  var contentLength = 0;
+  if (firstLengthByte < 0x80) {
+    contentLength = firstLengthByte;
+  } else {
+    final lengthByteCount = firstLengthByte & 0x7f;
+    _checkData(lengthByteCount != 0, '$name uses an indefinite DER length');
+    _checkData(
+      lengthByteCount <= keyData.length - 2,
+      '$name has a truncated DER length',
+    );
+    _checkData(keyData[2] != 0, '$name has a non-minimal DER length');
+    headerLength += lengthByteCount;
+    for (var i = 0; i < lengthByteCount; i++) {
+      contentLength = (contentLength << 8) | keyData[2 + i];
+    }
+    _checkData(contentLength >= 0x80, '$name has a non-minimal DER length');
+  }
+
+  _checkData(
+    headerLength + contentLength == keyData.length,
+    '$name has trailing or truncated data',
+  );
 }
 
 FormatException _rsaKeyFormatException(
