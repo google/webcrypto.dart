@@ -20,7 +20,7 @@ import 'package:native_toolchain_cmake/native_toolchain_cmake.dart';
 
 const _assetName = 'webcrypto.dart';
 const _libraryName = 'webcrypto';
-const _forceSourceBuildDefine = 'force_source_build';
+const _buildFromSourceDefine = 'build_from_source';
 
 Future<void> main(List<String> args) async {
   await build(args, (input, output) async {
@@ -35,12 +35,12 @@ Future<void> main(List<String> args) async {
     final packageRoot = input.packageRoot;
     final installDir = input.outputDirectory.resolve('install/');
     final sourceDir = packageRoot.resolve('src/');
-    final prebuiltAsset = _prebuiltAsset(input);
+    final prebuiltAsset = input.prebuiltAsset;
 
-    if (!_forceSourceBuild(input) && prebuiltAsset.existsSync()) {
+    if (!input.userDefines.buildFromSource && prebuiltAsset.existsSync()) {
       stdout.writeln(
         'webcrypto: using prebuilt native asset for '
-        '${_targetName(input)}.',
+        '${input.targetName}.',
       );
       output.assets.code.add(
         CodeAsset(
@@ -56,7 +56,7 @@ Future<void> main(List<String> args) async {
 
     stdout.writeln(
       'webcrypto: building native asset for '
-      '${_targetName(input)}.',
+      '${input.targetName}.',
     );
 
     final builder = CMakeBuilder.create(
@@ -89,29 +89,27 @@ Future<void> main(List<String> args) async {
   });
 }
 
-bool _forceSourceBuild(BuildInput input) {
-  final value = input.userDefines[_forceSourceBuildDefine];
-  return value == true || value == 'true';
-}
-
-File _prebuiltAsset(BuildInput input) {
-  final targetOS = input.config.code.targetOS;
-  final libraryFileName = targetOS.dylibFileName(_libraryName);
-  return File.fromUri(
-    input.packageRoot.resolve(
-      'prebuilt/${_targetName(input)}/$libraryFileName',
-    ),
-  );
-}
-
-String _targetName(BuildInput input) {
-  final code = input.config.code;
-  final os = code.targetOS;
-  final arch = code.targetArchitecture;
-  if (os == OS.iOS) {
-    return '${os.name}-${code.iOS.targetSdk.type}-${arch.name}';
+extension on BuildInput {
+  File get prebuiltAsset {
+    final libraryFileName = config.code.targetOS.dylibFileName(_libraryName);
+    return File.fromUri(
+      packageRoot.resolve('prebuilt/$targetName/$libraryFileName'),
+    );
   }
-  return '${os.name}-${arch.name}';
+
+  String get targetName {
+    final code = config.code;
+    final os = code.targetOS;
+    final arch = code.targetArchitecture;
+    if (os == OS.iOS) {
+      return '${os.name}-${code.iOS.targetSdk.type}-${arch.name}';
+    }
+    return '${os.name}-${arch.name}';
+  }
+}
+
+extension on HookInputUserDefines {
+  bool get buildFromSource => this[_buildFromSourceDefine] == true;
 }
 
 final _buildDependencyExtensions = {

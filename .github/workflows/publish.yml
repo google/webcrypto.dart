@@ -4,16 +4,169 @@ on:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
+  build-prebuilt:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x64
+            os: ubuntu-22.04
+            library: libwebcrypto.so
+            configure_args: ''
+          - target: macos-arm64
+            os: macos-15
+            library: libwebcrypto.dylib
+            configure_args: '-DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 -DCMAKE_OSX_ARCHITECTURES=arm64'
+          - target: macos-x64
+            os: macos-15-intel
+            library: libwebcrypto.dylib
+            configure_args: '-DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 -DCMAKE_OSX_ARCHITECTURES=x86_64'
+          - target: windows-x64
+            os: windows-2022
+            library: webcrypto.dll
+            configure_args: '-A x64'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/setup-nasm@72793074d3c8cdda771dba85f6deafe00623038b # v1.5.2
+        if: runner.os == 'Windows'
+
+      - name: Build prebuilt asset
+        shell: pwsh
+        run: |
+          $install = Join-Path $env:GITHUB_WORKSPACE 'build/prebuilt-install'
+          $artifact = Join-Path $env:GITHUB_WORKSPACE 'artifact/prebuilt/${{ matrix.target }}'
+          $configureArgs = @(
+            '-S', 'src',
+            '-B', 'build/prebuilt',
+            '-DCMAKE_BUILD_TYPE=Release',
+            "-DCMAKE_INSTALL_PREFIX=$install"
+          )
+          if ('${{ matrix.configure_args }}' -ne '') {
+            $configureArgs += '${{ matrix.configure_args }}'.Split(' ')
+          }
+
+          cmake @configureArgs
+          cmake --build build/prebuilt --config Release --target install
+
+          New-Item -ItemType Directory -Force -Path $artifact | Out-Null
+          Copy-Item -LiteralPath (Join-Path $install '${{ matrix.library }}') -Destination $artifact
+
+      - name: Verify Linux architecture
+        if: runner.os == 'Linux'
+        shell: pwsh
+        run: |
+          $library = 'artifact/prebuilt/${{ matrix.target }}/${{ matrix.library }}'
+          $description = & file $library
+          $description
+          if ($description -notmatch 'x86-64') {
+            throw 'Expected an x86-64 ELF library.'
+          }
+
+      - name: Verify macOS architecture
+        if: runner.os == 'macOS'
+        shell: pwsh
+        run: |
+          $library = 'artifact/prebuilt/${{ matrix.target }}/${{ matrix.library }}'
+          $architecture = (& lipo -archs $library).Trim()
+          $expected = if ('${{ matrix.target }}' -eq 'macos-arm64') { 'arm64' } else { 'x86_64' }
+          if ($architecture -ne $expected) {
+            throw "Expected $expected, got $architecture."
+          }
+
+      - name: Verify Windows architecture
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $library = 'artifact/prebuilt/${{ matrix.target }}/${{ matrix.library }}'
+          $stream = [System.IO.File]::OpenRead($library)
+          $reader = [System.IO.BinaryReader]::new($stream)
+          try {
+            $stream.Position = 0x3c
+            $peHeaderOffset = $reader.ReadInt32()
+            $stream.Position = $peHeaderOffset
+            if ($reader.ReadUInt32() -ne 0x00004550) {
+              throw 'Expected a PE library.'
+            }
+            $machine = $reader.ReadUInt16()
+            if ($machine -ne 0x8664) {
+              throw ('Expected an x64 PE library, got machine type 0x{0:x4}.' -f $machine)
+            }
+          } finally {
+            $reader.Dispose()
+            $stream.Dispose()
+          }
+
+      - name: Upload prebuilt asset
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: webcrypto-${{ matrix.target }}
+          path: artifact/
+          if-no-files-found: error
+
+  validate-prebuilt:
+    name: Validate prebuilt package
+    needs: build-prebuilt
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: webcrypto-*
+          path: .
+          merge-multiple: true
+      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Verify prebuilt layout
+        shell: pwsh
+        run: |
+          @(
+            'prebuilt/linux-x64/libwebcrypto.so',
+            'prebuilt/macos-arm64/libwebcrypto.dylib',
+            'prebuilt/macos-x64/libwebcrypto.dylib',
+            'prebuilt/windows-x64/webcrypto.dll'
+          ) | ForEach-Object {
+            if (-not (Test-Path -LiteralPath $_ -PathType Leaf)) {
+              throw "Missing prebuilt asset: $_"
+            }
+          }
+      - run: flutter pub get
+      - name: Test prebuilt asset
+        run: dart test -p vm test/aes_ctr_counter_wrap_test.dart
+      - name: Validate package contents
+        run: flutter pub publish --dry-run
+
   publish:
     name: Publish to pub.dev
-    runs-on: ubuntu-latest
+    needs:
+      - build-prebuilt
+      - validate-prebuilt
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-24.04
     environment: pub.dev
     permissions:
+      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: webcrypto-*
+          path: .
+          merge-multiple: true
       - uses: dart-lang/setup-dart@v1
       - uses: subosito/flutter-action@v2
         with:
