@@ -21,6 +21,7 @@ library;
 
 import 'dart:async';
 import 'dart:convert' show base64Url;
+import 'dart:isolate';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
@@ -44,6 +45,7 @@ part 'impl_jni.rsapss.dart';
 part 'impl_jni.rsassapkcs1v15.dart';
 part 'impl_jni.digest.dart';
 part 'impl_jni.random.dart';
+part 'impl_jni.rsa_common.dart';
 part 'impl_jni.utils.dart';
 
 const WebCryptoImpl webCryptImpl = _WebCryptoImpl();
