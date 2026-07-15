@@ -1,0 +1,132 @@
+name: Build & Upload Release Artifacts
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+
+jobs:
+  build-artifacts:
+    name: Build Native Artifact (${{ matrix.target.os }}-${{ matrix.target.arch }})
+    runs-on: ${{ matrix.target.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - os: linux
+            arch: x64
+            runner: ubuntu-latest
+            artifact: libwebcrypto.so
+            asset_name: webcrypto-linux-x64-libwebcrypto.so
+          - os: macos
+            arch: x64
+            runner: macos-13
+            artifact: libwebcrypto.dylib
+            asset_name: webcrypto-macOS-x64-libwebcrypto.dylib
+          - os: macos
+            arch: arm64
+            runner: macos-14
+            artifact: libwebcrypto.dylib
+            asset_name: webcrypto-macOS-arm64-libwebcrypto.dylib
+          - os: windows
+            arch: x64
+            runner: windows-latest
+            artifact: webcrypto.dll
+            asset_name: webcrypto-windows-x64-webcrypto.dll
+          - os: android
+            arch: arm64
+            abi: arm64-v8a
+            runner: ubuntu-latest
+            artifact: libwebcrypto.so
+            asset_name: webcrypto-android-arm64-libwebcrypto.so
+          - os: android
+            arch: arm
+            abi: armeabi-v7a
+            runner: ubuntu-latest
+            artifact: libwebcrypto.so
+            asset_name: webcrypto-android-arm-libwebcrypto.so
+          - os: android
+            arch: x64
+            abi: x86_64
+            runner: ubuntu-latest
+            artifact: libwebcrypto.so
+            asset_name: webcrypto-android-x64-libwebcrypto.so
+          - os: iOS
+            arch: arm64
+            runner: macos-14
+            artifact: libwebcrypto.dylib
+            asset_name: webcrypto-iOS-arm64-libwebcrypto.dylib
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: subosito/flutter-action@f37a2a73da312e3e63f5c0b9634526d2b0e7fe88
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Configure Linux Dependencies
+        if: matrix.target.os == 'linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y cmake ninja-build libgtk-3-dev
+
+      - name: Build Native Library for Android (CMake NDK)
+        if: matrix.target.os == 'android'
+        run: |
+          mkdir -p build_native
+          cd build_native
+          cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=${{ matrix.target.abi }} \
+            -DANDROID_PLATFORM=android-21 \
+            -DCMAKE_BUILD_TYPE=Release ../src
+          cmake --build . --config Release
+
+      - name: Build Native Library for iOS (CMake)
+        if: matrix.target.os == 'iOS'
+        run: |
+          mkdir -p build_native
+          cd build_native
+          cmake -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_BUILD_TYPE=Release ../src
+          cmake --build . --config Release --target webcrypto
+
+      - name: Build Desktop Native Library (CMake)
+        if: matrix.target.os != 'android' && matrix.target.os != 'iOS'
+        run: |
+          mkdir -p build_native
+          cd build_native
+          cmake -DCMAKE_BUILD_TYPE=Release ../src
+          cmake --build . --config Release
+
+      - name: Locate, Rename, and Hash Artifact
+        shell: bash
+        run: |
+          LIBRARY_PATH=$(find build_native -name "${{ matrix.target.artifact }}" | head -n 1)
+          if [ -z "$LIBRARY_PATH" ]; then
+            echo "Error: Could not find ${{ matrix.target.artifact }}"
+            exit 1
+          fi
+          cp "$LIBRARY_PATH" "./${{ matrix.target.asset_name }}"
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum "./${{ matrix.target.asset_name }}" > "./${{ matrix.target.asset_name }}.sha256"
+          else
+            shasum -a 256 "./${{ matrix.target.asset_name }}" > "./${{ matrix.target.asset_name }}.sha256"
+          fi
+
+      - name: Upload Build Artifacts (Workflow Debugging)
+        uses: actions/upload-artifact@b4b15b348d6a79ff96702e61a5847e68810fe949
+        with:
+          name: ${{ matrix.target.asset_name }}
+          path: |
+            ./${{ matrix.target.asset_name }}
+            ./${{ matrix.target.asset_name }}.sha256
+
+      - name: Upload Release Asset (Release Tags Only)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@c95fe0c20b7ea1f2c1494446929e7f3e254c693a
+        with:
+          files: |
+            ./${{ matrix.target.asset_name }}
+            ./${{ matrix.target.asset_name }}.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
