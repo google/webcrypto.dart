@@ -142,9 +142,6 @@ endif()
 add_library(
   webcrypto
 
-  # Build a shared library
-  SHARED
-
   # Source files
   ../src/webcrypto.c
   ${crypto_sources}

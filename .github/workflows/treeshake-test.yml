@@ -1,0 +1,47 @@
+name: Link Hook Treeshake Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test-treeshake-desktop:
+    name: Link Hook Treeshake (${{ matrix.os }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: linux
+            runner: ubuntu-latest
+          - os: macos
+            runner: macos-14
+          - os: windows
+            runner: windows-latest
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - uses: subosito/flutter-action@f37a2a73da312e3e63f5c0b9634526d2b0e7fe88
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Setup Windows NASM
+        if: matrix.os == 'windows'
+        uses: ilammy/setup-nasm@141b71216503c14c57c5f87b1c312781b012d093
+
+      - name: Configure Linux Dependencies
+        if: matrix.os == 'linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y cmake ninja-build libgtk-3-dev
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Run Tests with Link Hook & Record Use Treeshaking
+        run: dart test --enable-experiment=record-use

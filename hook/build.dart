@@ -136,6 +136,9 @@ Future<void> _fetchPrebuiltBinary(
         linkMode: DynamicLoadingBundled(),
         file: libraryFile.uri,
       ),
+      routing: input.config.linkingEnabled
+          ? ToLinkHook(input.packageName)
+          : const ToAppBundle(),
     );
   } finally {
     client.close();
@@ -183,9 +186,12 @@ Future<void> _buildLocalCMake(
   final installDir = input.outputDirectory.resolve('install/');
   final sourceDir = packageRoot.resolve('src/');
 
+  final buildStatic = input.config.buildStatic;
+
   stdout.writeln(
     'webcrypto: building native asset with CMake for '
-    '${input.config.code.targetOS}-${input.config.code.targetArchitecture}.',
+    '${input.config.code.targetOS}-${input.config.code.targetArchitecture} '
+    '(static: $buildStatic).',
   );
 
   final builder = CMakeBuilder.create(
@@ -194,27 +200,51 @@ Future<void> _buildLocalCMake(
     defines: {
       'CMAKE_BUILD_TYPE': 'Release',
       'CMAKE_INSTALL_PREFIX': installDir.toFilePath(),
+      'BUILD_SHARED_LIBS': buildStatic ? 'OFF' : 'ON',
     },
     targets: ['install'],
   );
 
   await builder.run(input: input, output: output);
 
-  final assets = await output.findAndAddCodeAssets(
-    input,
-    outDir: installDir,
-    names: {r'(lib)?webcrypto\.(dll|dylib|so)': _assetName},
-    regExp: true,
-  );
-  if (assets.isEmpty) {
+  final installDirPath = installDir.toFilePath();
+  final installDirectory = Directory(installDirPath);
+  final matchingFiles = installDirectory.existsSync()
+      ? installDirectory
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((f) => RegExp(r'(lib)?webcrypto\.(dll|dylib|so|a|lib)$').hasMatch(f.path))
+          .toList()
+      : <File>[];
+
+  if (matchingFiles.isEmpty) {
     throw BuildError(
       message:
-          'Failed to locate built webcrypto dynamic library in '
-          '${installDir.toFilePath()}',
+          'Failed to locate built webcrypto library in '
+          '$installDirPath',
     );
   }
 
+  final libraryFile = matchingFiles.first;
+
+  output.assets.code.add(
+    CodeAsset(
+      package: input.packageName,
+      name: _assetName,
+      linkMode: buildStatic ? StaticLinking() : DynamicLoadingBundled(),
+      file: libraryFile.uri,
+    ),
+    routing: buildStatic && input.config.linkingEnabled
+        ? ToLinkHook(input.packageName)
+        : const ToAppBundle(),
+  );
+
   output.dependencies.addAll(_buildDependencies(packageRoot));
+}
+
+extension on BuildConfig {
+  bool get buildStatic =>
+      code.linkModePreference == LinkModePreference.static || linkingEnabled;
 }
 
 final _buildDependencyExtensions = {

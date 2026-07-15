@@ -25,6 +25,9 @@ dependencies:
   hooks: ^2.0.0
   code_assets: ^1.0.0
   native_toolchain_cmake: ^0.2.4
+  native_toolchain_c: ^0.19.1
+  record_use: ^1.0.0
+  logging: ^1.3.0
   meta: ^1.3.0
   crypto: ^3.0.0
 
@@ -39,7 +42,7 @@ dev_dependencies:
 hooks:
   user_defines:
     webcrypto:
-      buildMode: fetch
+      buildMode: build
 
 topics:
  - crypto
