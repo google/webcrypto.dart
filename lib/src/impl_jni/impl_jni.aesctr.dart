@@ -168,7 +168,7 @@ Uint8List _wrapAesCtrCounter(Uint8List counter, int length) {
 }
 
 int _minBigIntAndInt(BigInt value, int limit) {
-  // Avoid converting huge counter-space values, such as 2^128, 
+  // Avoid converting huge counter-space values, such as 2^128,
   // to int just to compare them with the current Dart chunk length.
   final bigLimit = BigInt.from(limit);
   return value < bigLimit ? value.toInt() : limit;
