@@ -26,8 +26,9 @@ void main() {
 void generateWebCryptoBindings(Uri packageRoot) {
   FfiGenerator(
     output: Output(
-      dartFile: packageRoot
-          .resolve('lib/src/boringssl/bindings/generated_bindings.dart'),
+      dartFile: packageRoot.resolve(
+        'lib/src/boringssl/bindings/generated_bindings.dart',
+      ),
       style: const NativeExternalBindings(
         assetId: 'package:webcrypto/webcrypto.dart',
       ),
@@ -52,20 +53,12 @@ void generateWebCryptoBindings(Uri packageRoot) {
 // ignore_for_file: non_constant_identifier_names
 ''',
     ),
-    headers: Headers(
-      entryPoints: [
-        packageRoot.resolve('src/webcrypto.h'),
-      ],
-    ),
+    headers: Headers(entryPoints: [packageRoot.resolve('src/webcrypto.h')]),
     functions: Functions(
       include: Declarations.includeSet({'webcrypto_get_CBB_size'}),
     ),
-    structs: const Structs(
-      dependencies: CompoundDependencies.opaque,
-    ),
-    typedefs: const Typedefs(
-      include: Declarations.includeAll,
-    ),
+    structs: const Structs(dependencies: CompoundDependencies.opaque),
+    typedefs: const Typedefs(include: Declarations.includeAll),
   ).generate();
 }
 
@@ -144,14 +137,26 @@ void generateBoringSslBindings(Uri packageRoot) {
         packageRoot.resolve('third_party/boringssl/src/include/openssl/aead.h'),
         packageRoot.resolve('third_party/boringssl/src/include/openssl/aes.h'),
         packageRoot.resolve('third_party/boringssl/src/include/openssl/bn.h'),
-        packageRoot.resolve('third_party/boringssl/src/include/openssl/bytestring.h'),
-        packageRoot.resolve('third_party/boringssl/src/include/openssl/cipher.h'),
-        packageRoot.resolve('third_party/boringssl/src/include/openssl/crypto.h'),
-        packageRoot.resolve('third_party/boringssl/src/include/openssl/digest.h'),
+        packageRoot.resolve(
+          'third_party/boringssl/src/include/openssl/bytestring.h',
+        ),
+        packageRoot.resolve(
+          'third_party/boringssl/src/include/openssl/cipher.h',
+        ),
+        packageRoot.resolve(
+          'third_party/boringssl/src/include/openssl/crypto.h',
+        ),
+        packageRoot.resolve(
+          'third_party/boringssl/src/include/openssl/digest.h',
+        ),
         packageRoot.resolve('third_party/boringssl/src/include/openssl/ec.h'),
         packageRoot.resolve('third_party/boringssl/src/include/openssl/ecdh.h'),
-        packageRoot.resolve('third_party/boringssl/src/include/openssl/ec_key.h'),
-        packageRoot.resolve('third_party/boringssl/src/include/openssl/ecdsa.h'),
+        packageRoot.resolve(
+          'third_party/boringssl/src/include/openssl/ec_key.h',
+        ),
+        packageRoot.resolve(
+          'third_party/boringssl/src/include/openssl/ecdsa.h',
+        ),
         packageRoot.resolve('third_party/boringssl/src/include/openssl/err.h'),
         packageRoot.resolve('third_party/boringssl/src/include/openssl/evp.h'),
         packageRoot.resolve('third_party/boringssl/src/include/openssl/hkdf.h'),
@@ -182,26 +187,17 @@ void generateBoringSslBindings(Uri packageRoot) {
       }),
     ),
     enums: Enums(
-      include: Declarations.includeSet({
-        'point_conversion_form_t',
-      }),
+      include: Declarations.includeSet({'point_conversion_form_t'}),
       style: (decl, suggestedStyle) => EnumStyle.intConstants,
     ),
     unnamedEnums: UnnamedEnums(
-      include: Declarations.includeSet({
-        'ERR_LIB_HKDF',
-      }),
+      include: Declarations.includeSet({'ERR_LIB_HKDF'}),
     ),
     structs: Structs(
-      include: Declarations.includeSet({
-        'cbs_st',
-        'cbb_st',
-      }),
+      include: Declarations.includeSet({'cbs_st', 'cbb_st'}),
       dependencies: CompoundDependencies.opaque,
     ),
-    typedefs: const Typedefs(
-      include: Declarations.includeAll,
-    ),
+    typedefs: const Typedefs(include: Declarations.includeAll),
     functions: Functions(
       include: Declarations.includeSet({
         // Source of truth for BoringSSL entry points bound from Dart.
