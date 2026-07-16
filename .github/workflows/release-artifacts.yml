@@ -71,32 +71,10 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y cmake ninja-build libgtk-3-dev
 
-      - name: Build Native Library for Android (CMake NDK)
-        if: matrix.target.os == 'android'
+      - name: Build Native Library (native_toolchain_cmake)
         run: |
-          mkdir -p build_native
-          cd build_native
-          cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake \
-            -DANDROID_ABI=${{ matrix.target.abi }} \
-            -DANDROID_PLATFORM=android-21 \
-            -DCMAKE_BUILD_TYPE=Release ../src
-          cmake --build . --config Release
-
-      - name: Build Native Library for iOS (CMake)
-        if: matrix.target.os == 'iOS'
-        run: |
-          mkdir -p build_native
-          cd build_native
-          cmake -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_BUILD_TYPE=Release ../src
-          cmake --build . --config Release --target webcrypto
-
-      - name: Build Desktop Native Library (CMake)
-        if: matrix.target.os != 'android' && matrix.target.os != 'iOS'
-        run: |
-          mkdir -p build_native
-          cd build_native
-          cmake -DCMAKE_BUILD_TYPE=Release ../src
-          cmake --build . --config Release
+          dart pub get
+          dart run tool/build_native.dart --target-os ${{ matrix.target.os }} --target-architecture ${{ matrix.target.arch }} --output-dir ./build_native
 
       - name: Locate, Rename, and Hash Artifact
         shell: bash
