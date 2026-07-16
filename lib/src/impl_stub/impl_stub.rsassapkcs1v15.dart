@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// coverage:ignore-file
 part of 'impl_stub.dart';
 
 final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
