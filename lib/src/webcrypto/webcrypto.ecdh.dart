@@ -282,7 +282,8 @@ final class EcdhPublicKey {
   factory EcdhPublicKey(EcdhPublicKeyImpl impl) {
     return EcdhPublicKey._(impl);
   }
-/// Import [EcdhPublicKey] from raw elliptic curve point.
+  
+  /// Import [EcdhPublicKey] from raw elliptic curve point.
   ///
   /// Creates an [EcdhPublicKey] from [keyData] given as the raw
   /// elliptic curve point in uncompressed format. The [curve] specified
@@ -314,7 +315,7 @@ final class EcdhPublicKey {
     return EcdhPublicKey._(impl);
   }
 
- /// Import [EcdhPublicKey] in the [SPKI][1] format.
+  /// Import [EcdhPublicKey] in the [SPKI][1] format.
   ///
   /// Creates an [EcdhPublicKey] from [keyData] given as the DER encoded
   /// _SubjectPublicKeyInfo_ structure specified in [RFC 5280][1].
@@ -422,7 +423,7 @@ final class EcdhPublicKey {
     return EcdhPublicKey._(impl);
   }
 
- /// Export the [EcdhPublicKey] as a raw elliptic curve point.
+  /// Export the [EcdhPublicKey] as a raw elliptic curve point.
   ///
   /// Returns the raw elliptic curve point in uncompressed format as a
   /// list of bytes.
