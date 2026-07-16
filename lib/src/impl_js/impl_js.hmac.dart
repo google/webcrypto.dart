@@ -40,55 +40,21 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importRawKey(
   );
 }
 
-Uint8List _jwkDecodeBase64UrlNoPadding(String unpadded, String prop) {
-  try {
-    final padded = unpadded.padRight(
-      unpadded.length + ((4 - (unpadded.length % 4)) % 4),
-      '=',
-    );
-    return base64Url.decode(padded);
-  } on FormatException {
-    throw FormatException(
-      'JWK property "$prop" is not url-safe base64 without padding',
-      unpadded,
-    );
-  }
-}
-
-void _checkHmacJwkLength(List<int> keyData, int length) {
-  if (length < 0 ||
-      length > keyData.length * 8 ||
-      length <= (keyData.length - 1) * 8) {
-    throw const FormatException(
-      'JWK property "k" does not match expected length',
-    );
-  }
-
-  final remainder = length % 8;
-  if (remainder != 0) {
-    final unusedBitsMask = 0xff >> remainder;
-    if (keyData.last & unusedBitsMask != 0) {
-      throw const FormatException('JWK property "k" has non-zero unused bits');
-    }
-  }
-}
-
 Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash, {
   int? length,
 }) async {
-  if (length != null && jwk['k'] is String) {
-    _checkHmacJwkLength(
-      _jwkDecodeBase64UrlNoPadding(jwk['k'] as String, 'k'),
-      length,
-    );
-  }
-
   return _HmacSecretKeyImpl(
     await _importJsonWebKey(
       jwk,
-      subtle.Algorithm(name: 'HMAC', hash: _getHashAlgorithm(hash)),
+      length == null
+          ? subtle.Algorithm(name: 'HMAC', hash: _getHashAlgorithm(hash))
+          : subtle.Algorithm(
+              name: 'HMAC',
+              hash: _getHashAlgorithm(hash),
+              length: length,
+            ),
       _usagesSignVerify,
       'secret',
     ),
