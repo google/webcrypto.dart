@@ -83,11 +83,11 @@ Future<void> _fetchPrebuiltBinary(
   final expectedHash = fileHashes[targetTriple];
 
   if (expectedHash == null || expectedHash.isEmpty) {
-    throw BuildError(
-      message:
-          'No prebuilt binary hash registered for target $targetTriple in package:webcrypto.\n'
-          'To build webcrypto locally from source instead, set `buildMode: build` in your pubspec.yaml under `hooks.user_defines.webcrypto`.',
+    stdout.writeln(
+      'webcrypto: no prebuilt binary hash registered for $targetTriple, falling back to building from source.',
     );
+    await _buildLocalCMake(input, output);
+    return;
   }
 
   final assetName = 'webcrypto-$targetTriple-$dylibFileName';
@@ -95,9 +95,7 @@ Future<void> _fetchPrebuiltBinary(
     'https://github.com/google/webcrypto.dart/releases/download/v$releaseVersion/$assetName',
   );
 
-  stdout.writeln(
-    'webcrypto: fetching prebuilt binary from $binaryUrl...',
-  );
+  stdout.writeln('webcrypto: fetching prebuilt binary from $binaryUrl...');
 
   final client = HttpClient();
   try {
