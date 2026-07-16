@@ -32,3 +32,10 @@ To run the Android JNI/JCA AES-CBC smoke test:
 flutter test integration_test/jni_aescbc_test.dart \
   -d emulator-name
 ```
+
+To run the Android JNI/JCA AES-CTR smoke test:
+
+```sh
+flutter test integration_test/jni_aesctr_test.dart \
+  -d emulator-name
+```

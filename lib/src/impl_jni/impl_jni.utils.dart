@@ -129,3 +129,11 @@ void _fillRandomBytes(TypedData destination) {
     }
   });
 }
+
+Future<Uint8List> _bufferStream(Stream<List<int>> data) async {
+  final builder = BytesBuilder(copy: false);
+  await for (final chunk in data) {
+    builder.add(chunk);
+  }
+  return builder.takeBytes();
+}
