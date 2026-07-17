@@ -43,6 +43,6 @@
 ///     mismatching curves where it becomes an [ArgumentError].
 ///
 /// @docImport 'src/webcrypto/webcrypto.dart';
-library webcrypto;
+library;
 
 export 'src/webcrypto/webcrypto.dart';

@@ -44,7 +44,7 @@ BigInt _parseBigEndian(List<int> data, [int? bitLength]) {
   // Parse BigInt as big-endian integer.
   var value = BigInt.from(0);
   for (var i = init; i < data.length; i++) {
-    value = (value << 8) | BigInt.from(data[i] & 0xf);
+    value = (value << 8) | BigInt.from(data[i] & 0xff);
   }
   return value;
 }
@@ -140,7 +140,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
         // Consume the first M bytes from data.
         var i = 0; // Number of bytes consumed, after offset
         while (i < M) {
-          final N = math.min(M, bufSize);
+          final N = math.min(M - i, bufSize);
           inData.setAll(0, data.skip(offset + i).take(N));
 
           _checkOpIsOne(ssl.EVP_CipherUpdate(ctx, outBuf, outLen, inBuf, N));

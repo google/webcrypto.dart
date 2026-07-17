@@ -20,7 +20,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd "$DIR/.."
 
-flutter pub get
+dart pub get --no-example
 
-flutter pub run ffigen --config=lib/src/boringssl/bindings/ffigen.yaml
-flutter pub run ffigen --config=lib/src/third_party/boringssl/ffigen.yaml
+dart run ffigen --config=lib/src/boringssl/bindings/ffigen.yaml
+dart run ffigen --config=lib/src/third_party/boringssl/ffigen.yaml

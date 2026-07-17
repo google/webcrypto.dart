@@ -17,18 +17,21 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROOT="$DIR/.."
 
-# Remove all the generated files
-# Not removing .cxx/ and .gradle/ can cause problems when jumping between
-# flutter versions.
+# Remove generated build artifacts for the root Dart package and the Flutter
+# example app. The root package is no longer a Flutter project, so `flutter
+# clean` only applies inside example/.
 
-cd "$ROOT"
-flutter clean
+rm -rf "$ROOT/.dart_tool/"
+rm -rf "$ROOT/build/"
 
-cd "$ROOT/example/"
-flutter clean
-
-cd "$ROOT"
-rm -rf android/.cxx/
-rm -rf example/android/.gradle/
-rm -f example/.packages
+if [ -d "$ROOT/example/webcrypto_demo_flutter_app/" ]; then
+  (
+    cd "$ROOT/example/webcrypto_demo_flutter_app/"
+    flutter clean
+  )
+  rm -rf "$ROOT/example/webcrypto_demo_flutter_app/.dart_tool/"
+  rm -rf "$ROOT/example/webcrypto_demo_flutter_app/build/"
+  rm -rf "$ROOT/example/webcrypto_demo_flutter_app/android/.gradle/"
+  rm -f "$ROOT/example/webcrypto_demo_flutter_app/.packages"
+fi
 

@@ -14,7 +14,7 @@
 
 /// This library attempts to expose the definitions necessary to use the
 /// browsers `window.crypto.subtle` APIs.
-library common;
+library;
 
 import 'dart:js_interop';
 import 'dart:typed_data';
@@ -50,6 +50,9 @@ external JSWindow get window;
 
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window
 extension type JSWindow(JSObject _) implements JSObject {
+  /// https://developer.mozilla.org/en-US/docs/Web/API/Window/isSecureContext
+  external bool get isSecureContext;
+
   /// https://developer.mozilla.org/en-US/docs/Web/API/crypto_property
   external JSCrypto get crypto;
 }
@@ -60,10 +63,42 @@ extension type JSWindow(JSObject _) implements JSObject {
 /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto
 extension type JSCrypto(JSObject _) implements JSObject {
   /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/subtle
-  external JSSubtleCrypto get subtle;
+  @JS('subtle')
+  external JSSubtleCrypto? get _subtleOrNull;
+
+  JSSubtleCrypto get subtle =>
+      requireSubtleCrypto(_subtleOrNull, window.isSecureContext);
 
   /// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
   external JSTypedArray getRandomValues(JSTypedArray array);
+}
+
+const _webCryptoApiDocumentationUrl =
+    'https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API';
+const _secureContextsDocumentationUrl =
+    'https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts';
+
+@visibleForTesting
+JSSubtleCrypto requireSubtleCrypto(
+  JSSubtleCrypto? subtle,
+  bool isSecureContext,
+) {
+  if (subtle != null) {
+    return subtle;
+  }
+
+  if (!isSecureContext) {
+    throw UnsupportedError(
+      'Browser Web Crypto APIs require a secure context. '
+      'Load the page over HTTPS or a potentially trustworthy origin such as localhost. '
+      'See: $_secureContextsDocumentationUrl',
+    );
+  }
+
+  throw UnsupportedError(
+    'Browser Web Crypto APIs are unavailable because `window.crypto.subtle` '
+    'is missing in this runtime. See: $_webCryptoApiDocumentationUrl',
+  );
 }
 
 /// The `window.crypto.subtle` object.

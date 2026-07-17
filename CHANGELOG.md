@@ -1,3 +1,18 @@
+# 0.6.2-wip
+* Fixed JS interop to enable WebAssembly.
+
+# 0.6.1
+* Added Dart native build hooks and native asset lookup for the bundled
+  native library, enabling `dart test` for the core package.
+* `webcrypto` is now packaged as a Dart package using native hooks instead of
+  Flutter plugin scaffolding.
+* Improved web error handling when `window.crypto.subtle` is unavailable in
+  insecure contexts by throwing a clearer `UnsupportedError` with guidance.
+* Fixed native AES-CTR encryption and decryption for inputs larger than the
+  internal chunk buffer.
+* Added documentation for performing `deriveKey` using `deriveBits` and
+  `importRaw`.
+
 # 0.6.0
 * Replaced the `KeyPair` class with `typedef KeyPair<T, S> = ({T privateKey, S publicKey})` and refactored key generation methods to return a named record.
 * Bumped minimum required CMake version to `3.10` for building the

@@ -105,6 +105,50 @@ void main() {
   });
 
   group('crypto', () {
+    test('subtle API is available in secure contexts', () {
+      if (subtle.window.isSecureContext) {
+        expect(() => subtle.window.crypto.subtle, returnsNormally);
+        return;
+      }
+
+      expect(
+        () => subtle.window.crypto.subtle,
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            contains('secure context'),
+          ),
+        ),
+      );
+    });
+
+    test('subtle API throws secure-context guidance when unavailable', () {
+      expect(
+        () => subtle.requireSubtleCrypto(null, false),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('secure context'), contains('localhost')),
+          ),
+        ),
+      );
+    });
+
+    test('subtle API throws missing-API guidance in secure contexts', () {
+      expect(
+        () => subtle.requireSubtleCrypto(null, true),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('window.crypto.subtle'), contains('Web Crypto API')),
+          ),
+        ),
+      );
+    });
+
     test('getRandomValues: success', () {
       final data = Uint8List(16 * 1024);
       expect(data.every((e) => e == 0), isTrue);
@@ -123,24 +167,38 @@ void main() {
     test('getRandomValues: too long', () {
       try {
         subtle.window.crypto.getRandomValues(Uint8List(1000000).toJS);
-      } on subtle.JSDomException catch (e) {
-        // dart2js throws QuotaExceededError
-        expect(e.name, 'QuotaExceededError');
-      } on Error catch (e) {
-        // dart2wasm throws JavaScriptError
-        expect(e.toString(), 'JavaScriptError');
+      } catch (e) {
+        // ignore: invalid_runtime_check_with_js_interop_types
+        if (e is JSAny && e.isA<subtle.JSDomException>()) {
+          // dart2js throws QuotaExceededError
+          expect((e as subtle.JSDomException).name, 'QuotaExceededError');
+        } else if (e is Error) {
+          expect(
+            e.toString(),
+            anyOf('JavaScriptError', startsWith('QuotaExceededError:')),
+          );
+        } else {
+          rethrow;
+        }
       }
     });
 
     test('getRandomValues: not supported type', () {
       try {
         subtle.window.crypto.getRandomValues(Float32List(32).toJS);
-      } on subtle.JSDomException catch (e) {
-        // dart2js throws TypeMismatchError
-        expect(e.name, 'TypeMismatchError');
-      } on Error catch (e) {
-        // dart2wasm throws JavaScriptError
-        expect(e.toString(), 'JavaScriptError');
+      } catch (e) {
+        // ignore: invalid_runtime_check_with_js_interop_types
+        if (e is JSAny && e.isA<subtle.JSDomException>()) {
+          // dart2js throws TypeMismatchError
+          expect((e as subtle.JSDomException).name, 'TypeMismatchError');
+        } else if (e is Error) {
+          expect(
+            e.toString(),
+            anyOf('JavaScriptError', startsWith('TypeMismatchError:')),
+          );
+        } else {
+          rethrow;
+        }
       }
     });
   });

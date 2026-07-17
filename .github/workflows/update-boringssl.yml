@@ -1,0 +1,96 @@
+name: update-boringssl
+
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Optional BoringSSL revision SHA. Leave empty for latest.
+        required: false
+        type: string
+  schedule:
+    - cron: '0 9 * * 1'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-boringssl
+  cancel-in-progress: false
+
+jobs:
+  roll:
+    name: Roll BoringSSL
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq ninja-build libgtk-3-dev
+          flutter config --no-analytics
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Run BoringSSL roll script
+        id: roll
+        shell: bash
+        run: |
+          set -euo pipefail
+          revision='${{ github.event.inputs.revision || '' }}'
+          if [[ -n "$revision" ]]; then
+            bash ./tool/bump-boringssl-revision.sh "$revision"
+          else
+            bash ./tool/bump-boringssl-revision.sh
+          fi
+
+          new_revision="$(tr -d ' \t\n\r' < tool/REVISION)"
+          echo "revision=$new_revision" >> "$GITHUB_OUTPUT"
+          echo "short_revision=${new_revision:0:8}" >> "$GITHUB_OUTPUT"
+
+      - name: Check for changes
+        id: changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create pull request
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: "update-boringssl-${{ steps.roll.outputs.short_revision }}"
+          delete-branch: true
+          commit-message: "chore: update BoringSSL to ${{ steps.roll.outputs.short_revision }}"
+          title: "chore: update BoringSSL to ${{ steps.roll.outputs.short_revision }}"
+          body: |
+            Updates vendored BoringSSL to `${{ steps.roll.outputs.revision }}` using `tool/bump-boringssl-revision.sh`.
+
+            This workflow is intentionally thin: it just provisions the environment, runs the script, and opens a PR if the script produced a diff.
+          labels: |
+            dependencies
+            boringssl-update
+
+      - name: Summary
+        shell: bash
+        run: |
+          if [[ '${{ steps.changes.outputs.changed }}' == 'true' ]]; then
+            echo "Created or updated a PR for BoringSSL revision ${{ steps.roll.outputs.revision }}"
+          else
+            echo "No vendored changes were produced for BoringSSL revision ${{ steps.roll.outputs.revision }}"
+          fi
