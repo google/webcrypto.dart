@@ -281,8 +281,8 @@ final class EcdhPublicKey {
 
   factory EcdhPublicKey(EcdhPublicKeyImpl impl) {
     return EcdhPublicKey._(impl);
-  }
-  
+}
+
   /// Import [EcdhPublicKey] from raw elliptic curve point.
   ///
   /// Creates an [EcdhPublicKey] from [keyData] given as the raw
