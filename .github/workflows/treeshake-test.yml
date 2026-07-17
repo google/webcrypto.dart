@@ -43,5 +43,5 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Run Tests with Link Hook & Record Use Treeshaking
-        run: dart test --enable-experiment=record-use
+      - name: Run Treeshake Test with dart build & Size Limit Verification
+        run: dart test test/ffi/treeshake_test.dart

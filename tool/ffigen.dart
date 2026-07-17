@@ -19,16 +19,42 @@ import 'package:ffigen/ffigen.dart';
 void main() {
   final packageRoot = Platform.script.resolve('../');
 
-  generateWebCryptoBindings(packageRoot);
-  generateBoringSslBindings(packageRoot);
+  final webCryptoFile = packageRoot.resolve(
+    'lib/src/boringssl/bindings/generated_bindings.dart',
+  );
+  final boringSslFile = packageRoot.resolve(
+    'lib/src/third_party/boringssl/generated_bindings.dart',
+  );
+
+  generateWebCryptoBindings(packageRoot, webCryptoFile);
+  generateBoringSslBindings(packageRoot, boringSslFile);
+
+  _addRecordUseAnnotations(webCryptoFile);
+  _addRecordUseAnnotations(boringSslFile);
 }
 
-void generateWebCryptoBindings(Uri packageRoot) {
+void _addRecordUseAnnotations(Uri fileUri) {
+  final file = File.fromUri(fileUri);
+  if (!file.existsSync()) return;
+  var content = file.readAsStringSync();
+
+  if (!content.contains("import 'package:meta/meta.dart' as meta;")) {
+    content = content.replaceFirst(
+      "import 'dart:ffi' as ffi;\n",
+      "import 'dart:ffi' as ffi;\nimport 'package:meta/meta.dart' as meta;\n",
+    );
+  }
+
+  content = content.replaceAll('@meta.RecordUse()\n', '');
+  content = content.replaceAll('@ffi.Native', '@meta.RecordUse()\n@ffi.Native');
+
+  file.writeAsStringSync(content);
+}
+
+void generateWebCryptoBindings(Uri packageRoot, Uri outputFile) {
   FfiGenerator(
     output: Output(
-      dartFile: packageRoot.resolve(
-        'lib/src/boringssl/bindings/generated_bindings.dart',
-      ),
+      dartFile: outputFile,
       style: const NativeExternalBindings(
         assetId: 'package:webcrypto/webcrypto.dart',
       ),
@@ -62,12 +88,10 @@ void generateWebCryptoBindings(Uri packageRoot) {
   ).generate();
 }
 
-void generateBoringSslBindings(Uri packageRoot) {
+void generateBoringSslBindings(Uri packageRoot, Uri outputFile) {
   FfiGenerator(
     output: Output(
-      dartFile: packageRoot.resolve(
-        'lib/src/third_party/boringssl/generated_bindings.dart',
-      ),
+      dartFile: outputFile,
       style: const NativeExternalBindings(
         assetId: 'package:webcrypto/webcrypto.dart',
       ),

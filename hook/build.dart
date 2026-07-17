@@ -186,12 +186,10 @@ Future<void> _buildLocalCMake(
   final installDir = input.outputDirectory.resolve('install/');
   final sourceDir = packageRoot.resolve('src/');
 
-  final buildStatic = input.config.buildStatic;
-
   stdout.writeln(
     'webcrypto: building native asset with CMake for '
     '${input.config.code.targetOS}-${input.config.code.targetArchitecture} '
-    '(static: $buildStatic).',
+    '(static: ${input.config.linkingEnabled}).',
   );
 
   final builder = CMakeBuilder.create(
@@ -200,7 +198,8 @@ Future<void> _buildLocalCMake(
     defines: {
       'CMAKE_BUILD_TYPE': 'Release',
       'CMAKE_INSTALL_PREFIX': installDir.toFilePath(),
-      'BUILD_SHARED_LIBS': buildStatic ? 'OFF' : 'ON',
+      'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+      'BUILD_SHARED_LIBS': input.config.linkingEnabled ? 'OFF' : 'ON',
     },
     targets: ['install'],
   );
@@ -211,10 +210,14 @@ Future<void> _buildLocalCMake(
   final installDirectory = Directory(installDirPath);
   final matchingFiles = installDirectory.existsSync()
       ? installDirectory
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((f) => RegExp(r'(lib)?webcrypto\.(dll|dylib|so|a|lib)$').hasMatch(f.path))
-          .toList()
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where(
+              (f) => RegExp(
+                r'(lib)?webcrypto\.(dll|dylib|so|a|lib)$',
+              ).hasMatch(f.path),
+            )
+            .toList()
       : <File>[];
 
   if (matchingFiles.isEmpty) {
@@ -231,20 +234,15 @@ Future<void> _buildLocalCMake(
     CodeAsset(
       package: input.packageName,
       name: _assetName,
-      linkMode: buildStatic ? StaticLinking() : DynamicLoadingBundled(),
+      linkMode: DynamicLoadingBundled(),
       file: libraryFile.uri,
     ),
-    routing: buildStatic && input.config.linkingEnabled
+    routing: input.config.linkingEnabled
         ? ToLinkHook(input.packageName)
         : const ToAppBundle(),
   );
 
   output.dependencies.addAll(_buildDependencies(packageRoot));
-}
-
-extension on BuildConfig {
-  bool get buildStatic =>
-      code.linkModePreference == LinkModePreference.static || linkingEnabled;
 }
 
 final _buildDependencyExtensions = {

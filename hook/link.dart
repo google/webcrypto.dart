@@ -17,7 +17,7 @@ import 'dart:io';
 import 'package:code_assets/code_assets.dart'
     show CodeAsset, OS, HookConfigCodeConfig, LinkInputCodeAssets;
 import 'package:hooks/hooks.dart' show link;
-import 'package:logging/logging.dart' show Level, Logger;
+import 'package:logging/logging.dart' show Logger;
 import 'package:native_toolchain_c/native_toolchain_c.dart'
     show CLinker, LinkerOptions;
 import 'package:record_use/record_use.dart' as record_use;
@@ -38,10 +38,20 @@ Future<void> main(List<String> args) async {
       return;
     }
 
-    final recordedUses = input.recordedUses;
-    Iterable<String>? usedSymbols;
+    final disableTreeshakingUserDefine = input.userDefines['disable_treeshaking'];
+    final disableTreeshaking =
+        disableTreeshakingUserDefine == true ||
+        disableTreeshakingUserDefine == 'true' ||
+        Platform.environment['WEBCRYPTO_DISABLE_TREESHAKING'] == 'true';
 
-    if (recordedUses == null) {
+    final recordedUses = input.recordedUses;
+    Set<String>? usedSymbols;
+
+    if (disableTreeshaking) {
+      stdout.writeln(
+        'webcrypto: Treeshaking is disabled via user define (disable_treeshaking). All symbols will be preserved.',
+      );
+    } else if (recordedUses == null) {
       stdout.writeln(
         'webcrypto: --enable-experiment=record-use not active; linking all symbols.',
       );
@@ -59,14 +69,22 @@ Future<void> main(List<String> args) async {
                     ),
           )
           .map((id) => id.name)
-          .where((methodName) => methodName.startsWith('_'))
-          .map((methodName) => methodName.substring(1));
-    }
+          .map((name) {
+            final nameWithoutLeadingUnderscore = name.startsWith('_')
+                ? name.substring(1)
+                : name;
+            return nameWithoutLeadingUnderscore.startsWith('webcrypto_')
+                ? nameWithoutLeadingUnderscore
+                : 'webcrypto_$nameWithoutLeadingUnderscore';
+          })
+          .toSet();
 
-    stdout.writeln('''
-webcrypto treeshaking symbols:
-  ${usedSymbols?.join('\n') ?? 'All symbols preserved.'}
+      final sortedSymbols = usedSymbols.toList()..sort();
+      stdout.writeln('''
+webcrypto treeshaking enabled (${sortedSymbols.length} symbols preserved):
+  ${sortedSymbols.join('\n  ')}
 ''');
+    }
 
     await CLinker.library(
       name: 'webcrypto',
@@ -83,7 +101,6 @@ webcrypto treeshaking symbols:
       input: input,
       output: output,
       logger: Logger('webcrypto_linker')
-        ..level = Level.ALL
         ..onRecord.listen((record) => stdout.writeln(record.message)),
     );
   });

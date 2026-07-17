@@ -43,6 +43,7 @@ hooks:
   user_defines:
     webcrypto:
       buildMode: build
+      disable_treeshaking: false
 
 topics:
  - crypto

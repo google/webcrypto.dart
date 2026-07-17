@@ -63,9 +63,11 @@
 library;
 
 import 'dart:ffi' as ffi;
+import 'package:meta/meta.dart' as meta;
 
 /// BN_add sets |r| = |a| + |b|, where |r| may be the same pointer as either |a|
 /// or |b|. It returns one on success and zero on allocation failure.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<BIGNUM>,
@@ -83,6 +85,7 @@ external int BN_add(
 /// a big-endian number, and returns |ret|. If |ret| is NULL then a fresh
 /// |BIGNUM| is allocated and returned. It returns NULL on allocation
 /// failure.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Pointer<BIGNUM> Function(
     ffi.Pointer<ffi.Uint8>,
@@ -100,6 +103,7 @@ external ffi.Pointer<BIGNUM> BN_bin2bn(
 /// big-endian integer. The integer is padded with leading zeros up to size
 /// |len|. If |len| is smaller than |BN_num_bytes|, the function fails and
 /// returns 0. Otherwise, it returns 1.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<ffi.Uint8>, ffi.Size, ffi.Pointer<BIGNUM>)
 >(symbol: 'webcrypto_BN_bn2bin_padded')
@@ -111,6 +115,7 @@ external int BN_bn2bin_padded(
 
 /// BN_cmp returns a value less than, equal to or greater than zero if |a| is
 /// less than, equal to or greater than |b|, respectively.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>)>(
   symbol: 'webcrypto_BN_cmp',
 )
@@ -118,17 +123,20 @@ external int BN_cmp(ffi.Pointer<BIGNUM> a, ffi.Pointer<BIGNUM> b);
 
 /// BN_free frees the data referenced by |bn| and, if |bn| was originally
 /// allocated on the heap, frees |bn| also.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<BIGNUM>)>(symbol: 'webcrypto_BN_free')
 external void BN_free(ffi.Pointer<BIGNUM> bn);
 
 /// BN_lshift sets |r| equal to |a| << n. The |a| and |r| arguments may be the
 /// same |BIGNUM|. It returns one on success and zero on allocation failure.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>, ffi.Int)
 >(symbol: 'webcrypto_BN_lshift')
 external int BN_lshift(ffi.Pointer<BIGNUM> r, ffi.Pointer<BIGNUM> a, int n);
 
 /// BN_new creates a new, allocated BIGNUM and initialises it.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<BIGNUM> Function()>(symbol: 'webcrypto_BN_new')
 external ffi.Pointer<BIGNUM> BN_new();
 
@@ -138,6 +146,7 @@ external ffi.Pointer<BIGNUM> BN_new();
 /// While |size_t| is the preferred type for byte counts, callers can assume that
 /// |BIGNUM|s are bounded such that this value, and its corresponding bit count,
 /// will always fit in |int|.
+@meta.RecordUse()
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<BIGNUM>)>(
   symbol: 'webcrypto_BN_num_bytes',
 )
@@ -145,6 +154,7 @@ external int BN_num_bytes(ffi.Pointer<BIGNUM> bn);
 
 /// BN_set_word sets |bn| to |value|. It returns one on success or zero on
 /// allocation failure.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<BIGNUM>, BN_ULONG)>(
   symbol: 'webcrypto_BN_set_word',
 )
@@ -152,6 +162,7 @@ external int BN_set_word(ffi.Pointer<BIGNUM> bn, int value);
 
 /// BN_sub sets |r| = |a| - |b|, where |r| may be the same pointer as either |a|
 /// or |b|. It returns one on success and zero on allocation failure.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<BIGNUM>,
@@ -166,12 +177,14 @@ external int BN_sub(
 );
 
 /// BN_value_one returns a static BIGNUM with value 1.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<BIGNUM> Function()>(symbol: 'webcrypto_BN_value_one')
 external ffi.Pointer<BIGNUM> BN_value_one();
 
 /// BORINGSSL_self_test triggers most of the FIPS KAT-based self tests. It
 /// returns one on success and zero on error. It currently skips the SLH-DSA
 /// tests, which take a really long time to run.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function()>(symbol: 'webcrypto_BORINGSSL_self_test')
 external int BORINGSSL_self_test();
 
@@ -182,6 +195,7 @@ external int BORINGSSL_self_test();
 /// This function can only be called on a "top level" |CBB|, i.e. one initialised
 /// with |CBB_init| or |CBB_init_fixed|, or a |CBB| set to the zero state with
 /// |CBB_zero|.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<CBB>)>(
   symbol: 'webcrypto_CBB_cleanup',
 )
@@ -192,6 +206,7 @@ external void CBB_cleanup(ffi.Pointer<CBB> cbb);
 ///
 /// To avoid unfinalized length prefixes, it is a fatal error to call this on a
 /// CBB with any active children.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<CBB>)>(
   symbol: 'webcrypto_CBB_data',
 )
@@ -202,12 +217,14 @@ external ffi.Pointer<ffi.Uint8> CBB_data(ffi.Pointer<CBB> cbb);
 /// used after the children go out of scope, e.g. when local |CBB| objects are
 /// added as children to a |CBB| that persists after a function returns. This
 /// function returns one on success or zero on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>)>(symbol: 'webcrypto_CBB_flush')
 external int CBB_flush(ffi.Pointer<CBB> cbb);
 
 /// CBB_init initialises |cbb| with |initial_capacity|. Since a |CBB| grows as
 /// needed, the |initial_capacity| is just a hint. It returns one on success or
 /// zero on allocation failure.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>, ffi.Size)>(
   symbol: 'webcrypto_CBB_init',
 )
@@ -218,6 +235,7 @@ external int CBB_init(ffi.Pointer<CBB> cbb, int initial_capacity);
 ///
 /// To avoid unfinalized length prefixes, it is a fatal error to call this on a
 /// CBB with any active children.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function(ffi.Pointer<CBB>)>(symbol: 'webcrypto_CBB_len')
 external int CBB_len(ffi.Pointer<CBB> cbb);
 
@@ -225,6 +243,7 @@ external int CBB_len(ffi.Pointer<CBB> cbb);
 /// initialised with |CBB_init| or |CBB_init_fixed| before use, but it is safe to
 /// call |CBB_cleanup| without a successful |CBB_init|. This may be used for more
 /// uniform cleanup of a |CBB|.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<CBB>)>(symbol: 'webcrypto_CBB_zero')
 external void CBB_zero(ffi.Pointer<CBB> cbb);
 
@@ -233,6 +252,7 @@ external void CBB_zero(ffi.Pointer<CBB> cbb);
 /// of |a| and |b|. Unlike memcmp, it cannot be used to put elements into a
 /// defined order as the return value when a != b is undefined, other than to be
 /// non-zero.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, ffi.Size)
 >(symbol: 'webcrypto_CRYPTO_memcmp')
@@ -248,6 +268,7 @@ external int CRYPTO_memcmp(
 /// return value. Otherwise, as many bytes of the shared key as will fit are
 /// copied directly to, at most, |outlen| bytes at |out|. It returns the number
 /// of bytes written to |out|, or -1 on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<ffi.Void>,
@@ -285,6 +306,7 @@ external int ECDH_compute_key(
 );
 
 /// ECDSA_SIG_free frees |sig| its member |BIGNUM|s.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<ECDSA_SIG>)>(
   symbol: 'webcrypto_ECDSA_SIG_free',
 )
@@ -292,6 +314,7 @@ external void ECDSA_SIG_free(ffi.Pointer<ECDSA_SIG> sig);
 
 /// ECDSA_SIG_get0 sets |*out_r| and |*out_s|, if non-NULL, to the two
 /// components of |sig|.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Void Function(
     ffi.Pointer<ECDSA_SIG>,
@@ -307,6 +330,7 @@ external void ECDSA_SIG_get0(
 
 /// ECDSA_SIG_marshal marshals |sig| as a DER-encoded ECDSA-Sig-Value and appends
 /// the result to |cbb|. It returns one on success and zero on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>, ffi.Pointer<ECDSA_SIG>)>(
   symbol: 'webcrypto_ECDSA_SIG_marshal',
 )
@@ -316,6 +340,7 @@ external int ECDSA_SIG_marshal(
 );
 
 /// ECDSA_SIG_new returns a fresh |ECDSA_SIG| structure or NULL on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<ECDSA_SIG> Function()>(
   symbol: 'webcrypto_ECDSA_SIG_new',
 )
@@ -323,6 +348,7 @@ external ffi.Pointer<ECDSA_SIG> ECDSA_SIG_new();
 
 /// ECDSA_SIG_parse parses a DER-encoded ECDSA-Sig-Value structure from |cbs| and
 /// advances |cbs|. It returns a newly-allocated |ECDSA_SIG| or NULL on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<ECDSA_SIG> Function(ffi.Pointer<CBS>)>(
   symbol: 'webcrypto_ECDSA_SIG_parse',
 )
@@ -334,6 +360,7 @@ external ffi.Pointer<ECDSA_SIG> ECDSA_SIG_parse(ffi.Pointer<CBS> cbs);
 /// This function exists for OpenSSL compatibility, and to manage dynamic
 /// |EC_GROUP|s constructed by |EC_GROUP_new_curve_GFp|. Callers that do not need
 /// either may ignore this function.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_GROUP_free',
 )
@@ -341,12 +368,14 @@ external void EC_GROUP_free(ffi.Pointer<EC_GROUP> group);
 
 /// EC_GROUP_get0_order returns a pointer to the internal |BIGNUM| object in
 /// |group| that specifies the order of the group.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<BIGNUM> Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_GROUP_get0_order',
 )
 external ffi.Pointer<BIGNUM> EC_GROUP_get0_order(ffi.Pointer<EC_GROUP> group);
 
 /// EC_GROUP_get_curve_name returns a NID that identifies |group|.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_GROUP_get_curve_name',
 )
@@ -354,6 +383,7 @@ external int EC_GROUP_get_curve_name(ffi.Pointer<EC_GROUP> group);
 
 /// EC_GROUP_get_degree returns the number of bits needed to represent an
 /// element of the field underlying |group|.
+@meta.RecordUse()
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_GROUP_get_degree',
 )
@@ -376,6 +406,7 @@ external int EC_GROUP_get_degree(ffi.Pointer<EC_GROUP> group);
 ///
 /// If in doubt, use |NID_X9_62_prime256v1|, or see the curve25519.h header for
 /// more modern primitives.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EC_GROUP> Function(ffi.Int)>(
   symbol: 'webcrypto_EC_GROUP_new_by_curve_name',
 )
@@ -385,12 +416,14 @@ external ffi.Pointer<EC_GROUP> EC_GROUP_new_by_curve_name(int nid);
 /// expensive check that the public key is in the primary subgroup). It returns
 /// one if all checks pass and zero otherwise. If it returns zero then detail
 /// about the problem can be found on the error stack.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_check_key',
 )
 external int EC_KEY_check_key(ffi.Pointer<EC_KEY> key);
 
 /// EC_KEY_free frees all the data owned by |key| and |key| itself.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_free',
 )
@@ -399,18 +432,21 @@ external void EC_KEY_free(ffi.Pointer<EC_KEY> key);
 /// EC_KEY_generate_key generates a random, private key, calculates the
 /// corresponding public key and stores both in |key|. It returns one on success
 /// or zero otherwise.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_generate_key',
 )
 external int EC_KEY_generate_key(ffi.Pointer<EC_KEY> key);
 
 /// EC_KEY_get0_group returns a pointer to the |EC_GROUP| object inside |key|.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EC_GROUP> Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_get0_group',
 )
 external ffi.Pointer<EC_GROUP> EC_KEY_get0_group(ffi.Pointer<EC_KEY> key);
 
 /// EC_KEY_get0_private_key returns a pointer to the private key inside |key|.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<BIGNUM> Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_get0_private_key',
 )
@@ -418,6 +454,7 @@ external ffi.Pointer<BIGNUM> EC_KEY_get0_private_key(ffi.Pointer<EC_KEY> key);
 
 /// EC_KEY_get0_public_key returns a pointer to the public key point inside
 /// |key|.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EC_POINT> Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_get0_public_key',
 )
@@ -425,6 +462,7 @@ external ffi.Pointer<EC_POINT> EC_KEY_get0_public_key(ffi.Pointer<EC_KEY> key);
 
 /// EC_KEY_get_enc_flags returns the encoding flags for |key|, which is a
 /// bitwise-OR of |EC_PKEY_*| values.
+@meta.RecordUse()
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_get_enc_flags',
 )
@@ -432,6 +470,7 @@ external int EC_KEY_get_enc_flags(ffi.Pointer<EC_KEY> key);
 
 /// EC_KEY_new_by_curve_name returns a fresh EC_KEY for group specified by |nid|
 /// or NULL on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EC_KEY> Function(ffi.Int)>(
   symbol: 'webcrypto_EC_KEY_new_by_curve_name',
 )
@@ -439,6 +478,7 @@ external ffi.Pointer<EC_KEY> EC_KEY_new_by_curve_name(int nid);
 
 /// EC_KEY_set_enc_flags sets the encoding flags for |key|, which is a
 /// bitwise-OR of |EC_PKEY_*| values.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EC_KEY>, ffi.UnsignedInt)>(
   symbol: 'webcrypto_EC_KEY_set_enc_flags',
 )
@@ -447,6 +487,7 @@ external void EC_KEY_set_enc_flags(ffi.Pointer<EC_KEY> key, int flags);
 /// EC_KEY_set_private_key sets the private key of |key| to |priv|. It returns
 /// one on success and zero otherwise. |key| must already have had a group
 /// configured (see |EC_KEY_set_group| and |EC_KEY_new_by_curve_name|).
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_KEY>, ffi.Pointer<BIGNUM>)>(
   symbol: 'webcrypto_EC_KEY_set_private_key',
 )
@@ -459,6 +500,7 @@ external int EC_KEY_set_private_key(
 /// It returns one on success and zero otherwise. |key| must already have had a
 /// group configured (see |EC_KEY_set_group| and |EC_KEY_new_by_curve_name|), and
 /// |pub| must also belong to that group, and must not be the point at infinity.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_KEY>, ffi.Pointer<EC_POINT>)>(
   symbol: 'webcrypto_EC_KEY_set_public_key',
 )
@@ -470,6 +512,7 @@ external int EC_KEY_set_public_key(
 /// EC_KEY_set_public_key_affine_coordinates sets the public key in |key| to
 /// (|x|, |y|). It returns one on success and zero on error. It's considered an
 /// error if |x| and |y| do not represent a point on |key|'s curve.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EC_KEY>,
@@ -484,6 +527,7 @@ external int EC_KEY_set_public_key_affine_coordinates(
 );
 
 /// EC_POINT_free frees |point| and the data that it points to.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EC_POINT>)>(
   symbol: 'webcrypto_EC_POINT_free',
 )
@@ -495,6 +539,7 @@ external void EC_POINT_free(ffi.Pointer<EC_POINT> point);
 ///
 /// Either |x| or |y| may be NULL to skip computing that coordinate. This is
 /// slightly faster in the common case where only the x-coordinate is needed.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EC_GROUP>,
@@ -514,6 +559,7 @@ external int EC_POINT_get_affine_coordinates_GFp(
 
 /// EC_POINT_new returns a fresh |EC_POINT| object in the given group, or NULL
 /// on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EC_POINT> Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_POINT_new',
 )
@@ -523,6 +569,7 @@ external ffi.Pointer<EC_POINT> EC_POINT_new(ffi.Pointer<EC_GROUP> group);
 /// serialisation in |buf|. It returns one on success and zero on error. |ctx|
 /// may be NULL. It's considered an error if |buf| does not represent a point on
 /// the curve.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EC_GROUP>,
@@ -543,6 +590,7 @@ external int EC_POINT_oct2point(
 /// EC_POINT_point2cbb behaves like |EC_POINT_point2oct| but appends the
 /// serialised point to |cbb|. It returns one on success and zero on error. |ctx|
 /// is ignored and may be NULL.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<CBB>,
@@ -561,6 +609,7 @@ external int EC_POINT_point2cbb(
 );
 
 /// ERR_clear_error clears the error queue for the current thread.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function()>(symbol: 'webcrypto_ERR_clear_error')
 external void ERR_clear_error();
 
@@ -575,6 +624,7 @@ external void ERR_clear_error();
 ///
 /// error code is an 8 digit hexadecimal number; library name and reason string
 /// are ASCII text.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Pointer<ffi.Char> Function(ffi.Uint32, ffi.Pointer<ffi.Char>, ffi.Size)
 >(symbol: 'webcrypto_ERR_error_string_n')
@@ -587,16 +637,19 @@ external ffi.Pointer<ffi.Char> ERR_error_string_n(
 /// ERR_get_error gets the packed error code for the least recent error and
 /// removes that error from the queue. If there are no errors in the queue then
 /// it returns zero.
+@meta.RecordUse()
 @ffi.Native<ffi.Uint32 Function()>(symbol: 'webcrypto_ERR_get_error')
 external int ERR_get_error();
 
 /// The "peek" functions act like the |ERR_get_error| functions, above, but they
 /// do not remove the error from the queue.
+@meta.RecordUse()
 @ffi.Native<ffi.Uint32 Function()>(symbol: 'webcrypto_ERR_peek_error')
 external int ERR_peek_error();
 
 /// EVP_AEAD_CTX_free calls |EVP_AEAD_CTX_cleanup| and |OPENSSL_free| on
 /// |ctx|.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_AEAD_CTX>)>(
   symbol: 'webcrypto_EVP_AEAD_CTX_free',
 )
@@ -604,6 +657,7 @@ external void EVP_AEAD_CTX_free(ffi.Pointer<EVP_AEAD_CTX> ctx);
 
 /// EVP_AEAD_CTX_new allocates an |EVP_AEAD_CTX|, calls |EVP_AEAD_CTX_init| and
 /// returns the |EVP_AEAD_CTX|, or NULL on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Pointer<EVP_AEAD_CTX> Function(
     ffi.Pointer<EVP_AEAD>,
@@ -638,6 +692,7 @@ external ffi.Pointer<EVP_AEAD_CTX> EVP_AEAD_CTX_new(
 /// filled with zero bytes and |*out_len| set to zero.
 ///
 /// If |in| and |out| alias then |out| must be == |in|.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_AEAD_CTX>,
@@ -685,6 +740,7 @@ external int EVP_AEAD_CTX_open(
 /// filled with zero bytes and |*out_len| set to zero.
 ///
 /// If |in| and |out| alias then |out| must be == |in|.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_AEAD_CTX>,
@@ -714,6 +770,7 @@ external int EVP_AEAD_CTX_seal(
 
 /// EVP_AEAD_key_length returns the length, in bytes, of the keys used by
 /// |aead|.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_AEAD>)>(
   symbol: 'webcrypto_EVP_AEAD_key_length',
 )
@@ -721,6 +778,7 @@ external int EVP_AEAD_key_length(ffi.Pointer<EVP_AEAD> aead);
 
 /// EVP_AEAD_max_overhead returns the maximum number of additional bytes added
 /// by the act of sealing data with |aead|.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_AEAD>)>(
   symbol: 'webcrypto_EVP_AEAD_max_overhead',
 )
@@ -729,6 +787,7 @@ external int EVP_AEAD_max_overhead(ffi.Pointer<EVP_AEAD> aead);
 /// EVP_AEAD_max_tag_len returns the maximum tag length when using |aead|. This
 /// is the largest value that can be passed as |tag_len| to
 /// |EVP_AEAD_CTX_init|.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_AEAD>)>(
   symbol: 'webcrypto_EVP_AEAD_max_tag_len',
 )
@@ -736,6 +795,7 @@ external int EVP_AEAD_max_tag_len(ffi.Pointer<EVP_AEAD> aead);
 
 /// EVP_AEAD_nonce_length returns the length, in bytes, of the per-message nonce
 /// for |aead|.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_AEAD>)>(
   symbol: 'webcrypto_EVP_AEAD_nonce_length',
 )
@@ -743,6 +803,7 @@ external int EVP_AEAD_nonce_length(ffi.Pointer<EVP_AEAD> aead);
 
 /// EVP_CIPHER_CTX_free calls |EVP_CIPHER_CTX_cleanup| on |ctx| and then frees
 /// |ctx| itself.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_CIPHER_CTX>)>(
   symbol: 'webcrypto_EVP_CIPHER_CTX_free',
 )
@@ -750,6 +811,7 @@ external void EVP_CIPHER_CTX_free(ffi.Pointer<EVP_CIPHER_CTX> ctx);
 
 /// EVP_CIPHER_CTX_new allocates a fresh |EVP_CIPHER_CTX|, calls
 /// |EVP_CIPHER_CTX_init| and returns it, or NULL on allocation failure.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_CIPHER_CTX> Function()>(
   symbol: 'webcrypto_EVP_CIPHER_CTX_new',
 )
@@ -757,6 +819,7 @@ external ffi.Pointer<EVP_CIPHER_CTX> EVP_CIPHER_CTX_new();
 
 /// EVP_CIPHER_block_size returns the block size, in bytes, for |cipher|, or one
 /// if |cipher| is a stream cipher.
+@meta.RecordUse()
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<EVP_CIPHER>)>(
   symbol: 'webcrypto_EVP_CIPHER_block_size',
 )
@@ -764,6 +827,7 @@ external int EVP_CIPHER_block_size(ffi.Pointer<EVP_CIPHER> cipher);
 
 /// EVP_CIPHER_iv_length returns the IV size, in bytes, of |cipher|, or zero if
 /// |cipher| doesn't take an IV.
+@meta.RecordUse()
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<EVP_CIPHER>)>(
   symbol: 'webcrypto_EVP_CIPHER_iv_length',
 )
@@ -774,6 +838,7 @@ external int EVP_CIPHER_iv_length(ffi.Pointer<EVP_CIPHER> cipher);
 ///
 /// WARNING: This function does not check bounds on out, and correctly sizing
 /// the output buffer is difficult. Use |EVP_CipherFinal_ex2| instead.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_CIPHER_CTX>,
@@ -794,6 +859,7 @@ external int EVP_CipherFinal_ex(
 /// as the key and |iv| as the IV (if any). These should have the correct
 /// lengths given by |EVP_CIPHER_key_length| and |EVP_CIPHER_iv_length|. It
 /// returns one on success and zero on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_CIPHER_CTX>,
@@ -822,6 +888,7 @@ external int EVP_CipherInit_ex(
 /// WARNING: This function does not check bounds on |out|, and correctly sizing
 /// the output buffer is difficult. Use |EVP_CipherUpdate_ex| or
 /// |EVP_CipherUpdateAAD| instead.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_CIPHER_CTX>,
@@ -841,6 +908,7 @@ external int EVP_CipherUpdate(
 
 /// EVP_DigestFinal acts like |EVP_DigestFinal_ex| except that
 /// |EVP_MD_CTX_cleanup| is called on |ctx| before returning.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_MD_CTX>,
@@ -856,6 +924,7 @@ external int EVP_DigestFinal(
 
 /// EVP_DigestInit acts like |EVP_DigestInit_ex| except that |ctx| is
 /// initialised before use.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<EVP_MD>)>(
   symbol: 'webcrypto_EVP_DigestInit',
 )
@@ -876,6 +945,7 @@ external int EVP_DigestInit(
 /// single-shot operation.
 ///
 /// It returns one on success, or zero on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_MD_CTX>,
@@ -903,6 +973,7 @@ external int EVP_DigestSignFinal(
 /// used concurrently with other non-mutating functions on |pkey|.
 ///
 /// It returns one on success, or zero on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_MD_CTX>,
@@ -926,6 +997,7 @@ external int EVP_DigestSignInit(
 /// This function performs a streaming signing operation and will fail for
 /// signature algorithms which do not support this. Use |EVP_DigestSign| for a
 /// single-shot operation.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
 >(symbol: 'webcrypto_EVP_DigestSignUpdate')
@@ -937,6 +1009,7 @@ external int EVP_DigestSignUpdate(
 
 /// EVP_DigestUpdate hashes |len| bytes from |data| into the hashing operation
 /// in |ctx|. It returns one.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
 >(symbol: 'webcrypto_EVP_DigestUpdate')
@@ -953,6 +1026,7 @@ external int EVP_DigestUpdate(
 /// This function performs streaming signature verification and will fail for
 /// signature algorithms which do not support this. Use |EVP_DigestVerify| for a
 /// single-shot verification.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Uint8>, ffi.Size)
 >(symbol: 'webcrypto_EVP_DigestVerifyFinal')
@@ -976,6 +1050,7 @@ external int EVP_DigestVerifyFinal(
 /// used concurrently with other non-mutating functions on |pkey|.
 ///
 /// It returns one on success, or zero on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_MD_CTX>,
@@ -999,6 +1074,7 @@ external int EVP_DigestVerifyInit(
 /// This function performs streaming signature verification and will fail for
 /// signature algorithms which do not support this. Use |EVP_DigestVerify| for a
 /// single-shot verification.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
 >(symbol: 'webcrypto_EVP_DigestVerifyUpdate')
@@ -1009,6 +1085,7 @@ external int EVP_DigestVerifyUpdate(
 );
 
 /// EVP_MD_CTX_free calls |EVP_MD_CTX_cleanup| and then frees |ctx| itself.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_MD_CTX>)>(
   symbol: 'webcrypto_EVP_MD_CTX_free',
 )
@@ -1017,6 +1094,7 @@ external void EVP_MD_CTX_free(ffi.Pointer<EVP_MD_CTX> ctx);
 /// EVP_MD_CTX_new allocates and initialises a fresh |EVP_MD_CTX| and returns
 /// it, or NULL on allocation failure. The caller must use |EVP_MD_CTX_free| to
 /// release the resulting object.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_MD_CTX> Function()>(
   symbol: 'webcrypto_EVP_MD_CTX_new',
 )
@@ -1024,18 +1102,21 @@ external ffi.Pointer<EVP_MD_CTX> EVP_MD_CTX_new();
 
 /// EVP_MD_CTX_size returns the digest size of |ctx|, in bytes. It
 /// will crash if a digest hasn't been set on |ctx|.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_MD_CTX>)>(
   symbol: 'webcrypto_EVP_MD_CTX_size',
 )
 external int EVP_MD_CTX_size(ffi.Pointer<EVP_MD_CTX> ctx);
 
 /// EVP_MD_size returns the digest size of |md|, in bytes.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_MD>)>(
   symbol: 'webcrypto_EVP_MD_size',
 )
 external int EVP_MD_size(ffi.Pointer<EVP_MD> md);
 
 /// EVP_PKEY_CTX_free frees |ctx| and the data it owns.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_PKEY_CTX>)>(
   symbol: 'webcrypto_EVP_PKEY_CTX_free',
 )
@@ -1043,6 +1124,7 @@ external void EVP_PKEY_CTX_free(ffi.Pointer<EVP_PKEY_CTX> ctx);
 
 /// EVP_PKEY_CTX_new allocates a fresh |EVP_PKEY_CTX| for use with |pkey|. It
 /// returns the context or NULL on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Pointer<EVP_PKEY_CTX> Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<ENGINE>)
 >(symbol: 'webcrypto_EVP_PKEY_CTX_new')
@@ -1056,6 +1138,7 @@ external ffi.Pointer<EVP_PKEY_CTX> EVP_PKEY_CTX_new(
 /// and will call |OPENSSL_free| on it when |ctx| is destroyed.
 ///
 /// Returns one on success or zero on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Pointer<ffi.Uint8>, ffi.Size)
 >(symbol: 'webcrypto_EVP_PKEY_CTX_set0_rsa_oaep_label')
@@ -1071,6 +1154,7 @@ external int EVP_PKEY_CTX_set0_rsa_oaep_label(
 /// If unset, the default is the signing hash for |RSA_PKCS1_PSS_PADDING| and the
 /// OAEP hash for |RSA_PKCS1_OAEP_PADDING|. Callers are recommended to use this
 /// default and not call this function.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Pointer<EVP_MD>)>(
   symbol: 'webcrypto_EVP_PKEY_CTX_set_rsa_mgf1_md',
 )
@@ -1084,6 +1168,7 @@ external int EVP_PKEY_CTX_set_rsa_mgf1_md(
 /// Callers are recommended to overwrite this default.
 ///
 /// TODO(davidben): Remove the default and require callers specify this.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Pointer<EVP_MD>)>(
   symbol: 'webcrypto_EVP_PKEY_CTX_set_rsa_oaep_md',
 )
@@ -1095,6 +1180,7 @@ external int EVP_PKEY_CTX_set_rsa_oaep_md(
 /// EVP_PKEY_CTX_set_rsa_padding sets the padding type to use. It should be one
 /// of the |RSA_*_PADDING| values. Returns one on success or zero on error. By
 /// default, the padding is |RSA_PKCS1_PADDING|.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Int)>(
   symbol: 'webcrypto_EVP_PKEY_CTX_set_rsa_padding',
 )
@@ -1114,6 +1200,7 @@ external int EVP_PKEY_CTX_set_rsa_padding(
 /// differs from OpenSSL, which defaults to |RSA_PSS_SALTLEN_AUTO|.
 ///
 /// Returns one on success or zero on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Int)>(
   symbol: 'webcrypto_EVP_PKEY_CTX_set_rsa_pss_saltlen',
 )
@@ -1132,6 +1219,7 @@ external int EVP_PKEY_CTX_set_rsa_pss_saltlen(
 /// plaintext. The actual plaintext may be smaller.
 ///
 /// It returns one on success or zero on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_PKEY_CTX>,
@@ -1153,6 +1241,7 @@ external int EVP_PKEY_decrypt(
 /// operation. It should be called before |EVP_PKEY_decrypt|.
 ///
 /// It returns one on success or zero on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>)>(
   symbol: 'webcrypto_EVP_PKEY_decrypt_init',
 )
@@ -1168,6 +1257,7 @@ external int EVP_PKEY_decrypt_init(ffi.Pointer<EVP_PKEY_CTX> ctx);
 /// ciphertext. The actual ciphertext may be smaller.
 ///
 /// It returns one on success or zero on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_PKEY_CTX>,
@@ -1189,6 +1279,7 @@ external int EVP_PKEY_encrypt(
 /// operation. It should be called before |EVP_PKEY_encrypt|.
 ///
 /// It returns one on success or zero on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>)>(
   symbol: 'webcrypto_EVP_PKEY_encrypt_init',
 )
@@ -1196,16 +1287,19 @@ external int EVP_PKEY_encrypt_init(ffi.Pointer<EVP_PKEY_CTX> ctx);
 
 /// EVP_PKEY_free decrements the reference count of |pkey| and frees it if the
 /// reference count drops to zero.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_PKEY_free',
 )
 external void EVP_PKEY_free(ffi.Pointer<EVP_PKEY> pkey);
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EC_KEY> Function(ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_PKEY_get1_EC_KEY',
 )
 external ffi.Pointer<EC_KEY> EVP_PKEY_get1_EC_KEY(ffi.Pointer<EVP_PKEY> pkey);
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<RSA> Function(ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_PKEY_get1_RSA',
 )
@@ -1217,6 +1311,7 @@ external ffi.Pointer<RSA> EVP_PKEY_get1_RSA(ffi.Pointer<EVP_PKEY> pkey);
 /// PrivateKeyInfo (RFC 5208) AlgorithmIdentifier. Algorithm parameters can be
 /// inspected with algorithm-specific accessors, e.g.
 /// |EVP_PKEY_get_ec_curve_nid|.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_PKEY_id',
 )
@@ -1224,9 +1319,11 @@ external int EVP_PKEY_id(ffi.Pointer<EVP_PKEY> pkey);
 
 /// EVP_PKEY_new creates a new, empty public-key object and returns it or NULL
 /// on allocation failure.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_PKEY> Function()>(symbol: 'webcrypto_EVP_PKEY_new')
 external ffi.Pointer<EVP_PKEY> EVP_PKEY_new();
 
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EVP_PKEY_set1_EC_KEY',
 )
@@ -1261,6 +1358,7 @@ external int EVP_PKEY_set1_EC_KEY(
 /// not make |EVP_PKEY_RSA_PSS| available by default, only when callers opt in
 /// via |EVP_pkey_rsa_pss_sha256|. This differs from upstream OpenSSL, where
 /// callers are exposed to |EVP_PKEY_RSA_PSS| by default.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<RSA>)>(
   symbol: 'webcrypto_EVP_PKEY_set1_RSA',
 )
@@ -1286,6 +1384,7 @@ external int EVP_PKEY_set1_RSA(
 /// |EVP_PKEY_set1_tls_encodedpoint| with X25519, which requires a half-empty
 /// |EVP_PKEY| that was first configured with |EVP_PKEY_X25519|. Currently, all
 /// other values of |type| will result in an error.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY>, ffi.Int)>(
   symbol: 'webcrypto_EVP_PKEY_set_type',
 )
@@ -1298,6 +1397,7 @@ external int EVP_PKEY_set_type(ffi.Pointer<EVP_PKEY> pkey, int type);
 /// effectively randomized, which means one must consider collisions. Unless
 /// implementing an existing protocol which has already specified incorrect
 /// parameters, only use 12-byte nonces.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_AEAD> Function()>(
   symbol: 'webcrypto_EVP_aead_aes_128_gcm',
 )
@@ -1310,26 +1410,31 @@ external ffi.Pointer<EVP_AEAD> EVP_aead_aes_128_gcm();
 /// effectively randomized, which means one must consider collisions. Unless
 /// implementing an existing protocol which has already specified incorrect
 /// parameters, only use 12-byte nonces.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_AEAD> Function()>(
   symbol: 'webcrypto_EVP_aead_aes_256_gcm',
 )
 external ffi.Pointer<EVP_AEAD> EVP_aead_aes_256_gcm();
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_CIPHER> Function()>(
   symbol: 'webcrypto_EVP_aes_128_cbc',
 )
 external ffi.Pointer<EVP_CIPHER> EVP_aes_128_cbc();
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_CIPHER> Function()>(
   symbol: 'webcrypto_EVP_aes_128_ctr',
 )
 external ffi.Pointer<EVP_CIPHER> EVP_aes_128_ctr();
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_CIPHER> Function()>(
   symbol: 'webcrypto_EVP_aes_256_cbc',
 )
 external ffi.Pointer<EVP_CIPHER> EVP_aes_256_cbc();
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_CIPHER> Function()>(
   symbol: 'webcrypto_EVP_aes_256_ctr',
 )
@@ -1338,6 +1443,7 @@ external ffi.Pointer<EVP_CIPHER> EVP_aes_256_ctr();
 /// EVP_marshal_private_key marshals |key| as a DER-encoded PrivateKeyInfo
 /// structure (RFC 5208) and appends the result to |cbb|. It returns one on
 /// success and zero on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>, ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_marshal_private_key',
 )
@@ -1349,6 +1455,7 @@ external int EVP_marshal_private_key(
 /// EVP_marshal_public_key marshals |key| as a DER-encoded SubjectPublicKeyInfo
 /// structure (RFC 5280) and appends the result to |cbb|. It returns one on
 /// success and zero on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>, ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_marshal_public_key',
 )
@@ -1381,6 +1488,7 @@ external int EVP_marshal_public_key(
 ///
 /// A PrivateKeyInfo ends with an optional set of attributes. These are silently
 /// ignored.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_PKEY> Function(ffi.Pointer<CBS>)>(
   symbol: 'webcrypto_EVP_parse_private_key',
 )
@@ -1405,20 +1513,25 @@ external ffi.Pointer<EVP_PKEY> EVP_parse_private_key(ffi.Pointer<CBS> cbs);
 /// This means callers must check the type of the parsed public key to ensure it
 /// is suitable and validate other desired key properties such as RSA modulus
 /// size or EC curve.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_PKEY> Function(ffi.Pointer<CBS>)>(
   symbol: 'webcrypto_EVP_parse_public_key',
 )
 external ffi.Pointer<EVP_PKEY> EVP_parse_public_key(ffi.Pointer<CBS> cbs);
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_MD> Function()>(symbol: 'webcrypto_EVP_sha1')
 external ffi.Pointer<EVP_MD> EVP_sha1();
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_MD> Function()>(symbol: 'webcrypto_EVP_sha256')
 external ffi.Pointer<EVP_MD> EVP_sha256();
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_MD> Function()>(symbol: 'webcrypto_EVP_sha384')
 external ffi.Pointer<EVP_MD> EVP_sha384();
 
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<EVP_MD> Function()>(symbol: 'webcrypto_EVP_sha512')
 external ffi.Pointer<EVP_MD> EVP_sha512();
 
@@ -1429,6 +1542,7 @@ external ffi.Pointer<EVP_MD> EVP_sha512();
 /// HKDF is an Extract-and-Expand algorithm. It does not do any key stretching,
 /// and as such, is not suited to be used alone to generate a key from a
 /// password.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<ffi.Uint8>,
@@ -1455,6 +1569,7 @@ external int HKDF(
 );
 
 /// HMAC_CTX_free calls |HMAC_CTX_cleanup| and then frees |ctx| itself.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<HMAC_CTX>)>(
   symbol: 'webcrypto_HMAC_CTX_free',
 )
@@ -1463,6 +1578,7 @@ external void HMAC_CTX_free(ffi.Pointer<HMAC_CTX> ctx);
 /// HMAC_CTX_new allocates and initialises a new |HMAC_CTX| and returns it, or
 /// NULL on allocation failure. The caller must use |HMAC_CTX_free| to release
 /// the resulting object.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<HMAC_CTX> Function()>(symbol: 'webcrypto_HMAC_CTX_new')
 external ffi.Pointer<HMAC_CTX> HMAC_CTX_new();
 
@@ -1471,6 +1587,7 @@ external ffi.Pointer<HMAC_CTX> HMAC_CTX_new();
 /// |*out_len|. On entry, |out| must contain at least |HMAC_size| bytes of
 /// space. An output size of |EVP_MAX_MD_SIZE| will always be large enough. It
 /// returns one on success or zero on allocation failure.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<HMAC_CTX>,
@@ -1493,6 +1610,7 @@ external int HMAC_Final(
 /// WARNING: NULL and empty keys are ambiguous on non-initial calls. Passing NULL
 /// |key| but repeating the previous |md| reuses the previous key rather than the
 /// empty key.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<HMAC_CTX>,
@@ -1512,6 +1630,7 @@ external int HMAC_Init_ex(
 
 /// HMAC_Update hashes |data_len| bytes from |data| into the current HMAC
 /// operation in |ctx|. It returns one.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<HMAC_CTX>, ffi.Pointer<ffi.Uint8>, ffi.Size)
 >(symbol: 'webcrypto_HMAC_Update')
@@ -1523,6 +1642,7 @@ external int HMAC_Update(
 
 /// HMAC_size returns the size, in bytes, of the HMAC that will be produced by
 /// |ctx|. On entry, |ctx| must have been setup with |HMAC_Init_ex|.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function(ffi.Pointer<HMAC_CTX>)>(
   symbol: 'webcrypto_HMAC_size',
 )
@@ -1531,6 +1651,7 @@ external int HMAC_size(ffi.Pointer<HMAC_CTX> ctx);
 /// OPENSSL_free does nothing if |ptr| is NULL. Otherwise it zeros out the
 /// memory allocated at |ptr| and frees it along with the private data.
 /// It must only be used on on |ptr| values obtained from |OPENSSL_malloc|
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<ffi.Void>)>(
   symbol: 'webcrypto_OPENSSL_free',
 )
@@ -1540,6 +1661,7 @@ external void OPENSSL_free(ffi.Pointer<ffi.Void> ptr);
 /// private data. The resulting pointer must be freed with |OPENSSL_free|. In
 /// the case of a malloc failure, prior to returning NULL |OPENSSL_malloc| will
 /// push |ERR_R_MALLOC_FAILURE| onto the openssl error stack.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Size)>(
   symbol: 'webcrypto_OPENSSL_malloc',
 )
@@ -1548,6 +1670,7 @@ external ffi.Pointer<ffi.Void> OPENSSL_malloc(int size);
 /// OPENSSL_memdup returns an allocated, duplicate of |size| bytes from |data| or
 /// NULL on allocation failure. The memory allocated must be freed with
 /// |OPENSSL_free|.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)>(
   symbol: 'webcrypto_OPENSSL_memdup',
 )
@@ -1559,6 +1682,7 @@ external ffi.Pointer<ffi.Void> OPENSSL_memdup(
 /// PKCS5_PBKDF2_HMAC computes |iterations| iterations of PBKDF2 of |password|
 /// and |salt|, using |digest|, and outputs |key_len| bytes to |out_key|. It
 /// returns one on success and zero on allocation failure or if iterations is 0.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<ffi.Char>,
@@ -1584,6 +1708,7 @@ external int PKCS5_PBKDF2_HMAC(
 
 /// RAND_bytes writes |len| bytes of random data to |buf| and returns one. In the
 /// event that sufficient random data can not be obtained, |abort| is called.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<ffi.Uint8>, ffi.Size)>(
   symbol: 'webcrypto_RAND_bytes',
 )
@@ -1591,6 +1716,7 @@ external int RAND_bytes(ffi.Pointer<ffi.Uint8> buf, int len);
 
 /// RSAPublicKey_dup allocates a fresh |RSA| and copies the public key from
 /// |rsa| into it. It returns the fresh |RSA| object, or NULL on error.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<RSA> Function(ffi.Pointer<RSA>)>(
   symbol: 'webcrypto_RSAPublicKey_dup',
 )
@@ -1599,6 +1725,7 @@ external ffi.Pointer<RSA> RSAPublicKey_dup(ffi.Pointer<RSA> rsa);
 /// RSA_check_key performs basic validity tests on |rsa|. It returns one if
 /// they pass and zero otherwise. Opaque keys and public keys always pass. If it
 /// returns zero then a more detailed error is available on the error queue.
+@meta.RecordUse()
 @ffi.Native<ffi.Int Function(ffi.Pointer<RSA>)>(
   symbol: 'webcrypto_RSA_check_key',
 )
@@ -1606,6 +1733,7 @@ external int RSA_check_key(ffi.Pointer<RSA> rsa);
 
 /// RSA_free decrements the reference count of |rsa| and frees it if the
 /// reference count drops to zero.
+@meta.RecordUse()
 @ffi.Native<ffi.Void Function(ffi.Pointer<RSA>)>(symbol: 'webcrypto_RSA_free')
 external void RSA_free(ffi.Pointer<RSA> rsa);
 
@@ -1617,6 +1745,7 @@ external void RSA_free(ffi.Pointer<RSA> rsa);
 /// with event=3 when a suitable value for |p| is found.
 ///
 /// It returns one on success or zero on error.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<RSA>,
@@ -1636,6 +1765,7 @@ external int RSA_generate_key_ex(
 /// non-NULL, to |rsa|'s CRT parameters. These are d (mod p-1), d (mod q-1) and
 /// q^-1 (mod p), respectively. If |rsa| is a public key, each parameter will be
 /// set to NULL.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Void Function(
     ffi.Pointer<RSA>,
@@ -1653,6 +1783,7 @@ external void RSA_get0_crt_params(
 
 /// RSA_get0_factors sets |*out_p| and |*out_q|, if non-NULL, to |rsa|'s prime
 /// factors. If |rsa| is a public key, they will be set to NULL.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Void Function(
     ffi.Pointer<RSA>,
@@ -1669,6 +1800,7 @@ external void RSA_get0_factors(
 /// RSA_get0_key sets |*out_n|, |*out_e|, and |*out_d|, if non-NULL, to |rsa|'s
 /// modulus, public exponent, and private exponent, respectively. If |rsa| is a
 /// public key, the private exponent will be set to NULL.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Void Function(
     ffi.Pointer<RSA>,
@@ -1686,6 +1818,7 @@ external void RSA_get0_key(
 
 /// RSA_new returns a new, empty |RSA| object or NULL on error. Prefer using
 /// |RSA_new_public_key| or |RSA_new_private_key| to import an RSA key.
+@meta.RecordUse()
 @ffi.Native<ffi.Pointer<RSA> Function()>(symbol: 'webcrypto_RSA_new')
 external ffi.Pointer<RSA> RSA_new();
 
@@ -1697,6 +1830,7 @@ external ffi.Pointer<RSA> RSA_new();
 ///
 /// It is an error to call this function after |rsa| has been used for a
 /// cryptographic operation. Construct a new |RSA| object instead.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<RSA>,
@@ -1720,6 +1854,7 @@ external int RSA_set0_crt_params(
 ///
 /// It is an error to call this function after |rsa| has been used for a
 /// cryptographic operation. Construct a new |RSA| object instead.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<RSA>, ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>)
 >(symbol: 'webcrypto_RSA_set0_factors')
@@ -1738,6 +1873,7 @@ external int RSA_set0_factors(
 ///
 /// It is an error to call this function after |rsa| has been used for a
 /// cryptographic operation. Construct a new |RSA| object instead.
+@meta.RecordUse()
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<RSA>,

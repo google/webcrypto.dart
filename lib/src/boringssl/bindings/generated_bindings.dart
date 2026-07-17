@@ -23,8 +23,10 @@
 library;
 
 import 'dart:ffi' as ffi;
+import 'package:meta/meta.dart' as meta;
 
 /// Helper function to get the size of CBB structure for FFI allocation.
+@meta.RecordUse()
 @ffi.Native<ffi.Size Function()>()
 external int webcrypto_get_CBB_size();
 
