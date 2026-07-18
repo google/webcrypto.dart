@@ -15,6 +15,7 @@
 library;
 
 import 'dart:async';
+import 'dart:convert' show base64Url;
 import 'dart:js_interop';
 import 'dart:typed_data';
 
