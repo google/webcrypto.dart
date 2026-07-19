@@ -52,31 +52,35 @@ extension _RsaHashMetadata on _HashImpl {
   }
 }
 
-Uint8List _importPkcs8RsaPrivateKey(Uint8List keyData) {
+jni.JObject _importPkcs8RsaPrivateKey(Uint8List keyData) {
   _validateRsaDerEncoding(keyData, 'PKCS#8 RSA private key');
   try {
     return jni.using((arena) {
-      final key = _rsaPrivateKeyFromPkcs8(arena, keyData, validate: true);
-      return _copyEncodedRsaKey(arena, key, 'private');
+      final key = _rsaPrivateKeyFromPkcs8(arena, keyData);
+      return _validateRsaKeyBeforeOwnershipTransfer(key, () {
+        _validateRsaPrivateKey(arena, key);
+      });
     });
   } on jni.JThrowable catch (e) {
     throw _rsaKeyFormatException(e, 'Unable to import PKCS#8 RSA private key');
   }
 }
 
-Uint8List _importSpkiRsaPublicKey(Uint8List keyData) {
+jni.JObject _importSpkiRsaPublicKey(Uint8List keyData) {
   _validateRsaDerEncoding(keyData, 'SPKI RSA public key');
   try {
     return jni.using((arena) {
-      final key = _rsaPublicKeyFromSpki(arena, keyData, validate: true);
-      return _copyEncodedRsaKey(arena, key, 'public');
+      final key = _rsaPublicKeyFromSpki(arena, keyData);
+      return _validateRsaKeyBeforeOwnershipTransfer(key, () {
+        _validateRsaPublicKey(arena, key);
+      });
     });
   } on jni.JThrowable catch (e) {
     throw _rsaKeyFormatException(e, 'Unable to import SPKI RSA public key');
   }
 }
 
-Uint8List _importJwkRsaPrivateKey(
+jni.JObject _importJwkRsaPrivateKey(
   Map<String, dynamic> jwkData, {
   required String expectedAlg,
   required String expectedUse,
@@ -110,16 +114,16 @@ Uint8List _importJwkRsaPrivateKey(
       if (key == null) {
         throw AssertionError('JCA RSA KeyFactory returned a null private key');
       }
-      key.releasedBy(arena);
-      _validateRsaPrivateKey(arena, key);
-      return _copyEncodedRsaKey(arena, key, 'private');
+      return _validateRsaKeyBeforeOwnershipTransfer(key, () {
+        _validateRsaPrivateKey(arena, key);
+      });
     });
   } on jni.JThrowable catch (e) {
     throw _rsaKeyFormatException(e, 'Unable to import RSA private JWK');
   }
 }
 
-Uint8List _importJwkRsaPublicKey(
+jni.JObject _importJwkRsaPublicKey(
   Map<String, dynamic> jwkData, {
   required String expectedAlg,
   required String expectedUse,
@@ -141,23 +145,44 @@ Uint8List _importJwkRsaPublicKey(
       if (key == null) {
         throw AssertionError('JCA RSA KeyFactory returned a null public key');
       }
-      key.releasedBy(arena);
-      _validateRsaPublicKey(arena, key);
-      return _copyEncodedRsaKey(arena, key, 'public');
+      return _validateRsaKeyBeforeOwnershipTransfer(key, () {
+        _validateRsaPublicKey(arena, key);
+      });
     });
   } on jni.JThrowable catch (e) {
     throw _rsaKeyFormatException(e, 'Unable to import RSA public JWK');
   }
 }
 
+jni.JObject _validateRsaKeyBeforeOwnershipTransfer(
+  jni.JObject key,
+  void Function() validate,
+) {
+  try {
+    validate();
+    return key;
+  } catch (_) {
+    // The key is not persistent until ownership transfers to a Dart wrapper.
+    key.release();
+    rethrow;
+  }
+}
+
+Uint8List _exportEncodedRsaKey(jni.JObject key, String keyType) {
+  try {
+    return jni.using((arena) => _copyEncodedRsaKey(arena, key, keyType));
+  } on jni.JThrowable catch (e) {
+    throw _rsaOperationError(e, 'Unable to export RSA $keyType key');
+  }
+}
+
 Map<String, dynamic> _exportJwkRsaPrivateKey(
-  Uint8List keyData, {
+  jni.JObject key, {
   required String jwkAlg,
   required String jwkUse,
 }) {
   try {
     return jni.using((arena) {
-      final key = _rsaPrivateKeyFromPkcs8(arena, keyData);
       if (!key.isA(RSAPrivateCrtKey.type)) {
         throw UnsupportedError(
           'The JCA provider does not expose RSA CRT parameters for JWK export',
@@ -205,13 +230,12 @@ Map<String, dynamic> _exportJwkRsaPrivateKey(
 }
 
 Map<String, dynamic> _exportJwkRsaPublicKey(
-  Uint8List keyData, {
+  jni.JObject key, {
   required String jwkAlg,
   required String jwkUse,
 }) {
   try {
     return jni.using((arena) {
-      final key = _rsaPublicKeyFromSpki(arena, keyData);
       if (!key.isA(RSAPublicKey.type)) {
         throw AssertionError(
           'JCA RSA KeyFactory returned a non-RSA public key',
@@ -292,11 +316,7 @@ _RsaKeyPairData _generateRsaKeyPairOnCurrentIsolate(
   }
 }
 
-jni.JObject _rsaPrivateKeyFromPkcs8(
-  jni.Arena arena,
-  Uint8List keyData, {
-  bool validate = false,
-}) {
+jni.JObject _rsaPrivateKeyFromPkcs8(jni.Arena arena, Uint8List keyData) {
   final keyFactory = _rsaKeyFactory(arena);
   final encoded = arena.copyToJByteArray(keyData);
   final keySpec = PKCS8EncodedKeySpec(encoded)..releasedBy(arena);
@@ -304,18 +324,12 @@ jni.JObject _rsaPrivateKeyFromPkcs8(
   if (key == null) {
     throw AssertionError('JCA RSA KeyFactory returned a null private key');
   }
-  key.releasedBy(arena);
-  if (validate) {
-    _validateRsaPrivateKey(arena, key);
-  }
+  // Ownership transfers to the Dart key wrapper, so this reference must not
+  // be registered with the temporary arena.
   return key;
 }
 
-jni.JObject _rsaPublicKeyFromSpki(
-  jni.Arena arena,
-  Uint8List keyData, {
-  bool validate = false,
-}) {
+jni.JObject _rsaPublicKeyFromSpki(jni.Arena arena, Uint8List keyData) {
   final keyFactory = _rsaKeyFactory(arena);
   final encoded = arena.copyToJByteArray(keyData);
   final keySpec = X509EncodedKeySpec(encoded)..releasedBy(arena);
@@ -323,10 +337,8 @@ jni.JObject _rsaPublicKeyFromSpki(
   if (key == null) {
     throw AssertionError('JCA RSA KeyFactory returned a null public key');
   }
-  key.releasedBy(arena);
-  if (validate) {
-    _validateRsaPublicKey(arena, key);
-  }
+  // Ownership transfers to the Dart key wrapper, so this reference must not
+  // be registered with the temporary arena.
   return key;
 }
 

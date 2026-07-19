@@ -52,18 +52,24 @@ final class _StaticRsaSsaPkcs1V15PrivateKeyImpl
     final h = _rsaHashFromHash(hash);
     final keyPair = await _generateRsaKeyPair(modulusLength, publicExponent);
     return (
-      _RsaSsaPkcs1V15PrivateKeyImpl(keyPair.privateKeyData, h),
-      _RsaSsaPkcs1V15PublicKeyImpl(keyPair.publicKeyData, h),
+      _RsaSsaPkcs1V15PrivateKeyImpl(
+        _importPkcs8RsaPrivateKey(keyPair.privateKeyData),
+        h,
+      ),
+      _RsaSsaPkcs1V15PublicKeyImpl(
+        _importSpkiRsaPublicKey(keyPair.publicKeyData),
+        h,
+      ),
     );
   }
 }
 
 final class _RsaSsaPkcs1V15PrivateKeyImpl
     implements RsaSsaPkcs1V15PrivateKeyImpl {
-  _RsaSsaPkcs1V15PrivateKeyImpl(Uint8List keyData, this._hash)
-    : _keyData = Uint8List.fromList(keyData);
+  _RsaSsaPkcs1V15PrivateKeyImpl(this._key, this._hash);
 
-  final Uint8List _keyData;
+  // Retained on the caller isolate; its JGlobalReference finalizer owns release.
+  final jni.JObject _key;
   final _HashImpl _hash;
 
   @override
@@ -73,9 +79,8 @@ final class _RsaSsaPkcs1V15PrivateKeyImpl
   Future<Uint8List> signStream(Stream<List<int>> data) async {
     final arena = jni.Arena();
     try {
-      final key = _rsaPrivateKeyFromPkcs8(arena, _keyData);
       final signature = _createRsaSsaPkcs1V15Signature(arena, _hash);
-      signature.initSign(key);
+      signature.initSign(_key);
 
       final buffer = jni.JByteArray(_defaultChunkSize)..releasedBy(arena);
       await for (final chunk in data) {
@@ -96,12 +101,13 @@ final class _RsaSsaPkcs1V15PrivateKeyImpl
   }
 
   @override
-  Future<Uint8List> exportPkcs8Key() async => Uint8List.fromList(_keyData);
+  Future<Uint8List> exportPkcs8Key() async =>
+      _exportEncodedRsaKey(_key, 'private');
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
       _exportJwkRsaPrivateKey(
-        _keyData,
+        _key,
         jwkAlg: _hash._rsassaPkcs1v15JwkAlg,
         jwkUse: 'sig',
       );
@@ -142,10 +148,10 @@ final class _StaticRsaSsaPkcs1V15PublicKeyImpl
 
 final class _RsaSsaPkcs1V15PublicKeyImpl
     implements RsaSsaPkcs1V15PublicKeyImpl {
-  _RsaSsaPkcs1V15PublicKeyImpl(Uint8List keyData, this._hash)
-    : _keyData = Uint8List.fromList(keyData);
+  _RsaSsaPkcs1V15PublicKeyImpl(this._key, this._hash);
 
-  final Uint8List _keyData;
+  // Retained on the caller isolate; its JGlobalReference finalizer owns release.
+  final jni.JObject _key;
   final _HashImpl _hash;
 
   @override
@@ -156,9 +162,8 @@ final class _RsaSsaPkcs1V15PublicKeyImpl
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) async {
     final arena = jni.Arena();
     try {
-      final key = _rsaPublicKeyFromSpki(arena, _keyData);
       final verifier = _createRsaSsaPkcs1V15Signature(arena, _hash);
-      verifier.initVerify(key);
+      verifier.initVerify(_key);
 
       final buffer = jni.JByteArray(_defaultChunkSize)..releasedBy(arena);
       await for (final chunk in data) {
@@ -182,12 +187,13 @@ final class _RsaSsaPkcs1V15PublicKeyImpl
   }
 
   @override
-  Future<Uint8List> exportSpkiKey() async => Uint8List.fromList(_keyData);
+  Future<Uint8List> exportSpkiKey() async =>
+      _exportEncodedRsaKey(_key, 'public');
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async =>
       _exportJwkRsaPublicKey(
-        _keyData,
+        _key,
         jwkAlg: _hash._rsassaPkcs1v15JwkAlg,
         jwkUse: 'sig',
       );
