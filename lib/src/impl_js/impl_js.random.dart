@@ -21,15 +21,20 @@ final class _RandomImpl implements RandomImpl {
   void fillRandomBytes(TypedData destination) {
     try {
       subtle.getRandomValues(destination);
-    } on subtle.JSDomException catch (e) {
-      throw _translateDomException(e);
-    } on Error catch (e) {
-      final errorName = e.toString();
-      if (errorName != 'JavaScriptError') {
-        rethrow;
+    } catch (e) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (e is JSAny && e.isA<subtle.JSDomException>()) {
+        throw _translateDomException(e as subtle.JSDomException);
       }
+      if (e is Error) {
+        final errorName = e.toString();
+        if (errorName != 'JavaScriptError') {
+          rethrow;
+        }
 
-      throw _translateJavaScriptException();
+        throw _translateJavaScriptException();
+      }
+      rethrow;
     }
   }
 }

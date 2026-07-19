@@ -56,6 +56,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
+      - name: Install Valgrind
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y valgrind
       - run: dart pub get --no-example
       - run: xvfb-run dart test --exclude-tags browser-interop -p vm,chrome,firefox -c dart2js,dart2wasm
   macos:
