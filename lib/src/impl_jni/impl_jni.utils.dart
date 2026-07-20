@@ -16,6 +16,23 @@ part of 'impl_jni.dart';
 
 const _defaultChunkSize = 4096;
 
+/// Owns a JCA key whose lifetime extends beyond one JNI operation.
+///
+/// `package:jni` owns the underlying `JGlobalReference` and deletes it through
+/// its finalizer. This wrapper only prevents a live JCA key from crossing an
+/// isolate boundary; it must not add another finalizer or release [key]
+/// explicitly.
+@pragma('vm:isolate-unsendable')
+final class _JcaKeyOwner {
+  _JcaKeyOwner(this.key);
+
+  final jni.JObject key;
+
+  // TODO: Stress-test persistent-key churn. package:jni currently registers
+  // JGlobalReference finalizers with externalSize 0, so JVM key memory does
+  // not contribute to Dart VM GC pressure.
+}
+
 void _checkData(bool condition, String message) {
   if (!condition) {
     throw FormatException(message);

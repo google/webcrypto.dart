@@ -16,6 +16,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
@@ -203,6 +204,20 @@ void main() {
     skip: skipReason,
   );
 
+  test('JCA RSA key wrappers cannot cross isolate boundaries', () async {
+    for (final key in <Object>[privateKey, publicKey]) {
+      final ready = ReceivePort();
+      final isolate = await Isolate.spawn(_waitForMessage, ready.sendPort);
+      try {
+        final destination = await ready.first as SendPort;
+        expect(() => destination.send(key), throwsA(isA<ArgumentError>()));
+      } finally {
+        isolate.kill(priority: Isolate.immediate);
+        ready.close();
+      }
+    }
+  }, skip: skipReason);
+
   test('JCA RSASSA-PKCS1-v1_5 exports and validates RSA JWK values', () async {
     final privateJwk = await privateKey.exportJsonWebKey();
     final publicJwk = await publicKey.exportJsonWebKey();
@@ -245,6 +260,12 @@ void main() {
       ),
     );
   }, skip: skipReason);
+}
+
+Future<void> _waitForMessage(SendPort ready) async {
+  final messages = ReceivePort();
+  ready.send(messages.sendPort);
+  await messages.first;
 }
 
 String _prependZeroToBase64Url(String encoded) {

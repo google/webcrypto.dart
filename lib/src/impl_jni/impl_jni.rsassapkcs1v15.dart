@@ -68,8 +68,7 @@ final class _RsaSsaPkcs1V15PrivateKeyImpl
     implements RsaSsaPkcs1V15PrivateKeyImpl {
   _RsaSsaPkcs1V15PrivateKeyImpl(this._key, this._hash);
 
-  // Retained on the caller isolate; its JGlobalReference finalizer owns release.
-  final jni.JObject _key;
+  final _JcaKeyOwner _key;
   final _HashImpl _hash;
 
   @override
@@ -80,7 +79,7 @@ final class _RsaSsaPkcs1V15PrivateKeyImpl
     final arena = jni.Arena();
     try {
       final signature = _createRsaSsaPkcs1V15Signature(arena, _hash);
-      signature.initSign(_key);
+      signature.initSign(_key.key);
 
       final buffer = jni.JByteArray(_defaultChunkSize)..releasedBy(arena);
       await for (final chunk in data) {
@@ -150,8 +149,7 @@ final class _RsaSsaPkcs1V15PublicKeyImpl
     implements RsaSsaPkcs1V15PublicKeyImpl {
   _RsaSsaPkcs1V15PublicKeyImpl(this._key, this._hash);
 
-  // Retained on the caller isolate; its JGlobalReference finalizer owns release.
-  final jni.JObject _key;
+  final _JcaKeyOwner _key;
   final _HashImpl _hash;
 
   @override
@@ -163,7 +161,7 @@ final class _RsaSsaPkcs1V15PublicKeyImpl
     final arena = jni.Arena();
     try {
       final verifier = _createRsaSsaPkcs1V15Signature(arena, _hash);
-      verifier.initVerify(_key);
+      verifier.initVerify(_key.key);
 
       final buffer = jni.JByteArray(_defaultChunkSize)..releasedBy(arena);
       await for (final chunk in data) {

@@ -52,7 +52,7 @@ extension _RsaHashMetadata on _HashImpl {
   }
 }
 
-jni.JObject _importPkcs8RsaPrivateKey(Uint8List keyData) {
+_JcaKeyOwner _importPkcs8RsaPrivateKey(Uint8List keyData) {
   _validateRsaDerEncoding(keyData, 'PKCS#8 RSA private key');
   try {
     return jni.using((arena) {
@@ -66,7 +66,7 @@ jni.JObject _importPkcs8RsaPrivateKey(Uint8List keyData) {
   }
 }
 
-jni.JObject _importSpkiRsaPublicKey(Uint8List keyData) {
+_JcaKeyOwner _importSpkiRsaPublicKey(Uint8List keyData) {
   _validateRsaDerEncoding(keyData, 'SPKI RSA public key');
   try {
     return jni.using((arena) {
@@ -80,7 +80,7 @@ jni.JObject _importSpkiRsaPublicKey(Uint8List keyData) {
   }
 }
 
-jni.JObject _importJwkRsaPrivateKey(
+_JcaKeyOwner _importJwkRsaPrivateKey(
   Map<String, dynamic> jwkData, {
   required String expectedAlg,
   required String expectedUse,
@@ -123,7 +123,7 @@ jni.JObject _importJwkRsaPrivateKey(
   }
 }
 
-jni.JObject _importJwkRsaPublicKey(
+_JcaKeyOwner _importJwkRsaPublicKey(
   Map<String, dynamic> jwkData, {
   required String expectedAlg,
   required String expectedUse,
@@ -154,13 +154,13 @@ jni.JObject _importJwkRsaPublicKey(
   }
 }
 
-jni.JObject _validateRsaKeyBeforeOwnershipTransfer(
+_JcaKeyOwner _validateRsaKeyBeforeOwnershipTransfer(
   jni.JObject key,
   void Function() validate,
 ) {
   try {
     validate();
-    return key;
+    return _JcaKeyOwner(key);
   } catch (_) {
     // The key is not persistent until ownership transfers to a Dart wrapper.
     key.release();
@@ -168,21 +168,22 @@ jni.JObject _validateRsaKeyBeforeOwnershipTransfer(
   }
 }
 
-Uint8List _exportEncodedRsaKey(jni.JObject key, String keyType) {
+Uint8List _exportEncodedRsaKey(_JcaKeyOwner owner, String keyType) {
   try {
-    return jni.using((arena) => _copyEncodedRsaKey(arena, key, keyType));
+    return jni.using((arena) => _copyEncodedRsaKey(arena, owner.key, keyType));
   } on jni.JThrowable catch (e) {
     throw _rsaOperationError(e, 'Unable to export RSA $keyType key');
   }
 }
 
 Map<String, dynamic> _exportJwkRsaPrivateKey(
-  jni.JObject key, {
+  _JcaKeyOwner owner, {
   required String jwkAlg,
   required String jwkUse,
 }) {
   try {
     return jni.using((arena) {
+      final key = owner.key;
       if (!key.isA(RSAPrivateCrtKey.type)) {
         throw UnsupportedError(
           'The JCA provider does not expose RSA CRT parameters for JWK export',
@@ -230,12 +231,13 @@ Map<String, dynamic> _exportJwkRsaPrivateKey(
 }
 
 Map<String, dynamic> _exportJwkRsaPublicKey(
-  jni.JObject key, {
+  _JcaKeyOwner owner, {
   required String jwkAlg,
   required String jwkUse,
 }) {
   try {
     return jni.using((arena) {
+      final key = owner.key;
       if (!key.isA(RSAPublicKey.type)) {
         throw AssertionError(
           'JCA RSA KeyFactory returned a non-RSA public key',
