@@ -32,6 +32,7 @@ import 'webcrypto/random.dart' as random;
 import 'webcrypto/digest.dart' as digest;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
+import 'regression/jwk_use_key_ops_conflict.dart' as jwk_use_key_ops_conflict;
 
 /// Test runners from all test files except `digest.dart` and
 /// `random.dart`, which do not use [TestRunner].
@@ -60,6 +61,7 @@ void runAllTests(
     for (final r in _testRunners) ...r.tests(),
     ...random.tests(),
     ...digest.tests(),
+    ...jwk_use_key_ops_conflict.tests(),
     ...issue_60_trailing_bytes.tests(),
     ...derive_bits_zero_length.tests(),
   ];
