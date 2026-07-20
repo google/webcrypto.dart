@@ -26,7 +26,9 @@ int _ecCurveToNID(EllipticCurve curve) {
     return NID_secp521r1;
   }
   // This should never happen!
+  // coverage:ignore-start
   throw UnsupportedError('curve "$curve" is not supported');
+  // coverage:ignore-end
 }
 
 /// Get [EllipticCurve] from matching BoringSSL `ssl.NID_...`.
@@ -41,7 +43,9 @@ EllipticCurve _ecCurveFromNID(int nid) {
     return EllipticCurve.p521;
   }
   // This should never happen!
+  // coverage:ignore-start
   throw operationError('internal error detecting curve');
+  // coverage:ignore-end
 }
 
 String _ecCurveToJwkCrv(EllipticCurve curve) {
@@ -55,7 +59,9 @@ String _ecCurveToJwkCrv(EllipticCurve curve) {
     return 'P-521';
   }
   // This should never happen!
+  // coverage:ignore-start
   throw UnsupportedError('curve "$curve" is not supported');
+  // coverage:ignore-end
 }
 
 /// Perform some post-import validation for EC keys.
