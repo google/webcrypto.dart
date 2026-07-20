@@ -40,12 +40,6 @@ Future<EcdhPrivateKeyImpl> ecdhPrivateKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async {
-  if (jwk['use'] == 'enc') {
-    // Chrome incorrectly forbids the 'enc' value for ECDH, hence, we strip it
-    // when importing to ensure compatibility across browsers.
-    // See: https://crbug.com/641499
-    jwk = Map.fromEntries(jwk.entries.where((e) => e.key != 'use'));
-  }
   return _EcdhPrivateKeyImpl(
     await _importJsonWebKey(
       jwk,
@@ -111,12 +105,6 @@ Future<EcdhPublicKeyImpl> ecdhPublicKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   EllipticCurve curve,
 ) async {
-  if (jwk['use'] == 'enc') {
-    // Chrome incorrectly forbids the 'enc' value for ECDH, hence, we strip it
-    // when importing to ensure compatibility across browsers.
-    // See: https://crbug.com/641499
-    jwk = Map.fromEntries(jwk.entries.where((e) => e.key != 'use'));
-  }
   return _EcdhPublicKeyImpl(
     await _importJsonWebKey(
       jwk,
