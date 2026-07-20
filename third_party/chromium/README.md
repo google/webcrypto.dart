@@ -7,7 +7,7 @@ The vendored files are pinned to the Git revision in `REVISION` and can be
 updated by running:
 
 ```console
-./tool/update-chromium-test-vectors.sh [revision]
+dart run tool/update_chromium_test.dart [revision]
 ```
 
 `bad_ec_keys.json` is retained in its upstream form, including comment-only

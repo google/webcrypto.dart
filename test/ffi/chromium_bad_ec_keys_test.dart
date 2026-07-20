@@ -18,6 +18,7 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:convert/convert.dart';
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 
@@ -108,27 +109,13 @@ final class _BadEcKeyVector {
         curve,
       ),
       'pkcs8' => EcdsaPrivateKey.importPkcs8Key(
-        _decodeHex(key as String),
+        hex.decode(key as String),
         curve,
       ),
-      'spki' => EcdsaPublicKey.importSpkiKey(_decodeHex(key as String), curve),
+      'spki' => EcdsaPublicKey.importSpkiKey(hex.decode(key as String), curve),
       final value => throw StateError(
         'Unsupported key format in Chromium vectors: $value',
       ),
     };
-  }
-}
-
-List<int> _decodeHex(String value) {
-  if (value.length.isOdd) {
-    throw StateError('Chromium vector contains incomplete hex bytes.');
-  }
-  try {
-    return [
-      for (var i = 0; i < value.length; i += 2)
-        int.parse(value.substring(i, i + 2), radix: 16),
-    ];
-  } on FormatException catch (error) {
-    throw StateError('Chromium vector contains invalid hex: $error');
   }
 }
