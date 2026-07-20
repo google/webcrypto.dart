@@ -19,7 +19,7 @@
 # `dart run webcrypto:setup` while older direct-script workflows are supported.
 
 cmake_minimum_required(VERSION 3.14)
-project(webcrypto LANGUAGES C ASM)
+project(webcrypto LANGUAGES C)
 
 set(BORINGSSL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../third_party/boringssl/")
 include("${BORINGSSL_ROOT}/sources.cmake")
@@ -73,6 +73,12 @@ else()
   set(webcrypto_asm_sources)
 endif()
 
+if(NOT WIN32)
+  enable_language(ASM)
+elseif(WEBCRYPTO_BORINGSSL_ARCH STREQUAL "aarch64" AND NOT MSVC)
+  enable_language(ASM)
+endif()
+
 if(WIN32)
   # The generated Windows ARM64 sources are preprocessed GNU-style .S files.
   # MSVC's ARM assembler does not accept that format. Disable assembly
@@ -108,16 +114,19 @@ if(WIN32)
   )
 
   if(MSVC)
+    # Scope MSVC switches to C compilation. Passing these to NASM makes the
+    # assembly build fail because options such as /utf-8 and /W4 are not NASM
+    # arguments.
     add_compile_options(
-      /utf-8
-      /W4
-      /WX
-      /wd4100
-      /wd4127
-      /wd4141
-      /wd4244
-      /wd4267
-      /wd4706
+      $<$<COMPILE_LANGUAGE:C>:/utf-8>
+      $<$<COMPILE_LANGUAGE:C>:/W4>
+      $<$<COMPILE_LANGUAGE:C>:/WX>
+      $<$<COMPILE_LANGUAGE:C>:/wd4100>
+      $<$<COMPILE_LANGUAGE:C>:/wd4127>
+      $<$<COMPILE_LANGUAGE:C>:/wd4141>
+      $<$<COMPILE_LANGUAGE:C>:/wd4244>
+      $<$<COMPILE_LANGUAGE:C>:/wd4267>
+      $<$<COMPILE_LANGUAGE:C>:/wd4706>
     )
     # Multi-config Visual Studio generators otherwise place the DLL in a
     # Release/ subdirectory. A stable root output simplifies hook publication.

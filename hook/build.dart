@@ -36,7 +36,7 @@ void main(List<String> args) async {
     _validateTarget(code.targetOS, code.targetArchitecture);
 
     final logger = Logger.root
-      ..level = Level.WARNING
+      ..level = Level.ALL
       ..onRecord.listen((record) => stderr.writeln(record.message));
 
     final nativeInputs = await _collectNativeInputs(input.packageRoot);

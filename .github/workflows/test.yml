@@ -28,9 +28,12 @@ jobs:
         run: |
           set -o pipefail
           flutter pub publish --dry-run 2>&1 | tee /tmp/publish-dry-run.log
-          grep -q 'hook/build.dart' /tmp/publish-dry-run.log
-          grep -q 'src/CMakeLists.txt' /tmp/publish-dry-run.log
-          grep -q 'third_party/boringssl/sources.cmake' /tmp/publish-dry-run.log
+          grep -q 'build.dart (' /tmp/publish-dry-run.log
+          grep -q 'CMakeLists.txt (' /tmp/publish-dry-run.log
+          grep -q 'sources.cmake (' /tmp/publish-dry-run.log
+          test -f hook/build.dart
+          test -f src/CMakeLists.txt
+          test -f third_party/boringssl/sources.cmake
           test ! -d android
           test ! -d darwin
           test ! -d linux
@@ -245,7 +248,10 @@ jobs:
           cache: true
       - run: sudo apt-get update -y && sudo apt-get install -y cmake ninja-build clang libgtk-3-dev
       - run: flutter pub get
-      - run: xvfb-run flutter pub run test -p vm,chrome,firefox -c dart2js,dart2wasm --coverage ./coverage
+      - name: Native VM coverage through build hook
+        run: dart test -p vm --coverage ./coverage
+      - name: Browser JS/Wasm coverage
+        run: xvfb-run dart test -p chrome,firefox -c dart2js,dart2wasm --coverage ./coverage
       - run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@v2
         with:
@@ -264,7 +270,10 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter pub run test -p vm,chrome,firefox --coverage ./coverage
+      - name: Native VM coverage through build hook
+        run: dart test -p vm --coverage ./coverage
+      - name: Browser coverage
+        run: dart test -p chrome,firefox --coverage ./coverage
       - run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@v2
         with:

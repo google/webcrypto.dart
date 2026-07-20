@@ -24,8 +24,11 @@ jobs:
         run: |
           set -o pipefail
           flutter pub publish --dry-run 2>&1 | tee /tmp/publish-dry-run.log
-          grep -q 'hook/build.dart' /tmp/publish-dry-run.log
-          grep -q 'src/CMakeLists.txt' /tmp/publish-dry-run.log
-          grep -q 'third_party/boringssl/sources.cmake' /tmp/publish-dry-run.log
+          grep -q 'build.dart (' /tmp/publish-dry-run.log
+          grep -q 'CMakeLists.txt (' /tmp/publish-dry-run.log
+          grep -q 'sources.cmake (' /tmp/publish-dry-run.log
+          test -f hook/build.dart
+          test -f src/CMakeLists.txt
+          test -f third_party/boringssl/sources.cmake
       - name: Publish
         run: flutter pub publish --force

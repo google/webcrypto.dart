@@ -54,7 +54,19 @@ lookupLibraryBesideExecutable() {
     return null;
   }
   final executable = File(Platform.resolvedExecutable);
-  return _lookupLibrary(File('${executable.parent.path}/$libraryFileName'));
+  for (final directory in [
+    executable.parent,
+    // Flutter's stock Linux CMake runner installs bundled code assets under
+    // $ORIGIN/lib. Bare/custom embedders generally install beside the
+    // executable, which is checked first.
+    Directory('${executable.parent.path}${Platform.pathSeparator}lib'),
+  ]) {
+    final lookup = _lookupLibrary(
+      File('${directory.path}${Platform.pathSeparator}$libraryFileName'),
+    );
+    if (lookup != null) return lookup;
+  }
+  return null;
 }
 
 /// Look for the webcrypto binary library in the `.dart_tool/webcrypto/` folder.
