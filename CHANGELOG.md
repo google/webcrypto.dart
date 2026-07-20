@@ -1,3 +1,12 @@
+# 0.7.0
+* Build and bundle the pinned BoringSSL implementation through one Dart Native
+  Assets hook on Android, iOS, Linux, macOS, and Windows.
+* Remove the native Flutter plugin wrappers, duplicated Darwin source tree, and
+  manual setup requirement for supported Dart/Flutter test workflows.
+* Add target-aware CMake builds, a process-safe content-addressed build cache,
+  packaged-artifact inspection, and all-native CI coverage.
+* Retain `webcrypto:setup` only as a legacy direct-script fallback.
+
 # 0.6.0
 * Replaced the `KeyPair` class with `typedef KeyPair<T, S> = ({T privateKey, S publicKey})` and refactored key generation methods to return a named record.
 * Bumped minimum required CMake version to `3.10` for building the

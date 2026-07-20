@@ -25,9 +25,10 @@ section 'Running "flutter pub get"'
 flutter pub get
 
 
-flutter pub run webcrypto:setup
+section 'dart test (Native Assets, no setup command)'
+dart test
 
-section 'flutter test (local)'
+section 'flutter test (Native Assets, no setup command)'
 flutter test
 
 

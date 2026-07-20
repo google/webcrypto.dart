@@ -49,31 +49,36 @@ Future<void> main() async {
 For a discussion of the API design of this package,
 see `doc/design-rationale-md`.
 
-## Use with `flutter test`
+## Native builds and tests
 
-Unlike most plugins it is possible to run code that uses `package:webcrypto`
-with `flutter test`. For this to work the native library must be built in the
-application folder where `flutter test` is called. This can be done with:
+On Android, iOS, Linux, macOS, and Windows, `package:webcrypto` uses a Dart
+Native Assets build hook. `dart run`, `dart test`, `flutter run`,
+`flutter test`, and release application builds automatically compile and bundle
+the package's pinned BoringSSL source for the requested target. No Flutter
+method channel, application CMake edit, CocoaPod, checked-in binary, setup
+command, or loader environment variable is required.
+
+For example:
 
 ```bash
-# Only necessary when package:webcrypto is used from 'flutter test'
-# This is not necessary for development with 'flutter run' and hot-reload
-$ flutter pub run webcrypto:setup
-
-# Now it's possible to run tests that uses package:webcrypto
 $ flutter test test/my_test_file_using_webcrypto.dart
+$ flutter build linux
 ```
 
-This requires:
- * `cmake`
- * a C compiler (like `gcc` or `clang`)
- * Linux or Mac.
+Native builds require the platform's normal C/C++ build toolchain and CMake.
+Windows x86/x64 builds additionally require NASM. Android and Apple
+cross-builds use the NDK/Xcode toolchains supplied by Flutter. Build failures
+are reported while building the application rather than when the first crypto
+operation executes.
 
-The native library will be stored in `.dart_tool/webcrypto/` which should
-_not_ be under source control.
+The package keeps `dart run webcrypto:setup` only as a legacy fallback for
+toolchains that invoke Dart code without package build-hook support. It builds
+`.dart_tool/webcrypto/<library>` in the current project; new projects should not
+run it.
 
-It is also possible to run tests with Flutter Web using
-`flutter test -p chrome`, this does not require any additional setup steps.
+Web builds continue to use the browser Web Crypto API and emit no native
+library. Browser tests can be run with `flutter test -p chrome` or
+`flutter test -p chrome --wasm`.
 
 ## Limitations
 This package has a few limitations compared to the

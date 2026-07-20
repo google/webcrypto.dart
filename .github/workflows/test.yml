@@ -1,7 +1,7 @@
 name: test
 on:
   push:
-    branches: [master]
+    branches: [master, native-assets-all-platforms]
   pull_request:
     branches: [master]
 
@@ -10,254 +10,272 @@ env:
 
 jobs:
   lints:
-    name: Format + Lints
+    name: Format + lints + package contents
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
           cache: true
+      - run: flutter config --no-analytics
       - run: flutter pub get
       - run: dart format --output none --set-exit-if-changed .
       - run: dart analyze --fatal-warnings .
-  linux:
-    name: Linux desktop / Chrome / Firefox
+      - name: Validate publication contents
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter pub publish --dry-run 2>&1 | tee /tmp/publish-dry-run.log
+          grep -q 'hook/build.dart' /tmp/publish-dry-run.log
+          grep -q 'src/CMakeLists.txt' /tmp/publish-dry-run.log
+          grep -q 'third_party/boringssl/sources.cmake' /tmp/publish-dry-run.log
+          test ! -d android
+          test ! -d darwin
+          test ! -d linux
+          test ! -d windows
+
+  cache:
+    name: Native Assets cache race + invalidation
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
           cache: true
-      - name: Configure Flutter
+      - run: sudo apt-get update -y && sudo apt-get install -y cmake ninja-build clang
+      - run: flutter pub get
+      - run: ./tool/test-native-assets-cache.sh
+
+  linux:
+    name: Linux x64 native + desktop
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Configure Linux toolchain
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev
-          flutter config --no-analytics
+          sudo apt-get install -y cmake ninja-build clang libgtk-3-dev
+          flutter config --no-analytics --enable-linux-desktop
       - run: flutter pub get
-      - run: flutter pub run webcrypto:setup
-      - run: flutter test
-      - run: flutter test --platform chrome
-      - run: flutter test --platform chrome --wasm
-      - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
-        working-directory: ./example
-      - uses: nanasess/setup-chromedriver@v2
-      - name: Run integration_test with chromedriver
-        working-directory: ./example
+      - name: Dart tests without webcrypto:setup
+        run: dart test
+      - name: Flutter tests without webcrypto:setup
+        run: flutter test
+      - name: Linux integration
+        run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
+        working-directory: example
+      - name: Build and inspect release bundle
         run: |
-          xvfb-run ../tool/with-chromedriver.sh flutter drive \
-            --driver=test_driver/integration_test.dart \
-            --target=integration_test/webcrypto_test.dart \
-            -d chrome
-      - run: xvfb-run flutter pub run test -p vm,chrome,firefox
-  macos-14:
-    name: MacOS 14 desktop / Chrome / Firefox
-    runs-on: macos-14 # Test with xcode 15
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
-      - name: Configure Flutter
-        run: |
-          flutter config --no-analytics
-      - run: flutter pub get
-      - run: flutter pub run webcrypto:setup
-      - run: flutter test
-      - run: flutter test --platform chrome
-      - run: flutter test --platform chrome --wasm
-      - run: flutter test integration_test/webcrypto_test.dart -d macos
-        working-directory: ./example
-      # TODO: Enable chromedriver testing on MacOS when it works reliably
-      #- uses: nanasess/setup-chromedriver@v2
-      #- name: Run integration_test with chromedriver
-      #  working-directory: ./example
-      #  run: |
-      #    ../tool/with-chromedriver.sh flutter drive \
-      #      --driver=test_driver/integration_test.dart \
-      #      --target=integration_test/webcrypto_test.dart \
-      #      -d chrome
-      - uses: browser-actions/setup-firefox@v1
-      - name: flutter pub run test -p vm,chrome,firefox
-        shell: bash
-        # Remove FIREFOX_EXECUTABLE override when flutter upgrades past package:test 1.25.8
-        # Issue is fixed in https://github.com/dart-lang/test/pull/2276
-        run: |
-          export FIREFOX_EXECUTABLE="$(which firefox)"
-          flutter pub run test -p vm,chrome,firefox
-  macos-15:
-    name: MacOS 15 desktop / Chrome / Firefox
-    runs-on: macos-15 # Test with xcode 16
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
-      - name: Configure Flutter
-        run: |
-          flutter config --no-analytics
-      - run: flutter pub get
-      - run: flutter pub run webcrypto:setup
-      - run: flutter test
-      - run: flutter test --platform chrome
-      - run: flutter test --platform chrome --wasm
-      - run: flutter test integration_test/webcrypto_test.dart -d macos
-        working-directory: ./example
-      # TODO: Enable chromedriver testing on MacOS when it works reliably
-      - uses: browser-actions/setup-firefox@v1
-      - name: flutter pub run test -p vm,chrome,firefox
-        shell: bash
-        # Remove FIREFOX_EXECUTABLE override when flutter upgrades past package:test 1.25.8
-        # Issue is fixed in https://github.com/dart-lang/test/pull/2276
-        run: |
-          export FIREFOX_EXECUTABLE="$(which firefox)"
-          flutter pub run test -p vm,chrome,firefox
-  windows:
-    name: Windows desktop / Chrome / Firefox
-    runs-on: windows-latest
-    timeout-minutes: 15
-    steps:
-      - uses: ilammy/setup-nasm@v1
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
-      - name: Configure Flutter
-        run: |
-          flutter config --no-analytics
-      - run: flutter pub get
-      - run: flutter pub run webcrypto:setup
-      - run: flutter test
-      #- run: flutter test --platform chrome
-      #- run: flutter test --platform chrome --wasm
-      - run: flutter test integration_test/webcrypto_test.dart -d windows
-        working-directory: ./example
-      - uses: nanasess/setup-chromedriver@v2
-      - name: Run integration_test with chromedriver
-        working-directory: ./example
-        shell: bash
-        run: |
-          ../tool/with-chromedriver.sh flutter drive \
-            --driver=test_driver/integration_test.dart \
-            --target=integration_test/webcrypto_test.dart \
-            -d chrome
-      - run: flutter pub run test -p vm,chrome,firefox
-  ios:
-    name: iOS emulator (iPhone)
-    runs-on: macos-14
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
-      - name: Configure Flutter
-        run: |
-          flutter config --no-analytics
-      - uses: futureware-tech/simulator-action@v3
-        with:
-          model: 'iPhone 15'
-      - run: flutter pub get
-      - run: flutter test integration_test/webcrypto_test.dart -d iphone
-        working-directory: ./example
-  android:
-    name: Android emulator
+          flutter build linux --release
+          ../tool/inspect-native-assets.sh linux build/linux/x64/release/bundle
+        working-directory: example
+
+  web:
+    name: Web JS + Wasm (no native output)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
+          cache: true
+      - run: flutter config --no-analytics
+      - run: flutter pub get
+      - run: flutter test --platform chrome
+      - run: flutter test --platform chrome --wasm
+      - name: Build web and reject native artifacts
+        working-directory: example
+        run: |
+          flutter build web --release --wasm
+          if find build/web -type f \( \
+              -name 'libwebcrypto.so' -o \
+              -name 'libwebcrypto.dylib' -o \
+              -name 'webcrypto.dll' -o \
+              -name 'NativeAssetsManifest.json' \
+            \) -print -quit | grep -q .; then
+            echo 'Web output unexpectedly contains a native asset.' >&2
+            exit 1
+          fi
+
+  macos:
+    name: macOS arm64 + x64 native + desktop
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter config --no-analytics --enable-macos-desktop
+      - run: flutter pub get
+      - name: Dart tests without webcrypto:setup
+        run: dart test
+      - name: Flutter tests without webcrypto:setup
+        run: flutter test
+      - name: macOS integration
+        run: flutter test integration_test/webcrypto_test.dart -d macos
+        working-directory: example
+      - name: Build and inspect universal release app
+        working-directory: example
+        run: |
+          flutter build macos --release
+          ../tool/inspect-native-assets.sh macos build/macos/Build/Products/Release/example.app
+
+  ios-simulator:
+    name: iOS simulator integration
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter config --no-analytics
+      - uses: futureware-tech/simulator-action@v4
+        with:
+          model: iPhone 16 Pro
+      - run: flutter pub get
+      - name: iOS simulator integration without CocoaPods webcrypto
+        run: flutter test integration_test/webcrypto_test.dart -d iphone
+        working-directory: example
+
+  ios-device:
+    name: iOS arm64 unsigned package
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter config --no-analytics
+      - run: flutter pub get
+      - name: Build and inspect unsigned device app
+        working-directory: example
+        run: |
+          flutter build ios --release --no-codesign
+          ../tool/inspect-native-assets.sh ios build/ios/iphoneos/Runner.app
+
+  windows:
+    name: Windows x64 native + desktop
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/setup-nasm@v1
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter config --no-analytics --enable-windows-desktop
+      - run: flutter pub get
+      - name: Dart tests without webcrypto:setup
+        run: dart test
+      - name: Flutter tests without webcrypto:setup
+        run: flutter test
+      - name: Windows integration
+        run: flutter test integration_test/webcrypto_test.dart -d windows
+        working-directory: example
+      - name: Build release app
+        run: flutter build windows --release
+        working-directory: example
+      - name: Inspect PE/DLL output
+        shell: powershell
+        run: ./tool/inspect-windows-native-assets.ps1 -Bundle ./example/build/windows/x64/runner/Release
+
+  android:
+    name: Android x86_64 runtime + ARM64 package
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
           cache: true
       - uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: zulu
           java-version: 21
-      - name: Configure Flutter
+      - name: Configure Android
         run: |
           flutter config --no-analytics
-      - run: flutter pub get
-      - name: Enable KVM
-        run: |
+          flutter pub get
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Run flutter test integration_test/webcrypto_test.dart -d emulator
+      - name: Android x86_64 integration without plugin wrapper
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
-          # TODO: switch back to default once this is issue resolved:
-          # https://issuetracker.google.com/issues/432143095
           target: google_apis
           arch: x86_64
           working-directory: ./example
           script: flutter test integration_test/webcrypto_test.dart -d emulator
+      - name: Build and inspect all release APK ABIs
+        working-directory: example
+        run: |
+          flutter build apk --release
+          ../tool/inspect-native-assets.sh android build/app/outputs/flutter-apk/app-release.apk
+          unzip -Z1 build/app/outputs/flutter-apk/app-release.apk | grep -q '^lib/arm64-v8a/libwebcrypto.so$'
+          unzip -Z1 build/app/outputs/flutter-apk/app-release.apk | grep -q '^lib/x86_64/libwebcrypto.so$'
+
   linux-coverage:
-    name: Linux desktop / Chrome / Firefox (coverage)
+    name: Linux VM/browser coverage
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
           cache: true
-      - name: Configure Flutter
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev
-          flutter config --no-analytics
+      - run: sudo apt-get update -y && sudo apt-get install -y cmake ninja-build clang libgtk-3-dev
       - run: flutter pub get
-      - run: flutter pub run webcrypto:setup
       - run: xvfb-run flutter pub run test -p vm,chrome,firefox -c dart2js,dart2wasm --coverage ./coverage
-      # Report collected coverage
-      - name: Convert coverage to lcov
-        run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
+      - run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@v2
         with:
           flag-name: linux
           parallel: true
+
   windows-coverage:
-    name: Windows desktop / Chrome / Firefox (coverage)
+    name: Windows VM/browser coverage
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
-      - uses: ilammy/setup-nasm@v1
       - uses: actions/checkout@v4
+      - uses: ilammy/setup-nasm@v1
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
           cache: true
-      - name: Configure Flutter
-        run: |
-          flutter config --no-analytics
       - run: flutter pub get
-      - run: flutter pub run webcrypto:setup
       - run: flutter pub run test -p vm,chrome,firefox --coverage ./coverage
-      # Report collected coverage
-      - name: Convert coverage to lcov
-        run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
+      - run: dart run coverage:format_coverage -i ./coverage -o ./coverage/lcov.info --lcov --report-on lib/
       - uses: coverallsapp/github-action@v2
         with:
           flag-name: windows
           parallel: true
+
   coverage:
-    name: Report to coveralls
+    name: Report coverage
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs:
-      - linux-coverage
-      - windows-coverage
+    needs: [linux-coverage, windows-coverage]
     steps:
       - uses: coverallsapp/github-action@v2
         with:

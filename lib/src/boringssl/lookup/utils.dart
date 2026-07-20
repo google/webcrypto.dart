@@ -38,6 +38,25 @@ String get libraryFileName {
   );
 }
 
+/// Look for the bundled webcrypto library beside the embedder executable.
+///
+/// Stock Flutter resolves the code asset through `NativeAssetsManifest.json`.
+/// Bare/custom embedders may package code assets without installing the
+/// engine's manifest resolver; their portable fallback location is beside the
+/// embedder executable. Unlike a bare filename, this does not depend on the
+/// process working directory or `LD_LIBRARY_PATH`.
+Pointer<T> Function<T extends NativeType>(String symbolName)?
+lookupLibraryBesideExecutable() {
+  if (!(Platform.isAndroid ||
+      Platform.isLinux ||
+      Platform.isMacOS ||
+      Platform.isWindows)) {
+    return null;
+  }
+  final executable = File(Platform.resolvedExecutable);
+  return _lookupLibrary(File('${executable.parent.path}/$libraryFileName'));
+}
+
 /// Look for the webcrypto binary library in the `.dart_tool/webcrypto/` folder.
 ///
 /// Returns `null` if it could not be found.
@@ -51,20 +70,23 @@ lookupLibraryInDotDartTool() {
   final libraryFile = File.fromUri(
     dotDartTool.resolve('webcrypto/$libraryFileName'),
   );
-  if (libraryFile.existsSync()) {
-    final library = DynamicLibrary.open(libraryFile.path);
+  return _lookupLibrary(libraryFile);
+}
 
-    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcrypto = WebCrypto(library);
-    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
-
-    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    Pointer<T> lookup<T extends NativeType>(String s) =>
-        webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
-
+Pointer<T> Function<T extends NativeType>(String symbolName)? _lookupLibrary(
+  File libraryFile,
+) {
+  if (!libraryFile.existsSync()) return null;
+  try {
+    final webcryptoLookupSymbol = WebCrypto(
+      DynamicLibrary.open(libraryFile.path),
+    ).webcrypto_lookup_symbol;
+    Pointer<T> lookup<T extends NativeType>(String symbol) =>
+        webcryptoLookupSymbol(symFromString(symbol).index).cast<T>();
     return lookup;
+  } on ArgumentError {
+    return null;
   }
-  return null;
 }
 
 /// Find the `.dart_tool/` folder, returns `null` if unable to find it.

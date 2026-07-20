@@ -17,7 +17,6 @@
 import 'dart:ffi';
 
 import '../../third_party/boringssl/generated_bindings.dart';
-import '../bindings/generated_bindings.dart';
 
 import 'dart:io' show Platform;
 
@@ -26,52 +25,42 @@ import 'utils.dart';
 
 export 'symbols.generated.dart' show Sym;
 
-/// Dynamically load `webcrypto_lookup_symbol` function.
+// The URI of this Dart library is also the Native Assets identity registered by
+// hook/build.dart. @Native resolves through NativeAssetsManifest before trying
+// an embedder resolver or the current process.
+@Native<Pointer<Void> Function(Int32)>(
+  symbol: 'webcrypto_lookup_symbol',
+  isLeaf: true,
+)
+external Pointer<Void> _nativeWebcryptoLookupSymbol(int index);
+
+/// Load `webcrypto_lookup_symbol`, preferring the package's Native Asset.
 final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
   try {
-    late DynamicLibrary library;
-    if (Platform.isAndroid || Platform.isLinux) {
-      library = DynamicLibrary.open('libwebcrypto.so');
-    } else if (Platform.isWindows) {
-      library = DynamicLibrary.open('webcrypto.dll');
-    } else {
-      library = DynamicLibrary.executable();
-      // If current executable doesn't provide the symbol, then we're
-      if (!library.providesSymbol('webcrypto_lookup_symbol')) {
-        final lookup = lookupLibraryInDotDartTool();
-        if (lookup != null) {
-          return lookup;
-        }
-        throw UnsupportedError(
-          'package:webcrypto could not find required symbols in executable. '
-          'If you are using package:webcrypto from scripts or `flutter test` '
-          'make sure to run `flutter pub run webcrypto:setup` in the current '
-          'root project.',
-        );
-      }
+    // Probe resolution now so a missing manifest enters the compatibility path
+    // here rather than failing later on an unrelated crypto operation.
+    if (_nativeWebcryptoLookupSymbol(Sym.BN_bin2bn.index) == nullptr) {
+      throw StateError('webcrypto_lookup_symbol returned a null pointer.');
     }
-
-    // Try to lookup the 'webcrypto_lookup_symbol' symbol.
-    final webcrypto = WebCrypto(library);
-    final webcrypto_lookup_symbol = webcrypto.webcrypto_lookup_symbol;
-
-    // Return a function from Sym to lookup using `webcrypto_lookup_symbol`
-    Pointer<T> lookup<T extends NativeType>(String s) =>
-        webcrypto_lookup_symbol(symFromString(s).index).cast<T>();
-
-    return lookup;
+    Pointer<T> nativeAssetLookup<T extends NativeType>(String symbol) =>
+        _nativeWebcryptoLookupSymbol(symFromString(symbol).index).cast<T>();
+    return nativeAssetLookup;
   } on ArgumentError {
-    final lookup = lookupLibraryInDotDartTool();
-    if (lookup != null) {
-      return lookup;
-    }
-
-    throw UnsupportedError(
-      'package:webcrypto cannot be used from scripts or `flutter test` '
-      'unless `flutter pub run webcrypto:setup` has been run for the current '
-      'root project.',
-    );
+    // Continue into the custom-embedder and legacy setup fallbacks below.
   }
+
+  final fallback =
+      lookupLibraryBesideExecutable() ?? lookupLibraryInDotDartTool();
+  if (fallback != null) return fallback;
+
+  throw UnsupportedError(
+    'package:webcrypto could not load its native library on '
+    '${Platform.operatingSystem}. Native Assets did not resolve '
+    'package:webcrypto/src/boringssl/lookup/lookup.dart and no bundled or '
+    '.dart_tool/webcrypto library was found. Rebuild with a Dart/Flutter SDK '
+    'that supports package build hooks, or run `dart run webcrypto:setup` for '
+    'a legacy direct-script workflow.',
+  );
 }();
 
 final Pointer<T> Function<T extends NativeType>(String symbolName)

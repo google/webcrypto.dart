@@ -19,5 +19,13 @@ jobs:
         with:
           channel: 'stable'
       - run: flutter pub get
+      - name: Validate Native Assets package contents
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter pub publish --dry-run 2>&1 | tee /tmp/publish-dry-run.log
+          grep -q 'hook/build.dart' /tmp/publish-dry-run.log
+          grep -q 'src/CMakeLists.txt' /tmp/publish-dry-run.log
+          grep -q 'third_party/boringssl/sources.cmake' /tmp/publish-dry-run.log
       - name: Publish
         run: flutter pub publish --force

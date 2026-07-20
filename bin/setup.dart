@@ -20,9 +20,10 @@ import 'dart:convert';
 /// Build a `[lib]webcrypto.{so|dll|dylib}` in ´.dart_tool/webcrypto/` for the
 /// current root project.
 ///
-/// Tricks in `lib/src/boringssl/lookup/lookup.dart` can find these files when
-/// running unit tests (`flutter test`). This is not necessary for use as a
-/// plugin in Flutter applications.
+/// The lookup compatibility path can find this file in legacy direct-script
+/// environments that do not execute package build hooks. Supported Dart and
+/// Flutter SDKs build and bundle the library automatically; new projects
+/// should not invoke this command.
 void main() async {
   // Assumed package root
   final root = Directory.current.uri;
@@ -94,9 +95,9 @@ void main() async {
     exit(1);
   }
 
-  print('Package webcrypto now configured for use in your project.');
-  print('This is only necessary for using package:webcrypto in unit tests');
-  print('and scripts, not for usage in applications.');
+  print('Package webcrypto legacy fallback configured for this project.');
+  print('Supported Dart/Flutter SDKs run hook/build.dart automatically;');
+  print('this command is only for legacy direct-script environments.');
 }
 
 /// Join paths without duplicate path separators.
