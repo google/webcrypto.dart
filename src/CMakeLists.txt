@@ -120,7 +120,11 @@ if(MSVC)
   # Hack because Windows compilers will put .dll files in
   # $CMAKE_BINARY_DIR/Debug/ folder.
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}>)
+else()
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections")
 endif()
+
 if(WIN32)
   # Windows/MSVC option from CMakeLists.txt in BoringSSL
   # Use NASM on Windows.
@@ -142,9 +146,6 @@ endif()
 add_library(
   webcrypto
 
-  # Build a shared library
-  SHARED
-
   # Source files
   ../src/webcrypto.c
   ${crypto_sources}
@@ -164,7 +165,8 @@ set_target_properties(
   webcrypto
 
   PROPERTIES
-  
+
+  POSITION_INDEPENDENT_CODE ON
   C_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN 1
   WINDOWS_EXPORT_ALL_SYMBOLS TRUE
