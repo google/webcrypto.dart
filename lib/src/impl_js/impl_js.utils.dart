@@ -45,8 +45,10 @@ String _curveToName(EllipticCurve curve) {
       return 'P-521';
   }
   // This should never happen.
+  // coverage:ignore-start
   // ignore: dead_code
   throw AssertionError('Unknown curve "$curve"');
+  // coverage:ignore-end
 }
 
 Object _translateDomException(

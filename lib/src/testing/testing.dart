@@ -30,6 +30,7 @@ import 'webcrypto/rsassapkcs1v15.dart' as rsassapkcs1v15;
 // Other test files, that don't use TestRunner
 import 'webcrypto/random.dart' as random;
 import 'webcrypto/digest.dart' as digest;
+import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
 import 'regression/jwk_base64url.dart' as jwk_base64url;
 
@@ -62,6 +63,7 @@ void runAllTests(
     ...digest.tests(),
     ...issue_60_trailing_bytes.tests(),
     ...jwk_base64url.tests(),
+    ...derive_bits_zero_length.tests(),
   ];
 
   for (final (:name, :test) in allTests) {

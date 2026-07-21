@@ -85,7 +85,7 @@ final class AesGcmSecretKey {
   /// {@macro AES:no-support-for-AES-192}
   ///
   /// If specified the `"use"` property of the imported [jwk] must be
-  /// `"use": "sig"`.
+  /// `"use": "enc"`.
   ///
   /// {@macro importJsonWebKey:throws-FormatException-if-jwk}
   ///
