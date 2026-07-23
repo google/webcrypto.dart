@@ -43,6 +43,15 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importRawKey(
   );
 }
 
+void _checkHmacLength(List<int> keyData, int length) {
+  _checkData(
+    length >= 0 &&
+        length <= keyData.length * 8 &&
+        length > (keyData.length - 1) * 8,
+    message: 'JWK property "k" does not match expected length',
+  );
+}
+
 Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   Map<String, dynamic> jwk,
   HashImpl hash, {
@@ -65,6 +74,9 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importJsonWebKey(
   );
 
   final keyData = _jwkDecodeBase64UrlNoPadding(k.k!, 'k');
+  if (length != null) {
+    _checkHmacLength(keyData, length);
+  }
 
   return hmacSecretKey_importRawKey(keyData, hash, length: length);
 }
