@@ -6471,6 +6471,536 @@ final class $PKCS8EncodedKeySpec$Type$
   String get signature => r'Ljava/security/spec/PKCS8EncodedKeySpec;';
 }
 
+/// from: `java.security.spec.MGF1ParameterSpec`
+extension type MGF1ParameterSpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/MGF1ParameterSpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<MGF1ParameterSpec> type = $MGF1ParameterSpec$Type$();
+  static final _id_SHA1 = _class.staticFieldId(
+    r'SHA1',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA1`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA1 =>
+      _id_SHA1.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA224 = _class.staticFieldId(
+    r'SHA224',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA224`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA224 =>
+      _id_SHA224.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA256 = _class.staticFieldId(
+    r'SHA256',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA256`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA256 =>
+      _id_SHA256.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA384 = _class.staticFieldId(
+    r'SHA384',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA384`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA384 =>
+      _id_SHA384.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA512 = _class.staticFieldId(
+    r'SHA512',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA512`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA512 =>
+      _id_SHA512.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA512_224 = _class.staticFieldId(
+    r'SHA512_224',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA512_224`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA512_224 =>
+      _id_SHA512_224.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA512_256 = _class.staticFieldId(
+    r'SHA512_256',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA512_256`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA512_256 =>
+      _id_SHA512_256.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA3_224 = _class.staticFieldId(
+    r'SHA3_224',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA3_224`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA3_224 =>
+      _id_SHA3_224.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA3_256 = _class.staticFieldId(
+    r'SHA3_256',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA3_256`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA3_256 =>
+      _id_SHA3_256.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA3_384 = _class.staticFieldId(
+    r'SHA3_384',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA3_384`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA3_384 =>
+      _id_SHA3_384.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_SHA3_512 = _class.staticFieldId(
+    r'SHA3_512',
+    r'Ljava/security/spec/MGF1ParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.MGF1ParameterSpec SHA3_512`
+  /// The returned object must be released after use, by calling the [release] method.
+  static MGF1ParameterSpec? get SHA3_512 =>
+      _id_SHA3_512.getNullable(_class, MGF1ParameterSpec.type)
+          as MGF1ParameterSpec?;
+
+  static final _id_new$ = _class.constructorId(r'(Ljava/lang/String;)V');
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory MGF1ParameterSpec(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$string.pointer,
+    ).object<MGF1ParameterSpec>();
+  }
+}
+
+extension MGF1ParameterSpec$$Methods on MGF1ParameterSpec {
+  static final _id_get$digestAlgorithm = MGF1ParameterSpec._class
+      .instanceMethodId(r'getDigestAlgorithm', r'()Ljava/lang/String;');
+
+  static final _get$digestAlgorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String getDigestAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get digestAlgorithm {
+    return _get$digestAlgorithm(
+      reference.pointer,
+      _id_get$digestAlgorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_toString$1 = MGF1ParameterSpec._class.instanceMethodId(
+    r'toString',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _toString$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String toString()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? toString$1() {
+    return _toString$1(
+      reference.pointer,
+      _id_toString$1.pointer,
+    ).object<jni$_.JString?>();
+  }
+}
+
+final class $MGF1ParameterSpec$Type$ extends jni$_.JType<MGF1ParameterSpec> {
+  @jni$_.internal
+  const $MGF1ParameterSpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/MGF1ParameterSpec;';
+}
+
+/// from: `java.security.spec.PSSParameterSpec`
+extension type PSSParameterSpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/PSSParameterSpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<PSSParameterSpec> type = $PSSParameterSpec$Type$();
+
+  /// from: `static public final int TRAILER_FIELD_BC`
+  static const TRAILER_FIELD_BC = 1;
+  static final _id_DEFAULT = _class.staticFieldId(
+    r'DEFAULT',
+    r'Ljava/security/spec/PSSParameterSpec;',
+  );
+
+  /// from: `static public final java.security.spec.PSSParameterSpec DEFAULT`
+  /// The returned object must be released after use, by calling the [release] method.
+  static PSSParameterSpec? get DEFAULT =>
+      _id_DEFAULT.getNullable(_class, PSSParameterSpec.type)
+          as PSSParameterSpec?;
+
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/lang/String;Ljava/lang/String;Ljava/security/spec/AlgorithmParameterSpec;II)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Int32,
+                    jni$_.Int32,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public void <init>(java.lang.String string, java.lang.String string1, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec, int i, int i1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory PSSParameterSpec(
+    jni$_.JString? string,
+    jni$_.JString? string1,
+    jni$_.JObject? algorithmParameterSpec,
+    core$_.int i,
+    core$_.int i1,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$string1 = string1?.reference ?? jni$_.jNullReference;
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$string.pointer,
+      _$string1.pointer,
+      _$algorithmParameterSpec.pointer,
+      i,
+      i1,
+    ).object<PSSParameterSpec>();
+  }
+
+  static final _id_new$1 = _class.constructorId(r'(I)V');
+
+  static final _new$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Int32,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public void <init>(int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory PSSParameterSpec.new$1(core$_.int i) {
+    return _new$1(
+      _class.reference.pointer,
+      _id_new$1.pointer,
+      i,
+    ).object<PSSParameterSpec>();
+  }
+}
+
+extension PSSParameterSpec$$Methods on PSSParameterSpec {
+  static final _id_get$digestAlgorithm = PSSParameterSpec._class
+      .instanceMethodId(r'getDigestAlgorithm', r'()Ljava/lang/String;');
+
+  static final _get$digestAlgorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String getDigestAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get digestAlgorithm {
+    return _get$digestAlgorithm(
+      reference.pointer,
+      _id_get$digestAlgorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_get$mGFAlgorithm = PSSParameterSpec._class.instanceMethodId(
+    r'getMGFAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$mGFAlgorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String getMGFAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get mGFAlgorithm {
+    return _get$mGFAlgorithm(
+      reference.pointer,
+      _id_get$mGFAlgorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_get$mGFParameters = PSSParameterSpec._class.instanceMethodId(
+    r'getMGFParameters',
+    r'()Ljava/security/spec/AlgorithmParameterSpec;',
+  );
+
+  static final _get$mGFParameters =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.AlgorithmParameterSpec getMGFParameters()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get mGFParameters {
+    return _get$mGFParameters(
+      reference.pointer,
+      _id_get$mGFParameters.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_get$saltLength = PSSParameterSpec._class.instanceMethodId(
+    r'getSaltLength',
+    r'()I',
+  );
+
+  static final _get$saltLength =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int getSaltLength()`
+  core$_.int get saltLength {
+    return _get$saltLength(
+      reference.pointer,
+      _id_get$saltLength.pointer,
+    ).integer;
+  }
+
+  static final _id_get$trailerField = PSSParameterSpec._class.instanceMethodId(
+    r'getTrailerField',
+    r'()I',
+  );
+
+  static final _get$trailerField =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int getTrailerField()`
+  core$_.int get trailerField {
+    return _get$trailerField(
+      reference.pointer,
+      _id_get$trailerField.pointer,
+    ).integer;
+  }
+
+  static final _id_toString$1 = PSSParameterSpec._class.instanceMethodId(
+    r'toString',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _toString$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String toString()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? toString$1() {
+    return _toString$1(
+      reference.pointer,
+      _id_toString$1.pointer,
+    ).object<jni$_.JString?>();
+  }
+}
+
+final class $PSSParameterSpec$Type$ extends jni$_.JType<PSSParameterSpec> {
+  @jni$_.internal
+  const $PSSParameterSpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/PSSParameterSpec;';
+}
+
 /// from: `java.security.spec.RSAKeyGenParameterSpec`
 extension type RSAKeyGenParameterSpec._(jni$_.JObject _$this)
     implements jni$_.JObject {
@@ -10342,6 +10872,261 @@ final class $IvParameterSpec$Type$ extends jni$_.JType<IvParameterSpec> {
   String get signature => r'Ljavax/crypto/spec/IvParameterSpec;';
 }
 
+/// from: `javax.crypto.spec.OAEPParameterSpec`
+extension type OAEPParameterSpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'javax/crypto/spec/OAEPParameterSpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<OAEPParameterSpec> type = $OAEPParameterSpec$Type$();
+  static final _id_DEFAULT = _class.staticFieldId(
+    r'DEFAULT',
+    r'Ljavax/crypto/spec/OAEPParameterSpec;',
+  );
+
+  /// from: `static public final javax.crypto.spec.OAEPParameterSpec DEFAULT`
+  /// The returned object must be released after use, by calling the [release] method.
+  static OAEPParameterSpec? get DEFAULT =>
+      _id_DEFAULT.getNullable(_class, OAEPParameterSpec.type)
+          as OAEPParameterSpec?;
+
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/lang/String;Ljava/lang/String;Ljava/security/spec/AlgorithmParameterSpec;Ljavax/crypto/spec/PSource;)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.lang.String string, java.lang.String string1, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec, javax.crypto.spec.PSource pSource)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory OAEPParameterSpec(
+    jni$_.JString? string,
+    jni$_.JString? string1,
+    jni$_.JObject? algorithmParameterSpec,
+    PSource? pSource,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$string1 = string1?.reference ?? jni$_.jNullReference;
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    final _$pSource = pSource?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$string.pointer,
+      _$string1.pointer,
+      _$algorithmParameterSpec.pointer,
+      _$pSource.pointer,
+    ).object<OAEPParameterSpec>();
+  }
+}
+
+extension OAEPParameterSpec$$Methods on OAEPParameterSpec {
+  static final _id_get$digestAlgorithm = OAEPParameterSpec._class
+      .instanceMethodId(r'getDigestAlgorithm', r'()Ljava/lang/String;');
+
+  static final _get$digestAlgorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String getDigestAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get digestAlgorithm {
+    return _get$digestAlgorithm(
+      reference.pointer,
+      _id_get$digestAlgorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_get$mGFAlgorithm = OAEPParameterSpec._class.instanceMethodId(
+    r'getMGFAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$mGFAlgorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String getMGFAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get mGFAlgorithm {
+    return _get$mGFAlgorithm(
+      reference.pointer,
+      _id_get$mGFAlgorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_get$mGFParameters = OAEPParameterSpec._class
+      .instanceMethodId(
+        r'getMGFParameters',
+        r'()Ljava/security/spec/AlgorithmParameterSpec;',
+      );
+
+  static final _get$mGFParameters =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.AlgorithmParameterSpec getMGFParameters()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get mGFParameters {
+    return _get$mGFParameters(
+      reference.pointer,
+      _id_get$mGFParameters.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_get$pSource = OAEPParameterSpec._class.instanceMethodId(
+    r'getPSource',
+    r'()Ljavax/crypto/spec/PSource;',
+  );
+
+  static final _get$pSource =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public javax.crypto.spec.PSource getPSource()`
+  /// The returned object must be released after use, by calling the [release] method.
+  PSource? get pSource {
+    return _get$pSource(
+      reference.pointer,
+      _id_get$pSource.pointer,
+    ).object<PSource?>();
+  }
+}
+
+final class $OAEPParameterSpec$Type$ extends jni$_.JType<OAEPParameterSpec> {
+  @jni$_.internal
+  const $OAEPParameterSpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljavax/crypto/spec/OAEPParameterSpec;';
+}
+
+/// from: `javax.crypto.spec.PSource`
+extension type PSource._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'javax/crypto/spec/PSource');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<PSource> type = $PSource$Type$();
+}
+
+extension PSource$$Methods on PSource {
+  static final _id_get$algorithm = PSource._class.instanceMethodId(
+    r'getAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$algorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.lang.String getAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get algorithm {
+    return _get$algorithm(
+      reference.pointer,
+      _id_get$algorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+}
+
+final class $PSource$Type$ extends jni$_.JType<PSource> {
+  @jni$_.internal
+  const $PSource$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljavax/crypto/spec/PSource;';
+}
+
 /// from: `javax.crypto.spec.SecretKeySpec`
 extension type SecretKeySpec._(jni$_.JObject _$this)
     implements jni$_.JObject, SecretKey {
@@ -10596,4 +11381,97 @@ final class $SecretKeySpec$Type$ extends jni$_.JType<SecretKeySpec> {
   @jni$_.internal
   @core$_.override
   String get signature => r'Ljavax/crypto/spec/SecretKeySpec;';
+}
+
+/// from: `javax.crypto.spec.PSource$PSpecified`
+extension type PSource$PSpecified._(jni$_.JObject _$this) implements PSource {
+  static final _class = jni$_.JClass.forName(
+    r'javax/crypto/spec/PSource$PSpecified',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<PSource$PSpecified> type =
+      $PSource$PSpecified$Type$();
+  static final _id_DEFAULT = _class.staticFieldId(
+    r'DEFAULT',
+    r'Ljavax/crypto/spec/PSource$PSpecified;',
+  );
+
+  /// from: `static public final javax.crypto.spec.PSource$PSpecified DEFAULT`
+  /// The returned object must be released after use, by calling the [release] method.
+  static PSource$PSpecified? get DEFAULT =>
+      _id_DEFAULT.getNullable(_class, PSource$PSpecified.type)
+          as PSource$PSpecified?;
+
+  static final _id_new$ = _class.constructorId(r'([B)V');
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(byte[] bs)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory PSource$PSpecified(jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$bs.pointer,
+    ).object<PSource$PSpecified>();
+  }
+}
+
+extension PSource$PSpecified$$Methods on PSource$PSpecified {
+  static final _id_get$value = PSource$PSpecified._class.instanceMethodId(
+    r'getValue',
+    r'()[B',
+  );
+
+  static final _get$value =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public byte[] getValue()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? get value {
+    return _get$value(
+      reference.pointer,
+      _id_get$value.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+}
+
+final class $PSource$PSpecified$Type$ extends jni$_.JType<PSource$PSpecified> {
+  @jni$_.internal
+  const $PSource$PSpecified$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljavax/crypto/spec/PSource$PSpecified;';
 }

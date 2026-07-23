@@ -39,6 +39,8 @@ classes:
   - java.security.interfaces.RSAPrivateKey
   - java.security.interfaces.RSAPublicKey
   - java.security.spec.PKCS8EncodedKeySpec
+  - java.security.spec.MGF1ParameterSpec
+  - java.security.spec.PSSParameterSpec
   - java.security.spec.RSAKeyGenParameterSpec
   - java.security.spec.RSAPrivateCrtKeySpec
   - java.security.spec.RSAPublicKeySpec
@@ -49,4 +51,6 @@ classes:
   - javax.crypto.SecretKey
   - javax.crypto.spec.GCMParameterSpec
   - javax.crypto.spec.IvParameterSpec
+  - javax.crypto.spec.OAEPParameterSpec
+  - javax.crypto.spec.PSource
   - javax.crypto.spec.SecretKeySpec
