@@ -16,10 +16,9 @@ part of 'impl_jni.dart';
 
 typedef _RsaKeyPairData = ({Uint8List privateKeyData, Uint8List publicKeyData});
 
-// Keep imported-key limits aligned with rsa_check_public_key(), which backs
-// the FFI implementation's RSA_check_key() validation. See:
-// third_party/boringssl/src/crypto/fipsmodule/rsa/rsa_impl.cc.inc
-const _rsaMinModulusBits = 512;
+// Keep import prevalidation aligned with the package-wide key-generation range.
+// Providers may impose a stronger minimum when constructing or generating keys.
+const _rsaMinModulusBits = 256;
 const _rsaMaxModulusBits = 16384;
 const _rsaMaxPublicExponentBits = 33;
 
