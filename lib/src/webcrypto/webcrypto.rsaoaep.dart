@@ -14,6 +14,17 @@
 
 part of 'webcrypto.dart';
 
+Map<String, dynamic> _normalizeLegacyRsaOaepJwkAlg(
+  Map<String, dynamic> jwk,
+  Hash hash,
+) {
+  // Preserve imports of JWKs exported by older FFI releases.
+  if (identical(hash, Hash.sha1) && jwk['alg'] == 'RSA-OAEP-1') {
+    return {...jwk, 'alg': 'RSA-OAEP'};
+  }
+  return jwk;
+}
+
 /// RSAES-OAEP private key for decryption of messages.
 ///
 /// An [RsaOaepPrivateKey] instance holds a private RSA key for decrypting
@@ -176,7 +187,7 @@ final class RsaOaepPrivateKey {
     Hash hash,
   ) async {
     final impl = await webCryptImpl.rsaOaepPrivateKey.importJsonWebKey(
-      jwk,
+      _normalizeLegacyRsaOaepJwkAlg(jwk, hash),
       hash._impl,
     );
     return RsaOaepPrivateKey._(impl);
@@ -468,7 +479,7 @@ final class RsaOaepPublicKey {
     Hash hash,
   ) async {
     final impl = await webCryptImpl.rsaOaepPublicKey.importJsonWebKey(
-      jwk,
+      _normalizeLegacyRsaOaepJwkAlg(jwk, hash),
       hash._impl,
     );
     return RsaOaepPublicKey._(impl);
