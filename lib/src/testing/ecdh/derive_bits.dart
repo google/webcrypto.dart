@@ -53,7 +53,7 @@ List<({String name, Future<void> Function() test})> tests() {
       var threw = false;
       try {
         await aliceKeyPair.privateKey.deriveBits(
-          c.maxBits + 8,
+          c.maxBits + 1,
           bobKeyPair.publicKey,
         );
       } on OperationError {
