@@ -1,5 +1,6 @@
 # 0.6.2-wip
 * Fixed JS interop to enable WebAssembly.
+* Upgrade `ffigen` and `hooks` versions.
 
 # 0.6.1
 * Added Dart native build hooks and native asset lookup for the bundled
