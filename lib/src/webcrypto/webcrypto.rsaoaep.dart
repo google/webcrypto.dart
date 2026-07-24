@@ -74,8 +74,9 @@ Map<String, dynamic> _normalizeLegacyRsaOaepJwkAlg(
 /// {@endtemplate}
 ///
 /// {@template RSAES-OAEP-message-size-limit}
-/// The size of the message to be encrypted is limited to
-/// `message.length <= (modulusLength - 2 * hashLength - 2) / 8`.
+/// The maximum message size in bytes is
+/// `modulusByteLength - 2 * hashByteLength - 2`, where the modulus and hash
+/// output lengths are measured in bytes.
 /// Thus, [RsaOaepPublicKey.encryptBytes] is usually only used to encrypt the
 /// key for symmetric cipher like [AesCbcSecretKey], [AesCtrSecretKey] or
 /// [AesGcmSecretKey], after which the symmetric cipher can be used
@@ -498,10 +499,10 @@ final class RsaOaepPublicKey {
   /// [section 2.1.4 of "A Proposal for an ISO Standard for Public Key Encryption"][1].
   ///
   /// The size of the [data] to be encrypted is limited to
-  /// `data.length <= (modulusLength - 2 * hashLength - 2) / 8`, where
-  /// `hashLength` and `modulusLength` are given in bits.
-  /// For example, a 2048 bit RSA key with [Hash.sha256] cannot encrypt messages
-  /// larger than 191 bytes.
+  /// `data.length <= modulusByteLength - 2 * hashByteLength - 2`, where the
+  /// modulus and hash output lengths are measured in bytes.
+  /// For example, a 2048-bit RSA key with [Hash.sha256] can encrypt at most
+  /// 190 bytes.
   /// For this reason, RSAES-OAEP is often used to encrypt/decrypt a random
   /// one-time key for a symmetric cipher like [AesCbcSecretKey],
   /// [AesCtrSecretKey] or [AesGcmSecretKey], after which the symmetric cipher
