@@ -111,8 +111,8 @@ final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
         'custom implementations of EcdhPublicKey is not supported',
       );
     }
-    if (length <= 0) {
-      throw ArgumentError.value(length, 'length', 'must be positive');
+    if (length < 0) {
+      throw ArgumentError.value(length, 'length', 'must be non-negative');
     }
 
     return _Scope.async((scope) async {

@@ -49,8 +49,6 @@ part of 'webcrypto.dart';
 /// {@endtemplate}
 ///
 /// [1]: https://www.rfc-editor.org/rfc/rfc8018
-// TODO: Rewrite all RFC links to use https://www.rfc-editor.org/rfc/rfcXXXX
-
 final class Pbkdf2SecretKey {
   final Pbkdf2SecretKeyImpl _impl;
 

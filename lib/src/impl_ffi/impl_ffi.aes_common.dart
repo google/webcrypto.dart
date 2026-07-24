@@ -18,7 +18,9 @@ Uint8List _aesImportRawKey(List<int> keyData) {
   if (keyData.length == 24) {
     // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
     // If not supported in Chrome, there is not reason to support it in Dart.
+    // coverage:ignore-start
     throw UnsupportedError('192-bit AES keys are not supported');
+    // coverage:ignore-end
   }
   if (keyData.length != 16 && keyData.length != 32) {
     throw const FormatException('keyData for AES must be 128 or 256 bits');
@@ -43,7 +45,9 @@ Uint8List _aesImportJwkKey(
   if (keyData.length == 24) {
     // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
     // If not supported in Chrome, there is not reason to support it in Dart.
+    // coverage:ignore-start
     throw UnsupportedError('192-bit AES keys are not supported');
+    // coverage:ignore-end
   }
   checkJwk(
     keyData.length == 16 || keyData.length == 32,
@@ -82,7 +86,9 @@ Uint8List _aesGenerateKey(int length) {
   if (length == 192) {
     // 192-bit AES is intentionally unsupported, see https://crbug.com/533699
     // If not supported in Chrome, there is not reason to support it in Dart.
+    // coverage:ignore-start
     throw UnsupportedError('192-bit AES keys are not supported');
+    // coverage:ignore-end
   }
   if (length != 128 && length != 256) {
     throw const FormatException('keyData for AES must be 128 or 256 bits');

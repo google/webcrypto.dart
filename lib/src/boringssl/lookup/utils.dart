@@ -29,10 +29,12 @@ String get libraryFileName {
   if (Platform.isMacOS) {
     return 'lib$libraryName.dylib';
   }
+  // coverage:ignore-start
   throw UnsupportedError(
     'Platform ${Platform.operatingSystem} is unsupported or embed '
     'the binary webcrypto library for package:webcrypto',
   );
+  // coverage:ignore-end
 }
 
 /// Look for the webcrypto binary library in the `.dart_tool/webcrypto/` folder.
