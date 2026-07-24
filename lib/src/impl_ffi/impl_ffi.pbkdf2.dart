@@ -60,15 +60,13 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
         'The length for PBKDF2 must be a multiple of 8 bits',
       );
     }
-    if (length == 0) {
-      throw operationError(
-        'A length of zero is not allowed Pbkdf2SecretKey.deriveBits',
-      );
-    }
     if (iterations <= 0) {
       throw operationError(
         'Iterations <= 0 is not allowed for Pbkdf2SecretKey.deriveBits',
       );
+    }
+    if (length == 0) {
+      return Uint8List(0);
     }
 
     final lengthInBytes = length ~/ 8;
