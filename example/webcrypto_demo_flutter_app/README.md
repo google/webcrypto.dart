@@ -46,3 +46,10 @@ To run the Android JNI/JCA RSASSA-PKCS1-v1_5 smoke test:
 flutter test integration_test/jni_rsassapkcs1v15_test.dart \
   -d emulator-name
 ```
+
+To run the Android JNI/JCA RSA-OAEP smoke test:
+
+```sh
+flutter test integration_test/jni_rsaoaep_test.dart \
+  -d emulator-name
+```
