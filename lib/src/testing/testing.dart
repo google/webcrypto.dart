@@ -33,6 +33,7 @@ import 'webcrypto/digest.dart' as digest;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
 import 'regression/jwk_use_key_ops_conflict.dart' as jwk_use_key_ops_conflict;
+import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
 
 /// Test runners from all test files except `digest.dart` and
 /// `random.dart`, which do not use [TestRunner].
@@ -64,6 +65,7 @@ void runAllTests(
     ...jwk_use_key_ops_conflict.tests(),
     ...issue_60_trailing_bytes.tests(),
     ...derive_bits_zero_length.tests(),
+    ...rsa_oaep_sha1_jwk_alg.tests(),
   ];
 
   for (final (:name, :test) in allTests) {
