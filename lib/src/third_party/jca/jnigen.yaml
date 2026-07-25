@@ -27,6 +27,7 @@ android_sdk_config:
     - '36'
 classes:
   - java.math.BigInteger
+  - java.security.AlgorithmParameters
   - java.security.Key
   - java.security.KeyFactory
   - java.security.KeyPair
@@ -34,10 +35,18 @@ classes:
   - java.security.MessageDigest
   - java.security.SecureRandom
   - java.security.Signature
+  - java.security.interfaces.ECKey
+  - java.security.interfaces.ECPrivateKey
+  - java.security.interfaces.ECPublicKey
   - java.security.interfaces.RSAKey
   - java.security.interfaces.RSAPrivateCrtKey
   - java.security.interfaces.RSAPrivateKey
   - java.security.interfaces.RSAPublicKey
+  - java.security.spec.ECGenParameterSpec
+  - java.security.spec.ECParameterSpec
+  - java.security.spec.ECPoint
+  - java.security.spec.ECPrivateKeySpec
+  - java.security.spec.ECPublicKeySpec
   - java.security.spec.PKCS8EncodedKeySpec
   - java.security.spec.MGF1ParameterSpec
   - java.security.spec.PSSParameterSpec
