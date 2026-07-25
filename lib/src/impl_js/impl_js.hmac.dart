@@ -102,7 +102,7 @@ final class _StaticHmacSecretKeyImpl implements StaticHmacSecretKeyImpl {
   }
 
   @override
-  Future<HmacSecretKeyImpl> generateKey(HashImpl hash, {int? length = 32}) {
+  Future<HmacSecretKeyImpl> generateKey(HashImpl hash, {int? length}) {
     return hmacSecretKey_generateKey(hash, length: length);
   }
 }

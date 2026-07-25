@@ -181,8 +181,9 @@ final class HmacSecretKey {
   /// Generate random [HmacSecretKey].
   ///
   /// The [length] specifies the length of the secret key in bits. If omitted
-  /// the random key will use the same number of bits as the underlying hash
-  /// algorithm given in [hash].
+  /// the random key will use the block size of the underlying hash algorithm
+  /// given in [hash] (512 bits for SHA-1 and SHA-256, and 1024 bits for
+  /// SHA-384 and SHA-512).
   ///
   /// **Example**
   /// ```dart
