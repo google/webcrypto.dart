@@ -270,7 +270,7 @@ void _validateRsaPssSaltLength(int saltLength) {
     throw ArgumentError.value(
       saltLength,
       'saltLength',
-      'must be a positive integer',
+      'must be a non-negative integer',
     );
   }
 }
