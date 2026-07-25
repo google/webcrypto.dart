@@ -244,6 +244,12 @@ Signature _createRsaPssSignature(
   return signature;
 }
 
+// TODO: Decide the RSA-PSS policy for Android API 21-22. Android only
+// guarantees the hash-specific SHAxxxwithRSA/PSS aliases from API 23, while
+// RSASSA-PSS availability depends on the installed provider. Possible policies
+// include documenting provider-dependent support, requiring API 23, or routing
+// unsupported cases to another backend. See:
+// https://developer.android.com/reference/java/security/Signature
 Signature _getRsaPssSignature(jni.Arena arena, _HashImpl hash) {
   try {
     return _getRsaPssSignatureByName(arena, 'RSASSA-PSS');
