@@ -318,7 +318,8 @@ final class EcdhPublicKey {
   /// Import [EcdhPublicKey] in the [SPKI][1] format.
   ///
   /// Creates an [EcdhPublicKey] from [keyData] given as the DER encoded
-  /// _SubjectPublicKeyInfo_ structure specified in [RFC 5280][1].
+  /// _SubjectPublicKeyInfo_ structure specified in [RFC 5280][1], using the
+  /// EC algorithm identifiers and point encoding specified in [RFC 5480][2].
   /// The [curve] specified must match the curve used in [keyData].
   ///
   /// **Example**
@@ -341,6 +342,7 @@ final class EcdhPublicKey {
   /// ```
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5280
+  /// [2]: https://www.rfc-editor.org/rfc/rfc5480
   ///
   /// ## Compatibility
   /// TODO: explain that Chrome can't import SPKI keys from Firefox < 72.
