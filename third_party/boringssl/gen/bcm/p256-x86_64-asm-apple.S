@@ -9,6 +9,7 @@
 
 .section	__DATA,__const
 .p2align	6
+p256_constants:
 L$poly:
 .quad	0xffffffffffffffff, 0x00000000ffffffff, 0x0000000000000000, 0xffffffff00000001
 
@@ -95,6 +96,7 @@ L$neg_epilogue:
 .private_extern _ecp_nistz256_ord_mul_mont_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_ord_mul_mont_nohw
 _ecp_nistz256_ord_mul_mont_nohw:
 
 _CET_ENDBR
@@ -419,6 +421,7 @@ L$ord_mul_epilogue:
 .private_extern _ecp_nistz256_ord_sqr_mont_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_ord_sqr_mont_nohw
 _ecp_nistz256_ord_sqr_mont_nohw:
 
 _CET_ENDBR
@@ -707,6 +710,7 @@ L$ord_sqr_epilogue:
 .private_extern _ecp_nistz256_ord_mul_mont_adx
 
 .p2align	5
+.alt_entry _ecp_nistz256_ord_mul_mont_adx
 _ecp_nistz256_ord_mul_mont_adx:
 
 L$ecp_nistz256_ord_mul_mont_adx:
@@ -946,6 +950,7 @@ L$ord_mulx_epilogue:
 .private_extern _ecp_nistz256_ord_sqr_mont_adx
 
 .p2align	5
+.alt_entry _ecp_nistz256_ord_sqr_mont_adx
 _ecp_nistz256_ord_sqr_mont_adx:
 
 _CET_ENDBR
@@ -1162,6 +1167,7 @@ L$ord_sqrx_epilogue:
 .private_extern _ecp_nistz256_mul_mont_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_mul_mont_nohw
 _ecp_nistz256_mul_mont_nohw:
 
 _CET_ENDBR
@@ -1208,6 +1214,7 @@ L$mul_epilogue:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_mul_montq
 __ecp_nistz256_mul_montq:
 
 
@@ -1435,6 +1442,7 @@ __ecp_nistz256_mul_montq:
 .private_extern _ecp_nistz256_sqr_mont_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_sqr_mont_nohw
 _ecp_nistz256_sqr_mont_nohw:
 
 _CET_ENDBR
@@ -1479,6 +1487,7 @@ L$sqr_epilogue:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_sqr_montq
 __ecp_nistz256_sqr_montq:
 
 	movq	%rax,%r13
@@ -1644,6 +1653,7 @@ __ecp_nistz256_sqr_montq:
 .private_extern _ecp_nistz256_mul_mont_adx
 
 .p2align	5
+.alt_entry _ecp_nistz256_mul_mont_adx
 _ecp_nistz256_mul_mont_adx:
 
 _CET_ENDBR
@@ -1691,6 +1701,7 @@ L$mulx_epilogue:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_mul_montx
 __ecp_nistz256_mul_montx:
 
 
@@ -1862,6 +1873,7 @@ __ecp_nistz256_mul_montx:
 .private_extern _ecp_nistz256_sqr_mont_adx
 
 .p2align	5
+.alt_entry _ecp_nistz256_sqr_mont_adx
 _ecp_nistz256_sqr_mont_adx:
 
 _CET_ENDBR
@@ -1907,6 +1919,7 @@ L$sqrx_epilogue:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_sqr_montx
 __ecp_nistz256_sqr_montx:
 
 	mulxq	%r14,%r9,%r10
@@ -2040,6 +2053,7 @@ __ecp_nistz256_sqr_montx:
 .private_extern _ecp_nistz256_select_w5_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_select_w5_nohw
 _ecp_nistz256_select_w5_nohw:
 
 _CET_ENDBR
@@ -2104,6 +2118,7 @@ L$SEH_end_ecp_nistz256_select_w5_nohw:
 .private_extern _ecp_nistz256_select_w7_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_select_w7_nohw
 _ecp_nistz256_select_w7_nohw:
 
 _CET_ENDBR
@@ -2156,6 +2171,7 @@ L$SEH_end_ecp_nistz256_select_w7_nohw:
 .private_extern _ecp_nistz256_select_w5_avx2
 
 .p2align	5
+.alt_entry _ecp_nistz256_select_w5_avx2
 _ecp_nistz256_select_w5_avx2:
 
 _CET_ENDBR
@@ -2222,6 +2238,7 @@ L$SEH_end_ecp_nistz256_select_w5_avx2:
 .private_extern _ecp_nistz256_select_w7_avx2
 
 .p2align	5
+.alt_entry _ecp_nistz256_select_w7_avx2
 _ecp_nistz256_select_w7_avx2:
 
 _CET_ENDBR
@@ -2298,6 +2315,7 @@ L$SEH_end_ecp_nistz256_select_w7_avx2:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_add_toq
 __ecp_nistz256_add_toq:
 
 	xorq	%r11,%r11
@@ -2332,6 +2350,7 @@ __ecp_nistz256_add_toq:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_sub_fromq
 __ecp_nistz256_sub_fromq:
 
 	subq	0(%rbx),%r12
@@ -2365,6 +2384,7 @@ __ecp_nistz256_sub_fromq:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_subq
 __ecp_nistz256_subq:
 
 	subq	%r12,%rax
@@ -2394,6 +2414,7 @@ __ecp_nistz256_subq:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_mul_by_2q
 __ecp_nistz256_mul_by_2q:
 
 	xorq	%r11,%r11
@@ -2429,6 +2450,7 @@ __ecp_nistz256_mul_by_2q:
 .private_extern _ecp_nistz256_point_double_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_point_double_nohw
 _ecp_nistz256_point_double_nohw:
 
 _CET_ENDBR
@@ -2653,6 +2675,7 @@ L$point_doubleq_epilogue:
 .private_extern _ecp_nistz256_point_add_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_point_add_nohw
 _ecp_nistz256_point_add_nohw:
 
 _CET_ENDBR
@@ -3080,6 +3103,7 @@ L$point_addq_epilogue:
 .private_extern _ecp_nistz256_point_add_affine_nohw
 
 .p2align	5
+.alt_entry _ecp_nistz256_point_add_affine_nohw
 _ecp_nistz256_point_add_affine_nohw:
 
 _CET_ENDBR
@@ -3402,6 +3426,7 @@ L$add_affineq_epilogue:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_add_tox
 __ecp_nistz256_add_tox:
 
 	xorq	%r11,%r11
@@ -3437,6 +3462,7 @@ __ecp_nistz256_add_tox:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_sub_fromx
 __ecp_nistz256_sub_fromx:
 
 	xorq	%r11,%r11
@@ -3472,6 +3498,7 @@ __ecp_nistz256_sub_fromx:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_subx
 __ecp_nistz256_subx:
 
 	xorq	%r11,%r11
@@ -3503,6 +3530,7 @@ __ecp_nistz256_subx:
 
 
 .p2align	5
+.alt_entry __ecp_nistz256_mul_by_2x
 __ecp_nistz256_mul_by_2x:
 
 	xorq	%r11,%r11
@@ -3539,6 +3567,7 @@ __ecp_nistz256_mul_by_2x:
 .private_extern _ecp_nistz256_point_double_adx
 
 .p2align	5
+.alt_entry _ecp_nistz256_point_double_adx
 _ecp_nistz256_point_double_adx:
 
 _CET_ENDBR
@@ -3763,6 +3792,7 @@ L$point_doublex_epilogue:
 .private_extern _ecp_nistz256_point_add_adx
 
 .p2align	5
+.alt_entry _ecp_nistz256_point_add_adx
 _ecp_nistz256_point_add_adx:
 
 _CET_ENDBR
@@ -4190,6 +4220,7 @@ L$point_addx_epilogue:
 .private_extern _ecp_nistz256_point_add_affine_adx
 
 .p2align	5
+.alt_entry _ecp_nistz256_point_add_affine_adx
 _ecp_nistz256_point_add_affine_adx:
 
 _CET_ENDBR
