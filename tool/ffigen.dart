@@ -32,7 +32,7 @@ void generateWebCryptoBindings(Uri packageRoot) {
       style: const NativeExternalBindings(
         assetId: 'package:webcrypto/webcrypto.dart',
       ),
-      sort: true,
+      format: true,
       commentType: const CommentType(CommentStyle.any, CommentLength.full),
       preamble: '''
 // Copyright 2021 Google LLC
@@ -58,7 +58,6 @@ void generateWebCryptoBindings(Uri packageRoot) {
       include: Declarations.includeSet({'webcrypto_get_CBB_size'}),
     ),
     structs: const Structs(dependencies: CompoundDependencies.opaque),
-    typedefs: const Typedefs(include: Declarations.includeAll),
   ).generate();
 }
 
@@ -71,7 +70,7 @@ void generateBoringSslBindings(Uri packageRoot) {
       style: const NativeExternalBindings(
         assetId: 'package:webcrypto/webcrypto.dart',
       ),
-      sort: true,
+      format: true,
       commentType: const CommentType(CommentStyle.any, CommentLength.full),
       preamble: '''
 /* ====================================================================
@@ -197,7 +196,29 @@ void generateBoringSslBindings(Uri packageRoot) {
       include: Declarations.includeSet({'cbs_st', 'cbb_st'}),
       dependencies: CompoundDependencies.opaque,
     ),
-    typedefs: const Typedefs(include: Declarations.includeAll),
+    typedefs: Typedefs.includeSet({
+      'BIGNUM',
+      'BN_CTX',
+      'BN_GENCB',
+      'BN_ULONG',
+      'CBB',
+      'CBS',
+      'ECDSA_SIG',
+      'EC_GROUP',
+      'EC_KEY',
+      'EC_POINT',
+      'ENGINE',
+      'EVP_AEAD',
+      'EVP_AEAD_CTX',
+      'EVP_CIPHER',
+      'EVP_CIPHER_CTX',
+      'EVP_MD',
+      'EVP_MD_CTX',
+      'EVP_PKEY',
+      'EVP_PKEY_CTX',
+      'HMAC_CTX',
+      'RSA',
+    }),
     functions: Functions(
       include: Declarations.includeSet({
         // Source of truth for BoringSSL entry points bound from Dart.
