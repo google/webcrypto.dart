@@ -248,6 +248,7 @@ final class RsaPssPrivateKey {
   /// The [saltLength] is typically zero or length of the [Hash], for a
   /// discussion of appropriate values for [saltLength] see
   /// [RFC 3447 Section 9.1, Notes 4][1].
+  /// The [saltLength] must be between `0` and `2^32 - 1`.
   ///
   /// When running in Safari/WebKit on Mac the [saltLength] is restricted to
   /// `0 <= saltLength <= hashLength` as the underlying cryptography libraries
@@ -324,6 +325,7 @@ final class RsaPssPrivateKey {
   /// The [saltLength] is typically zero or length of the [Hash], for a
   /// discussion of appropriate values for [saltLength] see
   /// [RFC 3447 Section 9.1, Notes 4][1].
+  /// The [saltLength] must be between `0` and `2^32 - 1`.
   ///
   /// When running in Safari/WebKit on Mac the [saltLength] is restricted to
   /// `0 <= saltLength <= hashLength` as the underlying cryptography libraries

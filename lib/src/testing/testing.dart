@@ -33,6 +33,7 @@ import 'webcrypto/digest.dart' as digest;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
 import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
+import 'regression/uint32_parameter_overflow.dart' as uint32_parameter_overflow;
 
 /// Test runners from all test files except `digest.dart` and
 /// `random.dart`, which do not use [TestRunner].
@@ -64,6 +65,7 @@ void runAllTests(
     ...issue_60_trailing_bytes.tests(),
     ...derive_bits_zero_length.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
+    ...uint32_parameter_overflow.tests(),
   ];
 
   for (final (:name, :test) in allTests) {
