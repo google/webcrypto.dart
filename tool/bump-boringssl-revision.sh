@@ -465,8 +465,8 @@ main() {
     dart pub get --no-example
 
     section "Updating FFI bindings"
-    log_info "Running update-bindings.sh..."
-    bash "$DIR/update-bindings.sh"
+    log_info "Running tool/ffigen.dart..."
+    dart run "$DIR/ffigen.dart"
 
     section "Running tests"
     log_info "Running test.sh..."
