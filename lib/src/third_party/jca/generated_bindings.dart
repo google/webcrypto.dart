@@ -1942,6 +1942,437 @@ final class $BigInteger$Type$ extends jni$_.JType<BigInteger> {
   String get signature => r'Ljava/math/BigInteger;';
 }
 
+/// from: `java.security.AlgorithmParameters`
+extension type AlgorithmParameters._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/AlgorithmParameters',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<AlgorithmParameters> type =
+      $AlgorithmParameters$Type$();
+  static final _id_getInstance = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;)Ljava/security/AlgorithmParameters;',
+  );
+
+  static final _getInstance =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.AlgorithmParameters getInstance(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static AlgorithmParameters? getInstance(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _getInstance(
+      _class.reference.pointer,
+      _id_getInstance.pointer,
+      _$string.pointer,
+    ).object<AlgorithmParameters?>();
+  }
+
+  static final _id_getInstance$1 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/lang/String;)Ljava/security/AlgorithmParameters;',
+  );
+
+  static final _getInstance$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.AlgorithmParameters getInstance(java.lang.String string, java.lang.String string1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static AlgorithmParameters? getInstance$1(
+    jni$_.JString? string,
+    jni$_.JString? string1,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$string1 = string1?.reference ?? jni$_.jNullReference;
+    return _getInstance$1(
+      _class.reference.pointer,
+      _id_getInstance$1.pointer,
+      _$string.pointer,
+      _$string1.pointer,
+    ).object<AlgorithmParameters?>();
+  }
+
+  static final _id_getInstance$2 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/security/Provider;)Ljava/security/AlgorithmParameters;',
+  );
+
+  static final _getInstance$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public java.security.AlgorithmParameters getInstance(java.lang.String string, java.security.Provider provider)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static AlgorithmParameters? getInstance$2(
+    jni$_.JString? string,
+    jni$_.JObject? provider,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$provider = provider?.reference ?? jni$_.jNullReference;
+    return _getInstance$2(
+      _class.reference.pointer,
+      _id_getInstance$2.pointer,
+      _$string.pointer,
+      _$provider.pointer,
+    ).object<AlgorithmParameters?>();
+  }
+}
+
+extension AlgorithmParameters$$Methods on AlgorithmParameters {
+  static final _id_get$algorithm = AlgorithmParameters._class.instanceMethodId(
+    r'getAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$algorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.lang.String getAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get algorithm {
+    return _get$algorithm(
+      reference.pointer,
+      _id_get$algorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_get$provider = AlgorithmParameters._class.instanceMethodId(
+    r'getProvider',
+    r'()Ljava/security/Provider;',
+  );
+
+  static final _get$provider =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.security.Provider getProvider()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get provider {
+    return _get$provider(
+      reference.pointer,
+      _id_get$provider.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_init = AlgorithmParameters._class.instanceMethodId(
+    r'init',
+    r'(Ljava/security/spec/AlgorithmParameterSpec;)V',
+  );
+
+  static final _init =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void init(java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
+  void init(jni$_.JObject? algorithmParameterSpec) {
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    _init(
+      reference.pointer,
+      _id_init.pointer,
+      _$algorithmParameterSpec.pointer,
+    ).check();
+  }
+
+  static final _id_init$1 = AlgorithmParameters._class.instanceMethodId(
+    r'init',
+    r'([B)V',
+  );
+
+  static final _init$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void init(byte[] bs)`
+  void init$1(jni$_.JByteArray? bs) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    _init$1(reference.pointer, _id_init$1.pointer, _$bs.pointer).check();
+  }
+
+  static final _id_init$2 = AlgorithmParameters._class.instanceMethodId(
+    r'init',
+    r'([BLjava/lang/String;)V',
+  );
+
+  static final _init$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void init(byte[] bs, java.lang.String string)`
+  void init$2(jni$_.JByteArray? bs, jni$_.JString? string) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    _init$2(
+      reference.pointer,
+      _id_init$2.pointer,
+      _$bs.pointer,
+      _$string.pointer,
+    ).check();
+  }
+
+  static final _id_getParameterSpec = AlgorithmParameters._class
+      .instanceMethodId(
+        r'getParameterSpec',
+        r'(Ljava/lang/Class;)Ljava/security/spec/AlgorithmParameterSpec;',
+      );
+
+  static final _getParameterSpec =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final T getParameterSpec(java.lang.Class<T> class)`
+  /// The returned object must be released after use, by calling the [release] method.
+  $T? getParameterSpec<$T extends jni$_.JObject?>(jni$_.JObject? class$) {
+    final _$class$ = class$?.reference ?? jni$_.jNullReference;
+    return _getParameterSpec(
+      reference.pointer,
+      _id_getParameterSpec.pointer,
+      _$class$.pointer,
+    ).object<$T?>();
+  }
+
+  static final _id_get$encoded = AlgorithmParameters._class.instanceMethodId(
+    r'getEncoded',
+    r'()[B',
+  );
+
+  static final _get$encoded =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final byte[] getEncoded()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? get encoded {
+    return _get$encoded(
+      reference.pointer,
+      _id_get$encoded.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+
+  static final _id_getEncoded = AlgorithmParameters._class.instanceMethodId(
+    r'getEncoded',
+    r'(Ljava/lang/String;)[B',
+  );
+
+  static final _getEncoded =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final byte[] getEncoded(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? getEncoded(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _getEncoded(
+      reference.pointer,
+      _id_getEncoded.pointer,
+      _$string.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+
+  static final _id_toString$1 = AlgorithmParameters._class.instanceMethodId(
+    r'toString',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _toString$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.lang.String toString()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? toString$1() {
+    return _toString$1(
+      reference.pointer,
+      _id_toString$1.pointer,
+    ).object<jni$_.JString?>();
+  }
+}
+
+final class $AlgorithmParameters$Type$
+    extends jni$_.JType<AlgorithmParameters> {
+  @jni$_.internal
+  const $AlgorithmParameters$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/AlgorithmParameters;';
+}
+
 /// from: `java.security.Key`
 extension type Key._(jni$_.JObject _$this) implements jni$_.JObject {
   static final _class = jni$_.JClass.forName(r'java/security/Key');
@@ -5050,11 +5481,11 @@ extension Signature$$Methods on Signature {
 
   /// from: `public final java.security.AlgorithmParameters getParameters()`
   /// The returned object must be released after use, by calling the [release] method.
-  jni$_.JObject? get parameters {
+  AlgorithmParameters? get parameters {
     return _get$parameters(
       reference.pointer,
       _id_get$parameters.pointer,
-    ).object<jni$_.JObject?>();
+    ).object<AlgorithmParameters?>();
   }
 
   static final _id_getParameter = Signature._class.instanceMethodId(
@@ -5129,6 +5560,512 @@ final class $Signature$Type$ extends jni$_.JType<Signature> {
   @jni$_.internal
   @core$_.override
   String get signature => r'Ljava/security/Signature;';
+}
+
+/// from: `java.security.interfaces.ECKey`
+extension type ECKey._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'java/security/interfaces/ECKey');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<ECKey> type = $ECKey$Type$();
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $ECKey> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getParams()Ljava/security/spec/ECParameterSpec;') {
+        final $r = _$impls[$p]!.getParams();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(jni$_.JImplementer implementer, $ECKey $impl) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(r'java.security.interfaces.ECKey', $p, _$invokePointer, []);
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory ECKey.implement($ECKey $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<ECKey>();
+  }
+}
+
+extension ECKey$$Methods on ECKey {
+  static final _id_getParams = ECKey._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/ECParameterSpec;',
+  );
+
+  static final _getParams =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.security.spec.ECParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  ECParameterSpec? getParams() {
+    return _getParams(
+      reference.pointer,
+      _id_getParams.pointer,
+    ).object<ECParameterSpec?>();
+  }
+}
+
+abstract base mixin class $ECKey {
+  factory $ECKey({required ECParameterSpec? Function() getParams}) = _$ECKey;
+
+  ECParameterSpec? getParams();
+}
+
+final class _$ECKey with $ECKey {
+  _$ECKey({required ECParameterSpec? Function() getParams})
+    : _getParams = getParams;
+
+  final ECParameterSpec? Function() _getParams;
+
+  ECParameterSpec? getParams() {
+    return _getParams();
+  }
+}
+
+final class $ECKey$Type$ extends jni$_.JType<ECKey> {
+  @jni$_.internal
+  const $ECKey$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/interfaces/ECKey;';
+}
+
+/// from: `java.security.interfaces.ECPrivateKey`
+extension type ECPrivateKey._(jni$_.JObject _$this)
+    implements jni$_.JObject, ECKey {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/interfaces/ECPrivateKey',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<ECPrivateKey> type = $ECPrivateKey$Type$();
+
+  /// from: `static public final long serialVersionUID`
+  static const serialVersionUID = -7896394956925609184;
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $ECPrivateKey> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getS()Ljava/math/BigInteger;') {
+        final $r = _$impls[$p]!.getS();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getParams()Ljava/security/spec/ECParameterSpec;') {
+        final $r = _$impls[$p]!.getParams();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(jni$_.JImplementer implementer, $ECPrivateKey $impl) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(
+      r'java.security.interfaces.ECPrivateKey',
+      $p,
+      _$invokePointer,
+      [],
+    );
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory ECPrivateKey.implement($ECPrivateKey $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<ECPrivateKey>();
+  }
+}
+
+extension ECPrivateKey$$Methods on ECPrivateKey {
+  static final _id_getS = ECPrivateKey._class.instanceMethodId(
+    r'getS',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _getS =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.math.BigInteger getS()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? getS() {
+    return _getS(reference.pointer, _id_getS.pointer).object<BigInteger?>();
+  }
+
+  static final _id_getParams = ECPrivateKey._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/ECParameterSpec;',
+  );
+
+  static final _getParams =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.security.spec.ECParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  ECParameterSpec? getParams() {
+    return _getParams(
+      reference.pointer,
+      _id_getParams.pointer,
+    ).object<ECParameterSpec?>();
+  }
+}
+
+abstract base mixin class $ECPrivateKey {
+  factory $ECPrivateKey({
+    required BigInteger? Function() getS,
+    required ECParameterSpec? Function() getParams,
+  }) = _$ECPrivateKey;
+
+  BigInteger? getS();
+  ECParameterSpec? getParams();
+}
+
+final class _$ECPrivateKey with $ECPrivateKey {
+  _$ECPrivateKey({
+    required BigInteger? Function() getS,
+    required ECParameterSpec? Function() getParams,
+  }) : _getS = getS,
+       _getParams = getParams;
+
+  final BigInteger? Function() _getS;
+  final ECParameterSpec? Function() _getParams;
+
+  BigInteger? getS() {
+    return _getS();
+  }
+
+  ECParameterSpec? getParams() {
+    return _getParams();
+  }
+}
+
+final class $ECPrivateKey$Type$ extends jni$_.JType<ECPrivateKey> {
+  @jni$_.internal
+  const $ECPrivateKey$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/interfaces/ECPrivateKey;';
+}
+
+/// from: `java.security.interfaces.ECPublicKey`
+extension type ECPublicKey._(jni$_.JObject _$this)
+    implements jni$_.JObject, ECKey {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/interfaces/ECPublicKey',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<ECPublicKey> type = $ECPublicKey$Type$();
+
+  /// from: `static public final long serialVersionUID`
+  static const serialVersionUID = -3314988629879632826;
+
+  /// Maps a specific port to the implemented interface.
+  static final core$_.Map<core$_.int, $ECPublicKey> _$impls = {};
+  static jni$_.JObjectPtr _$invoke(
+    core$_.int port,
+    jni$_.JObjectPtr descriptor,
+    jni$_.JObjectPtr args,
+  ) {
+    return _$invokeMethod(
+      port,
+      jni$_.MethodInvocation.fromAddresses(0, descriptor.address, args.address),
+    );
+  }
+
+  static final jni$_.Pointer<
+    jni$_.NativeFunction<
+      jni$_.JObjectPtr Function(jni$_.Int64, jni$_.JObjectPtr, jni$_.JObjectPtr)
+    >
+  >
+  _$invokePointer = jni$_.Pointer.fromFunction(_$invoke);
+
+  static jni$_.Pointer<jni$_.Void> _$invokeMethod(
+    core$_.int $p,
+    jni$_.MethodInvocation $i,
+  ) {
+    try {
+      final $d = $i.methodDescriptor.toDartString(releaseOriginal: true);
+      final $a = $i.args;
+      if ($d == r'getW()Ljava/security/spec/ECPoint;') {
+        final $r = _$impls[$p]!.getW();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+      if ($d == r'getParams()Ljava/security/spec/ECParameterSpec;') {
+        final $r = _$impls[$p]!.getParams();
+        return ($r as jni$_.JObject?)
+                ?.as(const jni$_.$JObject$Type$())
+                .reference
+                .toPointer() ??
+            jni$_.nullptr;
+      }
+    } catch (e) {
+      return jni$_.ProtectedJniExtensions.newDartException(e);
+    }
+    return jni$_.nullptr;
+  }
+
+  static void implementIn(jni$_.JImplementer implementer, $ECPublicKey $impl) {
+    late final jni$_.RawReceivePort $p;
+    $p = jni$_.RawReceivePort(($m) {
+      if ($m == null) {
+        _$impls.remove($p.sendPort.nativePort);
+        $p.close();
+        return;
+      }
+      final $i = jni$_.MethodInvocation.fromMessage($m);
+      final $r = _$invokeMethod($p.sendPort.nativePort, $i);
+      jni$_.ProtectedJniExtensions.returnResult($i.result, $r);
+    });
+    implementer.add(
+      r'java.security.interfaces.ECPublicKey',
+      $p,
+      _$invokePointer,
+      [],
+    );
+    final $a = $p.sendPort.nativePort;
+    _$impls[$a] = $impl;
+  }
+
+  factory ECPublicKey.implement($ECPublicKey $impl) {
+    final $i = jni$_.JImplementer();
+    implementIn($i, $impl);
+    return $i.implement<ECPublicKey>();
+  }
+}
+
+extension ECPublicKey$$Methods on ECPublicKey {
+  static final _id_getW = ECPublicKey._class.instanceMethodId(
+    r'getW',
+    r'()Ljava/security/spec/ECPoint;',
+  );
+
+  static final _getW =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.security.spec.ECPoint getW()`
+  /// The returned object must be released after use, by calling the [release] method.
+  ECPoint? getW() {
+    return _getW(reference.pointer, _id_getW.pointer).object<ECPoint?>();
+  }
+
+  static final _id_getParams = ECPublicKey._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/ECParameterSpec;',
+  );
+
+  static final _getParams =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public abstract java.security.spec.ECParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  ECParameterSpec? getParams() {
+    return _getParams(
+      reference.pointer,
+      _id_getParams.pointer,
+    ).object<ECParameterSpec?>();
+  }
+}
+
+abstract base mixin class $ECPublicKey {
+  factory $ECPublicKey({
+    required ECPoint? Function() getW,
+    required ECParameterSpec? Function() getParams,
+  }) = _$ECPublicKey;
+
+  ECPoint? getW();
+  ECParameterSpec? getParams();
+}
+
+final class _$ECPublicKey with $ECPublicKey {
+  _$ECPublicKey({
+    required ECPoint? Function() getW,
+    required ECParameterSpec? Function() getParams,
+  }) : _getW = getW,
+       _getParams = getParams;
+
+  final ECPoint? Function() _getW;
+  final ECParameterSpec? Function() _getParams;
+
+  ECPoint? getW() {
+    return _getW();
+  }
+
+  ECParameterSpec? getParams() {
+    return _getParams();
+  }
+}
+
+final class $ECPublicKey$Type$ extends jni$_.JType<ECPublicKey> {
+  @jni$_.internal
+  const $ECPublicKey$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/interfaces/ECPublicKey;';
 }
 
 /// from: `java.security.interfaces.RSAKey`
@@ -6316,6 +7253,669 @@ final class $RSAPublicKey$Type$ extends jni$_.JType<RSAPublicKey> {
   @jni$_.internal
   @core$_.override
   String get signature => r'Ljava/security/interfaces/RSAPublicKey;';
+}
+
+/// from: `java.security.spec.ECGenParameterSpec`
+extension type ECGenParameterSpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/ECGenParameterSpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<ECGenParameterSpec> type =
+      $ECGenParameterSpec$Type$();
+  static final _id_new$ = _class.constructorId(r'(Ljava/lang/String;)V');
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory ECGenParameterSpec(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$string.pointer,
+    ).object<ECGenParameterSpec>();
+  }
+}
+
+final class $ECGenParameterSpec$Type$ extends jni$_.JType<ECGenParameterSpec> {
+  @jni$_.internal
+  const $ECGenParameterSpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/ECGenParameterSpec;';
+}
+
+/// from: `java.security.spec.ECParameterSpec`
+extension type ECParameterSpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/ECParameterSpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<ECParameterSpec> type = $ECParameterSpec$Type$();
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/security/spec/EllipticCurve;Ljava/security/spec/ECPoint;Ljava/math/BigInteger;I)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Int32,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public void <init>(java.security.spec.EllipticCurve ellipticCurve, java.security.spec.ECPoint eCPoint, java.math.BigInteger bigInteger, int i)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory ECParameterSpec(
+    jni$_.JObject? ellipticCurve,
+    ECPoint? eCPoint,
+    BigInteger? bigInteger,
+    core$_.int i,
+  ) {
+    final _$ellipticCurve = ellipticCurve?.reference ?? jni$_.jNullReference;
+    final _$eCPoint = eCPoint?.reference ?? jni$_.jNullReference;
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$ellipticCurve.pointer,
+      _$eCPoint.pointer,
+      _$bigInteger.pointer,
+      i,
+    ).object<ECParameterSpec>();
+  }
+}
+
+extension ECParameterSpec$$Methods on ECParameterSpec {
+  static final _id_get$curve = ECParameterSpec._class.instanceMethodId(
+    r'getCurve',
+    r'()Ljava/security/spec/EllipticCurve;',
+  );
+
+  static final _get$curve =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.EllipticCurve getCurve()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get curve {
+    return _get$curve(
+      reference.pointer,
+      _id_get$curve.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_get$generator = ECParameterSpec._class.instanceMethodId(
+    r'getGenerator',
+    r'()Ljava/security/spec/ECPoint;',
+  );
+
+  static final _get$generator =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.ECPoint getGenerator()`
+  /// The returned object must be released after use, by calling the [release] method.
+  ECPoint? get generator {
+    return _get$generator(
+      reference.pointer,
+      _id_get$generator.pointer,
+    ).object<ECPoint?>();
+  }
+
+  static final _id_get$order = ECParameterSpec._class.instanceMethodId(
+    r'getOrder',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _get$order =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getOrder()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get order {
+    return _get$order(
+      reference.pointer,
+      _id_get$order.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$cofactor = ECParameterSpec._class.instanceMethodId(
+    r'getCofactor',
+    r'()I',
+  );
+
+  static final _get$cofactor =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int getCofactor()`
+  core$_.int get cofactor {
+    return _get$cofactor(reference.pointer, _id_get$cofactor.pointer).integer;
+  }
+}
+
+final class $ECParameterSpec$Type$ extends jni$_.JType<ECParameterSpec> {
+  @jni$_.internal
+  const $ECParameterSpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/ECParameterSpec;';
+}
+
+/// from: `java.security.spec.ECPoint`
+extension type ECPoint._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'java/security/spec/ECPoint');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<ECPoint> type = $ECPoint$Type$();
+  static final _id_POINT_INFINITY = _class.staticFieldId(
+    r'POINT_INFINITY',
+    r'Ljava/security/spec/ECPoint;',
+  );
+
+  /// from: `static public final java.security.spec.ECPoint POINT_INFINITY`
+  /// The returned object must be released after use, by calling the [release] method.
+  static ECPoint? get POINT_INFINITY =>
+      _id_POINT_INFINITY.getNullable(_class, ECPoint.type) as ECPoint?;
+
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/math/BigInteger;Ljava/math/BigInteger;)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.math.BigInteger bigInteger, java.math.BigInteger bigInteger1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory ECPoint(BigInteger? bigInteger, BigInteger? bigInteger1) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    final _$bigInteger1 = bigInteger1?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$bigInteger.pointer,
+      _$bigInteger1.pointer,
+    ).object<ECPoint>();
+  }
+}
+
+extension ECPoint$$Methods on ECPoint {
+  static final _id_get$affineX = ECPoint._class.instanceMethodId(
+    r'getAffineX',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _get$affineX =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getAffineX()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get affineX {
+    return _get$affineX(
+      reference.pointer,
+      _id_get$affineX.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_get$affineY = ECPoint._class.instanceMethodId(
+    r'getAffineY',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _get$affineY =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getAffineY()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get affineY {
+    return _get$affineY(
+      reference.pointer,
+      _id_get$affineY.pointer,
+    ).object<BigInteger?>();
+  }
+
+  static final _id_equals = ECPoint._class.instanceMethodId(
+    r'equals',
+    r'(Ljava/lang/Object;)Z',
+  );
+
+  static final _equals =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallBooleanMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public boolean equals(java.lang.Object object)`
+  core$_.bool equals(jni$_.JObject? object) {
+    final _$object = object?.reference ?? jni$_.jNullReference;
+    return _equals(
+      reference.pointer,
+      _id_equals.pointer,
+      _$object.pointer,
+    ).boolean;
+  }
+
+  static final _id_hashCode$1 = ECPoint._class.instanceMethodId(
+    r'hashCode',
+    r'()I',
+  );
+
+  static final _hashCode$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public int hashCode()`
+  core$_.int hashCode$1() {
+    return _hashCode$1(reference.pointer, _id_hashCode$1.pointer).integer;
+  }
+}
+
+final class $ECPoint$Type$ extends jni$_.JType<ECPoint> {
+  @jni$_.internal
+  const $ECPoint$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/ECPoint;';
+}
+
+/// from: `java.security.spec.ECPrivateKeySpec`
+extension type ECPrivateKeySpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/ECPrivateKeySpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<ECPrivateKeySpec> type = $ECPrivateKeySpec$Type$();
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/math/BigInteger;Ljava/security/spec/ECParameterSpec;)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.math.BigInteger bigInteger, java.security.spec.ECParameterSpec eCParameterSpec)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory ECPrivateKeySpec(
+    BigInteger? bigInteger,
+    ECParameterSpec? eCParameterSpec,
+  ) {
+    final _$bigInteger = bigInteger?.reference ?? jni$_.jNullReference;
+    final _$eCParameterSpec =
+        eCParameterSpec?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$bigInteger.pointer,
+      _$eCParameterSpec.pointer,
+    ).object<ECPrivateKeySpec>();
+  }
+}
+
+extension ECPrivateKeySpec$$Methods on ECPrivateKeySpec {
+  static final _id_get$s = ECPrivateKeySpec._class.instanceMethodId(
+    r'getS',
+    r'()Ljava/math/BigInteger;',
+  );
+
+  static final _get$s =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.math.BigInteger getS()`
+  /// The returned object must be released after use, by calling the [release] method.
+  BigInteger? get s {
+    return _get$s(reference.pointer, _id_get$s.pointer).object<BigInteger?>();
+  }
+
+  static final _id_get$params = ECPrivateKeySpec._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/ECParameterSpec;',
+  );
+
+  static final _get$params =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.ECParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  ECParameterSpec? get params {
+    return _get$params(
+      reference.pointer,
+      _id_get$params.pointer,
+    ).object<ECParameterSpec?>();
+  }
+}
+
+final class $ECPrivateKeySpec$Type$ extends jni$_.JType<ECPrivateKeySpec> {
+  @jni$_.internal
+  const $ECPrivateKeySpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/ECPrivateKeySpec;';
+}
+
+/// from: `java.security.spec.ECPublicKeySpec`
+extension type ECPublicKeySpec._(jni$_.JObject _$this)
+    implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(
+    r'java/security/spec/ECPublicKeySpec',
+  );
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<ECPublicKeySpec> type = $ECPublicKeySpec$Type$();
+  static final _id_new$ = _class.constructorId(
+    r'(Ljava/security/spec/ECPoint;Ljava/security/spec/ECParameterSpec;)V',
+  );
+
+  static final _new$ =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_NewObject')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public void <init>(java.security.spec.ECPoint eCPoint, java.security.spec.ECParameterSpec eCParameterSpec)`
+  /// The returned object must be released after use, by calling the [release] method.
+  factory ECPublicKeySpec(ECPoint? eCPoint, ECParameterSpec? eCParameterSpec) {
+    final _$eCPoint = eCPoint?.reference ?? jni$_.jNullReference;
+    final _$eCParameterSpec =
+        eCParameterSpec?.reference ?? jni$_.jNullReference;
+    return _new$(
+      _class.reference.pointer,
+      _id_new$.pointer,
+      _$eCPoint.pointer,
+      _$eCParameterSpec.pointer,
+    ).object<ECPublicKeySpec>();
+  }
+}
+
+extension ECPublicKeySpec$$Methods on ECPublicKeySpec {
+  static final _id_get$w = ECPublicKeySpec._class.instanceMethodId(
+    r'getW',
+    r'()Ljava/security/spec/ECPoint;',
+  );
+
+  static final _get$w =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.ECPoint getW()`
+  /// The returned object must be released after use, by calling the [release] method.
+  ECPoint? get w {
+    return _get$w(reference.pointer, _id_get$w.pointer).object<ECPoint?>();
+  }
+
+  static final _id_get$params = ECPublicKeySpec._class.instanceMethodId(
+    r'getParams',
+    r'()Ljava/security/spec/ECParameterSpec;',
+  );
+
+  static final _get$params =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public java.security.spec.ECParameterSpec getParams()`
+  /// The returned object must be released after use, by calling the [release] method.
+  ECParameterSpec? get params {
+    return _get$params(
+      reference.pointer,
+      _id_get$params.pointer,
+    ).object<ECParameterSpec?>();
+  }
+}
+
+final class $ECPublicKeySpec$Type$ extends jni$_.JType<ECPublicKeySpec> {
+  @jni$_.internal
+  const $ECPublicKeySpec$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljava/security/spec/ECPublicKeySpec;';
 }
 
 /// from: `java.security.spec.PKCS8EncodedKeySpec`
@@ -8279,11 +9879,11 @@ extension Cipher$$Methods on Cipher {
 
   /// from: `public final java.security.AlgorithmParameters getParameters()`
   /// The returned object must be released after use, by calling the [release] method.
-  jni$_.JObject? get parameters {
+  AlgorithmParameters? get parameters {
     return _get$parameters(
       reference.pointer,
       _id_get$parameters.pointer,
-    ).object<jni$_.JObject?>();
+    ).object<AlgorithmParameters?>();
   }
 
   static final _id_get$exemptionMechanism = Cipher._class.instanceMethodId(
@@ -8521,7 +10121,11 @@ extension Cipher$$Methods on Cipher {
           >();
 
   /// from: `public final void init(int i, java.security.Key key, java.security.AlgorithmParameters algorithmParameters)`
-  void init$4(core$_.int i, Key? key, jni$_.JObject? algorithmParameters) {
+  void init$4(
+    core$_.int i,
+    Key? key,
+    AlgorithmParameters? algorithmParameters,
+  ) {
     final _$key = key?.reference ?? jni$_.jNullReference;
     final _$algorithmParameters =
         algorithmParameters?.reference ?? jni$_.jNullReference;
@@ -8571,7 +10175,7 @@ extension Cipher$$Methods on Cipher {
   void init$5(
     core$_.int i,
     Key? key,
-    jni$_.JObject? algorithmParameters,
+    AlgorithmParameters? algorithmParameters,
     SecureRandom? secureRandom,
   ) {
     final _$key = key?.reference ?? jni$_.jNullReference;
