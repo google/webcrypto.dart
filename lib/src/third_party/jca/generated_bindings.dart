@@ -11014,6 +11014,493 @@ final class $Cipher$Type$ extends jni$_.JType<Cipher> {
   String get signature => r'Ljavax/crypto/Cipher;';
 }
 
+/// from: `javax.crypto.KeyAgreement`
+extension type KeyAgreement._(jni$_.JObject _$this) implements jni$_.JObject {
+  static final _class = jni$_.JClass.forName(r'javax/crypto/KeyAgreement');
+
+  /// The type which includes information such as the signature of this class.
+  static const jni$_.JType<KeyAgreement> type = $KeyAgreement$Type$();
+  static final _id_getInstance = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;)Ljavax/crypto/KeyAgreement;',
+  );
+
+  static final _getInstance =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public final javax.crypto.KeyAgreement getInstance(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyAgreement? getInstance(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _getInstance(
+      _class.reference.pointer,
+      _id_getInstance.pointer,
+      _$string.pointer,
+    ).object<KeyAgreement?>();
+  }
+
+  static final _id_getInstance$1 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/lang/String;)Ljavax/crypto/KeyAgreement;',
+  );
+
+  static final _getInstance$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public final javax.crypto.KeyAgreement getInstance(java.lang.String string, java.lang.String string1)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyAgreement? getInstance$1(
+    jni$_.JString? string,
+    jni$_.JString? string1,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$string1 = string1?.reference ?? jni$_.jNullReference;
+    return _getInstance$1(
+      _class.reference.pointer,
+      _id_getInstance$1.pointer,
+      _$string.pointer,
+      _$string1.pointer,
+    ).object<KeyAgreement?>();
+  }
+
+  static final _id_getInstance$2 = _class.staticMethodId(
+    r'getInstance',
+    r'(Ljava/lang/String;Ljava/security/Provider;)Ljavax/crypto/KeyAgreement;',
+  );
+
+  static final _getInstance$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallStaticObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `static public final javax.crypto.KeyAgreement getInstance(java.lang.String string, java.security.Provider provider)`
+  /// The returned object must be released after use, by calling the [release] method.
+  static KeyAgreement? getInstance$2(
+    jni$_.JString? string,
+    jni$_.JObject? provider,
+  ) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    final _$provider = provider?.reference ?? jni$_.jNullReference;
+    return _getInstance$2(
+      _class.reference.pointer,
+      _id_getInstance$2.pointer,
+      _$string.pointer,
+      _$provider.pointer,
+    ).object<KeyAgreement?>();
+  }
+}
+
+extension KeyAgreement$$Methods on KeyAgreement {
+  static final _id_get$algorithm = KeyAgreement._class.instanceMethodId(
+    r'getAlgorithm',
+    r'()Ljava/lang/String;',
+  );
+
+  static final _get$algorithm =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.lang.String getAlgorithm()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JString? get algorithm {
+    return _get$algorithm(
+      reference.pointer,
+      _id_get$algorithm.pointer,
+    ).object<jni$_.JString?>();
+  }
+
+  static final _id_get$provider = KeyAgreement._class.instanceMethodId(
+    r'getProvider',
+    r'()Ljava/security/Provider;',
+  );
+
+  static final _get$provider =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final java.security.Provider getProvider()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JObject? get provider {
+    return _get$provider(
+      reference.pointer,
+      _id_get$provider.pointer,
+    ).object<jni$_.JObject?>();
+  }
+
+  static final _id_init = KeyAgreement._class.instanceMethodId(
+    r'init',
+    r'(Ljava/security/Key;)V',
+  );
+
+  static final _init =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void init(java.security.Key key)`
+  void init(Key? key) {
+    final _$key = key?.reference ?? jni$_.jNullReference;
+    _init(reference.pointer, _id_init.pointer, _$key.pointer).check();
+  }
+
+  static final _id_init$1 = KeyAgreement._class.instanceMethodId(
+    r'init',
+    r'(Ljava/security/Key;Ljava/security/SecureRandom;)V',
+  );
+
+  static final _init$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void init(java.security.Key key, java.security.SecureRandom secureRandom)`
+  void init$1(Key? key, SecureRandom? secureRandom) {
+    final _$key = key?.reference ?? jni$_.jNullReference;
+    final _$secureRandom = secureRandom?.reference ?? jni$_.jNullReference;
+    _init$1(
+      reference.pointer,
+      _id_init$1.pointer,
+      _$key.pointer,
+      _$secureRandom.pointer,
+    ).check();
+  }
+
+  static final _id_init$2 = KeyAgreement._class.instanceMethodId(
+    r'init',
+    r'(Ljava/security/Key;Ljava/security/spec/AlgorithmParameterSpec;)V',
+  );
+
+  static final _init$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (jni$_.Pointer<jni$_.Void>, jni$_.Pointer<jni$_.Void>)
+                >,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void init(java.security.Key key, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec)`
+  void init$2(Key? key, jni$_.JObject? algorithmParameterSpec) {
+    final _$key = key?.reference ?? jni$_.jNullReference;
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    _init$2(
+      reference.pointer,
+      _id_init$2.pointer,
+      _$key.pointer,
+      _$algorithmParameterSpec.pointer,
+    ).check();
+  }
+
+  static final _id_init$3 = KeyAgreement._class.instanceMethodId(
+    r'init',
+    r'(Ljava/security/Key;Ljava/security/spec/AlgorithmParameterSpec;Ljava/security/SecureRandom;)V',
+  );
+
+  static final _init$3 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JThrowablePtr Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<
+                  (
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                    jni$_.Pointer<jni$_.Void>,
+                  )
+                >,
+              )
+            >
+          >('globalEnv_CallVoidMethod')
+          .asFunction<
+            jni$_.JThrowablePtr Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final void init(java.security.Key key, java.security.spec.AlgorithmParameterSpec algorithmParameterSpec, java.security.SecureRandom secureRandom)`
+  void init$3(
+    Key? key,
+    jni$_.JObject? algorithmParameterSpec,
+    SecureRandom? secureRandom,
+  ) {
+    final _$key = key?.reference ?? jni$_.jNullReference;
+    final _$algorithmParameterSpec =
+        algorithmParameterSpec?.reference ?? jni$_.jNullReference;
+    final _$secureRandom = secureRandom?.reference ?? jni$_.jNullReference;
+    _init$3(
+      reference.pointer,
+      _id_init$3.pointer,
+      _$key.pointer,
+      _$algorithmParameterSpec.pointer,
+      _$secureRandom.pointer,
+    ).check();
+  }
+
+  static final _id_doPhase = KeyAgreement._class.instanceMethodId(
+    r'doPhase',
+    r'(Ljava/security/Key;Z)Ljava/security/Key;',
+  );
+
+  static final _doPhase =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>, jni$_.Int32)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public final java.security.Key doPhase(java.security.Key key, boolean z)`
+  /// The returned object must be released after use, by calling the [release] method.
+  Key? doPhase(Key? key, core$_.bool z) {
+    final _$key = key?.reference ?? jni$_.jNullReference;
+    return _doPhase(
+      reference.pointer,
+      _id_doPhase.pointer,
+      _$key.pointer,
+      z ? 1 : 0,
+    ).object<Key?>();
+  }
+
+  static final _id_generateSecret = KeyAgreement._class.instanceMethodId(
+    r'generateSecret',
+    r'()[B',
+  );
+
+  static final _generateSecret =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+            )
+          >();
+
+  /// from: `public final byte[] generateSecret()`
+  /// The returned object must be released after use, by calling the [release] method.
+  jni$_.JByteArray? generateSecret() {
+    return _generateSecret(
+      reference.pointer,
+      _id_generateSecret.pointer,
+    ).object<jni$_.JByteArray?>();
+  }
+
+  static final _id_generateSecret$1 = KeyAgreement._class.instanceMethodId(
+    r'generateSecret',
+    r'([BI)I',
+  );
+
+  static final _generateSecret$1 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>, jni$_.Int32)>,
+              )
+            >
+          >('globalEnv_CallIntMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+              core$_.int,
+            )
+          >();
+
+  /// from: `public final int generateSecret(byte[] bs, int i)`
+  core$_.int generateSecret$1(jni$_.JByteArray? bs, core$_.int i) {
+    final _$bs = bs?.reference ?? jni$_.jNullReference;
+    return _generateSecret$1(
+      reference.pointer,
+      _id_generateSecret$1.pointer,
+      _$bs.pointer,
+      i,
+    ).integer;
+  }
+
+  static final _id_generateSecret$2 = KeyAgreement._class.instanceMethodId(
+    r'generateSecret',
+    r'(Ljava/lang/String;)Ljavax/crypto/SecretKey;',
+  );
+
+  static final _generateSecret$2 =
+      jni$_.ProtectedJniExtensions.lookup<
+            jni$_.NativeFunction<
+              jni$_.JniResult Function(
+                jni$_.Pointer<jni$_.Void>,
+                jni$_.JMethodIDPtr,
+                jni$_.VarArgs<(jni$_.Pointer<jni$_.Void>,)>,
+              )
+            >
+          >('globalEnv_CallObjectMethod')
+          .asFunction<
+            jni$_.JniResult Function(
+              jni$_.Pointer<jni$_.Void>,
+              jni$_.JMethodIDPtr,
+              jni$_.Pointer<jni$_.Void>,
+            )
+          >();
+
+  /// from: `public final javax.crypto.SecretKey generateSecret(java.lang.String string)`
+  /// The returned object must be released after use, by calling the [release] method.
+  SecretKey? generateSecret$2(jni$_.JString? string) {
+    final _$string = string?.reference ?? jni$_.jNullReference;
+    return _generateSecret$2(
+      reference.pointer,
+      _id_generateSecret$2.pointer,
+      _$string.pointer,
+    ).object<SecretKey?>();
+  }
+}
+
+final class $KeyAgreement$Type$ extends jni$_.JType<KeyAgreement> {
+  @jni$_.internal
+  const $KeyAgreement$Type$();
+
+  @jni$_.internal
+  @core$_.override
+  String get signature => r'Ljavax/crypto/KeyAgreement;';
+}
+
 /// from: `javax.crypto.KeyGenerator`
 extension type KeyGenerator._(jni$_.JObject _$this) implements jni$_.JObject {
   static final _class = jni$_.JClass.forName(r'javax/crypto/KeyGenerator');

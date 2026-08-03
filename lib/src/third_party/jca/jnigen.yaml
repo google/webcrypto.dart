@@ -55,6 +55,7 @@ classes:
   - java.security.spec.RSAPublicKeySpec
   - java.security.spec.X509EncodedKeySpec
   - javax.crypto.Cipher
+  - javax.crypto.KeyAgreement
   - javax.crypto.KeyGenerator
   - javax.crypto.Mac
   - javax.crypto.SecretKey
