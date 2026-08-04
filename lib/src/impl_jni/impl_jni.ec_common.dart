@@ -17,6 +17,34 @@ part of 'impl_jni.dart';
 typedef _EcPointBytes = ({Uint8List x, Uint8List y});
 typedef _EcKeyPairData = ({Uint8List privateKeyData, Uint8List publicKeyData});
 
+// Prime-field parameters for the supported NIST curves, from SEC 2 v2,
+// sections 2.4.2, 2.5.1, and 2.6.1: https://www.secg.org/sec2-v2.pdf
+final _p256Prime = BigInt.parse(
+  'ffffffff00000001000000000000000000000000ffffffffffffffffffffffff',
+  radix: 16,
+);
+final _p256B = BigInt.parse(
+  '5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b',
+  radix: 16,
+);
+final _p384Prime = BigInt.parse(
+  'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe'
+  'ffffffff0000000000000000ffffffff',
+  radix: 16,
+);
+final _p384B = BigInt.parse(
+  'b3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875a'
+  'c656398d8a2ed19d2a85c8edd3ec2aef',
+  radix: 16,
+);
+final _p521Prime = (BigInt.one << 521) - BigInt.one;
+final _p521B = BigInt.parse(
+  '0051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef'
+  '109e156193951ec7e937b1652c0bd3bb1bf073573df883d2c34f1ef451fd46b5'
+  '03f00',
+  radix: 16,
+);
+
 final class _EcPrivateKeyMaterial {
   _EcPrivateKeyMaterial(this.owner, this.curve, this.publicPoint);
 
@@ -55,6 +83,14 @@ extension _EcCurveMetadata on EllipticCurve {
       EllipticCurve.p256 => 32,
       EllipticCurve.p384 => 48,
       EllipticCurve.p521 => 66,
+    };
+  }
+
+  ({BigInt prime, BigInt b}) get _primeCurveParameters {
+    return switch (this) {
+      EllipticCurve.p256 => (prime: _p256Prime, b: _p256B),
+      EllipticCurve.p384 => (prime: _p384Prime, b: _p384B),
+      EllipticCurve.p521 => (prime: _p521Prime, b: _p521B),
     };
   }
 }
@@ -110,7 +146,8 @@ _EcPrivateKeyMaterial _importPkcs8EcPrivateKey(
   _EcPointBytes? publicPoint,
 }) {
   _validateEcDerSequence(keyData, 'PKCS#8 EC private key');
-  final point = publicPoint ?? _extractEcPublicPointFromPkcs8(keyData, curve);
+  final encodedPoint =
+      publicPoint ?? _extractEcPublicPointFromPkcs8(keyData, curve);
 
   try {
     return jni.using((arena) {
@@ -124,16 +161,10 @@ _EcPrivateKeyMaterial _importPkcs8EcPrivateKey(
 
       return _validateEcKeyBeforeOwnershipTransfer(key, () {
         _validateEcPrivateKey(arena, key, curve);
-        // TODO: Decide whether point-less EC private PKCS#8 keys need a
-        // portable public-point derivation path. JCA ECPrivateKey exposes the
-        // scalar and curve, but not the corresponding public coordinates.
-        if (point == null) {
-          throw UnsupportedError(
-            'The JCA backend requires an EC private PKCS#8 key to include its '
-            'public point',
-          );
+        final point = encodedPoint ?? _deriveEcPublicPoint(arena, key, curve);
+        if (encodedPoint != null) {
+          _validateEcPrivatePublicPair(arena, key, point, curve);
         }
-        _validateEcPrivatePublicPair(arena, key, point, curve);
         return _EcPrivateKeyMaterial(_JcaKeyOwner(key), curve, point);
       });
     });
@@ -431,6 +462,112 @@ void _validateEcPrivateKey(
   );
 }
 
+_EcPointBytes _deriveEcPublicPoint(
+  jni.Arena arena,
+  jni.JObject privateKey,
+  EllipticCurve curve,
+) {
+  final ecPrivateKey = privateKey.as(ECPrivateKey.type)..releasedBy(arena);
+  final parameters = ecPrivateKey.getParams();
+  if (parameters == null) {
+    throw AssertionError('JCA EC private key has no parameters');
+  }
+  parameters.releasedBy(arena);
+
+  final generator = parameters.generator;
+  if (generator == null) {
+    throw AssertionError('JCA EC parameters have no generator');
+  }
+  generator.releasedBy(arena);
+  final generatorPoint = _copyEcPoint(arena, generator, curve);
+  final generatorKey = _ecPublicKeyFromPoint(arena, generatorPoint, curve)
+    ..releasedBy(arena);
+
+  final algorithm = 'ECDH'.toJString()..releasedBy(arena);
+  final agreement = KeyAgreement.getInstance(algorithm);
+  if (agreement == null) {
+    throw AssertionError('JCA ECDH KeyAgreement returned null');
+  }
+  agreement.releasedBy(arena);
+
+  final jcaPrivateKey = privateKey.as(Key.type)..releasedBy(arena);
+  final jcaGeneratorKey = generatorKey.as(Key.type)..releasedBy(arena);
+  agreement.init(jcaPrivateKey);
+  agreement.doPhase(jcaGeneratorKey, true)?.releasedBy(arena);
+  final secret = agreement.generateSecret();
+  if (secret == null) {
+    throw AssertionError('JCA ECDH KeyAgreement returned no secret');
+  }
+  secret.releasedBy(arena);
+
+  // ECDH with the curve generator computes d * G in provider code and returns
+  // its affine x coordinate. Recovering y from the public x coordinate avoids
+  // secret-dependent elliptic-curve arithmetic in Dart. All supported NIST
+  // primes are 3 modulo 4, so each square root is y = rhs^((p + 1) / 4).
+  final x = _normalizeEcCoordinate(secret.copyToDartBytes(), curve);
+  final xValue = _readUnsignedBigInt(x);
+  final curveParameters = curve._primeCurveParameters;
+  final prime = curveParameters.prime;
+  final rhs =
+      (xValue.modPow(BigInt.from(3), prime) -
+          BigInt.from(3) * xValue +
+          curveParameters.b) %
+      prime;
+  final y = rhs.modPow((prime + BigInt.one) >> 2, prime);
+  _checkData(
+    y.modPow(BigInt.two, prime) == rhs,
+    'Unable to derive the EC public point',
+  );
+
+  for (final yCandidate in <BigInt>[y, (prime - y) % prime]) {
+    final point = (
+      x: x,
+      y: _writeFixedLengthUnsignedBigInt(yCandidate, curve._coordinateLength),
+    );
+    if (_ecPrivatePublicPairMatches(arena, privateKey, point, curve)) {
+      return point;
+    }
+  }
+  throw const FormatException('Unable to derive the EC public point');
+}
+
+Uint8List _normalizeEcCoordinate(Uint8List bytes, EllipticCurve curve) {
+  if (bytes.isEmpty) {
+    throw AssertionError('JCA ECDH returned an empty EC coordinate');
+  }
+  final length = curve._coordinateLength;
+  var start = 0;
+  while (bytes.length - start > length && bytes[start] == 0) {
+    start++;
+  }
+  _checkData(
+    bytes.length - start <= length,
+    'JCA ECDH returned an oversized EC coordinate',
+  );
+  final result = Uint8List(length);
+  result.setRange(length - (bytes.length - start), length, bytes, start);
+  return result;
+}
+
+BigInt _readUnsignedBigInt(Uint8List bytes) {
+  var result = BigInt.zero;
+  for (final byte in bytes) {
+    result = (result << 8) | BigInt.from(byte);
+  }
+  return result;
+}
+
+Uint8List _writeFixedLengthUnsignedBigInt(BigInt value, int length) {
+  final result = Uint8List(length);
+  var remaining = value;
+  for (var i = result.length - 1; i >= 0 && remaining != BigInt.zero; i--) {
+    result[i] = (remaining & BigInt.from(0xff)).toInt();
+    remaining >>= 8;
+  }
+  _checkData(remaining == BigInt.zero, 'EC coordinate is too large');
+  return result;
+}
+
 _EcPointBytes _validateEcPublicKey(
   jni.Arena arena,
   jni.JObject key,
@@ -482,6 +619,18 @@ void _validateEcPrivatePublicPair(
   _EcPointBytes publicPoint,
   EllipticCurve curve,
 ) {
+  _checkData(
+    _ecPrivatePublicPairMatches(arena, privateKey, publicPoint, curve),
+    'Invalid EC private key: public point does not match private scalar',
+  );
+}
+
+bool _ecPrivatePublicPairMatches(
+  jni.Arena arena,
+  jni.JObject privateKey,
+  _EcPointBytes publicPoint,
+  EllipticCurve curve,
+) {
   final publicKey = _ecPublicKeyFromPoint(arena, publicPoint, curve)
     ..releasedBy(arena);
   final algorithm = 'SHA256withECDSA'.toJString()..releasedBy(arena);
@@ -508,10 +657,7 @@ void _validateEcPrivatePublicPair(
   verifier.releasedBy(arena);
   verifier.initVerify(publicKey);
   verifier.update$1(validationData);
-  _checkData(
-    verifier.verify(signature),
-    'Invalid EC private key: public point does not match private scalar',
-  );
+  return verifier.verify(signature);
 }
 
 Uint8List _copyEncodedEcKey(jni.Arena arena, jni.JObject key, String keyType) {

@@ -41,4 +41,17 @@ void main() {
       );
     }
   });
+
+  testWidgets('public API imports point-less P-256 PKCS#8', (_) async {
+    final privateKey = await EcdsaPrivateKey.importPkcs8Key(
+      base64.decode(
+        'MEECAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEJzAlAgEBBCCdKfq9jvibt61Gf8H5'
+        'nePEVusJphstWiK4ELnhbBr8bQ==',
+      ),
+      EllipticCurve.p256,
+    );
+    final jwk = await privateKey.exportJsonWebKey();
+    expect(jwk['x'], 'IhPWW8AGjzkxOj2gMtMDBO9nlVrzvD7Qm6AtAl6X8sE');
+    expect(jwk['y'], 'n2lKzqEjootvel5634HoRtxO0GlwA7UBDa477Cd4Qto');
+  });
 }
