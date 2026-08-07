@@ -75,7 +75,7 @@ Future<HmacSecretKeyImpl> hmacSecretKey_generateKey(
 }) async {
   final h = _HashImpl.fromHash(hash);
   length ??= ssl.EVP_MD_size(h._md) * 8;
-  final keyData = Uint8List((length / 8).ceil());
+  final keyData = Uint8List((length + 7) ~/ 8);
   fillRandomBytes(keyData);
 
   return _HmacSecretKeyImpl(_asUint8ListZeroedToBitLength(keyData, length), h);
