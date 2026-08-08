@@ -60,3 +60,10 @@ To run the Android JNI/JCA RSA-PSS smoke test:
 flutter test integration_test/jni_rsapss_test.dart \
   -d emulator-name
 ```
+
+To run the Android JNI/JCA ECDSA smoke test:
+
+```sh
+flutter test integration_test/jni_ecdsa_test.dart \
+  -d emulator-name
+```
