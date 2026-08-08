@@ -223,7 +223,7 @@ _EcPublicKeyMaterial _importRawEcPublicKey(
 _EcPrivateKeyMaterial _importJwkEcPrivateKey(
   Map<String, dynamic> jwkData,
   EllipticCurve curve, {
-  required String expectedAlg,
+  required String? expectedAlg,
   required String expectedUse,
 }) {
   final jwk = JsonWebKey.fromJson(jwkData);
@@ -262,7 +262,7 @@ _EcPrivateKeyMaterial _importJwkEcPrivateKey(
 _EcPublicKeyMaterial _importJwkEcPublicKey(
   Map<String, dynamic> jwkData,
   EllipticCurve curve, {
-  required String expectedAlg,
+  required String? expectedAlg,
   required String expectedUse,
 }) {
   final jwk = JsonWebKey.fromJson(jwkData);
@@ -331,7 +331,7 @@ Uint8List _exportRawEcPublicKey(_EcPublicKeyMaterial material) {
 
 Map<String, dynamic> _exportJwkEcPrivateKey(
   _EcPrivateKeyMaterial material, {
-  required String jwkUse,
+  required String? jwkUse,
 }) {
   try {
     return jni.using((arena) {
@@ -366,7 +366,7 @@ Map<String, dynamic> _exportJwkEcPrivateKey(
 
 Map<String, dynamic> _exportJwkEcPublicKey(
   _EcPublicKeyMaterial material, {
-  required String jwkUse,
+  required String? jwkUse,
 }) {
   return JsonWebKey(
     kty: 'EC',
@@ -722,7 +722,7 @@ void _validateEcJwk(
   JsonWebKey jwk,
   EllipticCurve curve, {
   required bool isPrivateKey,
-  required String expectedAlg,
+  required String? expectedAlg,
   required String expectedUse,
 }) {
   void check(bool condition, String prop, String message) {
@@ -740,11 +740,13 @@ void _validateEcJwk(
         ? 'must be present for a private key'
         : 'must not be present for a public key',
   );
-  check(
-    jwk.alg == null || jwk.alg == expectedAlg,
-    'alg',
-    'must be "$expectedAlg", if present',
-  );
+  if (expectedAlg != null) {
+    check(
+      jwk.alg == null || jwk.alg == expectedAlg,
+      'alg',
+      'must be "$expectedAlg", if present',
+    );
+  }
   check(
     jwk.use == null || jwk.use == expectedUse,
     'use',

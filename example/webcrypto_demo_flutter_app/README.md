@@ -67,3 +67,10 @@ To run the Android JNI/JCA ECDSA smoke test:
 flutter test integration_test/jni_ecdsa_test.dart \
   -d emulator-name
 ```
+
+To run the Android JNI/JCA ECDH smoke test:
+
+```sh
+flutter test integration_test/jni_ecdh_test.dart \
+  -d emulator-name
+```
