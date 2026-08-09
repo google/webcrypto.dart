@@ -112,9 +112,9 @@ Uint8List _derivePbkdf2(
       final block = Uint8List(hashLength);
       final output = Uint8List(lengthInBytes);
 
-      // TODO: Move the PBKDF2 iteration loop behind a JVM-side helper if this
-      // becomes a performance bottleneck. package:jni currently requires one
-      // Java-to-Dart copy per U value so Dart can apply PBKDF2's XOR step.
+      // TODO: Batch this loop outside Dart after package-level Java helper
+      // packaging is designed. The experimental path currently performs JNI
+      // calls and one Java-to-Dart copy for every U value.
       var outputOffset = 0;
       for (var blockIndex = 1; blockIndex <= blockCount; blockIndex++) {
         counterBytes[0] = (blockIndex >>> 24) & 0xff;
