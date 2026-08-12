@@ -17,6 +17,7 @@ library;
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
@@ -40,11 +41,17 @@ void main() {
 }
 
 List<_BadEcKeyVector> _loadTestVectors() {
-  final file = File(_testVectorPath);
+  final packageUri = Isolate.resolvePackageUriSync(
+    Uri.parse('package:webcrypto/webcrypto.dart'),
+  );
+  if (packageUri == null) {
+    throw StateError('Unable to locate package:webcrypto.');
+  }
+  final file = File.fromUri(packageUri.resolve('../$_testVectorPath'));
   if (!file.existsSync()) {
     throw StateError(
-      'Missing $_testVectorPath. Run tests from the package root or run '
-      './tool/update-chromium-test-vectors.sh to restore vendored vectors.',
+      'Missing $_testVectorPath. Run ./tool/update-chromium-test-vectors.sh '
+      'to restore vendored vectors.',
     );
   }
 
