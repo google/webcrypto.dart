@@ -12,36 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@TestOn('vm')
-library;
-
-import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 
-final _throwsEmptyKey = throwsA(
-  isA<FormatException>().having(
-    (error) => error.message,
-    'message',
-    'HMAC key data must not be empty',
-  ),
-);
+import '../utils/utils.dart';
 
-void main() {
-  test('rejects an empty raw key', () async {
-    await expectLater(
+List<({String name, Future<void> Function() test})> tests() => [
+  (
+    name: 'HMAC rejects empty raw keys',
+    test: () => _expectEmptyKeyRejected(
       HmacSecretKey.importRawKey(const [], Hash.sha256),
-      _throwsEmptyKey,
-    );
-  });
-
-  test('rejects an empty JWK key', () async {
-    await expectLater(
+    ),
+  ),
+  (
+    name: 'HMAC rejects empty JWK keys',
+    test: () => _expectEmptyKeyRejected(
       HmacSecretKey.importJsonWebKey(const {
         'kty': 'oct',
         'alg': 'HS256',
         'k': '',
       }, Hash.sha256),
-      _throwsEmptyKey,
+    ),
+  ),
+];
+
+Future<void> _expectEmptyKeyRejected(Future<HmacSecretKey> import) async {
+  try {
+    await import;
+  } on FormatException catch (error) {
+    check(
+      error.message == 'HMAC key data must not be empty',
+      'Expected an empty HMAC key error',
     );
-  });
+    return;
+  }
+  check(false, 'Expected an empty HMAC key to be rejected');
 }

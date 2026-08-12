@@ -31,6 +31,7 @@ import 'webcrypto/rsassapkcs1v15.dart' as rsassapkcs1v15;
 import 'webcrypto/random.dart' as random;
 import 'webcrypto/digest.dart' as digest;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
+import 'regression/hmac_empty_key.dart' as hmac_empty_key;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
 import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
 
@@ -63,6 +64,7 @@ void runAllTests(
     ...digest.tests(),
     ...issue_60_trailing_bytes.tests(),
     ...derive_bits_zero_length.tests(),
+    ...hmac_empty_key.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
   ];
 
