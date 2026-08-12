@@ -198,7 +198,7 @@ final class HmacSecretKey {
       throw ArgumentError.value(length, 'length', 'must be positive');
     }
     if (length != null && length > 0xffffffff) {
-      throw ArgumentError.value(length, 'length', 'must be at most 4294967295');
+      throw ArgumentError.value(length, 'length', 'too large');
     }
 
     final impl = await webCryptImpl.hmacSecretKey.generateKey(
