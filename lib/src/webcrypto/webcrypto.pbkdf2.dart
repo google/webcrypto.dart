@@ -82,7 +82,6 @@ final class Pbkdf2SecretKey {
   /// an exhaustive search for the derived key, but it will also make the
   /// key derivation operation slower. For details on [iterations] see
   /// [RFC 8018 section 4.2][1].
-  /// The [iterations] count must be between `1` and `2^32 - 1`.
   ///
   /// {@macro Pbkdf2SecretKey:example}
   ///

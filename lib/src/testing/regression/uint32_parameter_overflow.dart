@@ -14,6 +14,8 @@
 
 import 'package:webcrypto/webcrypto.dart';
 
+// Browser backends enforce these ranges through Web IDL. These tests cover
+// integer narrowing at the native FFI boundary.
 const _isFfi = bool.fromEnvironment('dart.library.ffi');
 const _maxUnsignedLong = 0xffffffff;
 
