@@ -37,6 +37,7 @@ Future<HmacSecretKeyImpl> hmacSecretKey_importRawKey(
   HashImpl hash, {
   int? length,
 }) async {
+  _checkData(keyData.isNotEmpty, message: 'HMAC key data must not be empty');
   return _HmacSecretKeyImpl(
     _asUint8ListZeroedToBitLength(keyData, length),
     _HashImpl.fromHash(hash),
