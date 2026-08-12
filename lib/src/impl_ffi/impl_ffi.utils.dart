@@ -486,7 +486,11 @@ Uint8List _jwkDecodeBase64UrlNoPadding(String unpadded, String prop) {
       unpadded.length + ((4 - (unpadded.length % 4)) % 4),
       '=',
     );
-    return base64Url.decode(padded);
+    final decoded = base64Url.decode(padded);
+    if (_jwkEncodeBase64UrlNoPadding(decoded) != unpadded) {
+      throw const FormatException();
+    }
+    return decoded;
   } on FormatException {
     throw FormatException(
       'JWK property "$prop" is not url-safe base64 without padding',
