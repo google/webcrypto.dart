@@ -38,21 +38,7 @@ abstract final class Hash {
   /// Compute a cryptographic hash-sum of [data] using this [Hash].
   ///
   /// **Example**
-  /// ```dart
-  /// import 'dart:convert' show base64, utf8;
-  /// import 'package:webcrypto/webcrypto.dart';
-  ///
-  /// Future<void> main() async {
-  ///   // Convert 'hello world' to a byte array
-  ///   final bytesToHash = utf8.encode('hello world');
-  ///
-  ///   // Compute hash of bytesToHash with sha-256
-  ///   List<int> hash = await Hash.sha256.digestBytes(bytesToHash);
-  ///
-  ///   // Print the base64 encoded hash
-  ///   print(base64.encode(hash));
-  /// }
-  /// ```
+  /// {@example /example/webcrypto/hash/digest_bytes.dart#example}
   Future<Uint8List> digestBytes(List<int> data) => _impl.digestBytes(data);
 
   /// Compute a cryptographic hash-sum of [data] stream using this [Hash].
