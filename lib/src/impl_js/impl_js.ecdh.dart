@@ -33,6 +33,7 @@ Future<EcdhPrivateKeyImpl> ecdhPrivateKey_importPkcs8Key(
       _usagesDeriveBits,
       'private',
     ),
+    curve,
   );
 }
 
@@ -56,6 +57,7 @@ Future<EcdhPrivateKeyImpl> ecdhPrivateKey_importJsonWebKey(
       _usagesDeriveBits,
       'private',
     ),
+    curve,
   );
 }
 
@@ -66,7 +68,7 @@ ecdhPrivateKey_generateKey(EllipticCurve curve) async {
     _usagesDeriveBits,
   );
   return (
-    privateKey: _EcdhPrivateKeyImpl(pair.privateKey),
+    privateKey: _EcdhPrivateKeyImpl(pair.privateKey, curve),
     publicKey: _EcdhPublicKeyImpl(pair.publicKey),
   );
 }
@@ -158,7 +160,14 @@ final class _StaticEcdhPrivateKeyImpl implements StaticEcdhPrivateKeyImpl {
 
 final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
   final subtle.JSCryptoKey _key;
-  _EcdhPrivateKeyImpl(this._key);
+  final int _maxLength;
+
+  _EcdhPrivateKeyImpl(this._key, EllipticCurve curve)
+    : _maxLength = switch (curve) {
+        EllipticCurve.p256 => 256,
+        EllipticCurve.p384 => 384,
+        EllipticCurve.p521 => 528,
+      };
 
   @override
   String toString() {
@@ -172,6 +181,15 @@ final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
         publicKey,
         'publicKey',
         'custom implementations of EcdhPublicKeyImpl is not supported',
+      );
+    }
+    if (length < 0) {
+      throw ArgumentError.value(length, 'length', 'must be non-negative');
+    }
+    if (length > _maxLength) {
+      throw operationError(
+        'Length in ECDH key derivation is too large. '
+        'Maximum allowed is $_maxLength bits.',
       );
     }
     final lengthInBytes = (length / 8).ceil();
