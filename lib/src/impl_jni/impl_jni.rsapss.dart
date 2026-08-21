@@ -169,8 +169,11 @@ Future<Uint8List> _signRsaPssStream(
 ) async {
   final arena = jni.Arena();
   try {
-    final signature = _createRsaPssSignature(arena, hash, saltLength);
+    final signature = _getRsaPssSignature(arena, hash);
     signature.initSign(key.key);
+    // The tested Android JCA provider resets PSS parameters during
+    // initialization.
+    _configureRsaPssSignature(arena, signature, hash, saltLength);
 
     final buffer = jni.JByteArray(_defaultChunkSize)..releasedBy(arena);
     await for (final chunk in data) {
@@ -199,8 +202,11 @@ Future<bool> _verifyRsaPssStream(
 ) async {
   final arena = jni.Arena();
   try {
-    final verifier = _createRsaPssSignature(arena, hash, saltLength);
+    final verifier = _getRsaPssSignature(arena, hash);
     verifier.initVerify(key.key);
+    // The tested Android JCA provider resets PSS parameters during
+    // initialization.
+    _configureRsaPssSignature(arena, verifier, hash, saltLength);
 
     final buffer = jni.JByteArray(_defaultChunkSize)..releasedBy(arena);
     await for (final chunk in data) {
@@ -223,13 +229,12 @@ Future<bool> _verifyRsaPssStream(
   }
 }
 
-Signature _createRsaPssSignature(
+void _configureRsaPssSignature(
   jni.Arena arena,
+  Signature signature,
   _HashImpl hash,
   int saltLength,
 ) {
-  final signature = _getRsaPssSignature(arena, hash);
-
   final hashName = hash._jcaName.toJString()..releasedBy(arena);
   final mgfName = 'MGF1'.toJString()..releasedBy(arena);
   final mgfParameters = MGF1ParameterSpec(hashName)..releasedBy(arena);
@@ -241,7 +246,6 @@ Signature _createRsaPssSignature(
     1,
   )..releasedBy(arena);
   signature.parameter = parameters;
-  return signature;
 }
 
 // TODO: Decide the RSA-PSS policy for Android API 21-22. Android only
