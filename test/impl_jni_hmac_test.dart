@@ -115,6 +115,25 @@ void main() {
     expect(await imported.signBytes(data), await key.signBytes(data));
   }, skip: skipReason);
 
+  test('JCA JWK imports require canonical unpadded base64url', () {
+    for (final keyData in ['AQ==', '+w']) {
+      expect(
+        () => jni_impl.webCryptImpl.hmacSecretKey.importJsonWebKey({
+          'kty': 'oct',
+          'alg': 'HS256',
+          'k': keyData,
+        }, jni_impl.webCryptImpl.sha256),
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'message',
+            contains('is not url-safe base64 without padding'),
+          ),
+        ),
+      );
+    }
+  }, skip: skipReason);
+
   test('JCA HMAC generateKey supports non-byte-aligned key lengths', () async {
     final key = await jni_impl.webCryptImpl.hmacSecretKey.generateKey(
       jni_impl.webCryptImpl.sha512,

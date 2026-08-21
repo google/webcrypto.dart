@@ -115,6 +115,21 @@ void main() {
 
   test('JCA RSA public imports validate the modulus and exponent', () async {
     final publicJwk = await publicKey.exportJsonWebKey();
+    final privateJwk = await privateKey.exportJsonWebKey();
+
+    await expectLater(
+      jni_impl.webCryptImpl.rsaSsaPkcs1v15PublicKey.importJsonWebKey(
+        privateJwk,
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains('must not be present for a public key'),
+        ),
+      ),
+    );
 
     final invalidExponent = Map<String, dynamic>.of(publicJwk)..['e'] = 'BA';
     await expectLater(
