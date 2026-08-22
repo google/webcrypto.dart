@@ -74,6 +74,22 @@ List<({String name, Future<void> Function() test})> tests() {
     isNotAllZero(data);
   });
 
+  test('fillRandomBytes: unsupported TypedData types', () async {
+    for (final data in <TypedData>[
+      Float32List(32),
+      Float64List(32),
+      ByteData(32),
+    ]) {
+      ArgumentError? error;
+      try {
+        fillRandomBytes(data);
+      } on ArgumentError catch (e) {
+        error = e;
+      }
+      check(error?.name == 'destination', 'Should reject ${data.runtimeType}');
+    }
+  });
+
   test('fillRandomBytes: Maximum buffer', () async {
     final data = Uint8List(64 * 1024);
     isAllZero(data);

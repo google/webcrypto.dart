@@ -41,6 +41,19 @@ void fillRandomBytes(
   // Note: Uint8List and friends all implement TypedData, but dartdoc has a bug
   //       where it's not reporting this.
 ) {
+  if (destination is! Uint8List &&
+      destination is! Uint16List &&
+      destination is! Uint32List &&
+      destination is! Int8List &&
+      destination is! Int16List &&
+      destination is! Int32List) {
+    throw ArgumentError.value(
+      destination,
+      'destination',
+      'unsupported TypedData type',
+    );
+  }
+
   // This limitation is given in the Web Cryptography Specification, see:
   // https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues
   if (destination.lengthInBytes > 65536) {
