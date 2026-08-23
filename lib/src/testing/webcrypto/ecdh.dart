@@ -15,7 +15,6 @@
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
-import '../utils/detected_runtime.dart';
 
 final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   algorithm: 'ECDH',
@@ -170,9 +169,7 @@ final _testData = [
     "deriveParams": {},
   },
 
-  /// Safari and WebKit on Mac (with CommonCrypto) does not support P-521, see:
-  /// https://bugs.webkit.org/show_bug.cgi?id=216755
-  ...(nullOnSafari(_testDataWithP521) ?? <Map>[]),
+  ..._testDataWithP521,
 
   // TODO: generate on firefox, once the import/export pkcs8 has been figured out
 ];
