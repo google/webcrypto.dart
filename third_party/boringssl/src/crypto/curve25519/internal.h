@@ -30,7 +30,7 @@ extern "C" void x25519_NEON(uint8_t out[32], const uint8_t scalar[32],
 #endif
 
 #if !defined(OPENSSL_NO_ASM) && !defined(OPENSSL_SMALL) && \
-    defined(__GNUC__) && defined(__x86_64__) && !defined(OPENSSL_WINDOWS)
+    (defined(__APPLE__) || defined(__ELF__)) && defined(OPENSSL_X86_64)
 #define BORINGSSL_FE25519_ADX
 
 // fiat_curve25519_adx_mul is defined in
@@ -56,22 +56,30 @@ void x25519_ge_scalarmult_base_adx(uint8_t h[4][32], const uint8_t a[32]);
 // t[3]+2^204 t[4].
 // fe limbs are bounded by 1.125*2^51.
 // Multiplication and carrying produce fe from fe_loose.
-typedef struct fe { uint64_t v[5]; } fe;
+typedef struct fe {
+  uint64_t v[5];
+} fe;
 
 // fe_loose limbs are bounded by 3.375*2^51.
 // Addition and subtraction produce fe_loose from (fe, fe).
-typedef struct fe_loose { uint64_t v[5]; } fe_loose;
+typedef struct fe_loose {
+  uint64_t v[5];
+} fe_loose;
 #else
 // fe means field element. Here the field is \Z/(2^255-19). An element t,
 // entries t[0]...t[9], represents the integer t[0]+2^26 t[1]+2^51 t[2]+2^77
 // t[3]+2^102 t[4]+...+2^230 t[9].
 // fe limbs are bounded by 1.125*2^26,1.125*2^25,1.125*2^26,1.125*2^25,etc.
 // Multiplication and carrying produce fe from fe_loose.
-typedef struct fe { uint32_t v[10]; } fe;
+typedef struct fe {
+  uint32_t v[10];
+} fe;
 
-// fe_loose limbs are bounded by 3.375*2^26,3.375*2^25,3.375*2^26,3.375*2^25,etc.
-// Addition and subtraction produce fe_loose from (fe, fe).
-typedef struct fe_loose { uint32_t v[10]; } fe_loose;
+// fe_loose limbs are bounded by 3.375*2^26, 3.375*2^25, 3.375*2^26, 3.375*2^25,
+// etc. Addition and subtraction produce fe_loose from (fe, fe).
+typedef struct fe_loose {
+  uint32_t v[10];
+} fe_loose;
 #endif
 
 // ge means group element.
