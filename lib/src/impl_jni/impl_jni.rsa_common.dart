@@ -85,7 +85,12 @@ _JcaKeyOwner _importJwkRsaPrivateKey(
   required String expectedUse,
 }) {
   final jwk = JsonWebKey.fromJson(jwkData);
-  _validateRsaJwk(jwk, expectedAlg: expectedAlg, expectedUse: expectedUse);
+  _validateRsaJwk(
+    jwk,
+    isPrivateKey: true,
+    expectedAlg: expectedAlg,
+    expectedUse: expectedUse,
+  );
 
   final n = _readRsaJwkInteger(jwk.n, 'n');
   final e = _readRsaJwkInteger(jwk.e, 'e');
@@ -128,7 +133,12 @@ _JcaKeyOwner _importJwkRsaPublicKey(
   required String expectedUse,
 }) {
   final jwk = JsonWebKey.fromJson(jwkData);
-  _validateRsaJwk(jwk, expectedAlg: expectedAlg, expectedUse: expectedUse);
+  _validateRsaJwk(
+    jwk,
+    isPrivateKey: false,
+    expectedAlg: expectedAlg,
+    expectedUse: expectedUse,
+  );
 
   final n = _readRsaJwkInteger(jwk.n, 'n');
   final e = _readRsaJwkInteger(jwk.e, 'e');
@@ -521,6 +531,7 @@ String _encodeRsaBigInteger(jni.Arena arena, BigInteger? value, String name) {
 
 void _validateRsaJwk(
   JsonWebKey jwk, {
+  required bool isPrivateKey,
   required String expectedAlg,
   required String expectedUse,
 }) {
@@ -538,6 +549,13 @@ void _validateRsaJwk(
     jwk.use == null || jwk.use == expectedUse,
     'use',
     'must be "$expectedUse", if present',
+  );
+  check(
+    isPrivateKey ? jwk.d != null : jwk.d == null,
+    'd',
+    isPrivateKey
+        ? 'must be present for a private key'
+        : 'must not be present for a public key',
   );
 }
 
