@@ -5,6 +5,16 @@ hash of user provided string.
 
 Additionally, this example application provides integration tests for devices.
 
+To run the complete shared test suite through the experimental JNI/JCA backend:
+
+```sh
+flutter test integration_test/webcrypto_test.dart \
+  -d emulator-name
+```
+
+The current backend status and known provider limitations are documented in
+[`doc/jca-backend.md`](../../doc/jca-backend.md).
+
 To run the Android JNI/JCA digest smoke test:
 
 ```sh
