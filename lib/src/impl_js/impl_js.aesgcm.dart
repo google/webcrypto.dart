@@ -18,6 +18,18 @@ part of 'impl_js.dart';
 
 const _aesGcmAlgorithm = subtle.Algorithm(name: 'AES-GCM');
 
+void _checkAesGcmTagLength(int tagLength) {
+  if (tagLength != 32 &&
+      tagLength != 64 &&
+      tagLength != 96 &&
+      tagLength != 104 &&
+      tagLength != 112 &&
+      tagLength != 120 &&
+      tagLength != 128) {
+    throw operationError('tagLength must be 32, 64, 96, 104, 112, 120 or 128');
+  }
+}
+
 Future<AesGcmSecretKeyImpl> aesGcm_importRawKey(List<int> keyData) async {
   return _AesGcmSecretKeyImpl(
     await _importKey(
@@ -89,6 +101,7 @@ final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
     int? tagLength = 128,
   }) async {
     tagLength ??= 128;
+    _checkAesGcmTagLength(tagLength);
     return await _decrypt(
       additionalData == null
           ? _aesGcmAlgorithm.update(
@@ -113,6 +126,7 @@ final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
     int? tagLength = 128,
   }) async {
     tagLength ??= 128;
+    _checkAesGcmTagLength(tagLength);
     return await _encrypt(
       additionalData == null
           ? _aesGcmAlgorithm.update(
