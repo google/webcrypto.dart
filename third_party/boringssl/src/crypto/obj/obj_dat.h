@@ -16,7 +16,7 @@
 
 
 BSSL_NAMESPACE_BEGIN
-#define NUM_NID 973
+#define NUM_NID 979
 
 static const uint8_t kObjectData[] = {
     /* NID_rsadsi */
@@ -7146,6 +7146,39 @@ static const uint8_t kObjectData[] = {
     0x04,
     0x04,
     0x02,
+    /* NID_alg_mtcProof_draft */
+    0x2b,
+    0x06,
+    0x01,
+    0x04,
+    0x01,
+    0x82,
+    0xda,
+    0x4b,
+    0x2f,
+    0x00,
+    /* NID_rdna_trustAnchorID_draft */
+    0x2b,
+    0x06,
+    0x01,
+    0x04,
+    0x01,
+    0x82,
+    0xda,
+    0x4b,
+    0x2f,
+    0x01,
+    /* NID_pe_mtcCertificationAuthority_draft */
+    0x2b,
+    0x06,
+    0x01,
+    0x04,
+    0x01,
+    0x82,
+    0xda,
+    0x4b,
+    0x2f,
+    0x02,
 };
 
 static const ASN1_OBJECT kObjects[NUM_NID] = {
@@ -8802,6 +8835,15 @@ static const ASN1_OBJECT kObjects[NUM_NID] = {
      0},
     {NULL, NULL, NID_undef, 0, NULL, 0},
     {"X-Wing", "X-Wing", NID_X_Wing, 0, NULL, 0},
+    {NULL, NULL, NID_undef, 0, NULL, 0},
+    {NULL, NULL, NID_undef, 0, NULL, 0},
+    {NULL, NULL, NID_undef, 0, NULL, 0},
+    {"alg-mtcProof-draft", "alg-mtcProof-draft", NID_alg_mtcProof_draft, 10,
+     &kObjectData[6241], 0},
+    {"rdna-trustAnchorID-draft", "rdna-trustAnchorID-draft",
+     NID_rdna_trustAnchorID_draft, 10, &kObjectData[6251], 0},
+    {"pe-mtcCertificationAuthority-draft", "pe-mtcCertificationAuthority-draft",
+     NID_pe_mtcCertificationAuthority_draft, 10, &kObjectData[6261], 0},
 };
 
 static const uint16_t kNIDsInShortNameOrder[] = {
@@ -9017,6 +9059,7 @@ static const uint16_t kNIDsInShortNameOrder[] = {
     368 /* acceptableResponses */,
     446 /* account */,
     363 /* ad_timestamping */,
+    976 /* alg-mtcProof-draft */,
     376 /* algorithm */,
     405 /* ansi-X9-62 */,
     910 /* anyExtendedKeyUsage */,
@@ -9478,6 +9521,7 @@ static const uint16_t kNIDsInShortNameOrder[] = {
     489 /* pagerTelephoneNumber */,
     374 /* path */,
     112 /* pbeWithMD5AndCast5CBC */,
+    978 /* pe-mtcCertificationAuthority-draft */,
     499 /* personalSignature */,
     487 /* personalTitle */,
     464 /* photo */,
@@ -9531,6 +9575,7 @@ static const uint16_t kNIDsInShortNameOrder[] = {
     286 /* qcStatements */,
     457 /* qualityLabelledData */,
     450 /* rFC822localPart */,
+    977 /* rdna-trustAnchorID-draft */,
     870 /* registeredAddress */,
     400 /* role */,
     877 /* roleOccupant */,
@@ -9954,6 +9999,7 @@ static const uint16_t kNIDsInLongNameOrder[] = {
     901 /* aes-256-gcm */,
     428 /* aes-256-ofb */,
     914 /* aes-256-xts */,
+    976 /* alg-mtcProof-draft */,
     376 /* algorithm */,
     484 /* associatedDomain */,
     485 /* associatedName */,
@@ -10432,6 +10478,7 @@ static const uint16_t kNIDsInLongNameOrder[] = {
     145 /* pbeWithSHA1And40BitRC4 */,
     170 /* pbeWithSHA1AndDES-CBC */,
     68 /* pbeWithSHA1AndRC2-CBC */,
+    978 /* pe-mtcCertificationAuthority-draft */,
     499 /* personalSignature */,
     487 /* personalTitle */,
     464 /* photo */,
@@ -10491,6 +10538,7 @@ static const uint16_t kNIDsInLongNameOrder[] = {
     122 /* rc5-cfb */,
     121 /* rc5-ecb */,
     123 /* rc5-ofb */,
+    977 /* rdna-trustAnchorID-draft */,
     870 /* registeredAddress */,
     460 /* rfc822Mailbox */,
     117 /* ripemd160 */,
@@ -11544,6 +11592,9 @@ static const uint16_t kNIDsInOIDOrder[] = {
     138 /* 1.3.6.1.4.1.311.10.3.4 (OBJ_ms_efs) */,
     648 /* 1.3.6.1.4.1.311.20.2.2 (OBJ_ms_smartcard_login) */,
     649 /* 1.3.6.1.4.1.311.20.2.3 (OBJ_ms_upn) */,
+    976 /* 1.3.6.1.4.1.44363.47.0 (OBJ_alg_mtcProof_draft) */,
+    977 /* 1.3.6.1.4.1.44363.47.1 (OBJ_rdna_trustAnchorID_draft) */,
+    978 /* 1.3.6.1.4.1.44363.47.2 (OBJ_pe_mtcCertificationAuthority_draft) */,
     751 /* 1.2.392.200011.61.1.1.1.2 (OBJ_camellia_128_cbc) */,
     752 /* 1.2.392.200011.61.1.1.1.3 (OBJ_camellia_192_cbc) */,
     753 /* 1.2.392.200011.61.1.1.1.4 (OBJ_camellia_256_cbc) */,
