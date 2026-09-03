@@ -33,6 +33,7 @@ import 'webcrypto/digest.dart' as digest;
 import 'regression/aes_gcm_invalid_tag_length.dart'
     as aes_gcm_invalid_tag_length;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
+import 'regression/ecdh_invalid_length.dart' as ecdh_invalid_length;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
 import 'regression/jwk_base64url.dart' as jwk_base64url;
 import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
@@ -69,6 +70,7 @@ void runAllTests(
     ...issue_60_trailing_bytes.tests(),
     ...jwk_base64url.tests(),
     ...derive_bits_zero_length.tests(),
+    ...ecdh_invalid_length.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
     ...rsa_modulus_length.tests(),
   ];
