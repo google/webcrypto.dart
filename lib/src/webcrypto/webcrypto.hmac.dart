@@ -181,8 +181,9 @@ final class HmacSecretKey {
   /// Generate random [HmacSecretKey].
   ///
   /// The [length] specifies the length of the secret key in bits. If omitted
-  /// the random key will use the same number of bits as the underlying hash
-  /// algorithm given in [hash].
+  /// the [recommended HMAC key length][1] defined by Web Crypto is used. This
+  /// is the block size of the hash function, which is distinct from its digest
+  /// size.
   ///
   /// **Example**
   /// ```dart
@@ -193,6 +194,8 @@ final class HmacSecretKey {
   ///   final key = await HmacSecretKey.generate(Hash.sha256);
   /// }
   /// ```
+  ///
+  /// [1]: https://www.w3.org/TR/WebCryptoAPI/#hmac-operations
   static Future<HmacSecretKey> generateKey(Hash hash, {int? length}) async {
     if (length != null && length <= 0) {
       throw ArgumentError.value(length, 'length', 'must be positive');
