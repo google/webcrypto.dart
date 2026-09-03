@@ -20,22 +20,7 @@ part of 'webcrypto.dart';
 /// calls to obtain more random bytes.
 ///
 /// **Example**
-/// ```dart
-/// import 'dart:convert' show base64;
-/// import 'dart:typed_data' show Uint8List;
-/// import 'package:webcrypto/webcrypto.dart';
-///
-/// void main() {
-///   // Allocate a byte array of 64 bytes.
-///   final bytes = Uint8List(64);
-///
-///   // Fill with random bytes.
-///   fillRandomBytes(bytes);
-///
-///   // Print base64 encoded random bytes.
-///   print(base64.encode(bytes));
-/// }
-/// ```
+/// {@example /example/webcrypto/random/fill_random_bytes.dart#example}
 void fillRandomBytes(
   TypedData destination,
   // Note: Uint8List and friends all implement TypedData, but dartdoc has a bug
