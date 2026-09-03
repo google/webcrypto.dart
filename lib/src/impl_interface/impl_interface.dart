@@ -40,17 +40,7 @@ typedef KeyPair<T, S> = ({T privateKey, S publicKey});
 ///
 /// > [!NOTE]
 /// > Additional values may be added to this enum in the future.
-enum EllipticCurve {
-  p256,
-  p384,
-
-  ///
-  ///
-  /// P-521 is **not supported on Safari**, see [bug 216755 (bugs.webkit.org)][1].
-  ///
-  /// [1]: https://bugs.webkit.org/show_bug.cgi?id=216755
-  p521,
-}
+enum EllipticCurve { p256, p384, p521 }
 
 /// Thrown when an operation failed for an operation-specific reason.
 final class OperationError extends Error {
