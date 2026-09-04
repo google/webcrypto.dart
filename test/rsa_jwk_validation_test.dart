@@ -15,14 +15,23 @@
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 
+import 'src/jni_test_setup.dart'
+    if (dart.library.io) 'src/jni_test_setup_io.dart';
+
 final _throwsInvalidJwk = throwsA(
   anyOf(isA<FormatException>(), isA<ArgumentError>()),
 );
 
 void main() {
+  final skipReason = jniHelperSetupSkipReason;
   late Map<String, dynamic> privateJwk;
 
   setUpAll(() async {
+    if (skipReason != null) {
+      return;
+    }
+
+    spawnJniForDesktopTests();
     final pair = await RsaOaepPrivateKey.generateKey(
       1024,
       BigInt.from(65537),
@@ -36,7 +45,7 @@ void main() {
       RsaOaepPublicKey.importJsonWebKey(privateJwk, Hash.sha256),
       _throwsInvalidJwk,
     );
-  });
+  }, skip: skipReason);
 
   test('RSA-PSS public import rejects a private JWK', () async {
     await expectLater(
@@ -47,7 +56,7 @@ void main() {
       }, Hash.sha256),
       _throwsInvalidJwk,
     );
-  });
+  }, skip: skipReason);
 
   test('RSASSA-PKCS1-v1_5 public import rejects a private JWK', () async {
     await expectLater(
@@ -58,5 +67,5 @@ void main() {
       }, Hash.sha256),
       _throwsInvalidJwk,
     );
-  });
+  }, skip: skipReason);
 }

@@ -18,13 +18,22 @@ library;
 import 'package:test/test.dart';
 import 'package:webcrypto/webcrypto.dart';
 
+import 'src/jni_test_setup.dart'
+    if (dart.library.io) 'src/jni_test_setup_io.dart';
+
 const _lengthTooLong =
     'Length specified for HkdfSecretKey.deriveBits is too long';
 
 void main() {
+  final skipReason = jniHelperSetupSkipReason;
   late HkdfSecretKey key;
 
   setUpAll(() async {
+    if (skipReason != null) {
+      return;
+    }
+
+    spawnJniForDesktopTests();
     key = await HkdfSecretKey.importRawKey(const [1, 2, 3, 4]);
   });
 
@@ -45,7 +54,7 @@ void main() {
       );
 
       expect(derived, hasLength(maxLengthInBytes));
-    });
+    }, skip: skipReason);
 
     test('$name rejects output one byte beyond the maximum', () async {
       await expectLater(
@@ -58,7 +67,7 @@ void main() {
           ),
         ),
       );
-    });
+    }, skip: skipReason);
   }
 
   test(
@@ -75,5 +84,6 @@ void main() {
         ),
       );
     },
+    skip: skipReason,
   );
 }
