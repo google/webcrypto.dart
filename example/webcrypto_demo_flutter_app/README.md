@@ -26,6 +26,20 @@ flutter test integration_test/jni_hkdf_test.dart \
   -d emulator-name
 ```
 
+To run the Android JNI/JCA PBKDF2 smoke test:
+
+```sh
+flutter test integration_test/jni_pbkdf2_test.dart \
+  -d emulator-name
+```
+
+To benchmark PBKDF2 at realistic iteration counts on Android:
+
+```sh
+flutter test integration_test/jni_pbkdf2_benchmark.dart \
+  -d emulator-name
+```
+
 To run the Android JNI/JCA AES-GCM smoke test:
 
 ```sh
