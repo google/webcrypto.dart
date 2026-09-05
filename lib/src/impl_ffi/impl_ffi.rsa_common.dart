@@ -86,6 +86,9 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
       'use',
       'must be "$expectedUse", if present',
     );
+    if (!isPrivateKey) {
+      checkJwk(jwk.d == null, 'd', 'must not be present for a public key');
+    }
 
     // TODO: Consider rejecting private keys with 'use', as it's only valid for
     //       public keys according to the RFC -- maybe read the RFC again to be

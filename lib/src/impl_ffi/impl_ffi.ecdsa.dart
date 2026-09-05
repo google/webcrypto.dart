@@ -29,7 +29,9 @@ String _ecdsaCurveToJwkAlg(EllipticCurve curve) {
     return 'ES512';
   }
   // This should never happen!
+  // coverage:ignore-start
   throw UnsupportedError('curve "$curve" is not supported');
+  // coverage:ignore-end
 }
 
 Future<EcdsaPrivateKeyImpl> ecdsaPrivateKey_importPkcs8Key(

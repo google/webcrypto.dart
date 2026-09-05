@@ -45,3 +45,13 @@ part 'webcrypto.random.dart';
 part 'webcrypto.rsaoaep.dart';
 part 'webcrypto.rsapss.dart';
 part 'webcrypto.rsassapkcs1v15.dart';
+
+void _checkRsaModulusLength(int modulusLength) {
+  if (modulusLength < 0 || modulusLength > 0xffffffff) {
+    throw ArgumentError.value(
+      modulusLength,
+      'modulusLength',
+      'must be between 0 and 2^32 - 1',
+    );
+  }
+}

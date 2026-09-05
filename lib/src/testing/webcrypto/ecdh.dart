@@ -15,7 +15,6 @@
 import 'package:webcrypto/webcrypto.dart';
 import '../utils/utils.dart';
 import '../utils/testrunner.dart';
-import '../utils/detected_runtime.dart';
 
 final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   algorithm: 'ECDH',
@@ -59,13 +58,32 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
 );
 
 void main() async {
-  log('generate ECDH test case');
+  log('generate ECDH test cases');
+
+  // P-256: up to 256 bits (32 bytes)
   await runner.generate(
     generateKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
     importKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
     deriveParams: {},
     maxDeriveLength: 32,
   );
+
+  // P-384: up to 384 bits (48 bytes)
+  await runner.generate(
+    generateKeyParams: {'curve': curveToJson(EllipticCurve.p384)},
+    importKeyParams: {'curve': curveToJson(EllipticCurve.p384)},
+    deriveParams: {},
+    maxDeriveLength: 48,
+  );
+
+  // P-521: up to 528 bits (66 bytes)
+  await runner.generate(
+    generateKeyParams: {'curve': curveToJson(EllipticCurve.p521)},
+    importKeyParams: {'curve': curveToJson(EllipticCurve.p521)},
+    deriveParams: {},
+    maxDeriveLength: 66,
+  );
+
   log('--------------------');
 
   await runner.tests().runTests();
@@ -151,9 +169,7 @@ final _testData = [
     "deriveParams": {},
   },
 
-  /// Safari and WebKit on Mac (with CommonCrypto) does not support P-521, see:
-  /// https://bugs.webkit.org/show_bug.cgi?id=216755
-  ...(nullOnSafari(_testDataWithP521) ?? <Map>[]),
+  ..._testDataWithP521,
 
   // TODO: generate on firefox, once the import/export pkcs8 has been figured out
 ];

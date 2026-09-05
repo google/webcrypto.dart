@@ -82,17 +82,8 @@ final class HmacSecretKey {
   /// as zero'ing the last bits in [keyData].
   ///
   /// **Example**
-  /// ```dart
-  /// import 'dart:convert' show utf8;
-  /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// Future<void> main() async {
-  ///   final key = await HmacSecretKey.importRawKey(
-  ///     base64.decode('WzIxLDg0LDEwMCw5OSwxMCwxMDUsMjIsODAsMTkwLDExNiwyMDMsMjQ5XQ=='),
-  ///     Hash.sha256,
-  ///   );
-  /// }
-  /// ```
+  /// {@example /example/webcrypto/hmac/import_raw_key.dart#example}
   static Future<HmacSecretKey> importRawKey(
     List<int> keyData,
     Hash hash, {
@@ -195,6 +186,9 @@ final class HmacSecretKey {
   static Future<HmacSecretKey> generateKey(Hash hash, {int? length}) async {
     if (length != null && length <= 0) {
       throw ArgumentError.value(length, 'length', 'must be positive');
+    }
+    if (length != null && length > 0xffffffff) {
+      throw ArgumentError.value(length, 'length', 'too large');
     }
 
     final impl = await webCryptImpl.hmacSecretKey.generateKey(
