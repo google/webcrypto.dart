@@ -249,6 +249,7 @@ final class RsaOaepPrivateKey {
     BigInt publicExponent,
     Hash hash,
   ) async {
+    _checkRsaModulusLength(modulusLength);
     final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.rsaOaepPrivateKey
         .generateKey(modulusLength, publicExponent, hash._impl);
 

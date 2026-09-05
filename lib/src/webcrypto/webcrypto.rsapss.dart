@@ -229,6 +229,7 @@ final class RsaPssPrivateKey {
     BigInt publicExponent,
     Hash hash,
   ) async {
+    _checkRsaModulusLength(modulusLength);
     final (privateKeyImpl, publicKeyImpl) = await webCryptImpl.rsaPssPrivateKey
         .generateKey(modulusLength, publicExponent, hash._impl);
 
