@@ -138,8 +138,8 @@ final class JsonWebKey {
       if (json['oth'] is! List || (json['oth'] as List).any((e) => e is! Map)) {
         throw FormatException('JWK entry "oth" must be list of maps', json);
       }
-      oth = (json['oth'] as List<Map>).map((json) {
-        return RsaOtherPrimesInfo.fromJson(json);
+      oth = (json['oth'] as List).map((json) {
+        return RsaOtherPrimesInfo.fromJson(json as Map);
       }).toList();
     }
     return JsonWebKey(
