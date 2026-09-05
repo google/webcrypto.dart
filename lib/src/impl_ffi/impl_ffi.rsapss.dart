@@ -140,6 +140,7 @@ final class _RsaPssPrivateKeyImpl implements RsaPssPrivateKeyImpl {
         'must be a positive integer',
       );
     }
+    _checkInt32(saltLength, 'saltLength');
 
     return _signStream(
       _key,
@@ -219,6 +220,7 @@ final class _RsaPssPublicKeyImpl implements RsaPssPublicKeyImpl {
         'must be a positive integer',
       );
     }
+    _checkInt32(saltLength, 'saltLength');
 
     return _verifyStream(
       _key,
