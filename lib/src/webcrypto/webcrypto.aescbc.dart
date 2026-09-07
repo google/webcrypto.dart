@@ -51,27 +51,8 @@ final class AesCbcSecretKey {
   /// {@endtemplate}
   ///
   /// **Example**
-  /// ```dart
-  /// import 'dart:convert' show utf8;
-  /// import 'dart:typed_data' show Uint8List;
-  /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// Future<void> main() async {
-  ///   final rawKey = Uint8List(16);
-  ///   fillRandomBytes(rawKey);
-  ///
-  ///   final k = await AesCbcSecretKey.importRawKey(rawKey);
-  ///
-  ///   // Use a unique IV for each message.
-  ///   final iv = Uint8List(16);
-  ///   fillRandomBytes(iv);
-  ///
-  ///   // Encrypt a message
-  ///   final c = await k.encryptBytes(utf8.encode('hello world'), iv);
-  ///
-  ///   print(utf8.decode(await k.decryptBytes(c, iv))); // hello world
-  /// }
-  /// ```
+  /// {@example /example/webcrypto/aes_cbc/import_raw_key.dart#example}
   static Future<AesCbcSecretKey> importRawKey(List<int> keyData) async {
     final impl = await webCryptImpl.aesCbcSecretKey.importRawKey(keyData);
     return AesCbcSecretKey._(impl);
