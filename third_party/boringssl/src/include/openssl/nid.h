@@ -5511,6 +5511,26 @@ extern "C" {
 #define SN_X_Wing "X-Wing"
 #define NID_X_Wing 972
 
+#define SN_alg_mtcProof_draft "alg-mtcProof-draft"
+#define NID_alg_mtcProof_draft 976
+#define OBJ_alg_mtcProof_draft 1L, 3L, 6L, 1L, 4L, 1L, 44363L, 47L, 0L
+#define OBJ_ENC_alg_mtcProof_draft \
+  0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0xda, 0x4b, 0x2f, 0x00
+
+#define SN_rdna_trustAnchorID_draft "rdna-trustAnchorID-draft"
+#define NID_rdna_trustAnchorID_draft 977
+#define OBJ_rdna_trustAnchorID_draft 1L, 3L, 6L, 1L, 4L, 1L, 44363L, 47L, 1L
+#define OBJ_ENC_rdna_trustAnchorID_draft \
+  0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0xda, 0x4b, 0x2f, 0x01
+
+#define SN_pe_mtcCertificationAuthority_draft \
+  "pe-mtcCertificationAuthority-draft"
+#define NID_pe_mtcCertificationAuthority_draft 978
+#define OBJ_pe_mtcCertificationAuthority_draft \
+  1L, 3L, 6L, 1L, 4L, 1L, 44363L, 47L, 2L
+#define OBJ_ENC_pe_mtcCertificationAuthority_draft \
+  0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0xda, 0x4b, 0x2f, 0x02
+
 
 #if defined(__cplusplus)
 } /* extern C */
