@@ -55,3 +55,13 @@ void _checkRsaModulusLength(int modulusLength) {
     );
   }
 }
+
+void _checkDeriveBitsLength(int length) {
+  if (length < 0 || length > 0xffffffff) {
+    throw ArgumentError.value(
+      length,
+      'length',
+      'must be between 0 and 2^32 - 1',
+    );
+  }
+}

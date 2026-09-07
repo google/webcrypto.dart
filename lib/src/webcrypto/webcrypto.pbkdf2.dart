@@ -91,5 +91,8 @@ final class Pbkdf2SecretKey {
     Hash hash,
     List<int> salt,
     int iterations,
-  ) => _impl.deriveBits(length, hash._impl, salt, iterations);
+  ) async {
+    _checkDeriveBitsLength(length);
+    return await _impl.deriveBits(length, hash._impl, salt, iterations);
+  }
 }

@@ -91,5 +91,8 @@ final class HkdfSecretKey {
     Hash hash,
     List<int> salt,
     List<int> info,
-  ) => _impl.deriveBits(length, hash._impl, salt, info);
+  ) async {
+    _checkDeriveBitsLength(length);
+    return await _impl.deriveBits(length, hash._impl, salt, info);
+  }
 }
