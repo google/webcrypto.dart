@@ -17,6 +17,7 @@ section	.text code align=64
 
 section	.rdata rdata align=8
 ALIGN	64
+p256_constants:
 $L$poly:
 	DQ	0xffffffffffffffff,0x00000000ffffffff,0x0000000000000000,0xffffffff00000001
 

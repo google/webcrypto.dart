@@ -61,8 +61,8 @@
 // ignore_for_file: type=lint
 import 'dart:ffi' as ffi;
 
-/// BN_add sets |r| = |a| + |b|, where |r| may be the same pointer as either |a|
-/// or |b|. It returns one on success and zero on allocation failure.
+/// BN_add sets `r` = `a` + `b`, where `r` may be the same pointer as either `a`
+/// or `b`. It returns one on success and zero on allocation failure.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<BIGNUM>,
@@ -76,9 +76,9 @@ external int BN_add(
   ffi.Pointer<BIGNUM> b,
 );
 
-/// BN_bin2bn sets |*ret| to the value of |len| bytes from |in|, interpreted as
-/// a big-endian number, and returns |ret|. If |ret| is NULL then a fresh
-/// |BIGNUM| is allocated and returned. It returns NULL on allocation
+/// BN_bin2bn sets `*ret` to the value of `len` bytes from `in`, interpreted as
+/// a big-endian number, and returns `ret`. If `ret` is NULL then a fresh
+/// `BIGNUM` is allocated and returned. It returns NULL on allocation
 /// failure.
 @ffi.Native<
   ffi.Pointer<BIGNUM> Function(
@@ -93,9 +93,9 @@ external ffi.Pointer<BIGNUM> BN_bin2bn(
   ffi.Pointer<BIGNUM> ret,
 );
 
-/// BN_bn2bin_padded serialises the absolute value of |in| to |out| as a
+/// BN_bn2bin_padded serialises the absolute value of `in` to `out` as a
 /// big-endian integer. The integer is padded with leading zeros up to size
-/// |len|. If |len| is smaller than |BN_num_bytes|, the function fails and
+/// `len`. If `len` is smaller than `BN_num_bytes`, the function fails and
 /// returns 0. Otherwise, it returns 1.
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<ffi.Uint8>, ffi.Size, ffi.Pointer<BIGNUM>)
@@ -109,24 +109,24 @@ external int BN_bn2bin_padded(
   ffi.Pointer<BIGNUM> in1,
 );
 
-/// BN_cmp returns a value less than, equal to or greater than zero if |a| is
-/// less than, equal to or greater than |b|, respectively.
+/// BN_cmp returns a value less than, equal to or greater than zero if `a` is
+/// less than, equal to or greater than `b`, respectively.
 @ffi.Native<ffi.Int Function(ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>)>(
   symbol: 'webcrypto_BN_cmp',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int BN_cmp(ffi.Pointer<BIGNUM> a, ffi.Pointer<BIGNUM> b);
 
-/// BN_free frees the data referenced by |bn| and, if |bn| was originally
-/// allocated on the heap, frees |bn| also.
+/// BN_free frees the data referenced by `bn` and, if `bn` was originally
+/// allocated on the heap, frees `bn` also.
 @ffi.Native<ffi.Void Function(ffi.Pointer<BIGNUM>)>(
   symbol: 'webcrypto_BN_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void BN_free(ffi.Pointer<BIGNUM> bn);
 
-/// BN_lshift sets |r| equal to |a| << n. The |a| and |r| arguments may be the
-/// same |BIGNUM|. It returns one on success and zero on allocation failure.
+/// BN_lshift sets `r` equal to `a` << n. The `a` and `r` arguments may be the
+/// same `BIGNUM`. It returns one on success and zero on allocation failure.
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>, ffi.Int)
 >(symbol: 'webcrypto_BN_lshift', assetId: 'package:webcrypto/webcrypto.dart')
@@ -140,18 +140,18 @@ external int BN_lshift(ffi.Pointer<BIGNUM> r, ffi.Pointer<BIGNUM> a, int n);
 external ffi.Pointer<BIGNUM> BN_new();
 
 /// BN_num_bytes returns the minimum number of bytes needed to represent the
-/// absolute value of |bn|.
+/// absolute value of `bn`.
 ///
-/// While |size_t| is the preferred type for byte counts, callers can assume that
-/// |BIGNUM|s are bounded such that this value, and its corresponding bit count,
-/// will always fit in |int|.
+/// While `size_t` is the preferred type for byte counts, callers can assume that
+/// `BIGNUM`s are bounded such that this value, and its corresponding bit count,
+/// will always fit in `int`.
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<BIGNUM>)>(
   symbol: 'webcrypto_BN_num_bytes',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int BN_num_bytes(ffi.Pointer<BIGNUM> bn);
 
-/// BN_set_word sets |bn| to |value|. It returns one on success or zero on
+/// BN_set_word sets `bn` to `value`. It returns one on success or zero on
 /// allocation failure.
 @ffi.Native<ffi.Int Function(ffi.Pointer<BIGNUM>, BN_ULONG)>(
   symbol: 'webcrypto_BN_set_word',
@@ -159,8 +159,8 @@ external int BN_num_bytes(ffi.Pointer<BIGNUM> bn);
 )
 external int BN_set_word(ffi.Pointer<BIGNUM> bn, int value);
 
-/// BN_sub sets |r| = |a| - |b|, where |r| may be the same pointer as either |a|
-/// or |b|. It returns one on success and zero on allocation failure.
+/// BN_sub sets `r` = `a` - `b`, where `r` may be the same pointer as either `a`
+/// or `b`. It returns one on success and zero on allocation failure.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<BIGNUM>,
@@ -190,21 +190,21 @@ external ffi.Pointer<BIGNUM> BN_value_one();
 )
 external int BORINGSSL_self_test();
 
-/// CBB_cleanup frees all resources owned by |cbb| and other |CBB| objects
+/// CBB_cleanup frees all resources owned by `cbb` and other `CBB` objects
 /// writing to the same buffer. This should be used in an error case where a
 /// serialisation is abandoned.
 ///
-/// This function can only be called on a "top level" |CBB|, i.e. one initialised
-/// with |CBB_init| or |CBB_init_fixed|, or a |CBB| set to the zero state with
-/// |CBB_zero|.
+/// This function can only be called on a "top level" `CBB`, i.e. one initialised
+/// with `CBB_init` or `CBB_init_fixed`, or a `CBB` set to the zero state with
+/// `CBB_zero`.
 @ffi.Native<ffi.Void Function(ffi.Pointer<CBB>)>(
   symbol: 'webcrypto_CBB_cleanup',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void CBB_cleanup(ffi.Pointer<CBB> cbb);
 
-/// CBB_data returns a pointer to the bytes written to |cbb|. It does not flush
-/// |cbb|. The pointer is valid until the next operation to |cbb|.
+/// CBB_data returns a pointer to the bytes written to `cbb`. It does not flush
+/// `cbb`. The pointer is valid until the next operation to `cbb`.
 ///
 /// To avoid unfinalized length prefixes, it is a fatal error to call this on a
 /// CBB with any active children.
@@ -215,9 +215,9 @@ external void CBB_cleanup(ffi.Pointer<CBB> cbb);
 external ffi.Pointer<ffi.Uint8> CBB_data(ffi.Pointer<CBB> cbb);
 
 /// CBB_flush causes any pending length prefixes to be written out and any child
-/// |CBB| objects of |cbb| to be invalidated. This allows |cbb| to continue to be
-/// used after the children go out of scope, e.g. when local |CBB| objects are
-/// added as children to a |CBB| that persists after a function returns. This
+/// `CBB` objects of `cbb` to be invalidated. This allows `cbb` to continue to be
+/// used after the children go out of scope, e.g. when local `CBB` objects are
+/// added as children to a `CBB` that persists after a function returns. This
 /// function returns one on success or zero on error.
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>)>(
   symbol: 'webcrypto_CBB_flush',
@@ -225,8 +225,8 @@ external ffi.Pointer<ffi.Uint8> CBB_data(ffi.Pointer<CBB> cbb);
 )
 external int CBB_flush(ffi.Pointer<CBB> cbb);
 
-/// CBB_init initialises |cbb| with |initial_capacity|. Since a |CBB| grows as
-/// needed, the |initial_capacity| is just a hint. It returns one on success or
+/// CBB_init initialises `cbb` with `initial_capacity`. Since a `CBB` grows as
+/// needed, the `initial_capacity` is just a hint. It returns one on success or
 /// zero on allocation failure.
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>, ffi.Size)>(
   symbol: 'webcrypto_CBB_init',
@@ -234,8 +234,8 @@ external int CBB_flush(ffi.Pointer<CBB> cbb);
 )
 external int CBB_init(ffi.Pointer<CBB> cbb, int initial_capacity);
 
-/// CBB_len returns the number of bytes written to |cbb|. It does not flush
-/// |cbb|.
+/// CBB_len returns the number of bytes written to `cbb`. It does not flush
+/// `cbb`.
 ///
 /// To avoid unfinalized length prefixes, it is a fatal error to call this on a
 /// CBB with any active children.
@@ -245,19 +245,19 @@ external int CBB_init(ffi.Pointer<CBB> cbb, int initial_capacity);
 )
 external int CBB_len(ffi.Pointer<CBB> cbb);
 
-/// CBB_zero sets an uninitialised |cbb| to the zero state. It must be
-/// initialised with |CBB_init| or |CBB_init_fixed| before use, but it is safe to
-/// call |CBB_cleanup| without a successful |CBB_init|. This may be used for more
-/// uniform cleanup of a |CBB|.
+/// CBB_zero sets an uninitialised `cbb` to the zero state. It must be
+/// initialised with `CBB_init` or `CBB_init_fixed` before use, but it is safe to
+/// call `CBB_cleanup` without a successful `CBB_init`. This may be used for more
+/// uniform cleanup of a `CBB`.
 @ffi.Native<ffi.Void Function(ffi.Pointer<CBB>)>(
   symbol: 'webcrypto_CBB_zero',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void CBB_zero(ffi.Pointer<CBB> cbb);
 
-/// CRYPTO_memcmp returns zero iff the |len| bytes at |a| and |b| are equal. It
-/// takes an amount of time dependent on |len|, but independent of the contents
-/// of |a| and |b|. Unlike memcmp, it cannot be used to put elements into a
+/// CRYPTO_memcmp returns zero iff the `len` bytes at `a` and `b` are equal. It
+/// takes an amount of time dependent on `len`, but independent of the contents
+/// of `a` and `b`. Unlike memcmp, it cannot be used to put elements into a
 /// defined order as the return value when a != b is undefined, other than to be
 /// non-zero.
 @ffi.Native<
@@ -272,12 +272,12 @@ external int CRYPTO_memcmp(
   int len,
 );
 
-/// ECDH_compute_key calculates the shared key between |pub_key| and |priv_key|.
-/// If |kdf| is not NULL, then it is called with the bytes of the shared key and
-/// the parameter |out|. When |kdf| returns, the value of |*outlen| becomes the
+/// ECDH_compute_key calculates the shared key between `pub_key` and `priv_key`.
+/// If `kdf` is not NULL, then it is called with the bytes of the shared key and
+/// the parameter `out`. When `kdf` returns, the value of `*outlen` becomes the
 /// return value. Otherwise, as many bytes of the shared key as will fit are
-/// copied directly to, at most, |outlen| bytes at |out|. It returns the number
-/// of bytes written to |out|, or -1 on error.
+/// copied directly to, at most, `outlen` bytes at `out`. It returns the number
+/// of bytes written to `out`, or -1 on error.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<ffi.Void>,
@@ -317,15 +317,15 @@ external int ECDH_compute_key(
   kdf,
 );
 
-/// ECDSA_SIG_free frees |sig| its member |BIGNUM|s.
+/// ECDSA_SIG_free frees `sig` its member `BIGNUM`s.
 @ffi.Native<ffi.Void Function(ffi.Pointer<ECDSA_SIG>)>(
   symbol: 'webcrypto_ECDSA_SIG_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void ECDSA_SIG_free(ffi.Pointer<ECDSA_SIG> sig);
 
-/// ECDSA_SIG_get0 sets |*out_r| and |*out_s|, if non-NULL, to the two
-/// components of |sig|.
+/// ECDSA_SIG_get0 sets `*out_r` and `*out_s`, if non-NULL, to the two
+/// components of `sig`.
 @ffi.Native<
   ffi.Void Function(
     ffi.Pointer<ECDSA_SIG>,
@@ -342,8 +342,8 @@ external void ECDSA_SIG_get0(
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_s,
 );
 
-/// ECDSA_SIG_marshal marshals |sig| as a DER-encoded ECDSA-Sig-Value and appends
-/// the result to |cbb|. It returns one on success and zero on error.
+/// ECDSA_SIG_marshal marshals `sig` as a DER-encoded ECDSA-Sig-Value and appends
+/// the result to `cbb`. It returns one on success and zero on error.
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>, ffi.Pointer<ECDSA_SIG>)>(
   symbol: 'webcrypto_ECDSA_SIG_marshal',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -353,26 +353,26 @@ external int ECDSA_SIG_marshal(
   ffi.Pointer<ECDSA_SIG> sig,
 );
 
-/// ECDSA_SIG_new returns a fresh |ECDSA_SIG| structure or NULL on error.
+/// ECDSA_SIG_new returns a fresh `ECDSA_SIG` structure or NULL on error.
 @ffi.Native<ffi.Pointer<ECDSA_SIG> Function()>(
   symbol: 'webcrypto_ECDSA_SIG_new',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<ECDSA_SIG> ECDSA_SIG_new();
 
-/// ECDSA_SIG_parse parses a DER-encoded ECDSA-Sig-Value structure from |cbs| and
-/// advances |cbs|. It returns a newly-allocated |ECDSA_SIG| or NULL on error.
+/// ECDSA_SIG_parse parses a DER-encoded ECDSA-Sig-Value structure from `cbs` and
+/// advances `cbs`. It returns a newly-allocated `ECDSA_SIG` or NULL on error.
 @ffi.Native<ffi.Pointer<ECDSA_SIG> Function(ffi.Pointer<CBS>)>(
   symbol: 'webcrypto_ECDSA_SIG_parse',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<ECDSA_SIG> ECDSA_SIG_parse(ffi.Pointer<CBS> cbs);
 
-/// EC_GROUP_free releases a reference to |group|, if |group| was created by
-/// |EC_GROUP_new_curve_GFp|. If |group| is static, it does nothing.
+/// EC_GROUP_free releases a reference to `group`, if `group` was created by
+/// `EC_GROUP_new_curve_GFp`. If `group` is static, it does nothing.
 ///
 /// This function exists for OpenSSL compatibility, and to manage dynamic
-/// |EC_GROUP|s constructed by |EC_GROUP_new_curve_GFp|. Callers that do not need
+/// `EC_GROUP`s constructed by `EC_GROUP_new_curve_GFp`. Callers that do not need
 /// either may ignore this function.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_GROUP_free',
@@ -380,15 +380,15 @@ external ffi.Pointer<ECDSA_SIG> ECDSA_SIG_parse(ffi.Pointer<CBS> cbs);
 )
 external void EC_GROUP_free(ffi.Pointer<EC_GROUP> group);
 
-/// EC_GROUP_get0_order returns a pointer to the internal |BIGNUM| object in
-/// |group| that specifies the order of the group.
+/// EC_GROUP_get0_order returns a pointer to the internal `BIGNUM` object in
+/// `group` that specifies the order of the group.
 @ffi.Native<ffi.Pointer<BIGNUM> Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_GROUP_get0_order',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<BIGNUM> EC_GROUP_get0_order(ffi.Pointer<EC_GROUP> group);
 
-/// EC_GROUP_get_curve_name returns a NID that identifies |group|.
+/// EC_GROUP_get_curve_name returns a NID that identifies `group`.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_GROUP_get_curve_name',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -396,29 +396,29 @@ external ffi.Pointer<BIGNUM> EC_GROUP_get0_order(ffi.Pointer<EC_GROUP> group);
 external int EC_GROUP_get_curve_name(ffi.Pointer<EC_GROUP> group);
 
 /// EC_GROUP_get_degree returns the number of bits needed to represent an
-/// element of the field underlying |group|.
+/// element of the field underlying `group`.
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_GROUP_get_degree',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int EC_GROUP_get_degree(ffi.Pointer<EC_GROUP> group);
 
-/// EC_GROUP_new_by_curve_name returns the |EC_GROUP| object for the elliptic
-/// curve specified by |nid|, or NULL on unsupported NID.  For OpenSSL
+/// EC_GROUP_new_by_curve_name returns the `EC_GROUP` object for the elliptic
+/// curve specified by `nid`, or NULL on unsupported NID.  For OpenSSL
 /// compatibility, this function returns a non-const pointer which may be passed
-/// to |EC_GROUP_free|. However, the resulting object is actually static and
-/// calling |EC_GROUP_free| is optional.
+/// to `EC_GROUP_free`. However, the resulting object is actually static and
+/// calling `EC_GROUP_free` is optional.
 ///
 /// The supported NIDs are:
-/// - |NID_secp224r1| (P-224)
-/// - |NID_X9_62_prime256v1| (P-256)
-/// - |NID_secp384r1| (P-384)
-/// - |NID_secp521r1| (P-521)
+/// - `NID_secp224r1` (P-224)
+/// - `NID_X9_62_prime256v1` (P-256)
+/// - `NID_secp384r1` (P-384)
+/// - `NID_secp521r1` (P-521)
 ///
 /// Calling this function causes all four curves to be linked into the binary.
-/// Prefer calling |EC_group_*| to allow the static linker to drop unused curves.
+/// Prefer calling `EC_group_*` to allow the static linker to drop unused curves.
 ///
-/// If in doubt, use |NID_X9_62_prime256v1|, or see the curve25519.h header for
+/// If in doubt, use `NID_X9_62_prime256v1`, or see the curve25519.h header for
 /// more modern primitives.
 @ffi.Native<ffi.Pointer<EC_GROUP> Function(ffi.Int)>(
   symbol: 'webcrypto_EC_GROUP_new_by_curve_name',
@@ -426,7 +426,7 @@ external int EC_GROUP_get_degree(ffi.Pointer<EC_GROUP> group);
 )
 external ffi.Pointer<EC_GROUP> EC_GROUP_new_by_curve_name(int nid);
 
-/// EC_KEY_check_key performs several checks on |key| (possibly including an
+/// EC_KEY_check_key performs several checks on `key` (possibly including an
 /// expensive check that the public key is in the primary subgroup). It returns
 /// one if all checks pass and zero otherwise. If it returns zero then detail
 /// about the problem can be found on the error stack.
@@ -436,7 +436,7 @@ external ffi.Pointer<EC_GROUP> EC_GROUP_new_by_curve_name(int nid);
 )
 external int EC_KEY_check_key(ffi.Pointer<EC_KEY> key);
 
-/// EC_KEY_free frees all the data owned by |key| and |key| itself.
+/// EC_KEY_free frees all the data owned by `key` and `key` itself.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_free',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -444,7 +444,7 @@ external int EC_KEY_check_key(ffi.Pointer<EC_KEY> key);
 external void EC_KEY_free(ffi.Pointer<EC_KEY> key);
 
 /// EC_KEY_generate_key generates a random, private key, calculates the
-/// corresponding public key and stores both in |key|. It returns one on success
+/// corresponding public key and stores both in `key`. It returns one on success
 /// or zero otherwise.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_generate_key',
@@ -452,14 +452,14 @@ external void EC_KEY_free(ffi.Pointer<EC_KEY> key);
 )
 external int EC_KEY_generate_key(ffi.Pointer<EC_KEY> key);
 
-/// EC_KEY_get0_group returns a pointer to the |EC_GROUP| object inside |key|.
+/// EC_KEY_get0_group returns a pointer to the `EC_GROUP` object inside `key`.
 @ffi.Native<ffi.Pointer<EC_GROUP> Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_get0_group',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<EC_GROUP> EC_KEY_get0_group(ffi.Pointer<EC_KEY> key);
 
-/// EC_KEY_get0_private_key returns a pointer to the private key inside |key|.
+/// EC_KEY_get0_private_key returns a pointer to the private key inside `key`.
 @ffi.Native<ffi.Pointer<BIGNUM> Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_get0_private_key',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -467,22 +467,22 @@ external ffi.Pointer<EC_GROUP> EC_KEY_get0_group(ffi.Pointer<EC_KEY> key);
 external ffi.Pointer<BIGNUM> EC_KEY_get0_private_key(ffi.Pointer<EC_KEY> key);
 
 /// EC_KEY_get0_public_key returns a pointer to the public key point inside
-/// |key|.
+/// `key`.
 @ffi.Native<ffi.Pointer<EC_POINT> Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_get0_public_key',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<EC_POINT> EC_KEY_get0_public_key(ffi.Pointer<EC_KEY> key);
 
-/// EC_KEY_get_enc_flags returns the encoding flags for |key|, which is a
-/// bitwise-OR of |EC_PKEY_*| values.
+/// EC_KEY_get_enc_flags returns the encoding flags for `key`, which is a
+/// bitwise-OR of `EC_PKEY_*` values.
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<EC_KEY>)>(
   symbol: 'webcrypto_EC_KEY_get_enc_flags',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int EC_KEY_get_enc_flags(ffi.Pointer<EC_KEY> key);
 
-/// EC_KEY_new_by_curve_name returns a fresh EC_KEY for group specified by |nid|
+/// EC_KEY_new_by_curve_name returns a fresh EC_KEY for group specified by `nid`
 /// or NULL on error.
 @ffi.Native<ffi.Pointer<EC_KEY> Function(ffi.Int)>(
   symbol: 'webcrypto_EC_KEY_new_by_curve_name',
@@ -490,17 +490,17 @@ external int EC_KEY_get_enc_flags(ffi.Pointer<EC_KEY> key);
 )
 external ffi.Pointer<EC_KEY> EC_KEY_new_by_curve_name(int nid);
 
-/// EC_KEY_set_enc_flags sets the encoding flags for |key|, which is a
-/// bitwise-OR of |EC_PKEY_*| values.
+/// EC_KEY_set_enc_flags sets the encoding flags for `key`, which is a
+/// bitwise-OR of `EC_PKEY_*` values.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EC_KEY>, ffi.UnsignedInt)>(
   symbol: 'webcrypto_EC_KEY_set_enc_flags',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void EC_KEY_set_enc_flags(ffi.Pointer<EC_KEY> key, int flags);
 
-/// EC_KEY_set_private_key sets the private key of |key| to |priv|. It returns
-/// one on success and zero otherwise. |key| must already have had a group
-/// configured (see |EC_KEY_set_group| and |EC_KEY_new_by_curve_name|).
+/// EC_KEY_set_private_key sets the private key of `key` to `priv`. It returns
+/// one on success and zero otherwise. `key` must already have had a group
+/// configured (see `EC_KEY_set_group` and `EC_KEY_new_by_curve_name`).
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_KEY>, ffi.Pointer<BIGNUM>)>(
   symbol: 'webcrypto_EC_KEY_set_private_key',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -510,10 +510,10 @@ external int EC_KEY_set_private_key(
   ffi.Pointer<BIGNUM> priv,
 );
 
-/// EC_KEY_set_public_key sets the public key of |key| to |pub|, by copying it.
-/// It returns one on success and zero otherwise. |key| must already have had a
-/// group configured (see |EC_KEY_set_group| and |EC_KEY_new_by_curve_name|), and
-/// |pub| must also belong to that group, and must not be the point at infinity.
+/// EC_KEY_set_public_key sets the public key of `key` to `pub`, by copying it.
+/// It returns one on success and zero otherwise. `key` must already have had a
+/// group configured (see `EC_KEY_set_group` and `EC_KEY_new_by_curve_name`), and
+/// `pub` must also belong to that group, and must not be the point at infinity.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EC_KEY>, ffi.Pointer<EC_POINT>)>(
   symbol: 'webcrypto_EC_KEY_set_public_key',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -523,9 +523,9 @@ external int EC_KEY_set_public_key(
   ffi.Pointer<EC_POINT> pub,
 );
 
-/// EC_KEY_set_public_key_affine_coordinates sets the public key in |key| to
-/// (|x|, |y|). It returns one on success and zero on error. It's considered an
-/// error if |x| and |y| do not represent a point on |key|'s curve.
+/// EC_KEY_set_public_key_affine_coordinates sets the public key in `key` to
+/// (`x`, `y`). It returns one on success and zero on error. It's considered an
+/// error if `x` and `y` do not represent a point on `key`'s curve.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EC_KEY>,
@@ -542,18 +542,18 @@ external int EC_KEY_set_public_key_affine_coordinates(
   ffi.Pointer<BIGNUM> y,
 );
 
-/// EC_POINT_free frees |point| and the data that it points to.
+/// EC_POINT_free frees `point` and the data that it points to.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EC_POINT>)>(
   symbol: 'webcrypto_EC_POINT_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void EC_POINT_free(ffi.Pointer<EC_POINT> point);
 
-/// EC_POINT_get_affine_coordinates_GFp sets |x| and |y| to the affine value of
-/// |point|. It returns one on success and zero otherwise. |ctx| is ignored and
+/// EC_POINT_get_affine_coordinates_GFp sets `x` and `y` to the affine value of
+/// `point`. It returns one on success and zero otherwise. `ctx` is ignored and
 /// may be NULL.
 ///
-/// Either |x| or |y| may be NULL to skip computing that coordinate. This is
+/// Either `x` or `y` may be NULL to skip computing that coordinate. This is
 /// slightly faster in the common case where only the x-coordinate is needed.
 @ffi.Native<
   ffi.Int Function(
@@ -575,7 +575,7 @@ external int EC_POINT_get_affine_coordinates_GFp(
   ffi.Pointer<BN_CTX> ctx,
 );
 
-/// EC_POINT_new returns a fresh |EC_POINT| object in the given group, or NULL
+/// EC_POINT_new returns a fresh `EC_POINT` object in the given group, or NULL
 /// on error.
 @ffi.Native<ffi.Pointer<EC_POINT> Function(ffi.Pointer<EC_GROUP>)>(
   symbol: 'webcrypto_EC_POINT_new',
@@ -583,9 +583,9 @@ external int EC_POINT_get_affine_coordinates_GFp(
 )
 external ffi.Pointer<EC_POINT> EC_POINT_new(ffi.Pointer<EC_GROUP> group);
 
-/// EC_POINT_oct2point sets |point| from |len| bytes of X9.62 format
-/// serialisation in |buf|. It returns one on success and zero on error. |ctx|
-/// may be NULL. It's considered an error if |buf| does not represent a point on
+/// EC_POINT_oct2point sets `point` from `len` bytes of X9.62 format
+/// serialisation in `buf`. It returns one on success and zero on error. `ctx`
+/// may be NULL. It's considered an error if `buf` does not represent a point on
 /// the curve.
 @ffi.Native<
   ffi.Int Function(
@@ -607,8 +607,8 @@ external int EC_POINT_oct2point(
   ffi.Pointer<BN_CTX> ctx,
 );
 
-/// EC_POINT_point2cbb behaves like |EC_POINT_point2oct| but appends the
-/// serialised point to |cbb|. It returns one on success and zero on error. |ctx|
+/// EC_POINT_point2cbb behaves like `EC_POINT_point2oct` but appends the
+/// serialised point to `cbb`. It returns one on success and zero on error. `ctx`
 /// is ignored and may be NULL.
 @ffi.Native<
   ffi.Int Function(
@@ -638,9 +638,9 @@ external int EC_POINT_point2cbb(
 external void ERR_clear_error();
 
 /// ERR_error_string_n generates a human-readable string representing
-/// |packed_error|, places it at |buf|, and returns |buf|. It writes at most
-/// |len| bytes (including the terminating NUL) and truncates the string if
-/// necessary. If |len| is greater than zero then |buf| is always NUL terminated.
+/// `packed_error`, places it at `buf`, and returns `buf`. It writes at most
+/// `len` bytes (including the terminating NUL) and truncates the string if
+/// necessary. If `len` is greater than zero then `buf` is always NUL terminated.
 ///
 /// The string will have the following format:
 ///
@@ -669,7 +669,7 @@ external ffi.Pointer<ffi.Char> ERR_error_string_n(
 )
 external int ERR_get_error();
 
-/// The "peek" functions act like the |ERR_get_error| functions, above, but they
+/// The "peek" functions act like the `ERR_get_error` functions, above, but they
 /// do not remove the error from the queue.
 @ffi.Native<ffi.Uint32 Function()>(
   symbol: 'webcrypto_ERR_peek_error',
@@ -677,16 +677,16 @@ external int ERR_get_error();
 )
 external int ERR_peek_error();
 
-/// EVP_AEAD_CTX_free calls |EVP_AEAD_CTX_cleanup| and |OPENSSL_free| on
-/// |ctx|.
+/// EVP_AEAD_CTX_free calls `EVP_AEAD_CTX_cleanup` and `OPENSSL_free` on
+/// `ctx`.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_AEAD_CTX>)>(
   symbol: 'webcrypto_EVP_AEAD_CTX_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void EVP_AEAD_CTX_free(ffi.Pointer<EVP_AEAD_CTX> ctx);
 
-/// EVP_AEAD_CTX_new allocates an |EVP_AEAD_CTX|, calls |EVP_AEAD_CTX_init| and
-/// returns the |EVP_AEAD_CTX|, or NULL on error.
+/// EVP_AEAD_CTX_new allocates an `EVP_AEAD_CTX`, calls `EVP_AEAD_CTX_init` and
+/// returns the `EVP_AEAD_CTX`, or NULL on error.
 @ffi.Native<
   ffi.Pointer<EVP_AEAD_CTX> Function(
     ffi.Pointer<EVP_AEAD>,
@@ -705,25 +705,25 @@ external ffi.Pointer<EVP_AEAD_CTX> EVP_AEAD_CTX_new(
   int tag_len,
 );
 
-/// EVP_AEAD_CTX_open authenticates |in_len| bytes from |in| and |ad_len| bytes
-/// from |ad| and decrypts at most |in_len| bytes into |out|. It returns one on
+/// EVP_AEAD_CTX_open authenticates `in_len` bytes from `in` and `ad_len` bytes
+/// from `ad` and decrypts at most `in_len` bytes into `out`. It returns one on
 /// success and zero otherwise.
 ///
 /// This function may be called concurrently with itself or any other seal/open
-/// function on the same |EVP_AEAD_CTX|.
+/// function on the same `EVP_AEAD_CTX`.
 ///
-/// At most |in_len| bytes are written to |out|. In order to ensure success,
-/// |max_out_len| should be at least |in_len|. On successful return, |*out_len|
-/// is set to the the actual number of bytes written.
+/// At most `in_len` bytes are written to `out`. In order to ensure success,
+/// `max_out_len` should be at least `in_len`. On successful return, `*out_len`
+/// is set to the actual number of bytes written.
 ///
-/// The length of |nonce|, |nonce_len|, must be equal to the result of
-/// |EVP_AEAD_nonce_length| for this AEAD.
+/// The length of `nonce`, `nonce_len`, must be equal to the result of
+/// `EVP_AEAD_nonce_length` for this AEAD.
 ///
-/// |EVP_AEAD_CTX_open| never results in a partial output. If |max_out_len| is
-/// insufficient, zero will be returned. If any error occurs, |out| will be
-/// filled with zero bytes and |*out_len| set to zero.
+/// `EVP_AEAD_CTX_open` never results in a partial output. If `max_out_len` is
+/// insufficient, zero will be returned. If any error occurs, `out` will be
+/// filled with zero bytes and `*out_len` set to zero.
 ///
-/// If |in| and |out| alias then |out| must be == |in|.
+/// If `in` and `out` alias then `out` must be == `in`.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_AEAD_CTX>,
@@ -754,26 +754,26 @@ external int EVP_AEAD_CTX_open(
   int ad_len,
 );
 
-/// EVP_AEAD_CTX_seal encrypts and authenticates |in_len| bytes from |in| and
-/// authenticates |ad_len| bytes from |ad| and writes the result to |out|. It
+/// EVP_AEAD_CTX_seal encrypts and authenticates `in_len` bytes from `in` and
+/// authenticates `ad_len` bytes from `ad` and writes the result to `out`. It
 /// returns one on success and zero otherwise.
 ///
 /// This function may be called concurrently with itself or any other seal/open
-/// function on the same |EVP_AEAD_CTX|.
+/// function on the same `EVP_AEAD_CTX`.
 ///
-/// At most |max_out_len| bytes are written to |out| and, in order to ensure
-/// success, |max_out_len| should be |in_len| plus the result of
-/// |EVP_AEAD_max_overhead|. On successful return, |*out_len| is set to the
+/// At most `max_out_len` bytes are written to `out` and, in order to ensure
+/// success, `max_out_len` should be `in_len` plus the result of
+/// `EVP_AEAD_max_overhead`. On successful return, `*out_len` is set to the
 /// actual number of bytes written.
 ///
-/// The length of |nonce|, |nonce_len|, must be equal to the result of
-/// |EVP_AEAD_nonce_length| for this AEAD.
+/// The length of `nonce`, `nonce_len`, must be equal to the result of
+/// `EVP_AEAD_nonce_length` for this AEAD.
 ///
-/// |EVP_AEAD_CTX_seal| never results in a partial output. If |max_out_len| is
-/// insufficient, zero will be returned. If any error occurs, |out| will be
-/// filled with zero bytes and |*out_len| set to zero.
+/// `EVP_AEAD_CTX_seal` never results in a partial output. If `max_out_len` is
+/// insufficient, zero will be returned. If any error occurs, `out` will be
+/// filled with zero bytes and `*out_len` set to zero.
 ///
-/// If |in| and |out| alias then |out| must be == |in|.
+/// If `in` and `out` alias then `out` must be == `in`.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_AEAD_CTX>,
@@ -805,7 +805,7 @@ external int EVP_AEAD_CTX_seal(
 );
 
 /// EVP_AEAD_key_length returns the length, in bytes, of the keys used by
-/// |aead|.
+/// `aead`.
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_AEAD>)>(
   symbol: 'webcrypto_EVP_AEAD_key_length',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -813,16 +813,16 @@ external int EVP_AEAD_CTX_seal(
 external int EVP_AEAD_key_length(ffi.Pointer<EVP_AEAD> aead);
 
 /// EVP_AEAD_max_overhead returns the maximum number of additional bytes added
-/// by the act of sealing data with |aead|.
+/// by the act of sealing data with `aead`.
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_AEAD>)>(
   symbol: 'webcrypto_EVP_AEAD_max_overhead',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int EVP_AEAD_max_overhead(ffi.Pointer<EVP_AEAD> aead);
 
-/// EVP_AEAD_max_tag_len returns the maximum tag length when using |aead|. This
-/// is the largest value that can be passed as |tag_len| to
-/// |EVP_AEAD_CTX_init|.
+/// EVP_AEAD_max_tag_len returns the maximum tag length when using `aead`. This
+/// is the largest value that can be passed as `tag_len` to
+/// `EVP_AEAD_CTX_init`.
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_AEAD>)>(
   symbol: 'webcrypto_EVP_AEAD_max_tag_len',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -830,50 +830,51 @@ external int EVP_AEAD_max_overhead(ffi.Pointer<EVP_AEAD> aead);
 external int EVP_AEAD_max_tag_len(ffi.Pointer<EVP_AEAD> aead);
 
 /// EVP_AEAD_nonce_length returns the length, in bytes, of the per-message nonce
-/// for |aead|.
+/// for `aead`.
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_AEAD>)>(
   symbol: 'webcrypto_EVP_AEAD_nonce_length',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int EVP_AEAD_nonce_length(ffi.Pointer<EVP_AEAD> aead);
 
-/// EVP_CIPHER_CTX_free calls |EVP_CIPHER_CTX_cleanup| on |ctx| and then frees
-/// |ctx| itself.
+/// EVP_CIPHER_CTX_free calls `EVP_CIPHER_CTX_cleanup` on `ctx` and then frees
+/// `ctx` itself.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_CIPHER_CTX>)>(
   symbol: 'webcrypto_EVP_CIPHER_CTX_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void EVP_CIPHER_CTX_free(ffi.Pointer<EVP_CIPHER_CTX> ctx);
 
-/// EVP_CIPHER_CTX_new allocates a fresh |EVP_CIPHER_CTX|, calls
-/// |EVP_CIPHER_CTX_init| and returns it, or NULL on allocation failure.
+/// EVP_CIPHER_CTX_new returns a newly-allocated `EVP_CIPHER_CTX` in the zero
+/// state, or NULL on allocation failure. The caller must use
+/// `EVP_CIPHER_CTX_free` to release the resulting object.
 @ffi.Native<ffi.Pointer<EVP_CIPHER_CTX> Function()>(
   symbol: 'webcrypto_EVP_CIPHER_CTX_new',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<EVP_CIPHER_CTX> EVP_CIPHER_CTX_new();
 
-/// EVP_CIPHER_block_size returns the block size, in bytes, for |cipher|, or one
-/// if |cipher| is a stream cipher.
+/// EVP_CIPHER_block_size returns the block size, in bytes, for `cipher`, or one
+/// if `cipher` is a stream cipher.
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<EVP_CIPHER>)>(
   symbol: 'webcrypto_EVP_CIPHER_block_size',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int EVP_CIPHER_block_size(ffi.Pointer<EVP_CIPHER> cipher);
 
-/// EVP_CIPHER_iv_length returns the IV size, in bytes, of |cipher|, or zero if
-/// |cipher| doesn't take an IV.
+/// EVP_CIPHER_iv_length returns the IV size, in bytes, of `cipher`, or zero if
+/// `cipher` doesn't take an IV.
 @ffi.Native<ffi.UnsignedInt Function(ffi.Pointer<EVP_CIPHER>)>(
   symbol: 'webcrypto_EVP_CIPHER_iv_length',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int EVP_CIPHER_iv_length(ffi.Pointer<EVP_CIPHER> cipher);
 
-/// EVP_CipherFinal_ex does the same as |EVP_CipherFinal_ex2|, except that no
+/// EVP_CipherFinal_ex does the same as `EVP_CipherFinal_ex2`, except that no
 /// output size is given and thus no bounds checking is performed.
 ///
 /// WARNING: This function does not check bounds on out, and correctly sizing
-/// the output buffer is difficult. Use |EVP_CipherFinal_ex2| instead.
+/// the output buffer is difficult. Use `EVP_CipherFinal_ex2` instead.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_CIPHER_CTX>,
@@ -890,13 +891,46 @@ external int EVP_CipherFinal_ex(
   ffi.Pointer<ffi.Int> out_len,
 );
 
-/// EVP_CipherInit_ex configures |ctx| for a fresh encryption (or decryption, if
-/// |enc| is zero) operation using |cipher|. If |ctx| has been previously
-/// configured with a cipher then |cipher|, |key| and |iv| may be |NULL| and
-/// |enc| may be -1 to reuse the previous values. The operation will use |key|
-/// as the key and |iv| as the IV (if any). These should have the correct
-/// lengths given by |EVP_CIPHER_key_length| and |EVP_CIPHER_iv_length|. It
-/// returns one on success and zero on error.
+/// EVP_CipherInit_ex configures `ctx` for a fresh encryption (or decryption, if
+/// `enc` is zero) operation using `cipher`. The memory in `ctx` must already
+/// have been initialized, e.g. with `EVP_CIPHER_CTX_init` or
+/// `EVP_CIPHER_CTX_new`. If non-NULL, `key` and `iv` will be used as the key and
+/// IV, respectively. These must point to `EVP_CIPHER_key_length` and
+/// `EVP_CIPHER_iv_length` bytes, respectively. It returns one on success and
+/// zero on error.
+///
+/// This function may be called multiple times on a single `EVP_CIPHER_CTX`,
+/// either to reset an existing object, or to configure a single operation in
+/// multiple steps. In such cases:
+///
+/// - `cipher` may be NULL to reuse the previous cipher state. A non-NULL
+/// `cipher` will reset all cipher state, including the key and IV, even if
+/// configuring the same `EVP_CIPHER` as before.
+///
+/// - `key` and `iv` may be NULL to either reuse the previous value, or leave
+/// them unconfigured.
+///
+/// - `enc` may be -1 to reuse the previous value. In ciphers that use a
+/// different key schedule between encryption and decryption (e.g. CBC and ECB
+/// modes), callers must configure `key` and `enc` together.
+///
+/// Some example multi-step configuration patterns:
+///
+/// - If setting a variable-length key with `EVP_CIPHER_CTX_set_key_length`,
+/// first configure only `cipher`, then use `EVP_CIPHER_CTX_set_key_length`,
+/// and finally configure `key`, leaving `cipher` NULL.
+///
+/// - If setting a variable-length IV with `EVP_CTRL_AEAD_SET_IVLEN`, first
+/// configure `cipher` and `key`, then use `EVP_CTRL_AEAD_SET_IVLEN`, and
+/// finally configure `iv`, leaving other parameters NULL.
+///
+/// - If retaining a long-lived context to reuse the key schedule across
+/// operations, first configure only `cipher` and `key` on the long-lived
+/// context, then copy the key schedule to a per-operation context with
+/// `EVP_CIPHER_CTX_copy`, and finally configure only `iv` on the per-operation
+/// context.
+///
+/// WARNING: This API is difficult to use correctly. Use `EVP_AEAD` for AEADs.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_CIPHER_CTX>,
@@ -919,15 +953,15 @@ external int EVP_CipherInit_ex(
   int enc,
 );
 
-/// EVP_CipherUpdate does the same as |EVP_CipherUpdate_ex|, except that no
+/// EVP_CipherUpdate does the same as `EVP_CipherUpdate_ex`, except that no
 /// output size is given and thus no bounds checking is performed.
 ///
-/// Additionally, if |ctx| is an AEAD cipher, e.g. |EVP_aes_128_gcm|, and |out|
-/// is NULL, this function instead behaves like |EVP_CipherUpdateAAD|.
+/// Additionally, if `ctx` is an AEAD cipher, e.g. `EVP_aes_128_gcm`, and `out`
+/// is NULL, this function instead behaves like `EVP_CipherUpdateAAD`.
 ///
-/// WARNING: This function does not check bounds on |out|, and correctly sizing
-/// the output buffer is difficult. Use |EVP_CipherUpdate_ex| or
-/// |EVP_CipherUpdateAAD| instead.
+/// WARNING: This function does not check bounds on `out`, and correctly sizing
+/// the output buffer is difficult. Use `EVP_CipherUpdate_ex` or
+/// `EVP_CipherUpdateAAD` instead.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_CIPHER_CTX>,
@@ -948,8 +982,8 @@ external int EVP_CipherUpdate(
   int in_len,
 );
 
-/// EVP_DigestFinal acts like |EVP_DigestFinal_ex| except that
-/// |EVP_MD_CTX_cleanup| is called on |ctx| before returning.
+/// EVP_DigestFinal acts like `EVP_DigestFinal_ex` except that
+/// `EVP_MD_CTX_cleanup` is called on `ctx` before returning.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<EVP_MD_CTX>,
@@ -966,8 +1000,18 @@ external int EVP_DigestFinal(
   ffi.Pointer<ffi.UnsignedInt> out_size,
 );
 
-/// EVP_DigestInit acts like |EVP_DigestInit_ex| except that |ctx| is
-/// initialised before use.
+/// EVP_DigestInit calls `EVP_MD_CTX_init`, followed by `EVP_DigestInit_ex`.
+///
+/// `EVP_MD_CTX_init` is used for initializing uninitialized memory in an
+/// `EVP_MD_CTX`, e.g. if it is declared as a local variable on the stack. Thus
+/// this function should not be used on objects that have already been
+/// initialized.
+///
+/// WARNING: This differs from OpenSSL 1.1.x, where `EVP_DigestInit` and
+/// `EVP_DigestInit_ex` are largely equivalent. This difference is because
+/// BoringSSL, like OpenSSL 1.0.x, still supports stack-allocating `EVP_MD_CTX`.
+/// Implementing the OpenSSL 1.1.x semantics would introduce uninitialized reads
+/// in those callers.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<EVP_MD>)>(
   symbol: 'webcrypto_EVP_DigestInit',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -978,14 +1022,14 @@ external int EVP_DigestInit(
 );
 
 /// EVP_DigestSignFinal signs the data that has been included by one or more
-/// calls to |EVP_DigestSignUpdate|. If |out_sig| is NULL then |*out_sig_len| is
+/// calls to `EVP_DigestSignUpdate`. If `out_sig` is NULL then `*out_sig_len` is
 /// set to the maximum number of output bytes. Otherwise, on entry,
-/// |*out_sig_len| must contain the length of the |out_sig| buffer. If the call
-/// is successful, the signature is written to |out_sig| and |*out_sig_len| is
+/// `*out_sig_len` must contain the length of the `out_sig` buffer. If the call
+/// is successful, the signature is written to `out_sig` and `*out_sig_len` is
 /// set to its length.
 ///
 /// This function performs a streaming signing operation and will fail for
-/// signature algorithms which do not support this. Use |EVP_DigestSign| for a
+/// signature algorithms which do not support this. Use `EVP_DigestSign` for a
 /// single-shot operation.
 ///
 /// It returns one on success, or zero on error.
@@ -1005,18 +1049,18 @@ external int EVP_DigestSignFinal(
   ffi.Pointer<ffi.Size> out_sig_len,
 );
 
-/// EVP_DigestSignInit sets up |ctx| for a signing operation with |type| and
-/// |pkey|. The |ctx| argument must have been initialised with
-/// |EVP_MD_CTX_init|. If |pctx| is not NULL, the |EVP_PKEY_CTX| of the signing
-/// operation will be written to |*pctx|; this can be used to set alternative
+/// EVP_DigestSignInit sets up `ctx` for a signing operation with `type` and
+/// `pkey`. The `ctx` argument must have been initialised with
+/// `EVP_MD_CTX_init`. If `pctx` is not NULL, the `EVP_PKEY_CTX` of the signing
+/// operation will be written to `*pctx`; this can be used to set alternative
 /// signing options.
 ///
 /// For single-shot signing algorithms which do not use a pre-hash, such as
-/// Ed25519, |type| should be NULL. The |EVP_MD_CTX| itself is unused but is
-/// present so the API is uniform. See |EVP_DigestSign|.
+/// Ed25519, `type` should be NULL. The `EVP_MD_CTX` itself is unused but is
+/// present so the API is uniform. See `EVP_DigestSign`.
 ///
-/// This function does not mutate |pkey| for thread-safety purposes and may be
-/// used concurrently with other non-mutating functions on |pkey|.
+/// This function does not mutate `pkey` for thread-safety purposes and may be
+/// used concurrently with other non-mutating functions on `pkey`.
 ///
 /// It returns one on success, or zero on error.
 @ffi.Native<
@@ -1039,11 +1083,11 @@ external int EVP_DigestSignInit(
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
-/// EVP_DigestSignUpdate appends |len| bytes from |data| to the data which will
-/// be signed in |EVP_DigestSignFinal|. It returns one.
+/// EVP_DigestSignUpdate appends `len` bytes from `data` to the data which will
+/// be signed in `EVP_DigestSignFinal`. It returns one.
 ///
 /// This function performs a streaming signing operation and will fail for
-/// signature algorithms which do not support this. Use |EVP_DigestSign| for a
+/// signature algorithms which do not support this. Use `EVP_DigestSign` for a
 /// single-shot operation.
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
@@ -1057,8 +1101,8 @@ external int EVP_DigestSignUpdate(
   int len,
 );
 
-/// EVP_DigestUpdate hashes |len| bytes from |data| into the hashing operation
-/// in |ctx|. It returns one.
+/// EVP_DigestUpdate hashes `len` bytes from `data` into the hashing operation
+/// in `ctx`. It returns one.
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
 >(
@@ -1071,12 +1115,12 @@ external int EVP_DigestUpdate(
   int len,
 );
 
-/// EVP_DigestVerifyFinal verifies that |sig_len| bytes of |sig| are a valid
+/// EVP_DigestVerifyFinal verifies that `sig_len` bytes of `sig` are a valid
 /// signature for the data that has been included by one or more calls to
-/// |EVP_DigestVerifyUpdate|. It returns one on success and zero otherwise.
+/// `EVP_DigestVerifyUpdate`. It returns one on success and zero otherwise.
 ///
 /// This function performs streaming signature verification and will fail for
-/// signature algorithms which do not support this. Use |EVP_DigestVerify| for a
+/// signature algorithms which do not support this. Use `EVP_DigestVerify` for a
 /// single-shot verification.
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Uint8>, ffi.Size)
@@ -1090,18 +1134,18 @@ external int EVP_DigestVerifyFinal(
   int sig_len,
 );
 
-/// EVP_DigestVerifyInit sets up |ctx| for a signature verification operation
-/// with |type| and |pkey|. The |ctx| argument must have been initialised with
-/// |EVP_MD_CTX_init|. If |pctx| is not NULL, the |EVP_PKEY_CTX| of the signing
-/// operation will be written to |*pctx|; this can be used to set alternative
+/// EVP_DigestVerifyInit sets up `ctx` for a signature verification operation
+/// with `type` and `pkey`. The `ctx` argument must have been initialised with
+/// `EVP_MD_CTX_init`. If `pctx` is not NULL, the `EVP_PKEY_CTX` of the signing
+/// operation will be written to `*pctx`; this can be used to set alternative
 /// signing options.
 ///
 /// For single-shot signing algorithms which do not use a pre-hash, such as
-/// Ed25519, |type| should be NULL. The |EVP_MD_CTX| itself is unused but is
-/// present so the API is uniform. See |EVP_DigestVerify|.
+/// Ed25519, `type` should be NULL. The `EVP_MD_CTX` itself is unused but is
+/// present so the API is uniform. See `EVP_DigestVerify`.
 ///
-/// This function does not mutate |pkey| for thread-safety purposes and may be
-/// used concurrently with other non-mutating functions on |pkey|.
+/// This function does not mutate `pkey` for thread-safety purposes and may be
+/// used concurrently with other non-mutating functions on `pkey`.
 ///
 /// It returns one on success, or zero on error.
 @ffi.Native<
@@ -1124,11 +1168,11 @@ external int EVP_DigestVerifyInit(
   ffi.Pointer<EVP_PKEY> pkey,
 );
 
-/// EVP_DigestVerifyUpdate appends |len| bytes from |data| to the data which
-/// will be verified by |EVP_DigestVerifyFinal|. It returns one.
+/// EVP_DigestVerifyUpdate appends `len` bytes from `data` to the data which
+/// will be verified by `EVP_DigestVerifyFinal`. It returns one.
 ///
 /// This function performs streaming signature verification and will fail for
-/// signature algorithms which do not support this. Use |EVP_DigestVerify| for a
+/// signature algorithms which do not support this. Use `EVP_DigestVerify` for a
 /// single-shot verification.
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<EVP_MD_CTX>, ffi.Pointer<ffi.Void>, ffi.Size)
@@ -1142,45 +1186,45 @@ external int EVP_DigestVerifyUpdate(
   int len,
 );
 
-/// EVP_MD_CTX_free calls |EVP_MD_CTX_cleanup| and then frees |ctx| itself.
+/// EVP_MD_CTX_free calls `EVP_MD_CTX_cleanup` and then frees `ctx` itself.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_MD_CTX>)>(
   symbol: 'webcrypto_EVP_MD_CTX_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void EVP_MD_CTX_free(ffi.Pointer<EVP_MD_CTX> ctx);
 
-/// EVP_MD_CTX_new allocates and initialises a fresh |EVP_MD_CTX| and returns
-/// it, or NULL on allocation failure. The caller must use |EVP_MD_CTX_free| to
-/// release the resulting object.
+/// EVP_MD_CTX_new returns a newly-allocated `EVP_MD_CTX` in the zero state, or
+/// NULL on allocation failure. The caller must use `EVP_MD_CTX_free` to release
+/// the resulting object.
 @ffi.Native<ffi.Pointer<EVP_MD_CTX> Function()>(
   symbol: 'webcrypto_EVP_MD_CTX_new',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<EVP_MD_CTX> EVP_MD_CTX_new();
 
-/// EVP_MD_CTX_size returns the digest size of |ctx|, in bytes. It
-/// will crash if a digest hasn't been set on |ctx|.
+/// EVP_MD_CTX_size returns the digest size of `ctx`, in bytes. It
+/// will crash if a digest hasn't been set on `ctx`.
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_MD_CTX>)>(
   symbol: 'webcrypto_EVP_MD_CTX_size',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int EVP_MD_CTX_size(ffi.Pointer<EVP_MD_CTX> ctx);
 
-/// EVP_MD_size returns the digest size of |md|, in bytes.
+/// EVP_MD_size returns the digest size of `md`, in bytes.
 @ffi.Native<ffi.Size Function(ffi.Pointer<EVP_MD>)>(
   symbol: 'webcrypto_EVP_MD_size',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int EVP_MD_size(ffi.Pointer<EVP_MD> md);
 
-/// EVP_PKEY_CTX_free frees |ctx| and the data it owns.
+/// EVP_PKEY_CTX_free frees `ctx` and the data it owns.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_PKEY_CTX>)>(
   symbol: 'webcrypto_EVP_PKEY_CTX_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void EVP_PKEY_CTX_free(ffi.Pointer<EVP_PKEY_CTX> ctx);
 
-/// EVP_PKEY_CTX_new allocates a fresh |EVP_PKEY_CTX| for use with |pkey|. It
+/// EVP_PKEY_CTX_new allocates a fresh `EVP_PKEY_CTX` for use with `pkey`. It
 /// returns the context or NULL on error.
 @ffi.Native<
   ffi.Pointer<EVP_PKEY_CTX> Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<ENGINE>)
@@ -1193,9 +1237,9 @@ external ffi.Pointer<EVP_PKEY_CTX> EVP_PKEY_CTX_new(
   ffi.Pointer<ENGINE> e,
 );
 
-/// EVP_PKEY_CTX_set0_rsa_oaep_label sets |label_len| bytes from |label| as the
-/// label used in OAEP. DANGER: On success, this call takes ownership of |label|
-/// and will call |OPENSSL_free| on it when |ctx| is destroyed.
+/// EVP_PKEY_CTX_set0_rsa_oaep_label sets `label_len` bytes from `label` as the
+/// label used in OAEP. DANGER: On success, this call takes ownership of `label`
+/// and will call `OPENSSL_free` on it when `ctx` is destroyed.
 ///
 /// Returns one on success or zero on error.
 @ffi.Native<
@@ -1210,11 +1254,11 @@ external int EVP_PKEY_CTX_set0_rsa_oaep_label(
   int label_len,
 );
 
-/// EVP_PKEY_CTX_set_rsa_mgf1_md sets |md| as the digest used in MGF1. Returns
+/// EVP_PKEY_CTX_set_rsa_mgf1_md sets `md` as the digest used in MGF1. Returns
 /// one on success or zero on error.
 ///
-/// If unset, the default is the signing hash for |RSA_PKCS1_PSS_PADDING| and the
-/// OAEP hash for |RSA_PKCS1_OAEP_PADDING|. Callers are recommended to use this
+/// If unset, the default is the signing hash for `RSA_PKCS1_PSS_PADDING` and the
+/// OAEP hash for `RSA_PKCS1_OAEP_PADDING`. Callers are recommended to use this
 /// default and not call this function.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Pointer<EVP_MD>)>(
   symbol: 'webcrypto_EVP_PKEY_CTX_set_rsa_mgf1_md',
@@ -1225,7 +1269,7 @@ external int EVP_PKEY_CTX_set_rsa_mgf1_md(
   ffi.Pointer<EVP_MD> md,
 );
 
-/// EVP_PKEY_CTX_set_rsa_oaep_md sets |md| as the digest used in OAEP padding.
+/// EVP_PKEY_CTX_set_rsa_oaep_md sets `md` as the digest used in OAEP padding.
 /// Returns one on success or zero on error. If unset, the default is SHA-1.
 /// Callers are recommended to overwrite this default.
 ///
@@ -1240,8 +1284,8 @@ external int EVP_PKEY_CTX_set_rsa_oaep_md(
 );
 
 /// EVP_PKEY_CTX_set_rsa_padding sets the padding type to use. It should be one
-/// of the |RSA_*_PADDING| values. Returns one on success or zero on error. By
-/// default, the padding is |RSA_PKCS1_PADDING|.
+/// of the `RSA_*_PADDING` values. Returns one on success or zero on error. By
+/// default, the padding is `RSA_PKCS1_PADDING`.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Int)>(
   symbol: 'webcrypto_EVP_PKEY_CTX_set_rsa_padding',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -1252,14 +1296,14 @@ external int EVP_PKEY_CTX_set_rsa_padding(
 );
 
 /// EVP_PKEY_CTX_set_rsa_pss_saltlen sets the length of the salt in a PSS-padded
-/// signature. A value of |RSA_PSS_SALTLEN_DIGEST| causes the salt to be the same
-/// length as the digest in the signature. A value of |RSA_PSS_SALTLEN_AUTO|
+/// signature. A value of `RSA_PSS_SALTLEN_DIGEST` causes the salt to be the same
+/// length as the digest in the signature. A value of `RSA_PSS_SALTLEN_AUTO`
 /// causes the salt to be the maximum length that will fit when signing and
 /// recovered from the signature when verifying. Otherwise the value gives the
 /// size of the salt in bytes.
 ///
-/// If unsure, use |RSA_PSS_SALTLEN_DIGEST|, which is the default. Note this
-/// differs from OpenSSL, which defaults to |RSA_PSS_SALTLEN_AUTO|.
+/// If unsure, use `RSA_PSS_SALTLEN_DIGEST`, which is the default. Note this
+/// differs from OpenSSL, which defaults to `RSA_PSS_SALTLEN_AUTO`.
 ///
 /// Returns one on success or zero on error.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>, ffi.Int)>(
@@ -1271,13 +1315,13 @@ external int EVP_PKEY_CTX_set_rsa_pss_saltlen(
   int salt_len,
 );
 
-/// EVP_PKEY_decrypt decrypts |in_len| bytes from |in|. If |out| is NULL, the
-/// maximum size of the plaintext is written to |out_len|. Otherwise, |*out_len|
-/// must contain the number of bytes of space available at |out|. If sufficient,
-/// the ciphertext will be written to |out| and |*out_len| updated with the true
+/// EVP_PKEY_decrypt decrypts `in_len` bytes from `in`. If `out` is NULL, the
+/// maximum size of the plaintext is written to `out_len`. Otherwise, `*out_len`
+/// must contain the number of bytes of space available at `out`. If sufficient,
+/// the ciphertext will be written to `out` and `*out_len` updated with the true
 /// length.
 ///
-/// WARNING: Setting |out| to NULL only gives the maximum size of the
+/// WARNING: Setting `out` to NULL only gives the maximum size of the
 /// plaintext. The actual plaintext may be smaller.
 ///
 /// It returns one on success or zero on error.
@@ -1301,8 +1345,8 @@ external int EVP_PKEY_decrypt(
   int in_len,
 );
 
-/// EVP_PKEY_decrypt_init initialises an |EVP_PKEY_CTX| for a decryption
-/// operation. It should be called before |EVP_PKEY_decrypt|.
+/// EVP_PKEY_decrypt_init initialises an `EVP_PKEY_CTX` for a decryption
+/// operation. It should be called before `EVP_PKEY_decrypt`.
 ///
 /// It returns one on success or zero on error.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>)>(
@@ -1311,13 +1355,13 @@ external int EVP_PKEY_decrypt(
 )
 external int EVP_PKEY_decrypt_init(ffi.Pointer<EVP_PKEY_CTX> ctx);
 
-/// EVP_PKEY_encrypt encrypts |in_len| bytes from |in|. If |out| is NULL, the
-/// maximum size of the ciphertext is written to |out_len|. Otherwise, |*out_len|
-/// must contain the number of bytes of space available at |out|. If sufficient,
-/// the ciphertext will be written to |out| and |*out_len| updated with the true
+/// EVP_PKEY_encrypt encrypts `in_len` bytes from `in`. If `out` is NULL, the
+/// maximum size of the ciphertext is written to `out_len`. Otherwise, `*out_len`
+/// must contain the number of bytes of space available at `out`. If sufficient,
+/// the ciphertext will be written to `out` and `*out_len` updated with the true
 /// length.
 ///
-/// WARNING: Setting |out| to NULL only gives the maximum size of the
+/// WARNING: Setting `out` to NULL only gives the maximum size of the
 /// ciphertext. The actual ciphertext may be smaller.
 ///
 /// It returns one on success or zero on error.
@@ -1341,8 +1385,8 @@ external int EVP_PKEY_encrypt(
   int in_len,
 );
 
-/// EVP_PKEY_encrypt_init initialises an |EVP_PKEY_CTX| for an encryption
-/// operation. It should be called before |EVP_PKEY_encrypt|.
+/// EVP_PKEY_encrypt_init initialises an `EVP_PKEY_CTX` for an encryption
+/// operation. It should be called before `EVP_PKEY_encrypt`.
 ///
 /// It returns one on success or zero on error.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY_CTX>)>(
@@ -1351,7 +1395,7 @@ external int EVP_PKEY_encrypt(
 )
 external int EVP_PKEY_encrypt_init(ffi.Pointer<EVP_PKEY_CTX> ctx);
 
-/// EVP_PKEY_free decrements the reference count of |pkey| and frees it if the
+/// EVP_PKEY_free decrements the reference count of `pkey` and frees it if the
 /// reference count drops to zero.
 @ffi.Native<ffi.Void Function(ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_PKEY_free',
@@ -1371,12 +1415,12 @@ external ffi.Pointer<EC_KEY> EVP_PKEY_get1_EC_KEY(ffi.Pointer<EVP_PKEY> pkey);
 )
 external ffi.Pointer<RSA> EVP_PKEY_get1_RSA(ffi.Pointer<EVP_PKEY> pkey);
 
-/// EVP_PKEY_id returns the type of |pkey|, which is one of the |EVP_PKEY_*|
+/// EVP_PKEY_id returns the type of `pkey`, which is one of the `EVP_PKEY_*`
 /// values above. These type values generally correspond to the algorithm OID,
 /// but not the parameters, of a SubjectPublicKeyInfo (RFC 5280) or
 /// PrivateKeyInfo (RFC 5208) AlgorithmIdentifier. Algorithm parameters can be
 /// inspected with algorithm-specific accessors, e.g.
-/// |EVP_PKEY_get_ec_curve_nid|.
+/// `EVP_PKEY_get_ec_curve_nid`.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_PKEY_id',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -1403,29 +1447,29 @@ external int EVP_PKEY_set1_EC_KEY(
 /// Getting and setting concrete key types.
 ///
 /// The following functions get and set the underlying key representation in an
-/// |EVP_PKEY| object. The |set1| functions take an additional reference to the
-/// underlying key and return one on success or zero if |key| is NULL. The
-/// |assign| functions adopt the caller's reference and return one on success or
-/// zero if |key| is NULL. The |get1| functions return a fresh reference to the
-/// underlying object or NULL if |pkey| is not of the correct type. The |get0|
+/// `EVP_PKEY` object. The `set1` functions take an additional reference to the
+/// underlying key and return one on success or zero if `key` is NULL. The
+/// `assign` functions adopt the caller's reference and return one on success or
+/// zero if `key` is NULL. The `get1` functions return a fresh reference to the
+/// underlying object or NULL if `pkey` is not of the correct type. The `get0`
 /// functions behave the same but return a non-owning pointer.
 ///
-/// The |get0| and |get1| functions take |const| pointers and are thus
+/// The `get0` and `get1` functions take `const` pointers and are thus
 /// non-mutating for thread-safety purposes, but mutating functions on the
-/// returned lower-level objects are considered to also mutate the |EVP_PKEY| and
-/// may not be called concurrently with other operations on the |EVP_PKEY|.
+/// returned lower-level objects are considered to also mutate the `EVP_PKEY` and
+/// may not be called concurrently with other operations on the `EVP_PKEY`.
 ///
 /// WARNING: Matching OpenSSL, the RSA functions behave non-uniformly.
-/// |EVP_PKEY_set1_RSA| and |EVP_PKEY_assign_RSA| construct an |EVP_PKEY_RSA|
-/// key, while the |EVP_PKEY_get0_RSA| and |EVP_PKEY_get1_RSA| will return
-/// non-NULL for both |EVP_PKEY_RSA| and |EVP_PKEY_RSA_PSS|.
+/// `EVP_PKEY_set1_RSA` and `EVP_PKEY_assign_RSA` construct an `EVP_PKEY_RSA`
+/// key, while the `EVP_PKEY_get0_RSA` and `EVP_PKEY_get1_RSA` will return
+/// non-NULL for both `EVP_PKEY_RSA` and `EVP_PKEY_RSA_PSS`.
 ///
 /// This means callers risk misusing a key if they assume a non-NULL return from
-/// |EVP_PKEY_get0_RSA| or |EVP_PKEY_get1_RSA| implies |EVP_PKEY_RSA|. Prefer
-/// |EVP_PKEY_id| to check the type of a key. To reduce this risk, BoringSSL does
-/// not make |EVP_PKEY_RSA_PSS| available by default, only when callers opt in
-/// via |EVP_pkey_rsa_pss_sha256|. This differs from upstream OpenSSL, where
-/// callers are exposed to |EVP_PKEY_RSA_PSS| by default.
+/// `EVP_PKEY_get0_RSA` or `EVP_PKEY_get1_RSA` implies `EVP_PKEY_RSA`. Prefer
+/// `EVP_PKEY_id` to check the type of a key. To reduce this risk, BoringSSL does
+/// not make `EVP_PKEY_RSA_PSS` available by default, only when callers opt in
+/// via `EVP_pkey_rsa_pss_sha256`. This differs from upstream OpenSSL, where
+/// callers are exposed to `EVP_PKEY_RSA_PSS` by default.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY>, ffi.Pointer<RSA>)>(
   symbol: 'webcrypto_EVP_PKEY_set1_RSA',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -1435,23 +1479,23 @@ external int EVP_PKEY_set1_RSA(
   ffi.Pointer<RSA> key,
 );
 
-/// EVP_PKEY_set_type sets the type of |pkey| to |type|. It returns one if
-/// successful or zero if the |type| argument is not one of the |EVP_PKEY_*|
-/// values supported for use with this function. If |pkey| is NULL, it simply
+/// EVP_PKEY_set_type sets the type of `pkey` to `type`. It returns one if
+/// successful or zero if the `type` argument is not one of the `EVP_PKEY_*`
+/// values supported for use with this function. If `pkey` is NULL, it simply
 /// reports whether the type is known.
 ///
-/// There are very few cases where this function is useful. Changing |pkey|'s
+/// There are very few cases where this function is useful. Changing `pkey`'s
 /// type clears any previously stored keys, so there is no benefit to loading a
-/// key and then changing its type. Although |pkey| is left with a type
+/// key and then changing its type. Although `pkey` is left with a type
 /// configured, it has no key, and functions which set a key, such as
-/// |EVP_PKEY_set1_RSA|, will configure a type anyway. If writing unit tests that
+/// `EVP_PKEY_set1_RSA`, will configure a type anyway. If writing unit tests that
 /// are only sensitive to the type of a key, it is preferable to construct a real
 /// key, so that tests are more representative of production code.
 ///
 /// The only API pattern which requires this function is
-/// |EVP_PKEY_set1_tls_encodedpoint| with X25519, which requires a half-empty
-/// |EVP_PKEY| that was first configured with |EVP_PKEY_X25519|. Currently, all
-/// other values of |type| will result in an error.
+/// `EVP_PKEY_set1_tls_encodedpoint` with X25519, which requires a half-empty
+/// `EVP_PKEY` that was first configured with `EVP_PKEY_X25519`. Currently, all
+/// other values of `type` will result in an error.
 @ffi.Native<ffi.Int Function(ffi.Pointer<EVP_PKEY>, ffi.Int)>(
   symbol: 'webcrypto_EVP_PKEY_set_type',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -1508,8 +1552,8 @@ external ffi.Pointer<EVP_CIPHER> EVP_aes_256_cbc();
 )
 external ffi.Pointer<EVP_CIPHER> EVP_aes_256_ctr();
 
-/// EVP_marshal_private_key marshals |key| as a DER-encoded PrivateKeyInfo
-/// structure (RFC 5208) and appends the result to |cbb|. It returns one on
+/// EVP_marshal_private_key marshals `key` as a DER-encoded PrivateKeyInfo
+/// structure (RFC 5208) and appends the result to `cbb`. It returns one on
 /// success and zero on error.
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>, ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_marshal_private_key',
@@ -1520,8 +1564,8 @@ external int EVP_marshal_private_key(
   ffi.Pointer<EVP_PKEY> key,
 );
 
-/// EVP_marshal_public_key marshals |key| as a DER-encoded SubjectPublicKeyInfo
-/// structure (RFC 5280) and appends the result to |cbb|. It returns one on
+/// EVP_marshal_public_key marshals `key` as a DER-encoded SubjectPublicKeyInfo
+/// structure (RFC 5280) and appends the result to `cbb`. It returns one on
 /// success and zero on error.
 @ffi.Native<ffi.Int Function(ffi.Pointer<CBB>, ffi.Pointer<EVP_PKEY>)>(
   symbol: 'webcrypto_EVP_marshal_public_key',
@@ -1533,13 +1577,13 @@ external int EVP_marshal_public_key(
 );
 
 /// EVP_parse_private_key decodes a DER-encoded PrivateKeyInfo structure (RFC
-/// 5208) from |cbs| and advances |cbs|. It returns a newly-allocated |EVP_PKEY|
+/// 5208) from `cbs` and advances `cbs`. It returns a newly-allocated `EVP_PKEY`
 /// or NULL on error.
 ///
-/// Prefer |EVP_PKEY_from_private_key_info| instead. This function has
+/// Prefer `EVP_PKEY_from_private_key_info` instead. This function has
 /// several pitfalls:
 ///
-/// Callers are expected to handle trailing data returned from |cbs|, making more
+/// Callers are expected to handle trailing data returned from `cbs`, making more
 /// common cases error-prone.
 ///
 /// There is also no way to pass in supported algorithms. This function instead
@@ -1552,7 +1596,7 @@ external int EVP_marshal_public_key(
 /// it is suitable and validate other desired key properties such as RSA modulus
 /// size or EC curve. In particular, RSA private key operations scale cubicly, so
 /// applications accepting RSA private keys from external sources may need to
-/// bound key sizes (use |EVP_PKEY_bits| or |RSA_bits|) to avoid a DoS vector.
+/// bound key sizes (use `EVP_PKEY_bits` or `RSA_bits`) to avoid a DoS vector.
 ///
 /// A PrivateKeyInfo ends with an optional set of attributes. These are silently
 /// ignored.
@@ -1563,13 +1607,13 @@ external int EVP_marshal_public_key(
 external ffi.Pointer<EVP_PKEY> EVP_parse_private_key(ffi.Pointer<CBS> cbs);
 
 /// EVP_parse_public_key decodes a DER-encoded SubjectPublicKeyInfo structure
-/// (RFC 5280) from |cbs| and advances |cbs|. It returns a newly-allocated
-/// |EVP_PKEY| or NULL on error.
+/// (RFC 5280) from `cbs` and advances `cbs`. It returns a newly-allocated
+/// `EVP_PKEY` or NULL on error.
 ///
-/// Prefer |EVP_PKEY_from_subject_public_key_info| instead. This function has
+/// Prefer `EVP_PKEY_from_subject_public_key_info` instead. This function has
 /// several pitfalls:
 ///
-/// Callers are expected to handle trailing data returned from |cbs|, making more
+/// Callers are expected to handle trailing data returned from `cbs`, making more
 /// common cases error-prone.
 ///
 /// There is also no way to pass in supported algorithms. This function instead
@@ -1612,8 +1656,8 @@ external ffi.Pointer<EVP_MD> EVP_sha384();
 external ffi.Pointer<EVP_MD> EVP_sha512();
 
 /// HKDF computes HKDF (as specified by RFC 5869) of initial keying material
-/// |secret| with |salt| and |info| using |digest|, and outputs |out_len| bytes
-/// to |out_key|. It returns one on success and zero on error.
+/// `secret` with `salt` and `info` using `digest`, and outputs `out_len` bytes
+/// to `out_key`. It returns one on success and zero on error.
 ///
 /// HKDF is an Extract-and-Expand algorithm. It does not do any key stretching,
 /// and as such, is not suited to be used alone to generate a key from a
@@ -1643,15 +1687,15 @@ external int HKDF(
   int info_len,
 );
 
-/// HMAC_CTX_free calls |HMAC_CTX_cleanup| and then frees |ctx| itself.
+/// HMAC_CTX_free calls `HMAC_CTX_cleanup` and then frees `ctx` itself.
 @ffi.Native<ffi.Void Function(ffi.Pointer<HMAC_CTX>)>(
   symbol: 'webcrypto_HMAC_CTX_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void HMAC_CTX_free(ffi.Pointer<HMAC_CTX> ctx);
 
-/// HMAC_CTX_new allocates and initialises a new |HMAC_CTX| and returns it, or
-/// NULL on allocation failure. The caller must use |HMAC_CTX_free| to release
+/// HMAC_CTX_new allocates and initialises a new `HMAC_CTX` and returns it, or
+/// NULL on allocation failure. The caller must use `HMAC_CTX_free` to release
 /// the resulting object.
 @ffi.Native<ffi.Pointer<HMAC_CTX> Function()>(
   symbol: 'webcrypto_HMAC_CTX_new',
@@ -1659,10 +1703,10 @@ external void HMAC_CTX_free(ffi.Pointer<HMAC_CTX> ctx);
 )
 external ffi.Pointer<HMAC_CTX> HMAC_CTX_new();
 
-/// HMAC_Final completes the HMAC operation in |ctx| and writes the result to
-/// |out|. If |out_len| is not |NULL| then it writes the length of the result to
-/// |*out_len|. On entry, |out| must contain at least |HMAC_size| bytes of
-/// space. An output size of |EVP_MAX_MD_SIZE| will always be large enough. It
+/// HMAC_Final completes the HMAC operation in `ctx` and writes the result to
+/// `out`. If `out_len` is not `NULL` then it writes the length of the result to
+/// `*out_len`. On entry, `out` must contain at least `HMAC_size` bytes of
+/// space. An output size of `EVP_MAX_MD_SIZE` will always be large enough. It
 /// returns one on success or zero on allocation failure.
 @ffi.Native<
   ffi.Int Function(
@@ -1677,14 +1721,14 @@ external int HMAC_Final(
   ffi.Pointer<ffi.UnsignedInt> out_len,
 );
 
-/// HMAC_Init_ex sets up an initialised |HMAC_CTX| to use |md| as the hash
-/// function and |key| as the key. For a non-initial call, |md| may be NULL, in
+/// HMAC_Init_ex sets up an initialised `HMAC_CTX` to use `md` as the hash
+/// function and `key` as the key. For a non-initial call, `md` may be NULL, in
 /// which case the previous hash function will be used. If the hash function has
-/// not changed and |key| is NULL, |ctx| reuses the previous key. It returns one
+/// not changed and `key` is NULL, `ctx` reuses the previous key. It returns one
 /// on success or zero on allocation failure.
 ///
 /// WARNING: NULL and empty keys are ambiguous on non-initial calls. Passing NULL
-/// |key| but repeating the previous |md| reuses the previous key rather than the
+/// `key` but repeating the previous `md` reuses the previous key rather than the
 /// empty key.
 @ffi.Native<
   ffi.Int Function(
@@ -1703,8 +1747,8 @@ external int HMAC_Init_ex(
   ffi.Pointer<ENGINE> impl,
 );
 
-/// HMAC_Update hashes |data_len| bytes from |data| into the current HMAC
-/// operation in |ctx|. It returns one.
+/// HMAC_Update hashes `data_len` bytes from `data` into the current HMAC
+/// operation in `ctx`. It returns one.
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<HMAC_CTX>, ffi.Pointer<ffi.Uint8>, ffi.Size)
 >(symbol: 'webcrypto_HMAC_Update', assetId: 'package:webcrypto/webcrypto.dart')
@@ -1715,35 +1759,35 @@ external int HMAC_Update(
 );
 
 /// HMAC_size returns the size, in bytes, of the HMAC that will be produced by
-/// |ctx|. On entry, |ctx| must have been setup with |HMAC_Init_ex|.
+/// `ctx`. On entry, `ctx` must have been setup with `HMAC_Init_ex`.
 @ffi.Native<ffi.Size Function(ffi.Pointer<HMAC_CTX>)>(
   symbol: 'webcrypto_HMAC_size',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int HMAC_size(ffi.Pointer<HMAC_CTX> ctx);
 
-/// OPENSSL_free does nothing if |ptr| is NULL. Otherwise it zeros out the
-/// memory allocated at |ptr| and frees it along with the private data.
-/// It must only be used on on |ptr| values obtained from |OPENSSL_malloc|
+/// OPENSSL_free does nothing if `ptr` is NULL. Otherwise it zeros out the
+/// memory allocated at `ptr` and frees it along with the private data.
+/// It must only be used on `ptr` values obtained from `OPENSSL_malloc`
 @ffi.Native<ffi.Void Function(ffi.Pointer<ffi.Void>)>(
   symbol: 'webcrypto_OPENSSL_free',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external void OPENSSL_free(ffi.Pointer<ffi.Void> ptr);
 
-/// OPENSSL_malloc is similar to a regular |malloc|, but allocates additional
-/// private data. The resulting pointer must be freed with |OPENSSL_free|. In
-/// the case of a malloc failure, prior to returning NULL |OPENSSL_malloc| will
-/// push |ERR_R_MALLOC_FAILURE| onto the openssl error stack.
+/// OPENSSL_malloc is similar to a regular `malloc`, but allocates additional
+/// private data. The resulting pointer must be freed with `OPENSSL_free`. In
+/// the case of a malloc failure, prior to returning NULL `OPENSSL_malloc` will
+/// push `ERR_R_MALLOC_FAILURE` onto the openssl error stack.
 @ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Size)>(
   symbol: 'webcrypto_OPENSSL_malloc',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<ffi.Void> OPENSSL_malloc(int size);
 
-/// OPENSSL_memdup returns an allocated, duplicate of |size| bytes from |data| or
+/// OPENSSL_memdup returns an allocated, duplicate of `size` bytes from `data` or
 /// NULL on allocation failure. The memory allocated must be freed with
-/// |OPENSSL_free|.
+/// `OPENSSL_free`.
 @ffi.Native<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)>(
   symbol: 'webcrypto_OPENSSL_memdup',
   assetId: 'package:webcrypto/webcrypto.dart',
@@ -1753,8 +1797,8 @@ external ffi.Pointer<ffi.Void> OPENSSL_memdup(
   int size,
 );
 
-/// PKCS5_PBKDF2_HMAC computes |iterations| iterations of PBKDF2 of |password|
-/// and |salt|, using |digest|, and outputs |key_len| bytes to |out_key|. It
+/// PKCS5_PBKDF2_HMAC computes `iterations` iterations of PBKDF2 of `password`
+/// and `salt`, using `digest`, and outputs `key_len` bytes to `out_key`. It
 /// returns one on success and zero on allocation failure or if iterations is 0.
 @ffi.Native<
   ffi.Int Function(
@@ -1782,23 +1826,23 @@ external int PKCS5_PBKDF2_HMAC(
   ffi.Pointer<ffi.Uint8> out_key,
 );
 
-/// RAND_bytes writes |len| bytes of random data to |buf| and returns one. In the
-/// event that sufficient random data can not be obtained, |abort| is called.
+/// RAND_bytes writes `len` bytes of random data to `buf` and returns one. In the
+/// event that sufficient random data can not be obtained, `abort` is called.
 @ffi.Native<ffi.Int Function(ffi.Pointer<ffi.Uint8>, ffi.Size)>(
   symbol: 'webcrypto_RAND_bytes',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external int RAND_bytes(ffi.Pointer<ffi.Uint8> buf, int len);
 
-/// RSAPublicKey_dup allocates a fresh |RSA| and copies the public key from
-/// |rsa| into it. It returns the fresh |RSA| object, or NULL on error.
+/// RSAPublicKey_dup allocates a fresh `RSA` and copies the public key from
+/// `rsa` into it. It returns the fresh `RSA` object, or NULL on error.
 @ffi.Native<ffi.Pointer<RSA> Function(ffi.Pointer<RSA>)>(
   symbol: 'webcrypto_RSAPublicKey_dup',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<RSA> RSAPublicKey_dup(ffi.Pointer<RSA> rsa);
 
-/// RSA_check_key performs basic validity tests on |rsa|. It returns one if
+/// RSA_check_key performs basic validity tests on `rsa`. It returns one if
 /// they pass and zero otherwise. Opaque keys and public keys always pass. If it
 /// returns zero then a more detailed error is available on the error queue.
 @ffi.Native<ffi.Int Function(ffi.Pointer<RSA>)>(
@@ -1807,7 +1851,7 @@ external ffi.Pointer<RSA> RSAPublicKey_dup(ffi.Pointer<RSA> rsa);
 )
 external int RSA_check_key(ffi.Pointer<RSA> rsa);
 
-/// RSA_free decrements the reference count of |rsa| and frees it if the
+/// RSA_free decrements the reference count of `rsa` and frees it if the
 /// reference count drops to zero.
 @ffi.Native<ffi.Void Function(ffi.Pointer<RSA>)>(
   symbol: 'webcrypto_RSA_free',
@@ -1816,11 +1860,11 @@ external int RSA_check_key(ffi.Pointer<RSA> rsa);
 external void RSA_free(ffi.Pointer<RSA> rsa);
 
 /// RSA_generate_key_ex generates a new RSA key where the modulus has size
-/// |bits| and the public exponent is |e|. If unsure, |RSA_F4| is a good value
-/// for |e|. If |cb| is not NULL then it is called during the key generation
-/// process. In addition to the calls documented for |BN_generate_prime_ex|, it
+/// `bits` and the public exponent is `e`. If unsure, `RSA_F4` is a good value
+/// for `e`. If `cb` is not NULL then it is called during the key generation
+/// process. In addition to the calls documented for `BN_generate_prime_ex`, it
 /// is called with event=2 when the n'th prime is rejected as unsuitable and
-/// with event=3 when a suitable value for |p| is found.
+/// with event=3 when a suitable value for `p` is found.
 ///
 /// It returns one on success or zero on error.
 @ffi.Native<
@@ -1841,9 +1885,9 @@ external int RSA_generate_key_ex(
   ffi.Pointer<BN_GENCB> cb,
 );
 
-/// RSA_get0_crt_params sets |*out_dmp1|, |*out_dmq1|, and |*out_iqmp|, if
-/// non-NULL, to |rsa|'s CRT parameters. These are d (mod p-1), d (mod q-1) and
-/// q^-1 (mod p), respectively. If |rsa| is a public key, each parameter will be
+/// RSA_get0_crt_params sets `*out_dmp1`, `*out_dmq1`, and `*out_iqmp`, if
+/// non-NULL, to `rsa`'s CRT parameters. These are d (mod p-1), d (mod q-1) and
+/// q^-1 (mod p), respectively. If `rsa` is a public key, each parameter will be
 /// set to NULL.
 @ffi.Native<
   ffi.Void Function(
@@ -1863,8 +1907,8 @@ external void RSA_get0_crt_params(
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_iqmp,
 );
 
-/// RSA_get0_factors sets |*out_p| and |*out_q|, if non-NULL, to |rsa|'s prime
-/// factors. If |rsa| is a public key, they will be set to NULL.
+/// RSA_get0_factors sets `*out_p` and `*out_q`, if non-NULL, to `rsa`'s prime
+/// factors. If `rsa` is a public key, they will be set to NULL.
 @ffi.Native<
   ffi.Void Function(
     ffi.Pointer<RSA>,
@@ -1881,8 +1925,8 @@ external void RSA_get0_factors(
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_q,
 );
 
-/// RSA_get0_key sets |*out_n|, |*out_e|, and |*out_d|, if non-NULL, to |rsa|'s
-/// modulus, public exponent, and private exponent, respectively. If |rsa| is a
+/// RSA_get0_key sets `*out_n`, `*out_e`, and `*out_d`, if non-NULL, to `rsa`'s
+/// modulus, public exponent, and private exponent, respectively. If `rsa` is a
 /// public key, the private exponent will be set to NULL.
 @ffi.Native<
   ffi.Void Function(
@@ -1899,22 +1943,22 @@ external void RSA_get0_key(
   ffi.Pointer<ffi.Pointer<BIGNUM>> out_d,
 );
 
-/// RSA_new returns a new, empty |RSA| object or NULL on error. Prefer using
-/// |RSA_new_public_key| or |RSA_new_private_key| to import an RSA key.
+/// RSA_new returns a new, empty `RSA` object or NULL on error. Prefer using
+/// `RSA_new_public_key` or `RSA_new_private_key` to import an RSA key.
 @ffi.Native<ffi.Pointer<RSA> Function()>(
   symbol: 'webcrypto_RSA_new',
   assetId: 'package:webcrypto/webcrypto.dart',
 )
 external ffi.Pointer<RSA> RSA_new();
 
-/// RSA_set0_crt_params sets |rsa|'s CRT parameters to |dmp1|, |dmq1|, and
-/// |iqmp|, if non-NULL, and takes ownership of them. On success, it takes
+/// RSA_set0_crt_params sets `rsa`'s CRT parameters to `dmp1`, `dmq1`, and
+/// `iqmp`, if non-NULL, and takes ownership of them. On success, it takes
 /// ownership of its parameters and returns one. Otherwise, it returns zero.
 ///
-/// Each argument must either be non-NULL or already configured on |rsa|.
+/// Each argument must either be non-NULL or already configured on `rsa`.
 ///
-/// It is an error to call this function after |rsa| has been used for a
-/// cryptographic operation. Construct a new |RSA| object instead.
+/// It is an error to call this function after `rsa` has been used for a
+/// cryptographic operation. Construct a new `RSA` object instead.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<RSA>,
@@ -1933,14 +1977,14 @@ external int RSA_set0_crt_params(
   ffi.Pointer<BIGNUM> iqmp,
 );
 
-/// RSA_set0_factors sets |rsa|'s prime factors to |p| and |q|, if non-NULL, and
+/// RSA_set0_factors sets `rsa`'s prime factors to `p` and `q`, if non-NULL, and
 /// takes ownership of them. On success, it takes ownership of each argument and
 /// returns one. Otherwise, it returns zero.
 ///
-/// Each argument must either be non-NULL or already configured on |rsa|.
+/// Each argument must either be non-NULL or already configured on `rsa`.
 ///
-/// It is an error to call this function after |rsa| has been used for a
-/// cryptographic operation. Construct a new |RSA| object instead.
+/// It is an error to call this function after `rsa` has been used for a
+/// cryptographic operation. Construct a new `RSA` object instead.
 @ffi.Native<
   ffi.Int Function(ffi.Pointer<RSA>, ffi.Pointer<BIGNUM>, ffi.Pointer<BIGNUM>)
 >(
@@ -1953,15 +1997,15 @@ external int RSA_set0_factors(
   ffi.Pointer<BIGNUM> q,
 );
 
-/// RSA_set0_key sets |rsa|'s modulus, public exponent, and private exponent to
-/// |n|, |e|, and |d| respectively, if non-NULL. On success, it takes ownership
+/// RSA_set0_key sets `rsa`'s modulus, public exponent, and private exponent to
+/// `n`, `e`, and `d` respectively, if non-NULL. On success, it takes ownership
 /// of each argument and returns one. Otherwise, it returns zero.
 ///
-/// |d| may be NULL, but |n| and |e| must either be non-NULL or already
-/// configured on |rsa|.
+/// `d` may be NULL, but `n` and `e` must either be non-NULL or already
+/// configured on `rsa`.
 ///
-/// It is an error to call this function after |rsa| has been used for a
-/// cryptographic operation. Construct a new |RSA| object instead.
+/// It is an error to call this function after `rsa` has been used for a
+/// cryptographic operation. Construct a new `RSA` object instead.
 @ffi.Native<
   ffi.Int Function(
     ffi.Pointer<RSA>,
@@ -2041,28 +2085,28 @@ final class bignum_ctx extends ffi.Opaque {}
 
 /// Private functions
 final class bignum_st extends ffi.Struct {
-  /// d is a pointer to an array of |width| |BN_BITS2|-bit chunks in
+  /// d is a pointer to an array of `width` `BN_BITS2`-bit chunks in
   /// little-endian order. This stores the absolute value of the number.
   external ffi.Pointer<BN_ULONG> d;
 
-  /// width is the number of elements of |d| which are valid. This value is not
-  /// necessarily minimal; the most-significant words of |d| may be zero.
-  /// |width| determines a potentially loose upper-bound on the absolute value
-  /// of the |BIGNUM|.
+  /// width is the number of elements of `d` which are valid. This value is not
+  /// necessarily minimal; the most-significant words of `d` may be zero.
+  /// `width` determines a potentially loose upper-bound on the absolute value
+  /// of the `BIGNUM`.
   ///
-  /// Functions taking |BIGNUM| inputs must compute the same answer for all
-  /// possible widths. |bn_minimal_width|, |bn_set_minimal_width|, and other
+  /// Functions taking `BIGNUM` inputs must compute the same answer for all
+  /// possible widths. `bn_minimal_width`, `bn_set_minimal_width`, and other
   /// helpers may be used to recover the minimal width, provided it is not
   /// secret. If it is secret, use a different algorithm. Functions may output
-  /// minimal or non-minimal |BIGNUM|s depending on secrecy requirements, but
+  /// minimal or non-minimal `BIGNUM`s depending on secrecy requirements, but
   /// those which cause widths to unboundedly grow beyond the minimal value
   /// should be documented such.
   ///
-  /// Note this is different from historical |BIGNUM| semantics.
+  /// Note this is different from historical `BIGNUM` semantics.
   @ffi.Int()
   external int width;
 
-  /// dmax is number of elements of |d| which are allocated.
+  /// dmax is number of elements of `d` which are allocated.
   @ffi.Int()
   external int dmax;
 
@@ -2070,17 +2114,17 @@ final class bignum_st extends ffi.Struct {
   @ffi.Int()
   external int neg;
 
-  /// flags is a bitmask of |BN_FLG_*| values
+  /// flags is a bitmask of `BN_FLG_*` values
   @ffi.Int()
   external int flags;
 }
 
-/// bn_gencb_st, or |BN_GENCB|, holds a callback function that is used by
+/// bn_gencb_st, or `BN_GENCB`, holds a callback function that is used by
 /// generation functions that can take a very long time to complete. Use
-/// |BN_GENCB_set| to initialise a |BN_GENCB| structure.
+/// `BN_GENCB_set` to initialise a `BN_GENCB` structure.
 ///
-/// The callback receives the address of that |BN_GENCB| structure as its last
-/// argument and the user is free to put an arbitrary pointer in |arg|. The other
+/// The callback receives the address of that `BN_GENCB` structure as its last
+/// argument and the user is free to put an arbitrary pointer in `arg`. The other
 /// arguments are set as follows:
 /// - event=BN_GENCB_GENERATED, n=i:   after generating the i'th possible prime
 /// number.
@@ -2097,18 +2141,18 @@ final class bn_gencb_st extends ffi.Opaque {}
 
 /// CRYPTO ByteBuilder.
 ///
-/// |CBB| objects allow one to build length-prefixed serialisations. A |CBB|
+/// `CBB` objects allow one to build length-prefixed serialisations. A `CBB`
 /// object is associated with a buffer and new buffers are created with
-/// |CBB_init|. Several |CBB| objects can point at the same buffer when a
-/// length-prefix is pending, however only a single |CBB| can be 'current' at
-/// any one time. For example, if one calls |CBB_add_u8_length_prefixed| then
-/// the new |CBB| points at the same buffer as the original. But if the original
-/// |CBB| is used then the length prefix is written out and the new |CBB| must
+/// `CBB_init`. Several `CBB` objects can point at the same buffer when a
+/// length-prefix is pending, however only a single `CBB` can be 'current' at
+/// any one time. For example, if one calls `CBB_add_u8_length_prefixed` then
+/// the new `CBB` points at the same buffer as the original. But if the original
+/// `CBB` is used then the length prefix is written out and the new `CBB` must
 /// not be used again.
 ///
-/// If one needs to force a length prefix to be written out because a |CBB| is
-/// going out of scope, use |CBB_flush|. If an operation on a |CBB| fails, it is
-/// in an undefined state and must not be used except to call |CBB_cleanup|.
+/// If one needs to force a length prefix to be written out because a `CBB` is
+/// going out of scope, use `CBB_flush`. If an operation on a `CBB` fails, it is
+/// in an undefined state and must not be used except to call `CBB_cleanup`.
 final class cbb_buffer_st extends ffi.Opaque {}
 
 final class cbb_child_st extends ffi.Opaque {}
@@ -2131,7 +2175,7 @@ final class ec_point_st extends ffi.Opaque {}
 
 /// Low-level signing and verification.
 ///
-/// Low-level functions handle signatures as |ECDSA_SIG| structures which allow
+/// Low-level functions handle signatures as `ECDSA_SIG` structures which allow
 /// the two values in an ECDSA signature to be handled separately.
 final class ecdsa_sig_st extends ffi.Struct {
   external ffi.Pointer<BIGNUM> r;
@@ -2156,13 +2200,13 @@ final class env_md_ctx_st extends ffi.Struct {
   external ffi.Pointer<EVP_PKEY_CTX> pctx;
 
   /// pctx_ops, if not NULL, points to a vtable that contains functions to
-  /// manipulate |pctx|.
+  /// manipulate `pctx`.
   external ffi.Pointer<evp_md_pctx_ops> pctx_ops;
 }
 
 final class env_md_st extends ffi.Opaque {}
 
-/// An evp_aead_ctx_st (typedefed as |EVP_AEAD_CTX| in base.h) represents an AEAD
+/// An evp_aead_ctx_st (typedefed as `EVP_AEAD_CTX` in base.h) represents an AEAD
 /// algorithm configured with a specific key and message-independent IV.
 final class evp_aead_ctx_st extends ffi.Struct {
   external ffi.Pointer<EVP_AEAD> aead;
@@ -2193,11 +2237,11 @@ final class evp_cipher_ctx_st extends ffi.Struct {
   /// application stuff
   external ffi.Pointer<ffi.Void> app_data;
 
-  /// cipher_data points to the |cipher| specific state.
+  /// cipher_data points to the `cipher` specific state.
   external ffi.Pointer<ffi.Void> cipher_data;
 
   /// key_len contains the length of the key, which may differ from
-  /// |cipher->key_len| if the cipher can take a variable key length.
+  /// `cipher->key_len` if the cipher can take a variable key length.
   @ffi.UnsignedInt()
   external int key_len;
 
@@ -2205,7 +2249,7 @@ final class evp_cipher_ctx_st extends ffi.Struct {
   @ffi.Int()
   external int encrypt;
 
-  /// flags contains the OR of zero or more |EVP_CIPH_*| flags, above.
+  /// flags contains the OR of zero or more `EVP_CIPH_*` flags, above.
   @ffi.Uint32()
   external int flags;
 
@@ -2223,16 +2267,16 @@ final class evp_cipher_ctx_st extends ffi.Struct {
   external ffi.Array<ffi.Uint8> buf;
 
   /// buf_len contains the number of bytes of a partial block contained in
-  /// |buf|.
+  /// `buf`.
   @ffi.Int()
   external int buf_len;
 
-  /// num contains the number of bytes of |iv| which are valid for modes that
+  /// num contains the number of bytes of `iv` which are valid for modes that
   /// manage partial blocks themselves.
   @ffi.UnsignedInt()
   external int num;
 
-  /// final_used is non-zero if the |final| buffer contains plaintext.
+  /// final_used is non-zero if the `final` buffer contains plaintext.
   @ffi.Int()
   external int final_used;
 
@@ -2266,7 +2310,7 @@ final class hmac_ctx_st extends ffi.Struct {
 }
 
 /// point_conversion_form_t enumerates forms, as defined in X9.62 (ECDSA), for
-/// the encoding of a elliptic curve point (x,y)
+/// the encoding of an elliptic curve point (x,y)
 abstract class point_conversion_form_t {
   /// POINT_CONVERSION_COMPRESSED indicates that the point is encoded as z||x,
   /// where the octet z specifies which solution of the quadratic equation y
