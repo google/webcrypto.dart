@@ -96,6 +96,7 @@ void _checkOp(bool condition, {String? message, String? fallback}) {
     message ??= err ?? fallback ?? 'unknown error';
     throw operationError(message);
   }
+  ssl.ERR_clear_error();
 }
 
 /// Throw [OperationError] if [retval] is not `1`.
@@ -116,6 +117,7 @@ void _checkData(bool condition, {String? message, String? fallback}) {
     message ??= err ?? fallback ?? 'unknown error';
     throw FormatException(message);
   }
+  ssl.ERR_clear_error();
 }
 
 /// Throw [FormatException] if [retval] is `1`.
@@ -273,6 +275,7 @@ class _Scope implements Allocator {
       return await fn(scope);
     } finally {
       scope._release();
+      ssl.ERR_clear_error();
     }
   }
 
@@ -284,6 +287,7 @@ class _Scope implements Allocator {
       yield* fn(scope);
     } finally {
       scope._release();
+      ssl.ERR_clear_error();
     }
   }
 
@@ -297,6 +301,7 @@ class _Scope implements Allocator {
       return fn(scope);
     } finally {
       scope._release();
+      ssl.ERR_clear_error();
     }
   }
 }
@@ -433,10 +438,10 @@ Future<bool> _verifyStream(
       signature.length,
     );
     if (result != 1) {
-      // TODO: We should always clear errors, when returning from any
-      //       function that uses BoringSSL.
-      // Note: In this case we could probably assert that error is just
-      //       signature related.
+      // Always clear errors, so we don't leak anything from the error queue.
+      ssl.ERR_clear_error();
+    } else {
+      // Also clear errors on success, just in case.
       ssl.ERR_clear_error();
     }
     return result == 1;
