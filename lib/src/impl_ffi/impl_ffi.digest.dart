@@ -72,6 +72,11 @@ abstract class _HashImpl implements HashImpl {
   /// https://www.iana.org/assignments/jose/jose.xhtml
   String get hmacJwkAlg;
 
+  /// Recommended HMAC key length in bits.
+  ///
+  /// Web Crypto defines this as the block size of the hash function.
+  int get hmacBlockSizeInBits;
+
   /// Algorithm (`alg` for JWK) when this hash algorithm is used in RSA-OAEP.
   ///
   /// For SHA-1, it returns 'RSA-OAEP'.
@@ -113,6 +118,9 @@ final class _Sha1 extends _HashImpl {
   String get hmacJwkAlg => 'HS1';
 
   @override
+  int get hmacBlockSizeInBits => 512;
+
+  @override
   String get rsaOaepJwkAlg => 'RSA-OAEP';
 
   @override
@@ -130,6 +138,9 @@ final class _Sha256 extends _HashImpl {
 
   @override
   String get hmacJwkAlg => 'HS256';
+
+  @override
+  int get hmacBlockSizeInBits => 512;
 
   @override
   String get rsaOaepJwkAlg => 'RSA-OAEP-256';
@@ -151,6 +162,9 @@ final class _Sha384 extends _HashImpl {
   String get hmacJwkAlg => 'HS384';
 
   @override
+  int get hmacBlockSizeInBits => 1024;
+
+  @override
   String get rsaOaepJwkAlg => 'RSA-OAEP-384';
 
   @override
@@ -168,6 +182,9 @@ final class _Sha512 extends _HashImpl {
 
   @override
   String get hmacJwkAlg => 'HS512';
+
+  @override
+  int get hmacBlockSizeInBits => 1024;
 
   @override
   String get rsaOaepJwkAlg => 'RSA-OAEP-512';
