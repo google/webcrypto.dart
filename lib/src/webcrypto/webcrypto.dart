@@ -55,3 +55,12 @@ void _checkRsaModulusLength(int modulusLength) {
     );
   }
 }
+
+void _checkAesKeyLength(int length) {
+  if (length == 192) {
+    throw UnsupportedError('192-bit AES keys are not supported');
+  }
+  if (length != 128 && length != 256) {
+    throw const FormatException('keyData for AES must be 128 or 256 bits');
+  }
+}
