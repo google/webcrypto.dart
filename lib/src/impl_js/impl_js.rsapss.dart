@@ -174,7 +174,7 @@ final class _RsaPssPrivateKeyImpl implements RsaPssPrivateKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'sig');
   }
 
   @override
@@ -245,7 +245,7 @@ final class _RsaPssPublicKeyImpl implements RsaPssPublicKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'sig');
   }
 
   @override

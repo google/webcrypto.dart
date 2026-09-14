@@ -170,7 +170,7 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'sig');
   }
 
   @override

@@ -395,7 +395,7 @@ void main() {
     );
 
     test(
-      'JWK wrapKey carries ext/key_ops metadata that package exportJsonWebKey omits',
+      'JWK package export normalizes use and omits ext/key_ops metadata',
       () async {
         final jsWrapped = await _wrapKey(
           wrap,
@@ -438,13 +438,17 @@ void main() {
 
         expect(jsJwk['ext'], isTrue);
         expect(jsJwk['key_ops'], orderedEquals(['sign', 'verify']));
+        expect(jsJwk.containsKey('use'), isFalse);
         expect(packageJwk.containsKey('ext'), isFalse);
         expect(packageJwk.containsKey('key_ops'), isFalse);
+        expect(packageJwk['use'], 'sig');
 
         final normalizedJsJwk = Map<String, dynamic>.from(jsJwk)
           ..remove('ext')
           ..remove('key_ops');
-        expect(normalizedJsJwk, equals(packageJwk));
+        final normalizedPackageJwk = Map<String, dynamic>.from(packageJwk)
+          ..remove('use');
+        expect(normalizedJsJwk, equals(normalizedPackageJwk));
       },
     );
   });

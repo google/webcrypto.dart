@@ -214,7 +214,7 @@ final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: null);
   }
 
   @override
@@ -256,7 +256,7 @@ final class _EcdhPublicKeyImpl implements EcdhPublicKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: null);
   }
 
   @override

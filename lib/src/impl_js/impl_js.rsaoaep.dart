@@ -171,7 +171,7 @@ final class _RsaOaepPrivateKeyImpl implements RsaOaepPrivateKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'enc');
   }
 
   @override
@@ -222,7 +222,7 @@ final class _RsaOaepPublicKeyImpl implements RsaOaepPublicKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'enc');
   }
 
   @override

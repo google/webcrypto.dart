@@ -295,9 +295,9 @@ Future<Uint8List> _exportKey(String format, subtle.JSCryptoKey key) {
 
 /// Adapt `crypto.subtle.export` to Dart types.
 Future<Map<String, Object>> _exportJsonWebKey(
-  subtle.JSCryptoKey key,
-  // TODO: Add expected 'use' the way we have it in the FFI implementation
-) {
+  subtle.JSCryptoKey key, {
+  required String? jwkUse,
+}) {
   return _handleDomException(() async {
     final jwk = await subtle.exportJsonWebKey('jwk', key);
     // Remove 'key_ops' and 'ext' as this library doesn't allow configuration of
@@ -305,6 +305,7 @@ Future<Map<String, Object>> _exportJsonWebKey(
     // Notice, that we also strip these in [_importJsonWebKey].
     jwk.key_ops = null;
     jwk.ext = null;
+    jwk.use = jwkUse;
     return jwk.toJson();
   });
 }

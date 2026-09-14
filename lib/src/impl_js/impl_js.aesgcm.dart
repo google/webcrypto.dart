@@ -145,7 +145,7 @@ final class _AesGcmSecretKeyImpl implements AesGcmSecretKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'enc');
   }
 
   @override
