@@ -168,6 +168,59 @@ final _testData = [
     "importKeyParams": {"curve": "p-256"},
     "deriveParams": {},
   },
+  {
+    "name": "P256/256 generated on boringssl/macos at 2026-09-08T19:44:47",
+    "privatePkcs8KeyData":
+        "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgM5938GydUYmaylhEKuoZNpmEpxpMfSl1GUs+lHceTSuhRANCAARRBN1Iv8QHoa5tdwNguVKdkE1zqGKgyj5TxoIZuDeIw8Cqy2OZ+X3BGA3ITFBLIt+q09sQf1u9MfBGj95wthpn",
+    "privateJsonWebKeyData": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "UQTdSL_EB6GubXcDYLlSnZBNc6hioMo-U8aCGbg3iMM",
+      "y": "wKrLY5n5fcEYDchMUEsi36rT2xB_W70x8EaP3nC2Gmc",
+      "d": "M5938GydUYmaylhEKuoZNpmEpxpMfSl1GUs-lHceTSs",
+    },
+    "publicRawKeyData":
+        "BEKBQ+9da02JBjjRhcMEuFEydbHfGUBYJFRn0lL/MR3WRRzMQXKBoYCxSWVrGnhvmh+aXngmUyLEgYUCjFdjdLg=",
+    "publicSpkiKeyData":
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQoFD711rTYkGONGFwwS4UTJ1sd8ZQFgkVGfSUv8xHdZFHMxBcoGhgLFJZWsaeG+aH5peeCZTIsSBhQKMV2N0uA==",
+    "publicJsonWebKeyData": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "QoFD711rTYkGONGFwwS4UTJ1sd8ZQFgkVGfSUv8xHdY",
+      "y": "RRzMQXKBoYCxSWVrGnhvmh-aXngmUyLEgYUCjFdjdLg",
+    },
+    "derivedBits": "EFgf8/DMeCsiuFv4uRN2Tl885RWhWWAISWzN2A9QZ6Q=",
+    "derivedLength": 256,
+    "importKeyParams": {"curve": "p-256"},
+    "deriveParams": {},
+  },
+  {
+    "name": "P384/384 generated on boringssl/macos at 2026-09-08T19:44:48",
+    "privatePkcs8KeyData":
+        "MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDBe+7rKTepZSPK6yingXcLlnUWGeD8kCON0d6I8OcOPWh5YmX2cHICUPdXJMBEVBbKhZANiAAR6uzloDk4tJWOPoqv+IsDXZKcLdxR1l5dkcw4NcM+5XtRyuyiHAWixe2ypqkYwdIVXEOxgEMf7EFUgUlQO8qeasWPh5BIT0J/j5Z55T7xv5RoebS3YknDWf8MtNfE6PfY=",
+    "privateJsonWebKeyData": {
+      "kty": "EC",
+      "crv": "P-384",
+      "x": "ers5aA5OLSVjj6Kr_iLA12SnC3cUdZeXZHMODXDPuV7UcrsohwFosXtsqapGMHSF",
+      "y": "VxDsYBDH-xBVIFJUDvKnmrFj4eQSE9Cf4-WeeU-8b-UaHm0t2JJw1n_DLTXxOj32",
+      "d": "Xvu6yk3qWUjyusop4F3C5Z1Fhng_JAjjdHeiPDnDj1oeWJl9nByAlD3VyTARFQWy",
+    },
+    "publicRawKeyData":
+        "BH14y9Mku0AEaIdECnpi5ffD0OlmJaobvwOB2HkZh43O0/hvEMKEwfrWdEphlSsOs/jo4mHgeAgKkrPG38pQvYTr/hISJRL4Qryaw9dARO9njhJww5O5zCT/+v8TyVGwKQ==",
+    "publicSpkiKeyData":
+        "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEfXjL0yS7QARoh0QKemLl98PQ6WYlqhu/A4HYeRmHjc7T+G8QwoTB+tZ0SmGVKw6z+OjiYeB4CAqSs8bfylC9hOv+EhIlEvhCvJrD10BE72eOEnDDk7nMJP/6/xPJUbAp",
+    "publicJsonWebKeyData": {
+      "kty": "EC",
+      "crv": "P-384",
+      "x": "fXjL0yS7QARoh0QKemLl98PQ6WYlqhu_A4HYeRmHjc7T-G8QwoTB-tZ0SmGVKw6z",
+      "y": "-OjiYeB4CAqSs8bfylC9hOv-EhIlEvhCvJrD10BE72eOEnDDk7nMJP_6_xPJUbAp",
+    },
+    "derivedBits":
+        "pF6YTAEjplY13gyM4onYj/mPrl4mTfHyedTdxP8h3EeEdgV+g4HUXdOwrXC2stG8",
+    "derivedLength": 384,
+    "importKeyParams": {"curve": "p-384"},
+    "deriveParams": {},
+  },
 
   ..._testDataWithP521,
 
