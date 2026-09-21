@@ -136,7 +136,6 @@ set(crypto_sources
   ${BORINGSSL_ROOT}src/crypto/fuzzer_mode.cc
   ${BORINGSSL_ROOT}src/crypto/hpke/hpke.cc
   ${BORINGSSL_ROOT}src/crypto/hrss/hrss.cc
-  ${BORINGSSL_ROOT}src/crypto/kyber/kyber.cc
   ${BORINGSSL_ROOT}src/crypto/lhash/lhash.cc
   ${BORINGSSL_ROOT}src/crypto/md4/md4.cc
   ${BORINGSSL_ROOT}src/crypto/md5/md5.cc
@@ -167,7 +166,6 @@ set(crypto_sources
   ${BORINGSSL_ROOT}src/crypto/rand/forkunsafe.cc
   ${BORINGSSL_ROOT}src/crypto/rand/getentropy.cc
   ${BORINGSSL_ROOT}src/crypto/rand/ios.cc
-  ${BORINGSSL_ROOT}src/crypto/rand/passive.cc
   ${BORINGSSL_ROOT}src/crypto/rand/rand.cc
   ${BORINGSSL_ROOT}src/crypto/rand/trusty.cc
   ${BORINGSSL_ROOT}src/crypto/rand/urandom.cc
@@ -237,6 +235,7 @@ set(crypto_sources
   ${BORINGSSL_ROOT}src/crypto/x509/x509_def.cc
   ${BORINGSSL_ROOT}src/crypto/x509/x509_ext.cc
   ${BORINGSSL_ROOT}src/crypto/x509/x509_lu.cc
+  ${BORINGSSL_ROOT}src/crypto/x509/x509_mtc.cc
   ${BORINGSSL_ROOT}src/crypto/x509/x509_obj.cc
   ${BORINGSSL_ROOT}src/crypto/x509/x509_req.cc
   ${BORINGSSL_ROOT}src/crypto/x509/x509_set.cc
