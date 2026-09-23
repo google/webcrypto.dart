@@ -33,6 +33,8 @@ import 'webcrypto/digest.dart' as digest;
 import 'regression/issue_302_hmac_jwk_length.dart' as issue_302_hmac_jwk_length;
 import 'regression/aes_gcm_invalid_tag_length.dart'
     as aes_gcm_invalid_tag_length;
+import 'regression/aes_cbc_invalid_padding_stream.dart'
+    as aes_cbc_invalid_padding_stream;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
 import 'regression/ecdh_invalid_length.dart' as ecdh_invalid_length;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
@@ -69,6 +71,7 @@ void runAllTests(
     ...digest.tests(),
     ...issue_302_hmac_jwk_length.tests(),
     ...aes_gcm_invalid_tag_length.tests(),
+    ...aes_cbc_invalid_padding_stream.tests(),
     ...issue_60_trailing_bytes.tests(),
     ...jwk_base64url.tests(),
     ...derive_bits_zero_length.tests(),
