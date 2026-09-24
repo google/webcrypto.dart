@@ -167,6 +167,7 @@ final class RsaPssPrivateKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) async {
+    _checkRsaPrivateJwk(jwk);
     final impl = await webCryptImpl.rsaPssPrivateKey.importJsonWebKey(
       jwk,
       hash._impl,
