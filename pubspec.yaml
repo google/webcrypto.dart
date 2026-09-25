@@ -21,7 +21,7 @@ environment:
   sdk: ^3.10.0
 
 dependencies:
-  boring: ^0.4.0
+  boring: ^0.4.1
   meta: ^1.3.0
 
 dev_dependencies:
