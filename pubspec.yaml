@@ -24,8 +24,7 @@ dependencies:
   boring:
     git:
       url: https://github.com/mosuem/boring.git
-      ref: cd6662fcb223f965ea054d5a84c9d70ccc7fe171
-  ffi: ^2.0.0
+      ref: 410fae8e7fd1a40cab6ba52ba2dff47e20e73865
   meta: ^1.3.0
 
 dev_dependencies:

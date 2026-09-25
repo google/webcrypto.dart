@@ -85,164 +85,25 @@ void _checkInt32(int value, String name) {
   }
 }
 
-const _sslAlloc = ssl.opensslAllocator;
-
-class _ScopeEntry {
-  final Object? handle;
-  final void Function() fn;
-
-  _ScopeEntry(this.handle, this.fn);
-}
-
-// Utility for tracking and releasing memory.
-class _Scope implements Allocator {
-  final List<_ScopeEntry> _deferred = [];
-
-  /// Defer [fn] to end of this scope.
-  void defer(void Function() fn, [Object? handle]) =>
-      _deferred.add(_ScopeEntry(handle, fn));
-
-  /// Allocate an [ffi.Pointer<T>] in this scope.
-  @override
-  ffi.Pointer<T> allocate<T extends ffi.NativeType>(
-    int byteCount, {
-    int? alignment,
-  }) {
-    final p = _sslAlloc.allocate<T>(byteCount);
-    defer(() => _sslAlloc.free(p), p);
-    return p;
-  }
-
-  /// Allocate and copy [data] to an [ffi.Pointer<T>] in this scope.
-  ffi.Pointer<T> dataAsPointer<T extends ffi.NativeType>(List<int> data) {
-    final p = _sslAlloc<ffi.Uint8>(data.length);
-    p.asTypedList(data.length).setAll(0, data);
-    final result = p.cast<T>();
-    defer(() => _sslAlloc.free(p), result);
-    return result;
-  }
-
-  /// Call [create], return [T], and [release] when scope is terminated.
+extension on BoringArena {
+  /// Call [create], return [T], and [release] when the arena is released.
+  ///
+  /// Throws [OperationError] if [create] returns `nullptr`.
   ffi.Pointer<T> create<T extends ffi.NativeType>(
     ffi.Pointer<T> Function() create,
     void Function(ffi.Pointer<T>) release,
   ) {
     final result = create();
     _checkOp(result.address != 0, fallback: 'allocation failed');
-    defer(() => release(result), result);
-    return result;
+    return using(result, release);
   }
 
-  /// Move [handle] out of scope.
-  ///
-  /// This requires that [handle] is an object that was registered in this
-  /// scope, otherwise this throws.
-  T move<T>(T handle) {
-    if (!_deferred.any((e) => e.handle == handle)) {
-      throw StateError('Cannot move handle from Scope');
-    }
-    _deferred.removeWhere((e) => e.handle == handle);
-    return handle;
-  }
-
-  /// Release all resources held in this scope.
-  ///
-  /// Instead of calling this directly, prefer to use:
-  ///  * [_Scope.async],
-  ///  * [_Scope.sync], or,
-  ///  * [_Scope.stream].
-  void _release() {
-    while (_deferred.isNotEmpty) {
-      try {
-        _deferred.removeLast().fn();
-      } catch (e) {
-        while (_deferred.isNotEmpty) {
-          try {
-            _deferred.removeLast().fn();
-          } catch (_) {
-            // Ignore error
-          }
-        }
-        rethrow;
-      }
-    }
-  }
-
-  @override
-  void free(ffi.Pointer pointer) {
-    // Does nothing, use `release` instead.
-    // Not throwing, so that this can actually be used as an Allocator.
-  }
-
-  /// Run [fn] with a [_Scope] that is released when the [Future] returned
-  /// from [fn] is completed.
-  static Future<T> async<T>(FutureOr<T> Function(_Scope scope) fn) async {
-    assert(T is! Future, 'avoid nested async blocks');
-    final scope = _Scope();
-    try {
-      return await fn(scope);
-    } finally {
-      scope._release();
-    }
-  }
-
-  /// Run [fn] with a [_Scope] that is released when the [Stream] returned
-  /// from [fn] is completed.
-  static Stream<T> stream<T>(Stream<T> Function(_Scope scope) fn) async* {
-    final scope = _Scope();
-    try {
-      yield* fn(scope);
-    } finally {
-      scope._release();
-    }
-  }
-
-  /// Run [fn] with a [_Scope] that is released when [fn] returns.
-  ///
-  /// Use [async] if [fn] is an async function that returns a [Future].
-  static T sync<T>(T Function(_Scope scope) fn) {
-    assert(T is! Future, 'avoid nested async blocks');
-    final scope = _Scope();
-    try {
-      return fn(scope);
-    } finally {
-      scope._release();
-    }
-  }
-}
-
-extension on _Scope {
   ffi.Pointer<RSA> createRSA() => create(ssl.RSA_new, ssl.RSA_free);
 
   ffi.Pointer<BIGNUM> createBN() => create(ssl.BN_new, ssl.BN_free);
 
   ffi.Pointer<EVP_CIPHER_CTX> createEVP_CIPHER_CTX() =>
       create(ssl.EVP_CIPHER_CTX_new, ssl.EVP_CIPHER_CTX_free);
-
-  ffi.Pointer<CBS> createCBS(List<int> data) {
-    final cbs = this<CBS>();
-    cbs.ref.data = dataAsPointer(data);
-    cbs.ref.len = data.length;
-    return cbs;
-  }
-
-  ffi.Pointer<CBB> createCBB([int sizeHint = 4096]) {
-    final cbb = this<CBB>();
-    ssl.CBB_zero(cbb);
-    _checkOp(ssl.CBB_init(cbb, sizeHint) == 1, fallback: 'allocation failure');
-    defer(() => ssl.CBB_cleanup(cbb));
-    return cbb;
-  }
-}
-
-extension on ffi.Pointer<CBB> {
-  /// Copy contents of this [CBB] to a [Uint8List].
-  Uint8List copy() {
-    _checkOp(ssl.CBB_flush(this) == 1);
-    final bytes = ssl.CBB_data(this);
-    final len = ssl.CBB_len(this);
-    return Uint8List.fromList(bytes.asTypedList(len));
-  }
 }
 
 extension on ffi.Pointer<ffi.Uint8> {
@@ -258,7 +119,7 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
   int Function(T, ffi.Pointer<S>, int) update,
 ) async {
   const maxChunk = 4096;
-  final buffer = _sslAlloc<ffi.Uint8>(maxChunk);
+  final buffer = ssl.opensslAllocator<ffi.Uint8>(maxChunk);
   try {
     final ptr = buffer.cast<S>();
     final bytes = buffer.asTypedList(maxChunk);
@@ -272,7 +133,7 @@ Future<void> _streamToUpdate<T, S extends ffi.NativeType>(
       }
     }
   } finally {
-    _sslAlloc.free(buffer);
+    ssl.opensslAllocator.free(buffer);
   }
 }
 
@@ -284,7 +145,7 @@ Future<Uint8List> _signStream(
   Stream<List<int>> data, {
   void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
 }) {
-  return _Scope.async((scope) async {
+  return BoringArena.run((scope) async {
     final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
     final pctx = config != null
         ? scope<ffi.Pointer<EVP_PKEY_CTX>>()
@@ -319,7 +180,7 @@ Future<bool> _verifyStream(
   Stream<List<int>> data, {
   void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
 }) {
-  return _Scope.async((scope) async {
+  return BoringArena.run((scope) async {
     // Create and initialize verification context
     final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
     final pctx = config != null
@@ -338,7 +199,7 @@ Future<bool> _verifyStream(
     // Verify signature
     final result = ssl.EVP_DigestVerifyFinal(
       ctx,
-      scope.dataAsPointer(signature),
+      scope.copyBytes(signature),
       signature.length,
     );
     if (result != 1) {
@@ -354,19 +215,19 @@ Future<bool> _verifyStream(
 
 /// Export private [key] as PKCS8.
 Uint8List _exportPkcs8Key(_EvpPKey key) {
-  return _Scope.sync((scope) {
-    final cbb = scope.createCBB();
+  return BoringArena.run((scope) {
+    final cbb = scope.cbb();
     _checkOpIsOne(ssl.EVP_marshal_private_key.invoke(cbb, key));
-    return cbb.copy();
+    return cbb.toBytes();
   });
 }
 
 /// Export public [key] as SPKI.
 Uint8List _exportSpkiKey(_EvpPKey key) {
-  return _Scope.sync((scope) {
-    final cbb = scope.createCBB();
+  return BoringArena.run((scope) {
+    final cbb = scope.cbb();
     _checkOpIsOne(ssl.EVP_marshal_public_key.invoke(cbb, key));
-    return cbb.copy();
+    return cbb.toBytes();
   });
 }
 

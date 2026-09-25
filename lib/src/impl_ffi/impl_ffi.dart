@@ -17,7 +17,6 @@
 library;
 
 import 'dart:async';
-import 'dart:ffi' show Allocator;
 import 'dart:typed_data';
 import 'dart:convert' show base64Url;
 import 'dart:isolate';

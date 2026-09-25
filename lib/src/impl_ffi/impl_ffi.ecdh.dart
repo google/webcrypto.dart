@@ -115,14 +115,14 @@ final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
       throw ArgumentError.value(length, 'length', 'must be non-negative');
     }
 
-    return _Scope.async((scope) async {
+    return BoringArena.run((scope) async {
       final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY.invoke(publicKey._key);
       _checkOp(pubEcKey.address != 0, fallback: 'not an ec key');
-      scope.defer(() => ssl.EC_KEY_free(pubEcKey));
+      scope.using(pubEcKey, ssl.EC_KEY_free);
 
       final privEcKey = ssl.EVP_PKEY_get1_EC_KEY.invoke(_key);
       _checkOp(privEcKey.address != 0, fallback: 'not an ec key');
-      scope.defer(() => ssl.EC_KEY_free(privEcKey));
+      scope.using(privEcKey, ssl.EC_KEY_free);
 
       // Check that public/private key uses the same elliptic curve.
       if (ssl.EC_GROUP_get_curve_name(ssl.EC_KEY_get0_group(pubEcKey)) !=

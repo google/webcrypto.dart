@@ -92,19 +92,19 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
   _EvpPKey key,
   Uint8List signature,
 ) {
-  return _Scope.sync((scope) {
+  return BoringArena.run((scope) {
     // TODO: Check if cbs is empty after parsing, consider using ECDSA_SIG_from_bytes instead (like chrome does)
-    final ecdsa = ssl.ECDSA_SIG_parse(scope.createCBS(signature));
+    final ecdsa = ssl.ECDSA_SIG_parse(scope.cbs(signature));
     _checkOp(
       ecdsa.address != 0,
       message: 'internal error formatting signature',
     );
-    scope.defer(() => ssl.ECDSA_SIG_free(ecdsa));
+    scope.using(ecdsa, ssl.ECDSA_SIG_free);
 
     // Read EC key and get the number of bytes required to encode R and S.
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
-    scope.defer(() => ssl.EC_KEY_free(ec));
+    scope.using(ec, ssl.EC_KEY_free);
 
     final N = ssl.BN_num_bytes(
       ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(ec)),
@@ -139,11 +139,11 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
   _EvpPKey key,
   List<int> signature,
 ) {
-  return _Scope.sync((scope) {
+  return BoringArena.run((scope) {
     // Read EC key and get the number of bytes required to encode R and S.
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
-    scope.defer(() => ssl.EC_KEY_free(ec));
+    scope.using(ec, ssl.EC_KEY_free);
 
     final N = ssl.BN_num_bytes(
       ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(ec)),
@@ -163,7 +163,7 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
     final S = scope<ffi.Pointer<BIGNUM>>();
     ssl.ECDSA_SIG_get0(ecdsa, R, S);
 
-    final psig = scope.dataAsPointer<ffi.Uint8>(signature);
+    final psig = scope.copyBytes<ffi.Uint8>(signature);
     _checkOp(
       ssl.BN_bin2bn(psig + 0, N, R.value).address != 0,
       fallback: 'allocation failure',
@@ -173,12 +173,12 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
       fallback: 'allocation failure',
     );
 
-    final cbb = scope.createCBB();
+    final cbb = scope.cbb();
     _checkOpIsOne(
       ssl.ECDSA_SIG_marshal(cbb, ecdsa),
       fallback: 'internal error reformatting signature',
     );
-    return cbb.copy();
+    return cbb.toBytes();
   });
 }
 
