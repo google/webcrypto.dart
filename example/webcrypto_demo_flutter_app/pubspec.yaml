@@ -26,13 +26,5 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
 
-# TODO: Remove once package:boring 0.4.0 is published. Keep in sync with the
-# dependency_overrides in ../../pubspec.yaml.
-dependency_overrides:
-  boring:
-    git:
-      url: https://github.com/mosuem/boring.git
-      ref: 60072877a8ef9e3a504c4f4cb3cfb2abd5baae5e
-
 flutter:
   uses-material-design: true
