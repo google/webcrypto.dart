@@ -19,7 +19,7 @@ library;
 import 'dart:async';
 import 'dart:ffi' show Allocator;
 import 'dart:typed_data';
-import 'dart:convert' show utf8, base64Url;
+import 'dart:convert' show base64Url;
 import 'dart:isolate';
 import 'dart:ffi' as ffi;
 import 'dart:math' as math;

@@ -16,23 +16,9 @@
 
 part of 'impl_ffi.dart';
 
-/// Wrapper around [EVP_PKEY] which attaches finalizer and ensure that the
-/// [ffi.Finalizable] is kept in scope while the [EVP_PKEY] is used.
-class _EvpPKey implements ffi.Finalizable {
-  /// We don't really have an estimate of how much space the EVP_PKEY structure
-  /// takes up, but if we make it some non-trivial size then hopefully the GC
-  /// will prioritize freeing them.
-  static const _externalSizeEstimate = 4096;
-
-  static final _finalizer = ffi.NativeFinalizer(
-    ffi.Native.addressOf<
-          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<EVP_PKEY>)>
-        >(ssl.EVP_PKEY_free)
-        .cast(),
-  );
-
-  final ffi.Pointer<EVP_PKEY> _pkey;
-
+/// Wrapper around [EVP_PKEY] backed by [NativeHandle] from `package:boring`.
+extension type _EvpPKey._(NativeHandle<EVP_PKEY> _handle)
+    implements NativeHandle<EVP_PKEY> {
   /// Allocate new [EVP_PKEY], attach finalizer and return the wrapped key.
   factory _EvpPKey() {
     final pkey = ssl.EVP_PKEY_new();
@@ -40,49 +26,9 @@ class _EvpPKey implements ffi.Finalizable {
     return _EvpPKey.wrap(pkey);
   }
 
-  /// Wrap existing [EVP_PKEY], this will attach a finalizer.
-  ///
-  /// After this, the wrapped key may only be used within a callback passed to
-  /// [use]. Otherwise, the garbage collect may be calling the finalizer while
-  /// the key is in use.
-  _EvpPKey.wrap(this._pkey) {
-    _finalizer.attach(this, _pkey.cast(), externalSize: _externalSizeEstimate);
-  }
-
-  /// Use the wrapped [EVP_PKEY] in callback [fn].
-  ///
-  /// Note. [fn] is not allowed to return a [Future].
-  T use<T>(T Function(ffi.Pointer<EVP_PKEY> pkey) fn) => fn(_pkey);
-}
-
-/// Extension of native function that takes a [EVP_PKEY], making it easy to call
-/// using a wrapped [_EvpPKey].
-extension<T> on T Function(ffi.Pointer<EVP_PKEY>) {
-  /// Invoke this function with unwrapped [key].
-  T invoke(_EvpPKey key) => key.use((pkey) => this(pkey));
-}
-
-/// Extension of native function that takes a [EVP_PKEY], making it easy to call
-/// using a wrapped [_EvpPKey].
-extension<T, A1> on T Function(ffi.Pointer<EVP_PKEY>, A1) {
-  /// Invoke this function with unwrapped [key].
-  T invoke(_EvpPKey key, A1 arg1) => key.use((pkey) => this(pkey, arg1));
-}
-
-/// Extension of native function that takes a [EVP_PKEY], making it easy to call
-/// using a wrapped [_EvpPKey].
-extension<T, A1> on T Function(A1, ffi.Pointer<EVP_PKEY>) {
-  /// Invoke this function with unwrapped [key].
-  T invoke(A1 arg1, _EvpPKey key) => key.use((pkey) => this(arg1, pkey));
-}
-
-/// Extension of native function that takes a [EVP_PKEY], making it easy to call
-/// using a wrapped [_EvpPKey].
-extension<T, A1, A2, A3, A4>
-    on T Function(A1, A2, A3, A4, ffi.Pointer<EVP_PKEY>) {
-  /// Invoke this function with unwrapped [key].
-  T invoke(A1 arg1, A2 arg2, A3 arg3, A4 arg4, _EvpPKey key) =>
-      key.use((pkey) => this(arg1, arg2, arg3, arg4, pkey));
+  /// Wrap existing [EVP_PKEY] and attach `EVP_PKEY_free` native finalizer.
+  _EvpPKey.wrap(ffi.Pointer<EVP_PKEY> pkey)
+    : _handle = NativeHandle(pkey, ssl.addresses.EVP_PKEY_free);
 }
 
 /// Throw [OperationError] if [condition] is `false`.
@@ -92,7 +38,7 @@ extension<T, A1, A2, A3, A4>
 void _checkOp(bool condition, {String? message, String? fallback}) {
   if (!condition) {
     // Always extract the error to ensure we clear the error queue.
-    final err = _extractError();
+    final err = ssl.extractBoringSslError();
     message ??= err ?? fallback ?? 'unknown error';
     throw operationError(message);
   }
@@ -112,7 +58,7 @@ void _checkOpIsOne(int retval, {String? message, String? fallback}) =>
 void _checkData(bool condition, {String? message, String? fallback}) {
   if (!condition) {
     // Always extract the error to ensure we clear the error queue.
-    final err = _extractError();
+    final err = ssl.extractBoringSslError();
     message ??= err ?? fallback ?? 'unknown error';
     throw FormatException(message);
   }
@@ -136,33 +82,6 @@ void _checkUnsignedLong(int value, String name) {
 void _checkInt32(int value, String name) {
   if (value < -0x80000000 || value > 0x7fffffff) {
     throw ArgumentError.value(value, name, 'must fit a signed 32-bit integer');
-  }
-}
-
-/// Extract latest error on this thread as [String] and clear the error queue
-/// for this thread.
-///
-/// Returns `null` if there is no error.
-String? _extractError() {
-  try {
-    // Get the error.
-    final err = ssl.ERR_get_error();
-    if (err == 0) {
-      return null;
-    }
-    const N = 4096; // Max error message size
-    final out = _sslAlloc<ffi.Char>(N);
-    try {
-      ssl.ERR_error_string_n(err, out, N);
-      final data = out.cast<ffi.Uint8>().asTypedList(N);
-      // Take everything until '\0'
-      return utf8.decode(data.takeWhile((i) => i != 0).toList());
-    } finally {
-      _sslAlloc.free(out);
-    }
-  } finally {
-    // Always clear error queue, so we continue
-    ssl.ERR_clear_error();
   }
 }
 
