@@ -31,6 +31,12 @@ extension type _EvpPKey._(NativeHandle<EVP_PKEY> _handle)
     : _handle = NativeHandle(pkey, ssl.addresses.EVP_PKEY_free);
 }
 
+// BoringSSL pushes errors onto a thread-local queue, and an isolate may resume
+// on a different OS thread after an `await`. So consume errors right after the
+// failing call, using _checkOp / _checkData or ERR_clear_error, rather than
+// deferring it to a `finally` or BoringArena release that may run after an
+// `await`. In tests, checkErrorStack fails if errors are left behind.
+
 /// Throw [OperationError] if [condition] is `false`.
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
@@ -203,8 +209,8 @@ Future<bool> _verifyStream(
       signature.length,
     );
     if (result != 1) {
-      // TODO: We should always clear errors, when returning from any
-      //       function that uses BoringSSL.
+      // An invalid signature is a `false` result, not an error, so discard
+      // what BoringSSL pushed, right here (see the comment above _checkOp).
       // Note: In this case we could probably assert that error is just
       //       signature related.
       ssl.ERR_clear_error();

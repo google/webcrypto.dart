@@ -22,9 +22,9 @@ Future<T> checkErrorStack<T>(FutureOr<T> Function() fn) async {
   // Always clear the error stack
   ssl.ERR_clear_error();
 
-  // TODO: Do this in every finally{} instead and use BoringArena to do it.
-  //       Then have an assert that there is no errors.
-  //       That way we clear errors in production and fail on them in testing.
+  // Operations must consume BoringSSL errors right after each failing call
+  // (see _checkOp in lib/src/impl_ffi/impl_ffi.utils.dart), so fail the test
+  // if any are left behind.
   final ret = await fn();
   // Formats the first error (if any) and always clears the error stack.
   final err = ssl.extractBoringSslError();
