@@ -19,6 +19,8 @@ import 'package:hooks/hooks.dart';
 import 'package:native_toolchain_cmake/native_toolchain_cmake.dart';
 
 const _assetName = 'webcrypto.dart';
+const _libraryName = 'webcrypto';
+const _buildFromSourceDefine = 'build_from_source';
 
 Future<void> main(List<String> args) async {
   await build(args, (input, output) async {
@@ -33,14 +35,32 @@ Future<void> main(List<String> args) async {
     final packageRoot = input.packageRoot;
     final installDir = input.outputDirectory.resolve('install/');
     final sourceDir = packageRoot.resolve('src/');
+    final prebuiltAsset = input.prebuiltAsset;
+
+    if (!input.userDefines.buildFromSource && prebuiltAsset.existsSync()) {
+      stdout.writeln(
+        'webcrypto: using prebuilt native asset for '
+        '${input.targetName}.',
+      );
+      output.assets.code.add(
+        CodeAsset(
+          package: input.packageName,
+          name: _assetName,
+          linkMode: DynamicLoadingBundled(),
+          file: prebuiltAsset.uri,
+        ),
+      );
+      output.dependencies.add(prebuiltAsset.uri);
+      return;
+    }
 
     stdout.writeln(
       'webcrypto: building native asset for '
-      '${input.config.code.targetOS}-${input.config.code.targetArchitecture}.',
+      '${input.targetName}.',
     );
 
     final builder = CMakeBuilder.create(
-      name: 'webcrypto',
+      name: _libraryName,
       sourceDir: sourceDir,
       defines: {
         'CMAKE_BUILD_TYPE': 'Release',
@@ -67,6 +87,29 @@ Future<void> main(List<String> args) async {
 
     output.dependencies.addAll(_buildDependencies(packageRoot));
   });
+}
+
+extension on BuildInput {
+  File get prebuiltAsset {
+    final libraryFileName = config.code.targetOS.dylibFileName(_libraryName);
+    return File.fromUri(
+      packageRoot.resolve('prebuilt/$targetName/$libraryFileName'),
+    );
+  }
+
+  String get targetName {
+    final code = config.code;
+    final os = code.targetOS;
+    final arch = code.targetArchitecture;
+    if (os == OS.iOS) {
+      return '${os.name}-${code.iOS.targetSdk.type}-${arch.name}';
+    }
+    return '${os.name}-${arch.name}';
+  }
+}
+
+extension on HookInputUserDefines {
+  bool get buildFromSource => this[_buildFromSourceDefine] == true;
 }
 
 final _buildDependencyExtensions = {
