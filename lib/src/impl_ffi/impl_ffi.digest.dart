@@ -72,7 +72,7 @@ abstract class _HashImpl implements HashImpl {
   /// https://www.iana.org/assignments/jose/jose.xhtml
   String get hmacJwkAlg;
 
-  /// Recommended HMAC key length in bits.
+  /// HMAC key length in bits when no length is specified.
   ///
   /// Web Crypto defines this as the block size of the hash function.
   int get hmacBlockSizeInBits;
