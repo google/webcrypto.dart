@@ -166,30 +166,7 @@ String? _extractError() {
   }
 }
 
-class _SslAllocator implements Allocator {
-  const _SslAllocator();
-
-  /// Allocate [byteCount] bytes.
-  ///
-  /// Must be de-allocated with [free].
-  @override
-  ffi.Pointer<T> allocate<T extends ffi.NativeType>(
-    int byteCount, {
-    int? alignment,
-  }) {
-    final p = ssl.OPENSSL_malloc(byteCount);
-    _checkOp(p.address != 0, fallback: 'allocation failure');
-    return p.cast<T>();
-  }
-
-  /// Release memory allocated with [allocate].
-  @override
-  void free(ffi.Pointer pointer) {
-    ssl.OPENSSL_free(pointer.cast());
-  }
-}
-
-const _sslAlloc = _SslAllocator();
+const _sslAlloc = ssl.opensslAllocator;
 
 class _ScopeEntry {
   final Object? handle;
@@ -331,8 +308,7 @@ extension on _Scope {
   }
 
   ffi.Pointer<CBB> createCBB([int sizeHint = 4096]) {
-    final cbbSize = nativeWebcryptoGetCbbSize();
-    final cbb = allocate<ffi.Uint8>(cbbSize).cast<CBB>();
+    final cbb = this<CBB>();
     ssl.CBB_zero(cbb);
     _checkOp(ssl.CBB_init(cbb, sizeHint) == 1, fallback: 'allocation failure');
     defer(() => ssl.CBB_cleanup(cbb));

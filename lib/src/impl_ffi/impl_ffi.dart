@@ -24,15 +24,12 @@ import 'dart:isolate';
 import 'dart:ffi' as ffi;
 import 'dart:math' as math;
 import 'package:meta/meta.dart';
-import 'package:webcrypto/src/third_party/boringssl/generated_bindings.dart';
-import 'package:webcrypto/src/third_party/boringssl/generated_bindings.dart'
-    as ssl;
+import 'package:boring/bindings.dart';
+import 'package:boring/bindings.dart' as ssl;
 
 import '../jsonwebkey.dart' show JsonWebKey;
 import '../webcrypto/webcrypto.dart';
 import '../impl_interface/impl_interface.dart';
-import '../boringssl/lookup/lookup.dart'
-    show nativeWebcryptoGetCbbSize, ERR_GET_LIB, ERR_GET_REASON;
 
 part 'impl_ffi.aescbc.dart';
 part 'impl_ffi.aesctr.dart';

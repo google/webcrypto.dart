@@ -263,7 +263,9 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
     final privRSA = scope.createRSA();
 
     final e = scope.createBN();
-    _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
+    // Use BN_set_u64, not BN_set_word: package:boring binds BN_ULONG as
+    // Uint64, but it is 32 bits wide on 32-bit targets.
+    _checkOpIsOne(ssl.BN_set_u64(e, publicExponent.toInt()));
 
     _checkOpIsOne(
       await _RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr),

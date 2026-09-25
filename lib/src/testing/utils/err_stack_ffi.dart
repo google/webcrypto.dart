@@ -17,8 +17,7 @@ import 'dart:convert';
 import 'dart:ffi' as ffi;
 
 import 'package:ffi/ffi.dart' as ffi;
-import 'package:webcrypto/src/third_party/boringssl/generated_bindings.dart'
-    as ssl;
+import 'package:boring/bindings.dart' as ssl;
 
 import 'utils.dart';
 
