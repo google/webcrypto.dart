@@ -60,6 +60,7 @@ download() {
     local destination="$2"
     local url="$CHROMIUM_REPOSITORY/+/$REVISION/$source_path?format=TEXT"
 
+    # Gitiles returns file contents as base64 when format=TEXT is requested.
     curl --fail --location --silent --show-error "$url" |
         python3 -c 'import base64, sys; sys.stdout.buffer.write(base64.b64decode(sys.stdin.buffer.read()))' \
         > "$destination"
