@@ -1,6 +1,7 @@
 # 0.6.2-wip
 * Fixed JS interop to enable WebAssembly.
 * Fixed native RSA public-key JWK imports to reject private key material.
+* Upgrade `ffigen` and `hooks` versions.
 * Fixed native HKDF output-length validation to reject oversized requests
   before allocating memory.
 

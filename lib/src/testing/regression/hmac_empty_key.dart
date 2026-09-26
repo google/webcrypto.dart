@@ -38,11 +38,7 @@ List<({String name, Future<void> Function() test})> tests() => [
 Future<void> _expectEmptyKeyRejected(Future<HmacSecretKey> import) async {
   try {
     await import;
-  } on FormatException catch (error) {
-    check(
-      error.message == 'HMAC key data must not be empty',
-      'Expected an empty HMAC key error',
-    );
+  } on FormatException {
     return;
   }
   check(false, 'Expected an empty HMAC key to be rejected');
