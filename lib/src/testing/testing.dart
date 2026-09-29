@@ -31,6 +31,7 @@ import 'webcrypto/rsassapkcs1v15.dart' as rsassapkcs1v15;
 import 'webcrypto/random.dart' as random;
 import 'webcrypto/digest.dart' as digest;
 import 'regression/issue_302_hmac_jwk_length.dart' as issue_302_hmac_jwk_length;
+import 'regression/hmac_signature_snapshot.dart' as hmac_signature_snapshot;
 import 'regression/aes_gcm_invalid_tag_length.dart'
     as aes_gcm_invalid_tag_length;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
@@ -69,6 +70,7 @@ void runAllTests(
     ...random.tests(),
     ...digest.tests(),
     ...issue_302_hmac_jwk_length.tests(),
+    ...hmac_signature_snapshot.tests(),
     ...aes_gcm_invalid_tag_length.tests(),
     ...ecdh_derive_bits.tests(),
     ...issue_60_trailing_bytes.tests(),
