@@ -33,6 +33,7 @@ Future<void> main(List<String> args) async {
     final packageRoot = input.packageRoot;
     final installDir = input.outputDirectory.resolve('install/');
     final sourceDir = packageRoot.resolve('src/');
+    final sanitizer = input.config.code.sanitizer;
 
     stdout.writeln(
       'webcrypto: building native asset for '
@@ -45,6 +46,10 @@ Future<void> main(List<String> args) async {
       defines: {
         'CMAKE_BUILD_TYPE': 'Release',
         'CMAKE_INSTALL_PREFIX': installDir.toFilePath(),
+        if (sanitizer != null) 'CMAKE_TOOLCHAIN_FILE': '',
+        if (sanitizer != null) 'CMAKE_C_COMPILER': 'clang',
+        if (sanitizer != null) 'CMAKE_CXX_COMPILER': 'clang++',
+        if (sanitizer != null) 'WEBCRYPTO_SANITIZER': sanitizer.name,
       },
       targets: ['install'],
     );
