@@ -77,6 +77,7 @@ final _buildDependencyExtensions = {
   '.cmake',
   '.cpp',
   '.h',
+  '.inc',
 };
 
 Iterable<Uri> _buildDependencies(Uri packageRoot) sync* {
@@ -95,7 +96,8 @@ Iterable<Uri> _filesForBuild(Directory root) sync* {
     if (entity is! File) {
       continue;
     }
-    if (!_buildDependencyExtensions.any(entity.uri.path.endsWith)) {
+    if (entity.uri.pathSegments.last != 'CMakeLists.txt' &&
+        !_buildDependencyExtensions.any(entity.uri.path.endsWith)) {
       continue;
     }
     yield entity.uri;
