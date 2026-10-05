@@ -18,6 +18,8 @@ import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
 import 'package:native_toolchain_cmake/native_toolchain_cmake.dart';
 
+import 'build_dependencies.dart';
+
 const _assetName = 'webcrypto.dart';
 
 Future<void> main(List<String> args) async {
@@ -65,39 +67,6 @@ Future<void> main(List<String> args) async {
       );
     }
 
-    output.dependencies.addAll(_buildDependencies(packageRoot));
+    output.dependencies.addAll(buildDependencies(packageRoot));
   });
-}
-
-final _buildDependencyExtensions = {
-  '.S',
-  '.asm',
-  '.c',
-  '.cc',
-  '.cmake',
-  '.cpp',
-  '.h',
-};
-
-Iterable<Uri> _buildDependencies(Uri packageRoot) sync* {
-  yield* _filesForBuild(Directory.fromUri(packageRoot.resolve('src/')));
-  yield* _filesForBuild(
-    Directory.fromUri(packageRoot.resolve('third_party/boringssl/')),
-  );
-}
-
-Iterable<Uri> _filesForBuild(Directory root) sync* {
-  if (!root.existsSync()) {
-    return;
-  }
-
-  for (final entity in root.listSync(recursive: true, followLinks: false)) {
-    if (entity is! File) {
-      continue;
-    }
-    if (!_buildDependencyExtensions.any(entity.uri.path.endsWith)) {
-      continue;
-    }
-    yield entity.uri;
-  }
 }
