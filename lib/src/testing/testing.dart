@@ -37,6 +37,7 @@ import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
 import 'regression/ecdh_invalid_length.dart' as ecdh_invalid_length;
 import 'ecdh/derive_bits.dart' as ecdh_derive_bits;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
+import 'regression/hmac_large_generated_key.dart' as hmac_large_generated_key;
 import 'regression/jwk_base64url.dart' as jwk_base64url;
 import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
 import 'regression/rsa_modulus_length.dart' as rsa_modulus_length;
@@ -77,6 +78,7 @@ void runAllTests(
     ...ecdh_invalid_length.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
     ...rsa_modulus_length.tests(),
+    ...hmac_large_generated_key.tests(),
   ];
 
   for (final (:name, :test) in allTests) {
