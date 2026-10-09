@@ -55,3 +55,11 @@ void _checkRsaModulusLength(int modulusLength) {
     );
   }
 }
+
+void _checkRsaPrivateJwk(Map<String, dynamic> jwk) {
+  if (jwk.containsKey('oth')) {
+    throw const FormatException(
+      'Multi-prime RSA private keys are not supported',
+    );
+  }
+}

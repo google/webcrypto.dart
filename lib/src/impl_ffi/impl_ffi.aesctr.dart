@@ -252,7 +252,13 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     int length,
   ) {
     _checkArguments(counter, length);
-    return _aesCtrEncryptOrDecrypt(_key, false, data, counter, length);
+    return _aesCtrEncryptOrDecrypt(
+      _key,
+      false,
+      data,
+      Uint8List.fromList(counter),
+      length,
+    );
   }
 
   @override
@@ -274,7 +280,13 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     int length,
   ) {
     _checkArguments(counter, length);
-    return _aesCtrEncryptOrDecrypt(_key, true, data, counter, length);
+    return _aesCtrEncryptOrDecrypt(
+      _key,
+      true,
+      data,
+      Uint8List.fromList(counter),
+      length,
+    );
   }
 
   @override
