@@ -55,7 +55,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
   //       what chrome does, how firefox passes tests. And check if other
   //       primitives that accept an iv/nonce has size limitations on it.
 
-  return _Scope.async((scope) async {
+  return BoringArena.run((scope) async {
     assert(key.length == 16 || key.length == 32);
     final aead = key.length == 16
         ? ssl.EVP_aead_aes_128_gcm()
@@ -64,7 +64,7 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
     final ctx = scope.create(
       () => ssl.EVP_AEAD_CTX_new(
         aead,
-        scope.dataAsPointer(key),
+        scope.copyBytes(key),
         key.length,
         tagLength ~/ 8,
       ),
@@ -81,11 +81,11 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
           out,
           outLen,
           maxOut,
-          scope.dataAsPointer(iv),
+          scope.copyBytes(iv),
           iv.length,
-          scope.dataAsPointer(data),
+          scope.copyBytes(data),
           data.length,
-          scope.dataAsPointer(additionalData_),
+          scope.copyBytes(additionalData_),
           additionalData_.length,
         ),
       );
@@ -99,11 +99,11 @@ Future<Uint8List> _aesGcmEncryptDecrypt(
           out,
           outLen,
           data.length,
-          scope.dataAsPointer(iv),
+          scope.copyBytes(iv),
           iv.length,
-          scope.dataAsPointer(data),
+          scope.copyBytes(data),
           data.length,
-          scope.dataAsPointer(additionalData_),
+          scope.copyBytes(additionalData_),
           additionalData_.length,
         ),
       );

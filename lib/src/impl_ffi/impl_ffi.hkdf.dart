@@ -64,17 +64,17 @@ final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
       throw operationError(lengthTooLong);
     }
 
-    return _Scope.async((scope) async {
+    return BoringArena.run((scope) async {
       final out = scope<ffi.Uint8>(lengthInBytes);
       final r = ssl.HKDF(
         out,
         lengthInBytes,
         md,
-        scope.dataAsPointer(_key),
+        scope.copyBytes(_key),
         _key.length,
-        scope.dataAsPointer(salt),
+        scope.copyBytes(salt),
         salt.length,
-        scope.dataAsPointer(info),
+        scope.copyBytes(info),
         info.length,
       );
       if (r != 1) {

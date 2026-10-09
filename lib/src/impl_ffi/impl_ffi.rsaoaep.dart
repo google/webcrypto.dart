@@ -105,7 +105,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   List<int> data, {
   List<int>? label,
 }) async {
-  return _Scope.sync((scope) {
+  return BoringArena.run((scope) {
     final ctx = scope.create(
       () => ssl.EVP_PKEY_CTX_new.invoke(key, ffi.nullptr),
       ssl.EVP_PKEY_CTX_free,
@@ -119,14 +119,14 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
 
     // Copy and set label
     if (label != null && label.isNotEmpty) {
-      final plabel = scope.dataAsPointer<ffi.Uint8>(label);
+      final plabel = scope.copyBytes<ffi.Uint8>(label);
       _checkOpIsOne(
         ssl.EVP_PKEY_CTX_set0_rsa_oaep_label(ctx, plabel, label.length),
       );
       scope.move(plabel);
     }
 
-    final input = scope.dataAsPointer<ffi.Uint8>(data);
+    final input = scope.copyBytes<ffi.Uint8>(data);
     final plen = scope<ffi.Size>();
     plen.value = 0;
     _checkOpIsOne(

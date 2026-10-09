@@ -146,12 +146,12 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) {
-    return _Scope.async((scope) async {
+    return BoringArena.run((scope) async {
       final ctx = scope.create(ssl.HMAC_CTX_new, ssl.HMAC_CTX_free);
       _checkOpIsOne(
         ssl.HMAC_Init_ex(
           ctx,
-          scope.dataAsPointer(_keyData),
+          scope.copyBytes(_keyData),
           _keyData.length,
           _hash._md,
           ffi.nullptr,
@@ -191,10 +191,10 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
     if (signature.length != other.length) {
       return false;
     }
-    return _Scope.sync((scope) {
+    return BoringArena.run((scope) {
       final cmp = ssl.CRYPTO_memcmp(
-        scope.dataAsPointer(signature),
-        scope.dataAsPointer(other),
+        scope.copyBytes(signature),
+        scope.copyBytes(other),
         other.length,
       );
       return cmp == 0;
