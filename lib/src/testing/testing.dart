@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'utils/detected_runtime.dart' show detectedRuntime;
 import 'utils/testrunner.dart' show TestRunner;
 
 // TestRunner implementations
@@ -30,17 +31,23 @@ import 'webcrypto/rsassapkcs1v15.dart' as rsassapkcs1v15;
 // Other test files, that don't use TestRunner
 import 'webcrypto/random.dart' as random;
 import 'webcrypto/digest.dart' as digest;
+import 'regression/aes_cbc_invalid_iv.dart' as aes_cbc_invalid_iv;
 import 'regression/issue_302_hmac_jwk_length.dart' as issue_302_hmac_jwk_length;
+import 'regression/hmac_signature_snapshot.dart' as hmac_signature_snapshot;
 import 'regression/aes_gcm_invalid_tag_length.dart'
     as aes_gcm_invalid_tag_length;
+import 'regression/aes_cbc_iv_snapshot.dart' as aes_cbc_iv_snapshot;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
 import 'regression/ecdh_invalid_length.dart' as ecdh_invalid_length;
 import 'regression/hmac_default_key_length.dart' as hmac_default_key_length;
 import 'ecdh/derive_bits.dart' as ecdh_derive_bits;
+import 'regression/hmac_empty_key.dart' as hmac_empty_key;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
+import 'regression/hmac_large_generated_key.dart' as hmac_large_generated_key;
 import 'regression/jwk_base64url.dart' as jwk_base64url;
 import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
 import 'regression/rsa_modulus_length.dart' as rsa_modulus_length;
+import 'regression/rsa_private_jwk_oth.dart' as rsa_private_jwk_oth;
 
 /// Test runners from all test files except `digest.dart` and
 /// `random.dart`, which do not use [TestRunner].
@@ -69,16 +76,22 @@ void runAllTests(
     for (final r in _testRunners) ...r.tests(),
     ...random.tests(),
     ...digest.tests(),
+    ...aes_cbc_invalid_iv.tests(),
     ...issue_302_hmac_jwk_length.tests(),
+    ...hmac_signature_snapshot.tests(),
     ...aes_gcm_invalid_tag_length.tests(),
+    ...aes_cbc_iv_snapshot.tests(),
     ...ecdh_derive_bits.tests(),
     ...issue_60_trailing_bytes.tests(),
     ...jwk_base64url.tests(),
     ...derive_bits_zero_length.tests(),
     ...ecdh_invalid_length.tests(),
-    ...hmac_default_key_length.tests(),
+    ...hmac_empty_key.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
     ...rsa_modulus_length.tests(),
+    // Firefox's Web Crypto implementation rejects this large key with UnknownError.
+    if (detectedRuntime != 'firefox') ...hmac_large_generated_key.tests(),
+    ...rsa_private_jwk_oth.tests(),
   ];
 
   for (final (:name, :test) in allTests) {
