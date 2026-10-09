@@ -89,7 +89,16 @@ Future<HmacSecretKeyImpl> hmacSecretKey_generateKey(
   final h = _HashImpl.fromHash(hash);
   length ??= ssl.EVP_MD_size(h._md) * 8;
   final keyData = Uint8List((length / 8).ceil());
-  fillRandomBytes(keyData);
+  const maxRandomBytes = 65536;
+  for (var offset = 0; offset < keyData.length; offset += maxRandomBytes) {
+    fillRandomBytes(
+      Uint8List.sublistView(
+        keyData,
+        offset,
+        math.min(offset + maxRandomBytes, keyData.length),
+      ),
+    );
+  }
 
   return _HmacSecretKeyImpl(_asUint8ListZeroedToBitLength(keyData, length), h);
 }
