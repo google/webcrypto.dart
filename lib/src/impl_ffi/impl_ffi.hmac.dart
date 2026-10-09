@@ -165,7 +165,18 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
       verifyStream(signature, Stream.value(data));
 
   @override
-  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) async {
+  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) {
+    // Snapshot caller-owned input before any asynchronous work. This matches
+    // Web Crypto semantics and keeps verification independent of mutations to
+    // the original list while the data stream is being consumed.
+    final signatureSnapshot = List<int>.of(signature, growable: false);
+    return _verifySignatureStream(signatureSnapshot, data);
+  }
+
+  Future<bool> _verifySignatureStream(
+    List<int> signature,
+    Stream<List<int>> data,
+  ) async {
     final other = await signStream(data);
     if (signature.length != other.length) {
       return false;
