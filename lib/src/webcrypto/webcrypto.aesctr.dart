@@ -42,33 +42,8 @@ final class AesCtrSecretKey {
   /// {@macro AES:no-support-for-AES-192}
   ///
   /// **Example**
-  /// ```dart
-  /// import 'dart:convert' show utf8;
-  /// import 'dart:typed_data' show Uint8List;
-  /// import 'package:webcrypto/webcrypto.dart';
   ///
-  /// Future<void> main() async {
-  ///   final rawKey = Uint8List(16);
-  ///   fillRandomBytes(rawKey);
-  ///
-  ///   // Import key from raw bytes
-  ///   final k = await AesCtrSecretKey.importRawKey(rawKey);
-  ///
-  ///   // Use a unique counter for each message.
-  ///   final ctr = Uint8List(16); // always 16 bytes
-  ///   fillRandomBytes(ctr);
-  ///
-  ///   // Length of the counter, the N'th right most bits of ctr are incremented
-  ///   // for each block, the left most 128 - N bits are used as static nonce.
-  ///   final N = 64;
-  ///
-  ///   // Encrypt a message
-  ///   final c = await k.encryptBytes(utf8.encode('hello world'), ctr, N);
-  ///
-  ///   // Decrypt message (requires the same counter ctr and length N)
-  ///   print(utf8.decode(await k.decryptBytes(c, ctr, N))); // hello world
-  /// }
-  /// ```
+  /// {@example /example/webcrypto/aes_ctr/import_raw_key.dart#example}
   static Future<AesCtrSecretKey> importRawKey(List<int> keyData) async {
     final impl = await webCryptImpl.aesCtrSecretKey.importRawKey(keyData);
     return AesCtrSecretKey._(impl);
