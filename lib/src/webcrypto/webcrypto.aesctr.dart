@@ -134,6 +134,7 @@ final class AesCtrSecretKey {
   /// }
   /// ```
   static Future<AesCtrSecretKey> generateKey(int length) async {
+    _checkAesKeyLength(length);
     final impl = await webCryptImpl.aesCtrSecretKey.generateKey(length);
     return AesCtrSecretKey._(impl);
   }
