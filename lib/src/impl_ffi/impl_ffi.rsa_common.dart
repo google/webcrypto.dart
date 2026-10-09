@@ -158,12 +158,6 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
       scope.move(dp); // ssl.RSA_set0_crt_params takes ownership
       scope.move(dq);
       scope.move(qi);
-
-      // Notice that 'jwk.oth' isn't supported by Chrome:
-      // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/rsa.cc#31
-      // This also appears to be ignored by Firefox:
-      // https://hg.mozilla.org/mozilla-central/file/38e6ad5fd7535be88e432075f76ec4a2dc294672/dom/crypto/CryptoKey.cpp#l588
-      // Thus, we follow Chrome and ignore property.
     }
 
     _checkDataIsOne(ssl.RSA_check_key(rsa), fallback: 'invalid RSA key');

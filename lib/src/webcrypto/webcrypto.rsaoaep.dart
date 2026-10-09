@@ -187,6 +187,7 @@ final class RsaOaepPrivateKey {
     Map<String, dynamic> jwk,
     Hash hash,
   ) async {
+    _checkRsaPrivateJwk(jwk);
     final impl = await webCryptImpl.rsaOaepPrivateKey.importJsonWebKey(
       _normalizeLegacyRsaOaepJwkAlg(jwk, hash),
       hash._impl,
