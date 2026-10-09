@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'utils/detected_runtime.dart' show detectedRuntime;
 import 'utils/testrunner.dart' show TestRunner;
 
 // TestRunner implementations
@@ -78,7 +79,8 @@ void runAllTests(
     ...ecdh_invalid_length.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
     ...rsa_modulus_length.tests(),
-    ...hmac_large_generated_key.tests(),
+    // Firefox's Web Crypto implementation rejects this large key with UnknownError.
+    if (detectedRuntime != 'firefox') ...hmac_large_generated_key.tests(),
   ];
 
   for (final (:name, :test) in allTests) {
