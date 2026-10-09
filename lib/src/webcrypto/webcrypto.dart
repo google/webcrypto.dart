@@ -61,6 +61,14 @@ void _checkAesKeyLength(int length) {
     throw UnsupportedError('192-bit AES keys are not supported');
   }
   if (length != 128 && length != 256) {
-    throw const FormatException('keyData for AES must be 128 or 256 bits');
+    throw const FormatException('AES key length must be 128 or 256 bits');
+  }
+}
+
+void _checkRsaPrivateJwk(Map<String, dynamic> jwk) {
+  if (jwk.containsKey('oth')) {
+    throw const FormatException(
+      'Multi-prime RSA private keys are not supported',
+    );
   }
 }

@@ -65,7 +65,8 @@ void main() async {
     generateKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
     importKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
     deriveParams: {},
-    maxDeriveLength: 32,
+    minDeriveLength: 256,
+    maxDeriveLength: 256,
   );
 
   // P-384: up to 384 bits (48 bytes)
@@ -73,7 +74,8 @@ void main() async {
     generateKeyParams: {'curve': curveToJson(EllipticCurve.p384)},
     importKeyParams: {'curve': curveToJson(EllipticCurve.p384)},
     deriveParams: {},
-    maxDeriveLength: 48,
+    minDeriveLength: 384,
+    maxDeriveLength: 384,
   );
 
   // P-521: up to 528 bits (66 bytes)
@@ -81,7 +83,8 @@ void main() async {
     generateKeyParams: {'curve': curveToJson(EllipticCurve.p521)},
     importKeyParams: {'curve': curveToJson(EllipticCurve.p521)},
     deriveParams: {},
-    maxDeriveLength: 66,
+    minDeriveLength: 528,
+    maxDeriveLength: 528,
   );
 
   log('--------------------');
