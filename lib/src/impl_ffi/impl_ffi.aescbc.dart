@@ -42,7 +42,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
 
     final ivSize = ssl.EVP_CIPHER_iv_length(cipher);
     if (iv.length != ivSize) {
-      throw ArgumentError.value(iv, 'iv', 'must be $ivSize bytes');
+      throw operationError('iv must be $ivSize bytes');
     }
 
     final ctx = scope.createEVP_CIPHER_CTX();

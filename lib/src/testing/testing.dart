@@ -30,6 +30,7 @@ import 'webcrypto/rsassapkcs1v15.dart' as rsassapkcs1v15;
 // Other test files, that don't use TestRunner
 import 'webcrypto/random.dart' as random;
 import 'webcrypto/digest.dart' as digest;
+import 'regression/aes_cbc_invalid_iv.dart' as aes_cbc_invalid_iv;
 import 'regression/issue_302_hmac_jwk_length.dart' as issue_302_hmac_jwk_length;
 import 'regression/hmac_signature_snapshot.dart' as hmac_signature_snapshot;
 import 'regression/aes_gcm_invalid_tag_length.dart'
@@ -71,6 +72,7 @@ void runAllTests(
     for (final r in _testRunners) ...r.tests(),
     ...random.tests(),
     ...digest.tests(),
+    ...aes_cbc_invalid_iv.tests(),
     ...issue_302_hmac_jwk_length.tests(),
     ...hmac_signature_snapshot.tests(),
     ...aes_gcm_invalid_tag_length.tests(),
