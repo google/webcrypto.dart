@@ -65,7 +65,7 @@ Future<void> main(List<String> args) async {
       );
     }
 
-    output.dependencies.addAll(_buildDependencies(packageRoot));
+    output.dependencies.addAll(buildDependencies(packageRoot));
   });
 }
 
@@ -80,7 +80,7 @@ final _buildDependencyExtensions = {
   '.inc',
 };
 
-Iterable<Uri> _buildDependencies(Uri packageRoot) sync* {
+Iterable<Uri> buildDependencies(Uri packageRoot) sync* {
   yield* _filesForBuild(Directory.fromUri(packageRoot.resolve('src/')));
   yield* _filesForBuild(
     Directory.fromUri(packageRoot.resolve('third_party/boringssl/')),
