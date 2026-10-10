@@ -70,6 +70,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
 
     // Allocate and output length integer
     final outLen = scope<ffi.Int>();
+    final decryptedChunks = encrypt ? null : <Uint8List>[];
 
     // Process data from source
     await for (final data in source) {
@@ -80,7 +81,12 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
 
         _checkOpIsOne(ssl.EVP_CipherUpdate(ctx, outBuf, outLen, inBuf, N));
         if (outLen.value > 0) {
-          yield outData.sublist(0, outLen.value);
+          final chunk = outData.sublist(0, outLen.value);
+          if (encrypt) {
+            yield chunk;
+          } else {
+            decryptedChunks!.add(chunk);
+          }
         }
         offset += N;
       }
@@ -88,7 +94,17 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
     // Output final block
     _checkOpIsOne(ssl.EVP_CipherFinal_ex(ctx, outBuf, outLen));
     if (outLen.value > 0) {
-      yield outData.sublist(0, outLen.value);
+      final chunk = outData.sublist(0, outLen.value);
+      if (encrypt) {
+        yield chunk;
+      } else {
+        decryptedChunks!.add(chunk);
+      }
+    }
+    if (!encrypt) {
+      for (final chunk in decryptedChunks!) {
+        yield chunk;
+      }
     }
   });
 }
