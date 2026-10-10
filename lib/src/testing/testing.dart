@@ -86,6 +86,7 @@ void runAllTests(
     ...jwk_base64url.tests(),
     ...derive_bits_zero_length.tests(),
     ...ecdh_invalid_length.tests(),
+    ...hmac_default_key_length.tests(),
     ...hmac_empty_key.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
     ...rsa_modulus_length.tests(),
