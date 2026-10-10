@@ -102,8 +102,8 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     Stream<List<int>> data,
     List<int> counter,
     int length,
-  ) async* {
-    yield await decryptBytes(await _bufferStream(data), counter, length);
+  ) {
+    return _cryptStream(data, Uint8List.fromList(counter), length, false);
   }
 
   @override
@@ -127,13 +127,25 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     Stream<List<int>> data,
     List<int> counter,
     int length,
+  ) {
+    return _cryptStream(data, Uint8List.fromList(counter), length, true);
+  }
+
+  Stream<Uint8List> _cryptStream(
+    Stream<List<int>> data,
+    Uint8List counter,
+    int length,
+    bool encrypt,
   ) async* {
-    yield await encryptBytes(await _bufferStream(data), counter, length);
+    final bytes = await _bufferStream(data);
+    yield await (encrypt
+        ? encryptBytes(bytes, counter, length)
+        : decryptBytes(bytes, counter, length));
   }
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'enc');
   }
 
   @override

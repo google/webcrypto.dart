@@ -42,7 +42,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
 
     final ivSize = ssl.EVP_CIPHER_iv_length(cipher);
     if (iv.length != ivSize) {
-      throw ArgumentError.value(iv, 'iv', 'must be $ivSize bytes');
+      throw operationError('iv must be $ivSize bytes');
     }
 
     final ctx = scope.createEVP_CIPHER_CTX();
@@ -125,7 +125,9 @@ final class _AesCbcSecretKeyImpl implements AesCbcSecretKeyImpl {
 
   @override
   Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async =>
-      await _bufferStream(decryptStream(Stream.value(data), iv));
+      await _bufferStream(
+        decryptStream(Stream.value(data), Uint8List.fromList(iv)),
+      );
 
   @override
   Stream<Uint8List> decryptStream(Stream<List<int>> data, List<int> iv) =>
@@ -133,7 +135,9 @@ final class _AesCbcSecretKeyImpl implements AesCbcSecretKeyImpl {
 
   @override
   Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async =>
-      await _bufferStream(encryptStream(Stream.value(data), iv));
+      await _bufferStream(
+        encryptStream(Stream.value(data), Uint8List.fromList(iv)),
+      );
 
   @override
   Stream<Uint8List> encryptStream(Stream<List<int>> data, List<int> iv) =>

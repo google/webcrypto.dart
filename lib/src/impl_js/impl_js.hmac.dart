@@ -164,13 +164,21 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
   }
 
   @override
-  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) async {
+  Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) {
+    final signatureSnapshot = List<int>.of(signature, growable: false);
+    return _verifySignatureStream(signatureSnapshot, data);
+  }
+
+  Future<bool> _verifySignatureStream(
+    List<int> signature,
+    Stream<List<int>> data,
+  ) async {
     return await verifyBytes(signature, await _bufferStream(data));
   }
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'sig');
   }
 
   @override
