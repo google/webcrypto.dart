@@ -17,15 +17,19 @@ import 'dart:typed_data';
 
 import 'package:webcrypto/webcrypto.dart';
 
-/// Exercises FFI ownership and cleanup paths while Valgrind inspects the
-/// process. This deliberately avoids `package:test` so the monitored process
-/// contains only the crypto workload and its memory-pressure allocations.
+/// Runs the memory-safety workload without the `package:test` runtime so
+/// Valgrind only observes the crypto operations and pressure allocations.
 Future<void> main() async {
+  await exerciseFfiMemorySafety();
+  // ignore: avoid_print
+  print('Cryptographic operations survived memory pressure.');
+}
+
+/// Exercises FFI ownership and cleanup paths under native memory tooling.
+Future<void> exerciseFfiMemorySafety() async {
   await _exerciseSymmetricOperations();
   await _exerciseAsymmetricKeyOwnership();
   await _exerciseCleanupAfterFailedImports();
-  // ignore: avoid_print
-  print('Cryptographic operations survived memory pressure.');
 }
 
 Future<void> _exerciseSymmetricOperations() async {

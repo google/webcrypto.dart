@@ -42,7 +42,7 @@ jobs:
           sudo apt-get install -y ninja-build libgtk-3-dev
           flutter config --no-analytics
       - run: flutter pub get
-      - run: xvfb-run dart test --exclude-tags browser-interop -p vm,chrome,firefox -c dart2js,dart2wasm --coverage ./coverage
+      - run: xvfb-run dart test --exclude-tags 'browser-interop || sanitizer' -p vm,chrome,firefox -c dart2js,dart2wasm --coverage ./coverage
       - run: xvfb-run flutter test integration_test/webcrypto_test.dart -d linux
         working-directory: ./example/webcrypto_demo_flutter_app
       # Report collected coverage
@@ -61,7 +61,18 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y valgrind
       - run: dart pub get --no-example
-      - run: xvfb-run dart test --exclude-tags browser-interop -p vm,chrome,firefox -c dart2js,dart2wasm
+      - run: xvfb-run dart test --exclude-tags 'browser-interop || sanitizer' -p vm,chrome,firefox -c dart2js,dart2wasm
+  linux-asan:
+    name: Linux ASan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
+        with:
+          sdk: 3.14.0-281.0.dev
+      - run: dart pub get --no-example
+      - run: dart test -c cli -p vm-asan test/ffi/sanitizer_test.dart
   macos:
     name: MacOS desktop / Chrome
     runs-on: macos-15 # Test with xcode 16
@@ -76,7 +87,7 @@ jobs:
         run: |
           flutter config --no-analytics
       - run: flutter pub get
-      - run: dart test --exclude-tags browser-interop -p vm,chrome -c dart2js,dart2wasm
+      - run: dart test --exclude-tags 'browser-interop || sanitizer' -p vm,chrome -c dart2js,dart2wasm
       - run: flutter test integration_test/webcrypto_test.dart -d macos --timeout 5m
         working-directory: ./example/webcrypto_demo_flutter_app
   windows:
@@ -94,7 +105,7 @@ jobs:
         run: |
           flutter config --no-analytics
       - run: flutter pub get
-      - run: dart test --exclude-tags browser-interop -p vm,chrome,firefox
+      - run: dart test --exclude-tags 'browser-interop || sanitizer' -p vm,chrome,firefox
       - run: flutter test integration_test/webcrypto_test.dart -d windows
         working-directory: ./example/webcrypto_demo_flutter_app
   ios:

@@ -22,6 +22,25 @@ project(webcrypto)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(DEFINED WEBCRYPTO_SANITIZER)
+  if(WEBCRYPTO_SANITIZER STREQUAL "asan")
+    set(WEBCRYPTO_SANITIZER_FLAG "-fsanitize=address")
+  elseif(WEBCRYPTO_SANITIZER STREQUAL "msan")
+    set(WEBCRYPTO_SANITIZER_FLAG "-fsanitize=memory")
+  elseif(WEBCRYPTO_SANITIZER STREQUAL "tsan")
+    set(WEBCRYPTO_SANITIZER_FLAG "-fsanitize=thread")
+  else()
+    message(FATAL_ERROR "Unsupported sanitizer: ${WEBCRYPTO_SANITIZER}")
+  endif()
+
+  set(CMAKE_C_FLAGS
+      "${CMAKE_C_FLAGS} ${WEBCRYPTO_SANITIZER_FLAG} -fno-omit-frame-pointer")
+  set(CMAKE_CXX_FLAGS
+      "${CMAKE_CXX_FLAGS} ${WEBCRYPTO_SANITIZER_FLAG} -fno-omit-frame-pointer")
+  set(CMAKE_SHARED_LINKER_FLAGS
+      "${CMAKE_SHARED_LINKER_FLAGS} ${WEBCRYPTO_SANITIZER_FLAG}")
+endif()
+
 enable_language(ASM)
 
 # Set as required by ../third_party/boringssl/sources.cmake included below
