@@ -104,30 +104,7 @@ final class RsaOaepPrivateKey {
   /// {@macro RSA-importKey:throws-FormatException-if-KeyData}
   ///
   /// **Example**
-  /// ```dart
-  /// import 'package:webcrypto/webcrypto.dart';
-  /// import 'package:pem/pem.dart';
-  ///
-  /// Future<void> main() async {
-  ///   // Read key data from PEM encoded block. This will remove the
-  ///   // '----BEGIN...' padding, decode base64 and return encoded bytes.
-  ///   List<int> keyData = PemCodec(PemLabel.privateKey).decode("""
-  ///     -----BEGIN PRIVATE KEY-----
-  ///     MIGEAgEAMBAGByqG...
-  ///     -----END PRIVATE KEY-----
-  ///   """);
-  ///
-  ///   // Import private key from binary PEM decoded data.
-  ///   final privateKey = await RsaOaepPrivateKey.importPkcs8Key(
-  ///     keyData,
-  ///     Hash.sha256,
-  ///   );
-  ///
-  ///   // Export the key again (print it in same format as it was given).
-  ///   List<int> rawKeyData = await privateKey.exportPkcs8Key();
-  ///   print(PemCodec(PemLabel.privateKey).encode(rawKeyData));
-  /// }
-  /// ```
+  /// {@example /example/webcrypto/rsa_oaep/import_pkcs8_key.dart#example}
   ///
   /// [1]: https://www.rfc-editor.org/rfc/rfc5208
   static Future<RsaOaepPrivateKey> importPkcs8Key(

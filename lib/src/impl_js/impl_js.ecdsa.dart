@@ -175,7 +175,7 @@ final class _EcdsaPrivateKeyImpl implements EcdsaPrivateKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'sig');
   }
 
   @override
@@ -243,7 +243,7 @@ final class _EcdsaPublicKeyImpl implements EcdsaPublicKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'sig');
   }
 
   @override

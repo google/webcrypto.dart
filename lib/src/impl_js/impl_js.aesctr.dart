@@ -145,7 +145,7 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
 
   @override
   Future<Map<String, dynamic>> exportJsonWebKey() async {
-    return await _exportJsonWebKey(_key);
+    return await _exportJsonWebKey(_key, jwkUse: 'enc');
   }
 
   @override

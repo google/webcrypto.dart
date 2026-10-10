@@ -125,6 +125,20 @@ void _checkData(bool condition, {String? message, String? fallback}) {
 void _checkDataIsOne(int retval, {String? message, String? fallback}) =>
     _checkData(retval == 1, message: message, fallback: fallback);
 
+/// Validate that [value] fits Web IDL's `unsigned long` type.
+void _checkUnsignedLong(int value, String name) {
+  if (value < 0 || value > 0xffffffff) {
+    throw ArgumentError.value(value, name, 'must be between 0 and 4294967295');
+  }
+}
+
+/// Validate that [value] can be passed to a signed 32-bit native parameter.
+void _checkInt32(int value, String name) {
+  if (value < -0x80000000 || value > 0x7fffffff) {
+    throw ArgumentError.value(value, name, 'must fit a signed 32-bit integer');
+  }
+}
+
 /// Extract latest error on this thread as [String] and clear the error queue
 /// for this thread.
 ///
