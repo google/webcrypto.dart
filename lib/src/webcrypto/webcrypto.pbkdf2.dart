@@ -92,7 +92,7 @@ final class Pbkdf2SecretKey {
     List<int> salt,
     int iterations,
   ) async {
-    _checkDeriveBitsLength(length);
+    checkUnsignedLong(length, 'length');
     return await _impl.deriveBits(length, hash._impl, salt, iterations);
   }
 }

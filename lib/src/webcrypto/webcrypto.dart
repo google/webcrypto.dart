@@ -56,16 +56,6 @@ void _checkRsaModulusLength(int modulusLength) {
   }
 }
 
-void _checkDeriveBitsLength(int length) {
-  if (length < 0 || length > 0xffffffff) {
-    throw ArgumentError.value(
-      length,
-      'length',
-      'must be between 0 and 2^32 - 1',
-    );
-  }
-}
-
 void _checkAesKeyLength(int length) {
   if (length == 192) {
     throw UnsupportedError('192-bit AES keys are not supported');
