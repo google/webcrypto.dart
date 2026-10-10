@@ -65,7 +65,7 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
         'Iterations <= 0 is not allowed for Pbkdf2SecretKey.deriveBits',
       );
     }
-    _checkUnsignedLong(iterations, 'iterations');
+    checkUnsignedLong(iterations, 'iterations');
     if (length == 0) {
       return Uint8List(0);
     }
