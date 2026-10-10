@@ -18,6 +18,12 @@ part of 'impl_js.dart';
 
 const _aesCtrAlgorithm = subtle.Algorithm(name: 'AES-CTR');
 
+void _checkAesCtrLength(int length) {
+  if (length <= 0 || 128 < length) {
+    throw ArgumentError.value(length, 'length', 'must be between 1 and 128');
+  }
+}
+
 Future<AesCtrSecretKeyImpl> aesCtr_importRawKey(List<int> keyData) async {
   return _AesCtrSecretKeyImpl(
     await _importKey(
@@ -87,6 +93,7 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     List<int> counter,
     int length,
   ) async {
+    _checkAesCtrLength(length);
     return await _decrypt(
       _aesCtrAlgorithm.update(
         counter: Uint8List.fromList(counter),
@@ -112,6 +119,7 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
     List<int> counter,
     int length,
   ) async {
+    _checkAesCtrLength(length);
     return await _encrypt(
       _aesCtrAlgorithm.update(
         counter: Uint8List.fromList(counter),
