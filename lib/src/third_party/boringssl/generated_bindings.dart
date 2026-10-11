@@ -145,7 +145,7 @@ external int BN_num_bytes(ffi.Pointer<BIGNUM> bn);
 
 /// BN_set_word sets |bn| to |value|. It returns one on success or zero on
 /// allocation failure.
-@ffi.Native<ffi.Int Function(ffi.Pointer<BIGNUM>, BN_ULONG)>(
+@ffi.Native<ffi.Int Function(ffi.Pointer<BIGNUM>, ffi.UintPtr)>(
   symbol: 'webcrypto_BN_set_word',
 )
 external int BN_set_word(ffi.Pointer<BIGNUM> bn, int value);
@@ -1758,8 +1758,6 @@ const int AES_BLOCK_SIZE = 16;
 typedef BIGNUM = bignum_st;
 typedef BN_CTX = bignum_ctx;
 typedef BN_GENCB = bn_gencb_st;
-typedef BN_ULONG = ffi.Uint64;
-typedef DartBN_ULONG = int;
 typedef CBB = cbb_st;
 typedef CBS = cbs_st;
 typedef ECDSA_SIG = ecdsa_sig_st;
