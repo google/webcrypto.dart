@@ -1,9 +1,34 @@
 # 0.6.2-wip
-* Fixed JS interop to enable WebAssembly.
-* Fixed native RSA public-key JWK imports to reject private key material.
-* Upgrade `ffigen` and `hooks` versions.
-* Fixed native HKDF output-length validation to reject oversized requests
-  before allocating memory.
+* Fixed incorrect RSA public exponents during native key generation on
+  32-bit platforms.
+* Fixed native AES-CTR processing of large stream chunks.
+* Snapshot AES-CBC IVs, AES-CTR counters, and HMAC signatures before
+  asynchronous processing so caller mutations do not change the operation.
+* Fixed HMAC JWK imports with an explicit key length and rejected empty
+  imported HMAC keys. Added support for generating HMAC keys larger than
+  the browser random-fill limit.
+* Fixed native ECDH and PBKDF2 derivation to support zero-length results.
+* Reject oversized native HKDF output lengths before allocating memory,
+  and reject overflowing PBKDF2 iteration counts and RSA-PSS salt lengths
+  before passing them to native code.
+* Validate browser ECDH output lengths, AES-GCM tag lengths, and RSA
+  modulus lengths before browser interop. Validate AES and HMAC key
+  generation lengths and supported typed-data inputs to `fillRandomBytes`.
+* Fixed AES-CBC invalid-IV errors and delivered RSA-PSS byte-operation
+  validation errors through the returned futures.
+* Reject trailing bytes in imported EC and RSA keys, malformed JWK
+  base64url values, private key material in native RSA public-key JWK
+  imports, and unsupported multi-prime RSA JWKs.
+* Fixed parsing of JSON-decoded RSA JWK `oth` entries and the RSA-OAEP
+  SHA-1 JWK algorithm identifier. Align browser JWK export `use` metadata
+  with native exports.
+* Fixed JS exception handling for WebAssembly builds.
+* Fixed stale native build-cache reuse after changes to CMake configuration
+  or BoringSSL include files.
+* Updated runtime dependencies to `hooks` 2.x and
+  `native_toolchain_cmake` 0.3.x.
+* Added documentation for `wrapKey` compatibility and clarified ECDH
+  imports, derivation limits, and RSA-OAEP plaintext size limits.
 
 # 0.6.1
 * Added Dart native build hooks and native asset lookup for the bundled
