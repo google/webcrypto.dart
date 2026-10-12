@@ -208,7 +208,7 @@ def classify_asm(path):
     if normalized == "crypto/hrss/asm/poly_rq_mul.S":
         return "linux_x86_64"
     if normalized.startswith("third_party/fiat/asm/"):
-        return "linux_x86_64"
+        return ("apple_x86_64", "linux_x86_64")
 
     return None
 
@@ -238,7 +238,9 @@ for file in (
 ):
     key = classify_asm(file)
     if key is not None:
-        asm_outputs[key].append(file)
+        keys = key if isinstance(key, tuple) else (key,)
+        for output_key in keys:
+            asm_outputs[output_key].append(file)
 
 payload = {
     "crypto_sources": sorted(bcm.get("srcs", []) + crypto.get("srcs", [])),
