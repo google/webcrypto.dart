@@ -50,6 +50,7 @@ import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
 import 'regression/rsa_modulus_length.dart' as rsa_modulus_length;
 import 'regression/rsa_private_jwk_oth.dart' as rsa_private_jwk_oth;
 import 'regression/rsa_pss_async_errors.dart' as rsa_pss_async_errors;
+import 'regression/rsa_signature_snapshot.dart' as rsa_signature_snapshot;
 
 /// Test runners from all test files except `digest.dart` and
 /// `random.dart`, which do not use [TestRunner].
@@ -97,6 +98,7 @@ void runAllTests(
     if (detectedRuntime != 'firefox') ...hmac_large_generated_key.tests(),
     ...rsa_private_jwk_oth.tests(),
     ...rsa_pss_async_errors.tests(),
+    ...rsa_signature_snapshot.tests(),
   ];
 
   for (final (:name, :test) in allTests) {
