@@ -220,7 +220,7 @@ final class _EcdsaPrivateKeyImpl implements EcdsaPrivateKeyImpl {
 
   @override
   Future<Uint8List> signBytes(List<int> data, HashImpl hash) =>
-      signStream(Stream.value(data), hash);
+      signStream(Stream.value(Uint8List.fromList(data)), hash);
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data, HashImpl hash) async {
