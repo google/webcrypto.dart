@@ -128,7 +128,7 @@ final class _RsaPssPrivateKeyImpl implements RsaPssPrivateKeyImpl {
 
   @override
   Future<Uint8List> signBytes(List<int> data, int saltLength) {
-    return signStream(Stream.value(data), saltLength);
+    return signStream(Stream.value(Uint8List.fromList(data)), saltLength);
   }
 
   @override
