@@ -38,7 +38,7 @@ abstract class _HashImpl implements HashImpl {
 
   @override
   Future<Uint8List> digestBytes(List<int> data) =>
-      digestStream(Stream.value(data));
+      digestStream(Stream.value(Uint8List.fromList(data)));
 
   @override
   Future<Uint8List> digestStream(Stream<List<int>> data) {
