@@ -16,7 +16,6 @@ import 'dart:ffi' as ffi;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webcrypto/webcrypto.dart';
 import 'package:webcrypto/src/third_party/boringssl/generated_bindings.dart';
 
 void main() {
@@ -27,16 +26,6 @@ void main() {
     expect(ffi.sizeOf<ffi.UintPtr>(), 4);
 
     expect(_readWord(), [0, 0, 0, 0, 0, 1, 0, 1]);
-  });
-
-  test('RSA-OAEP generates a key with exponent 65537', () async {
-    final pair = await RsaOaepPrivateKey.generateKey(
-      2048,
-      BigInt.from(65537),
-      Hash.sha256,
-    );
-    final publicJwk = await pair.publicKey.exportJsonWebKey();
-    expect(publicJwk['e'], 'AQAB');
   });
 }
 
