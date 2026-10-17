@@ -104,6 +104,23 @@ void main() {
     decryptCounter[15] = 1;
     expect(await _collectBytes(decrypting), equals(plaintext));
   });
+
+  test('AES-CTR byte operations snapshot the input', () async {
+    final key = await AesCtrSecretKey.importRawKey(Uint8List(16));
+    final plaintext = Uint8List.fromList([1, 2, 3]);
+    final counter = Uint8List(16);
+    final ciphertext = await key.encryptBytes(plaintext, counter, 128);
+
+    final encryptInput = Uint8List.fromList(plaintext);
+    final encrypting = key.encryptBytes(encryptInput, counter, 128);
+    encryptInput[0] ^= 1;
+    expect(await encrypting, equals(ciphertext));
+
+    final decryptInput = Uint8List.fromList(ciphertext);
+    final decrypting = key.decryptBytes(decryptInput, counter, 128);
+    decryptInput[0] ^= 1;
+    expect(await decrypting, equals(plaintext));
+  });
 }
 
 Future<Uint8List> _collectBytes(Stream<List<int>> stream) async {
