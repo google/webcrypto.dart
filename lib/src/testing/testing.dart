@@ -40,6 +40,7 @@ import 'regression/aes_gcm_invalid_tag_length.dart'
 import 'regression/aes_cbc_iv_snapshot.dart' as aes_cbc_iv_snapshot;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
 import 'regression/ecdh_invalid_length.dart' as ecdh_invalid_length;
+import 'regression/hmac_default_key_length.dart' as hmac_default_key_length;
 import 'ecdh/derive_bits.dart' as ecdh_derive_bits;
 import 'regression/hmac_empty_key.dart' as hmac_empty_key;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
@@ -90,6 +91,7 @@ void runAllTests(
     ...jwk_export_use.tests(),
     ...derive_bits_zero_length.tests(),
     ...ecdh_invalid_length.tests(),
+    ...hmac_default_key_length.tests(),
     ...hmac_empty_key.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
     ...rsa_modulus_length.tests(),
