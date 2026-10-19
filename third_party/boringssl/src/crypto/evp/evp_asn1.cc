@@ -238,7 +238,7 @@ EVP_PKEY *d2i_PrivateKey(int type, EVP_PKEY **out, const uint8_t **inp,
   });
 }
 
-// num_elements parses one SEQUENCE from |in| and returns the number of elements
+// num_elements parses one SEQUENCE from `in` and returns the number of elements
 // in it. On parse error, it returns zero.
 static size_t num_elements(const uint8_t *in, size_t in_len) {
   CBS cbs, sequence;
@@ -326,9 +326,9 @@ EVP_PKEY *d2i_PublicKey(int type, EVP_PKEY **out, const uint8_t **inp,
 
       // Unlike OpenSSL, we do not support EC keys with this API. The raw EC
       // public key serialization requires knowing the group. In OpenSSL,
-      // calling this function with |EVP_PKEY_EC| and setting |out| to
-      // nullptr does not work. It requires |*out| to include a
-      // partially-initialized |EVP_PKEY| to extract the group.
+      // calling this function with `EVP_PKEY_EC` and setting `out` to
+      // nullptr does not work. It requires `*out` to include a
+      // partially-initialized `EVP_PKEY` to extract the group.
       default:
         OPENSSL_PUT_ERROR(EVP, EVP_R_UNSUPPORTED_PUBLIC_KEY_TYPE);
         return nullptr;
@@ -380,8 +380,7 @@ int i2d_RSA_PUBKEY(const RSA *rsa, uint8_t **outp) {
   }
 
   UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  if (pkey == nullptr ||
-      !EVP_PKEY_set1_RSA(pkey.get(), const_cast<RSA *>(rsa))) {
+  if (pkey == nullptr || !EVP_PKEY_set1_RSA(pkey.get(), rsa)) {
     return -1;
   }
 
@@ -404,8 +403,7 @@ int i2d_DSA_PUBKEY(const DSA *dsa, uint8_t **outp) {
   }
 
   UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  if (pkey == nullptr ||
-      !EVP_PKEY_set1_DSA(pkey.get(), const_cast<DSA *>(dsa))) {
+  if (pkey == nullptr || !EVP_PKEY_set1_DSA(pkey.get(), dsa)) {
     return -1;
   }
 
@@ -430,8 +428,7 @@ int i2d_EC_PUBKEY(const EC_KEY *ec_key, uint8_t **outp) {
   }
 
   UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  if (pkey == nullptr ||
-      !EVP_PKEY_set1_EC_KEY(pkey.get(), const_cast<EC_KEY *>(ec_key))) {
+  if (pkey == nullptr || !EVP_PKEY_set1_EC_KEY(pkey.get(), ec_key)) {
     return -1;
   }
 

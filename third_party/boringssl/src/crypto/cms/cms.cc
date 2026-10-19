@@ -56,8 +56,9 @@ class CMSContentInfo : public CMS_ContentInfo_st {
 
 BSSL_NAMESPACE_END
 
-CMS_ContentInfo *CMS_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
-                          BIO *data, uint32_t flags) {
+CMS_ContentInfo *CMS_sign(const X509 *signcert, const EVP_PKEY *pkey,
+                          const STACK_OF(X509) *certs, BIO *data,
+                          uint32_t flags) {
   // We only support external signatures and do not support embedding
   // certificates in SignedData.
   if ((flags & CMS_DETACHED) == 0 || sk_X509_num(certs) != 0) {
@@ -75,8 +76,8 @@ CMS_ContentInfo *CMS_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
     return nullptr;
   }
 
-  // We don't actually use streaming mode, but Linux passes |CMS_STREAM| to
-  // |CMS_sign| and OpenSSL interprets it as an alias for |CMS_PARTIAL| in this
+  // We don't actually use streaming mode, but Linux passes `CMS_STREAM` to
+  // `CMS_sign` and OpenSSL interprets it as an alias for `CMS_PARTIAL` in this
   // context.
   if ((flags & (CMS_PARTIAL | CMS_STREAM)) == 0 &&
       !CMS_final(cms.get(), data, nullptr, flags)) {
@@ -88,8 +89,8 @@ CMS_ContentInfo *CMS_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
 
 void CMS_ContentInfo_free(CMS_ContentInfo *cms) { Delete(FromOpaque(cms)); }
 
-CMS_SignerInfo *CMS_add1_signer(CMS_ContentInfo *cms, X509 *signcert,
-                                EVP_PKEY *pkey, const EVP_MD *md,
+CMS_SignerInfo *CMS_add1_signer(CMS_ContentInfo *cms, const X509 *signcert,
+                                const EVP_PKEY *pkey, const EVP_MD *md,
                                 uint32_t flags) {
   auto *impl = FromOpaque(cms);
   if (  // Already finalized.
@@ -137,7 +138,7 @@ int CMS_final(CMS_ContentInfo *cms, BIO *data, BIO *dcont, uint32_t flags) {
       // We only support the straightforward passthrough mode, without S/MIME
       // translations.
       (flags & CMS_BINARY) == 0 ||
-      // We do not support |dcont|. It is unclear what it does.
+      // We do not support `dcont`. It is unclear what it does.
       dcont != nullptr) {
     OPENSSL_PUT_ERROR(CMS, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
     return 0;

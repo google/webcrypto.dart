@@ -87,14 +87,14 @@ static int X509_LOOKUP_by_subject(X509_LOOKUP *ctx, int type,
   if (ctx->method == nullptr || ctx->method->get_by_subject == nullptr) {
     return 0;
   }
-  // Note |get_by_subject| leaves |ret| in an inconsistent state. It has
-  // pointers to an |X509| or |X509_CRL|, but has not bumped the refcount yet.
+  // Note `get_by_subject` leaves `ret` in an inconsistent state. It has
+  // pointers to an `X509` or `X509_CRL`, but has not bumped the refcount yet.
   // For now, the caller is expected to fix this, but ideally we'd fix the
-  // |X509_LOOKUP| convention itself.
+  // `X509_LOOKUP` convention itself.
   return ctx->method->get_by_subject(ctx, type, name, ret) > 0;
 }
 
-// x509_object_cmp_name compares |a| against the specified type and name. This
+// x509_object_cmp_name compares `a` against the specified type and name. This
 // avoids needing to construct a reference certificate or CRL.
 static int x509_object_cmp_name(const X509_OBJECT *a, int type,
                                 const X509_NAME *name) {
@@ -149,6 +149,13 @@ int X509_STORE_up_ref(X509_STORE *store) {
   return 1;
 }
 
+X509_STORE *X509_STORE_dup_ref(const X509_STORE *store) {
+  if (store == nullptr) {
+    return nullptr;
+  }
+  return FromOpaque(store)->DupRefInternal();
+}
+
 void X509_STORE_free(X509_STORE *vfy) {
   if (vfy == nullptr) {
     return;
@@ -197,14 +204,14 @@ int X509_STORE_CTX_get_by_subject(X509_STORE_CTX *vs, int type,
   }
 
   // TODO(crbug.com/boringssl/685): This should call
-  // |X509_OBJECT_free_contents|.
+  // `X509_OBJECT_free_contents`.
   ret->type = tmp->type;
   ret->data = tmp->data;
   X509_OBJECT_up_ref_count(ret);
   return 1;
 }
 
-static int x509_store_add(X509Store *ctx, void *x, int is_crl) {
+static int x509_store_add(X509Store *ctx, const void *x, int is_crl) {
   if (x == nullptr) {
     return 0;
   }
@@ -216,12 +223,11 @@ static int x509_store_add(X509Store *ctx, void *x, int is_crl) {
 
   if (is_crl) {
     obj->type = X509_LU_CRL;
-    obj->data.crl = (X509_CRL *)x;
+    obj->data.crl = X509_CRL_dup_ref(static_cast<const X509_CRL *>(x));
   } else {
     obj->type = X509_LU_X509;
-    obj->data.x509 = (X509 *)x;
+    obj->data.x509 = X509_dup_ref(static_cast<const X509 *>(x));
   }
-  X509_OBJECT_up_ref_count(obj);
 
   ctx->objs_lock.LockWrite();
 
@@ -241,11 +247,11 @@ static int x509_store_add(X509Store *ctx, void *x, int is_crl) {
   return ret;
 }
 
-int X509_STORE_add_cert(X509_STORE *ctx, X509 *x) {
+int X509_STORE_add_cert(X509_STORE *ctx, const X509 *x) {
   return x509_store_add(FromOpaque(ctx), x, /*is_crl=*/0);
 }
 
-int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x) {
+int X509_STORE_add_crl(X509_STORE *ctx, const X509_CRL *x) {
   return x509_store_add(FromOpaque(ctx), x, /*is_crl=*/1);
 }
 
@@ -297,22 +303,22 @@ static int x509_object_idx_cnt(STACK_OF(X509_OBJECT) *h, int type,
                                const X509_NAME *name, int *out_num_match) {
   sk_X509_OBJECT_sort(h);
 
-  // Find the first matching object. |sk_X509_OBJECT_find| would require
-  // constructing an |X509| or |X509_CRL| object, so implement our own binary
+  // Find the first matching object. `sk_X509_OBJECT_find` would require
+  // constructing an `X509` or `X509_CRL` object, so implement our own binary
   // search.
   size_t start = 0, end = sk_X509_OBJECT_num(h);
   while (end - start > 1) {
-    // Bias |mid| towards |start|. The range has more than one element, so |mid|
+    // Bias `mid` towards `start`. The range has more than one element, so `mid`
     // is not the last element.
     size_t mid = start + (end - start - 1) / 2;
     assert(start <= mid && mid + 1 < end);
     int r = x509_object_cmp_name(sk_X509_OBJECT_value(h, mid), type, name);
     if (r < 0) {
-      start = mid + 1;  // |mid| is too low.
+      start = mid + 1;  // `mid` is too low.
     } else if (r > 0) {
-      end = mid;  // |mid| is too high.
+      end = mid;  // `mid` is too high.
     } else {
-      // |mid| matches, but we need to keep searching to find the first match.
+      // `mid` matches, but we need to keep searching to find the first match.
       end = mid + 1;
     }
   }
@@ -332,7 +338,7 @@ static int x509_object_idx_cnt(STACK_OF(X509_OBJECT) *h, int type,
     }
   }
 
-  assert(start <= INT_MAX);  // |STACK_OF(T)| never stores more than |INT_MAX|.
+  assert(start <= INT_MAX);  // `STACK_OF(T)` never stores more than `INT_MAX`.
   return static_cast<int>(start);
 }
 
@@ -501,7 +507,7 @@ int X509_STORE_CTX_get1_issuer(X509 **out_issuer, X509_STORE_CTX *ctx,
   X509_OBJECT_free_contents(&obj);
 
   // Else find index of first cert accepted by
-  // |x509_check_issued_with_callback|.
+  // `x509_check_issued_with_callback`.
   X509Store *store = FromOpaque(ctx->ctx);
   MutexWriteLock lock(&store->objs_lock);
   int idx = X509_OBJECT_idx_by_subject(store->objs.get(), X509_LU_X509, xn);
@@ -512,7 +518,7 @@ int X509_STORE_CTX_get1_issuer(X509 **out_issuer, X509_STORE_CTX *ctx,
       // See if we've run past the matches.
       //
       // This works because the objects are sorted by type, then subject
-      // name, using |x509_object_cmp|.
+      // name, using `x509_object_cmp`.
       if (pobj->type != X509_LU_X509) {
         return 0;
       }
