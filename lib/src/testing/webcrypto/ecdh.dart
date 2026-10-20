@@ -96,6 +96,13 @@ void main() async {
 // ignore_for_file: prefer_single_quotes
 final _testData = [
   {
+    "name": "reject PKCS8 key imported with the wrong curve",
+    "privatePkcs8KeyData":
+        "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg3aTiZ7odKAODYk4BpZlzulBCB/BptmxjtvrzyXI71UyhRANCAATl0GVa8O1sXXf2NV5qGJ/9/Vq8PVWCZuezADa1F0Vr2TaB8BseZIW+rhmEmLC2FfCdxj9NmLp00SilRTm40Hxm",
+    "importKeyParams": {"curve": "p-521"},
+    "importKeyException": "curve",
+  },
+  {
     "name": "generated on boringssl/linux at 2020-01-22T23:24:34",
     "privatePkcs8KeyData":
         "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg3aTiZ7odKAODYk4BpZlzulBCB/BptmxjtvrzyXI71UyhRANCAATl0GVa8O1sXXf2NV5qGJ/9/Vq8PVWCZuezADa1F0Vr2TaB8BseZIW+rhmEmLC2FfCdxj9NmLp00SilRTm40Hxm",
