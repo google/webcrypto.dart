@@ -63,6 +63,10 @@ class _TestCase {
   // Parameters for key import (always required)
   final Map<String, dynamic>? importKeyParams;
 
+  // If present, each supplied key import must throw an error containing this
+  // string. No other operation is run for this test case.
+  final String? importKeyException;
+
   // Parameters for sign/verify (required, if there is a signature)
   final Map<String, dynamic>? signVerifyParams;
 
@@ -87,6 +91,7 @@ class _TestCase {
     this.derivedBits,
     this.derivedLength,
     this.importKeyParams,
+    this.importKeyException,
     this.signVerifyParams,
     this.encryptDecryptParams,
     this.deriveParams,
@@ -112,6 +117,7 @@ class _TestCase {
       derivedBits: _optionalBase64Decode(json['derivedBits']),
       derivedLength: json['derivedLength'] as int?,
       importKeyParams: _optionalStringMapDecode(json['importKeyParams']),
+      importKeyException: json['importKeyException'] as String?,
       signVerifyParams: _optionalStringMapDecode(json['signVerifyParams']),
       encryptDecryptParams: _optionalStringMapDecode(
         json['encryptDecryptParams'],
@@ -136,6 +142,7 @@ class _TestCase {
       'derivedBits': _optionalBase64Encode(derivedBits),
       'derivedLength': derivedLength,
       'importKeyParams': importKeyParams,
+      'importKeyException': importKeyException,
       'signVerifyParams': signVerifyParams,
       'encryptDecryptParams': encryptDecryptParams,
       'deriveParams': deriveParams,
@@ -660,6 +667,31 @@ void _validateTestCase<PrivateKey, PublicKey>(
       c.publicSpkiKeyData != null ||
       c.publicJsonWebKeyData != null;
 
+  // Check that data matches the methods we have in the runner.
+  check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
+  check(r._importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
+  check(r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null);
+  check(r._importPublicRawKey != null || c.publicRawKeyData == null);
+  check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
+  check(r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
+
+  if (c.importKeyException != null) {
+    check(c.importKeyException!.isNotEmpty, 'Expected error must not be empty');
+    check(c.generateKeyParams == null);
+    check(hasPrivateKey || hasPublicKey, 'A key to import is required');
+    check(!r._isSymmetric || !hasPublicKey);
+    check(c.importKeyParams != null);
+    check(c.plaintext == null);
+    check(c.signature == null);
+    check(c.ciphertext == null);
+    check(c.derivedBits == null);
+    check(c.derivedLength == null);
+    check(c.signVerifyParams == null);
+    check(c.encryptDecryptParams == null);
+    check(c.deriveParams == null);
+    return;
+  }
+
   // Test that we have keys to import or generate some.
   if (r._isSymmetric) {
     check(!hasPublicKey);
@@ -699,14 +731,6 @@ void _validateTestCase<PrivateKey, PublicKey>(
   if (r._deriveBits != null) {
     check(c.derivedLength != null);
   }
-
-  // Check that data matches the methods we have in the runner.
-  check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
-  check(r._importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
-  check(r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null);
-  check(r._importPublicRawKey != null || c.publicRawKeyData == null);
-  check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
-  check(r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
 }
 
 void _runTests<PrivateKey, PublicKey>(
@@ -741,6 +765,85 @@ void _runTests<PrivateKey, PublicKey>(
       publicKey = pair.publicKey;
       privateKey = pair.privateKey;
     });
+  } else if (c.importKeyException != null) {
+    Future<void> expectImportError(Future<void> Function() importKey) async {
+      Object? caught;
+      try {
+        await importKey();
+      } catch (error) {
+        caught = error;
+      }
+      check(caught != null, 'Expected key import to throw');
+      check(
+        caught.toString().contains(c.importKeyException!),
+        'Unexpected key import error: $caught',
+      );
+    }
+
+    if (c.privateRawKeyData != null) {
+      test(
+        'importPrivateRawKey() throws',
+        () => expectImportError(() async {
+          await r._importPrivateRawKey!(
+            c.privateRawKeyData!,
+            c.importKeyParams!,
+          );
+        }),
+      );
+    }
+    if (c.privatePkcs8KeyData != null) {
+      test(
+        'importPrivatePkcs8Key() throws',
+        () => expectImportError(() async {
+          await r._importPrivatePkcs8Key!(
+            c.privatePkcs8KeyData!,
+            c.importKeyParams!,
+          );
+        }),
+      );
+    }
+    if (c.privateJsonWebKeyData != null) {
+      test(
+        'importPrivateJsonWebKey() throws',
+        () => expectImportError(() async {
+          await r._importPrivateJsonWebKey!(
+            c.privateJsonWebKeyData!,
+            c.importKeyParams!,
+          );
+        }),
+      );
+    }
+    if (c.publicRawKeyData != null) {
+      test(
+        'importPublicRawKey() throws',
+        () => expectImportError(() async {
+          await r._importPublicRawKey!(c.publicRawKeyData!, c.importKeyParams!);
+        }),
+      );
+    }
+    if (c.publicSpkiKeyData != null) {
+      test(
+        'importPublicSpkiKey() throws',
+        () => expectImportError(() async {
+          await r._importPublicSpkiKey!(
+            c.publicSpkiKeyData!,
+            c.importKeyParams!,
+          );
+        }),
+      );
+    }
+    if (c.publicJsonWebKeyData != null) {
+      test(
+        'importPublicJsonWebKey() throws',
+        () => expectImportError(() async {
+          await r._importPublicJsonWebKey!(
+            c.publicJsonWebKeyData!,
+            c.importKeyParams!,
+          );
+        }),
+      );
+    }
+    return;
   } else {
     test('import key-pair', () async {
       // Get a privateKey
