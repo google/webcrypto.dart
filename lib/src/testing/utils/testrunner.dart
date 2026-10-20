@@ -49,7 +49,7 @@ class _TestCase {
   final List<int>? publicSpkiKeyData;
   final Map<String, dynamic>? publicJsonWebKeyData;
 
-  // Plaintext to be signed, (always required)
+  // Plaintext to be signed or encrypted.
   final List<int>? plaintext;
   // Signature to be verified (invalid, if generateKeyParams != null)
   final List<int>? signature;
@@ -60,9 +60,13 @@ class _TestCase {
   // Number of bits to derive.
   final int? derivedLength;
 
-  // Parameters for key import (always required)
+  // Parameters for key import, when importing a key.
   final Map<String, dynamic>? importKeyParams;
 
+  // Operation expected to fail, with its error type and message.
+  final String? errorOperation;
+  final String? expectedErrorType;
+  final String? expectedErrorMessage;
   // Parameters for sign/verify (required, if there is a signature)
   final Map<String, dynamic>? signVerifyParams;
 
@@ -87,6 +91,9 @@ class _TestCase {
     this.derivedBits,
     this.derivedLength,
     this.importKeyParams,
+    this.errorOperation,
+    this.expectedErrorType,
+    this.expectedErrorMessage,
     this.signVerifyParams,
     this.encryptDecryptParams,
     this.deriveParams,
@@ -112,6 +119,9 @@ class _TestCase {
       derivedBits: _optionalBase64Decode(json['derivedBits']),
       derivedLength: json['derivedLength'] as int?,
       importKeyParams: _optionalStringMapDecode(json['importKeyParams']),
+      errorOperation: json['errorOperation'] as String?,
+      expectedErrorType: json['expectedErrorType'] as String?,
+      expectedErrorMessage: json['expectedErrorMessage'] as String?,
       signVerifyParams: _optionalStringMapDecode(json['signVerifyParams']),
       encryptDecryptParams: _optionalStringMapDecode(
         json['encryptDecryptParams'],
@@ -136,6 +146,9 @@ class _TestCase {
       'derivedBits': _optionalBase64Encode(derivedBits),
       'derivedLength': derivedLength,
       'importKeyParams': importKeyParams,
+      'errorOperation': errorOperation,
+      'expectedErrorType': expectedErrorType,
+      'expectedErrorMessage': expectedErrorMessage,
       'signVerifyParams': signVerifyParams,
       'encryptDecryptParams': encryptDecryptParams,
       'deriveParams': deriveParams,
@@ -660,6 +673,103 @@ void _validateTestCase<PrivateKey, PublicKey>(
       c.publicSpkiKeyData != null ||
       c.publicJsonWebKeyData != null;
 
+  // Check that data matches the methods we have in the runner.
+  check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
+  check(r._importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
+  check(r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null);
+  check(r._importPublicRawKey != null || c.publicRawKeyData == null);
+  check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
+  check(r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
+
+  check((c.errorOperation == null) == (c.expectedErrorType == null));
+  check((c.errorOperation == null) == (c.expectedErrorMessage == null));
+  if (c.errorOperation != null) {
+    check(c.expectedErrorType!.isNotEmpty, 'Expected error type is required');
+    check(
+      c.expectedErrorMessage!.isNotEmpty,
+      'Expected error message is required',
+    );
+    check(
+      const {
+        'generateKey',
+        'signBytes',
+        'verifyBytes',
+        'encryptBytes',
+        'decryptBytes',
+        'deriveBits',
+      }.contains(c.errorOperation),
+      'Unknown error operation',
+    );
+    if (c.errorOperation == 'generateKey') {
+      check(c.generateKeyParams != null);
+      check(!hasPrivateKey && !hasPublicKey);
+      check(c.importKeyParams == null);
+      check(c.plaintext == null && c.signature == null && c.ciphertext == null);
+      check(c.derivedBits == null && c.derivedLength == null);
+    } else {
+      check(c.generateKeyParams == null);
+      check(hasPrivateKey);
+      check(r._isSymmetric || hasPublicKey);
+      check(c.importKeyParams != null);
+      check(c.derivedBits == null);
+    }
+    check(
+      c.errorOperation == 'signBytes' ||
+          c.errorOperation == 'verifyBytes' ||
+          c.signVerifyParams == null,
+    );
+    check(
+      c.errorOperation == 'encryptBytes' ||
+          c.errorOperation == 'decryptBytes' ||
+          c.encryptDecryptParams == null,
+    );
+    check(c.errorOperation == 'deriveBits' || c.deriveParams == null);
+    check(
+      c.errorOperation != 'signBytes' ||
+          (r._signBytes != null &&
+              c.plaintext != null &&
+              c.signVerifyParams != null),
+    );
+    check(
+      c.errorOperation != 'verifyBytes' ||
+          (r._verifyBytes != null &&
+              c.plaintext != null &&
+              c.signature != null &&
+              c.signVerifyParams != null),
+    );
+    check(
+      c.errorOperation != 'encryptBytes' ||
+          (r._encryptBytes != null &&
+              c.plaintext != null &&
+              c.encryptDecryptParams != null),
+    );
+    check(
+      c.errorOperation != 'decryptBytes' ||
+          (r._decryptBytes != null &&
+              c.ciphertext != null &&
+              c.encryptDecryptParams != null),
+    );
+    check(
+      c.errorOperation != 'deriveBits' ||
+          (r._deriveBits != null &&
+              c.derivedLength != null &&
+              c.deriveParams != null),
+    );
+    check(
+      c.errorOperation == 'signBytes' ||
+          c.errorOperation == 'verifyBytes' ||
+          c.errorOperation == 'encryptBytes' ||
+          c.plaintext == null,
+    );
+    check(c.errorOperation == 'verifyBytes' || c.signature == null);
+    check(c.errorOperation == 'decryptBytes' || c.ciphertext == null);
+    check(
+      c.errorOperation == 'deriveBits' ||
+          (c.derivedBits == null && c.derivedLength == null),
+    );
+    return;
+  }
+
   // Test that we have keys to import or generate some.
   if (r._isSymmetric) {
     check(!hasPublicKey);
@@ -699,14 +809,6 @@ void _validateTestCase<PrivateKey, PublicKey>(
   if (r._deriveBits != null) {
     check(c.derivedLength != null);
   }
-
-  // Check that data matches the methods we have in the runner.
-  check(r._importPrivateRawKey != null || c.privateRawKeyData == null);
-  check(r._importPrivatePkcs8Key != null || c.privatePkcs8KeyData == null);
-  check(r._importPrivateJsonWebKey != null || c.privateJsonWebKeyData == null);
-  check(r._importPublicRawKey != null || c.publicRawKeyData == null);
-  check(r._importPublicSpkiKey != null || c.publicSpkiKeyData == null);
-  check(r._importPublicJsonWebKey != null || c.publicJsonWebKeyData == null);
 }
 
 void _runTests<PrivateKey, PublicKey>(
@@ -733,8 +835,40 @@ void _runTests<PrivateKey, PublicKey>(
   PublicKey? publicKey;
   PrivateKey? privateKey;
 
+  Future<void> expectError(
+    Future<void> Function() operation,
+    String type,
+    String message,
+  ) async {
+    Object? caught;
+    try {
+      await operation();
+    } catch (error) {
+      caught = error;
+    }
+    check(caught != null, 'Expected operation to throw');
+    check(
+      caught.runtimeType.toString() == type,
+      'Unexpected operation error type: ${caught.runtimeType}',
+    );
+    check(
+      caught.toString().contains(message),
+      'Unexpected operation error: $caught',
+    );
+  }
+
   if (c.generateKeyParams != null) {
     test('generateKeyPair()', () async {
+      if (c.errorOperation == 'generateKey') {
+        await expectError(
+          () async {
+            await r._generateKeyPair(c.generateKeyParams!);
+          },
+          c.expectedErrorType!,
+          c.expectedErrorMessage!,
+        );
+        return;
+      }
       final pair = await r._generateKeyPair(c.generateKeyParams!);
       check(pair.privateKey != null);
       check(pair.publicKey != null);
@@ -792,6 +926,66 @@ void _runTests<PrivateKey, PublicKey>(
         check(false, 'missing public key for importing');
       }
     });
+  }
+
+  if (c.errorOperation == 'generateKey') {
+    return;
+  }
+  if (c.errorOperation != null) {
+    test('${c.errorOperation}() throws', () async {
+      Future<void> operation() async {
+        switch (c.errorOperation) {
+          case 'signBytes':
+            await r._signBytes!(
+              privateKey as PrivateKey,
+              c.plaintext!,
+              c.signVerifyParams!,
+            );
+            return;
+          case 'verifyBytes':
+            await r._verifyBytes!(
+              publicKey as PublicKey,
+              c.signature!,
+              c.plaintext!,
+              c.signVerifyParams!,
+            );
+            return;
+          case 'encryptBytes':
+            await r._encryptBytes!(
+              publicKey as PublicKey,
+              c.plaintext!,
+              c.encryptDecryptParams!,
+            );
+            return;
+          case 'decryptBytes':
+            await r._decryptBytes!(
+              privateKey as PrivateKey,
+              c.ciphertext!,
+              c.encryptDecryptParams!,
+            );
+            return;
+          case 'deriveBits':
+            await r._deriveBits!(
+              (
+                privateKey: privateKey as PrivateKey,
+                publicKey: publicKey as PublicKey,
+              ),
+              c.derivedLength!,
+              c.deriveParams!,
+            );
+            return;
+          default:
+            throw StateError('Unknown error operation');
+        }
+      }
+
+      await expectError(
+        operation,
+        c.expectedErrorType!,
+        c.expectedErrorMessage!,
+      );
+    });
+    return;
   }
 
   //------------------------------ Create a signature for testing
