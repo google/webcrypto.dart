@@ -70,10 +70,14 @@ download 'LICENSE' "$TEMP_DIR/LICENSE"
 download \
     'components/test/data/webcrypto/bad_ec_keys.json' \
     "$TEMP_DIR/bad_ec_keys.json"
+download \
+    'components/test/data/webcrypto/sha.json' \
+    "$TEMP_DIR/sha.json"
 
 mkdir -p "$TARGET"
 mv "$TEMP_DIR/LICENSE" "$TARGET/LICENSE"
 mv "$TEMP_DIR/bad_ec_keys.json" "$TARGET/bad_ec_keys.json"
+mv "$TEMP_DIR/sha.json" "$TARGET/sha.json"
 printf '%s\n' "$REVISION" > "$TARGET/REVISION"
 
 echo "Vendored Chromium WebCrypto test vectors at revision $REVISION."
