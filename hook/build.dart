@@ -81,6 +81,7 @@ final _buildDependencyExtensions = {
   '.cc',
   '.cmake',
   '.cpp',
+  '.exports',
   '.h',
   '.inc',
 };
