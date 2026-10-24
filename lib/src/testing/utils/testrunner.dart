@@ -557,26 +557,11 @@ class TestRunner<PrivateKey, PublicKey> {
       derivedBits = await deriveBits(pair, derivedLength, deriveParams);
     }
 
-    Future<T?> optionalCall<S, T>(Future<T> Function(S)? fn, S v) async =>
-        fn != null ? await fn(v) : null;
-    final c = _TestCase(
-      name,
-      generateKeyParams: null, // omit generateKeyParams
-      privateRawKeyData: await optionalCall(_exportPrivateRawKey, privateKey),
-      privatePkcs8KeyData: await optionalCall(
-        _exportPrivatePkcs8Key,
-        privateKey,
-      ),
-      privateJsonWebKeyData: await optionalCall(
-        _exportPrivateJsonWebKey,
-        privateKey,
-      ),
-      publicRawKeyData: await optionalCall(_exportPublicRawKey, publicKey),
-      publicSpkiKeyData: await optionalCall(_exportPublicSpkiKey, publicKey),
-      publicJsonWebKeyData: await optionalCall(
-        _exportPublicJsonWebKey,
-        publicKey,
-      ),
+    final c = await _exportGeneratedTestCase(
+      this,
+      name: name,
+      privateKey: privateKey,
+      publicKey: publicKey,
       plaintext: plaintext,
       signature: signature,
       ciphertext: ciphertext,
@@ -625,6 +610,59 @@ class TestRunner<PrivateKey, PublicKey> {
     }
     return tests;
   }
+}
+
+Future<_TestCase> _exportGeneratedTestCase<PrivateKey, PublicKey>(
+  TestRunner<PrivateKey, PublicKey> runner, {
+  required String name,
+  required PrivateKey privateKey,
+  required PublicKey publicKey,
+  required Map<String, dynamic> importKeyParams,
+  required Map<String, dynamic>? signVerifyParams,
+  required Map<String, dynamic>? encryptDecryptParams,
+  required Map<String, dynamic>? deriveParams,
+  required List<int>? plaintext,
+  required List<int>? signature,
+  required List<int>? ciphertext,
+  required List<int>? derivedBits,
+  required int? derivedLength,
+}) async {
+  Future<T?> optionalCall<S, T>(Future<T> Function(S)? fn, S value) async =>
+      fn == null ? null : await fn(value);
+
+  return _TestCase(
+    name,
+    privateRawKeyData: await optionalCall(
+      runner._exportPrivateRawKey,
+      privateKey,
+    ),
+    privatePkcs8KeyData: await optionalCall(
+      runner._exportPrivatePkcs8Key,
+      privateKey,
+    ),
+    privateJsonWebKeyData: await optionalCall(
+      runner._exportPrivateJsonWebKey,
+      privateKey,
+    ),
+    publicRawKeyData: await optionalCall(runner._exportPublicRawKey, publicKey),
+    publicSpkiKeyData: await optionalCall(
+      runner._exportPublicSpkiKey,
+      publicKey,
+    ),
+    publicJsonWebKeyData: await optionalCall(
+      runner._exportPublicJsonWebKey,
+      publicKey,
+    ),
+    plaintext: plaintext,
+    signature: signature,
+    ciphertext: ciphertext,
+    derivedBits: derivedBits,
+    importKeyParams: importKeyParams,
+    signVerifyParams: signVerifyParams,
+    encryptDecryptParams: encryptDecryptParams,
+    derivedLength: derivedLength,
+    deriveParams: deriveParams,
+  );
 }
 
 /// Wraps a [test] function such that calls must always be ordered, and that
@@ -1449,44 +1487,20 @@ void _runTests<PrivateKey, PublicKey>(
 
   if (c.generateKeyParams != null) {
     test('validate generated test case', () async {
-      Future<T?> optionalCall<S, T>(Future<T> Function(S)? fn, S v) async =>
-          fn != null ? await fn(v) : null;
       final date = DateTime.now()
           .toIso8601String()
           .split('T')
           .first; // drop time
-      final generated = _TestCase(
-        '${c.name} generated on $detectedRuntime at $date',
-        generateKeyParams: null, // omit generateKeyParams
-        privateRawKeyData: await optionalCall(
-          r._exportPrivateRawKey,
-          privateKey as PrivateKey,
-        ),
-        privatePkcs8KeyData: await optionalCall(
-          r._exportPrivatePkcs8Key,
-          privateKey as PrivateKey,
-        ),
-        privateJsonWebKeyData: await optionalCall(
-          r._exportPrivateJsonWebKey,
-          privateKey as PrivateKey,
-        ),
-        publicRawKeyData: await optionalCall(
-          r._exportPublicRawKey,
-          publicKey as PublicKey,
-        ),
-        publicSpkiKeyData: await optionalCall(
-          r._exportPublicSpkiKey,
-          publicKey as PublicKey,
-        ),
-        publicJsonWebKeyData: await optionalCall(
-          r._exportPublicJsonWebKey,
-          publicKey as PublicKey,
-        ),
+      final generated = await _exportGeneratedTestCase(
+        r,
+        name: '${c.name} generated on $detectedRuntime at $date',
+        privateKey: privateKey as PrivateKey,
+        publicKey: publicKey as PublicKey,
         plaintext: c.plaintext,
         signature: signature,
         ciphertext: ciphertext,
         derivedBits: derivedBits,
-        importKeyParams: c.importKeyParams,
+        importKeyParams: c.importKeyParams!,
         signVerifyParams: c.signVerifyParams,
         encryptDecryptParams: c.encryptDecryptParams,
         derivedLength: c.derivedLength,
