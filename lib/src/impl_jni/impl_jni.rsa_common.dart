@@ -15,6 +15,16 @@
 part of 'impl_jni.dart';
 
 typedef _RsaKeyPairData = ({Uint8List privateKeyData, Uint8List publicKeyData});
+typedef _RsaPrivateComponents = ({
+  BigInt n,
+  BigInt e,
+  BigInt d,
+  BigInt p,
+  BigInt q,
+  BigInt dp,
+  BigInt dq,
+  BigInt qi,
+});
 
 // Keep import prevalidation aligned with the package-wide key-generation range.
 // Providers may impose a stronger minimum when constructing or generating keys.
@@ -52,13 +62,15 @@ extension _RsaHashMetadata on _HashImpl {
 }
 
 _JcaKeyOwner _importPkcs8RsaPrivateKey(Uint8List keyData) {
-  _validateRsaDerEncoding(keyData, 'PKCS#8 RSA private key');
+  final components = _parsePkcs8RsaPrivateKey(keyData);
   try {
     return jni.using((arena) {
       final key = _rsaPrivateKeyFromPkcs8(arena, keyData);
-      return _validateRsaKeyBeforeOwnershipTransfer(key, () {
-        _validateRsaPrivateKey(arena, key);
-      });
+      return _validateRsaKeyBeforeOwnershipTransfer(
+        key,
+        () => _validateImportedRsaPrivateKey(arena, key, components),
+        rsaPrivateComponents: components,
+      );
     });
   } on jni.JThrowable catch (e) {
     throw _rsaKeyFormatException(e, 'Unable to import PKCS#8 RSA private key');
@@ -100,6 +112,17 @@ _JcaKeyOwner _importJwkRsaPrivateKey(
   final dp = _readRsaJwkInteger(jwk.dp, 'dp');
   final dq = _readRsaJwkInteger(jwk.dq, 'dq');
   final qi = _readRsaJwkInteger(jwk.qi, 'qi');
+  final _RsaPrivateComponents components = (
+    n: _rsaBigIntFromBytes(n),
+    e: _rsaBigIntFromBytes(e),
+    d: _rsaBigIntFromBytes(d),
+    p: _rsaBigIntFromBytes(p),
+    q: _rsaBigIntFromBytes(q),
+    dp: _rsaBigIntFromBytes(dp),
+    dq: _rsaBigIntFromBytes(dq),
+    qi: _rsaBigIntFromBytes(qi),
+  );
+  _validateParsedRsaPrivateKey(components);
 
   try {
     return jni.using((arena) {
@@ -118,9 +141,11 @@ _JcaKeyOwner _importJwkRsaPrivateKey(
       if (key == null) {
         throw AssertionError('JCA RSA KeyFactory returned a null private key');
       }
-      return _validateRsaKeyBeforeOwnershipTransfer(key, () {
-        _validateRsaPrivateKey(arena, key);
-      });
+      return _validateRsaKeyBeforeOwnershipTransfer(
+        key,
+        () => _validateImportedRsaPrivateKey(arena, key, components),
+        rsaPrivateComponents: components,
+      );
     });
   } on jni.JThrowable catch (e) {
     throw _rsaKeyFormatException(e, 'Unable to import RSA private JWK');
@@ -165,11 +190,12 @@ _JcaKeyOwner _importJwkRsaPublicKey(
 
 _JcaKeyOwner _validateRsaKeyBeforeOwnershipTransfer(
   jni.JObject key,
-  void Function() validate,
-) {
+  void Function() validate, {
+  _RsaPrivateComponents? rsaPrivateComponents,
+}) {
   try {
     validate();
-    return _JcaKeyOwner(key);
+    return _JcaKeyOwner(key, rsaPrivateComponents: rsaPrivateComponents);
   } catch (_) {
     // The key is not persistent until ownership transfers to a Dart wrapper.
     key.release();
@@ -190,53 +216,25 @@ Map<String, dynamic> _exportJwkRsaPrivateKey(
   required String jwkAlg,
   required String jwkUse,
 }) {
-  try {
-    return jni.using((arena) {
-      final key = owner.key;
-      if (!key.isA(RSAPrivateCrtKey.type)) {
-        throw UnsupportedError(
-          'The JCA provider does not expose RSA CRT parameters for JWK export',
-        );
-      }
-      final rsaKey = key.as(RSAPrivateCrtKey.type)..releasedBy(arena);
-
-      return JsonWebKey(
-        kty: 'RSA',
-        use: jwkUse,
-        alg: jwkAlg,
-        n: _encodeRsaBigInteger(arena, rsaKey.getModulus(), 'modulus'),
-        e: _encodeRsaBigInteger(
-          arena,
-          rsaKey.getPublicExponent(),
-          'public exponent',
-        ),
-        d: _encodeRsaBigInteger(
-          arena,
-          rsaKey.getPrivateExponent(),
-          'private exponent',
-        ),
-        p: _encodeRsaBigInteger(arena, rsaKey.getPrimeP(), 'prime P'),
-        q: _encodeRsaBigInteger(arena, rsaKey.getPrimeQ(), 'prime Q'),
-        dp: _encodeRsaBigInteger(
-          arena,
-          rsaKey.getPrimeExponentP(),
-          'prime exponent P',
-        ),
-        dq: _encodeRsaBigInteger(
-          arena,
-          rsaKey.getPrimeExponentQ(),
-          'prime exponent Q',
-        ),
-        qi: _encodeRsaBigInteger(
-          arena,
-          rsaKey.getCrtCoefficient(),
-          'CRT coefficient',
-        ),
-      ).toJson();
-    });
-  } on jni.JThrowable catch (e) {
-    throw _rsaOperationError(e, 'Unable to export RSA private JWK');
+  final c = owner.rsaPrivateComponents;
+  if (c == null) {
+    throw StateError('RSA private key components are unavailable');
   }
+  String encode(BigInt value) =>
+      _jwkEncodeBase64UrlNoPadding(_unsignedBytesFromBigInt(value));
+  return JsonWebKey(
+    kty: 'RSA',
+    use: jwkUse,
+    alg: jwkAlg,
+    n: encode(c.n),
+    e: encode(c.e),
+    d: encode(c.d),
+    p: encode(c.p),
+    q: encode(c.q),
+    dp: encode(c.dp),
+    dq: encode(c.dq),
+    qi: encode(c.qi),
+  ).toJson();
 }
 
 Map<String, dynamic> _exportJwkRsaPublicKey(
@@ -378,37 +376,116 @@ BigInteger _rsaBigInteger(jni.Arena arena, Uint8List unsignedBytes) {
   return BigInteger.new$3(1, bytes)..releasedBy(arena);
 }
 
-void _validateRsaPrivateKey(jni.Arena arena, jni.JObject key) {
-  // JCA KeyFactory constructs provider key objects but can defer CRT
-  // consistency checks until the first private-key operation. Validate during
-  // import so malformed keys fail with the public API's FormatException
-  // instead of a later OperationError.
+void _validateImportedRsaPrivateKey(
+  jni.Arena arena,
+  jni.JObject key,
+  _RsaPrivateComponents components,
+) {
   _checkData(
-    key.isA(RSAPrivateCrtKey.type),
-    'Invalid RSA private key: CRT parameters are required',
+    key.isA(RSAPrivateKey.type),
+    'Invalid RSA private key: RSA parameters are required',
   );
-  final rsaKey = key.as(RSAPrivateCrtKey.type)..releasedBy(arena);
+  final rsaKey = key.as(RSAPrivateKey.type)..releasedBy(arena);
+  _checkData(
+    _readPositiveRsaBigInteger(arena, rsaKey.getModulus(), 'n') ==
+            components.n &&
+        _readPositiveRsaBigInteger(arena, rsaKey.getPrivateExponent(), 'd') ==
+            components.d,
+    'Invalid RSA private key: provider changed the imported key',
+  );
+}
 
-  _validateRsaPrivateComponents(
-    n: _readPositiveRsaBigInteger(arena, rsaKey.getModulus(), 'n'),
-    e: _readPositiveRsaBigInteger(arena, rsaKey.getPublicExponent(), 'e'),
-    d: _readPositiveRsaBigInteger(arena, rsaKey.getPrivateExponent(), 'd'),
-    p: _readPositiveRsaBigInteger(
-      arena,
-      rsaKey.getPrimeP(),
-      'p',
-      mustBePrime: true,
-    ),
-    q: _readPositiveRsaBigInteger(
-      arena,
-      rsaKey.getPrimeQ(),
-      'q',
-      mustBePrime: true,
-    ),
-    dp: _readPositiveRsaBigInteger(arena, rsaKey.getPrimeExponentP(), 'dp'),
-    dq: _readPositiveRsaBigInteger(arena, rsaKey.getPrimeExponentQ(), 'dq'),
-    qi: _readPositiveRsaBigInteger(arena, rsaKey.getCrtCoefficient(), 'qi'),
+_RsaPrivateComponents _parsePkcs8RsaPrivateKey(Uint8List data) {
+  final outer = _DerReader(data);
+  final info = _DerReader(outer.readElement(0x30));
+  outer.expectDone();
+  _checkData(
+    _readRsaDerInteger(info, 'PKCS#8 version') == BigInt.zero,
+    'Invalid PKCS#8 RSA private key: unsupported version',
   );
+  final algorithm = _DerReader(info.readElement(0x30));
+  // rsaEncryption (1.2.840.113549.1.1.1) with NULL parameters.
+  const rsaOid = [0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01];
+  final oid = algorithm.readElement(0x06);
+  _checkData(
+    _bytesEqual(oid, Uint8List.fromList(rsaOid)),
+    'Invalid PKCS#8 RSA algorithm',
+  );
+  _checkData(
+    algorithm.readElement(0x05).isEmpty,
+    'Invalid PKCS#8 RSA algorithm parameters',
+  );
+  algorithm.expectDone();
+  final wrapped = _DerReader(info.readElement(0x04));
+  if (!info.isDone) {
+    // PKCS#8 permits optional attributes after the private key.
+    info.readElement(0xa0);
+  }
+  info.expectDone();
+  final rsa = _DerReader(wrapped.readElement(0x30));
+  wrapped.expectDone();
+  _checkData(
+    _readRsaDerInteger(rsa, 'RSA version') == BigInt.zero,
+    'Invalid RSA private key: multi-prime keys are unsupported',
+  );
+  final components = (
+    n: _readRsaDerInteger(rsa, 'n'),
+    e: _readRsaDerInteger(rsa, 'e'),
+    d: _readRsaDerInteger(rsa, 'd'),
+    p: _readRsaDerInteger(rsa, 'p'),
+    q: _readRsaDerInteger(rsa, 'q'),
+    dp: _readRsaDerInteger(rsa, 'dp'),
+    dq: _readRsaDerInteger(rsa, 'dq'),
+    qi: _readRsaDerInteger(rsa, 'qi'),
+  );
+  rsa.expectDone();
+  _validateParsedRsaPrivateKey(components);
+  return components;
+}
+
+BigInt _readRsaDerInteger(_DerReader reader, String name) {
+  final bytes = reader.readElement(0x02);
+  _checkData(
+    bytes.isNotEmpty && bytes.first & 0x80 == 0,
+    'Invalid RSA private key: $name must be nonnegative',
+  );
+  _checkData(
+    bytes.length == 1 || bytes.first != 0 || bytes[1] & 0x80 != 0,
+    'Invalid RSA private key: $name has non-minimal encoding',
+  );
+  return _rsaBigIntFromBytes(bytes);
+}
+
+BigInt _rsaBigIntFromBytes(List<int> bytes) {
+  var value = BigInt.zero;
+  for (final byte in bytes) {
+    value = (value << 8) | BigInt.from(byte);
+  }
+  return value;
+}
+
+void _validateParsedRsaPrivateKey(_RsaPrivateComponents c) {
+  _validateRsaPrivateComponents(
+    n: c.n,
+    e: c.e,
+    d: c.d,
+    p: c.p,
+    q: c.q,
+    dp: c.dp,
+    dq: c.dq,
+    qi: c.qi,
+  );
+  // BigInt has no primality test; reject composites before handing the key
+  // to a provider that may defer its own consistency checks.
+  jni.using((arena) {
+    for (final prime in [c.p, c.q]) {
+      final value = _rsaBigInteger(arena, _unsignedBytesFromBigInt(prime));
+      _checkData(
+        value.isProbablePrime(100),
+        'Invalid RSA private key: p or q is not prime',
+      );
+    }
+  });
 }
 
 void _validateRsaPublicKey(jni.Arena arena, jni.JObject key) {
@@ -426,22 +503,11 @@ void _validateRsaPublicKey(jni.Arena arena, jni.JObject key) {
 BigInt _readPositiveRsaBigInteger(
   jni.Arena arena,
   BigInteger? value,
-  String name, {
-  bool mustBePrime = false,
-}) {
+  String name,
+) {
   _checkData(value != null, 'Invalid RSA key: $name is missing');
   value!.releasedBy(arena);
   _checkData(value.signum() > 0, 'Invalid RSA key: $name must be positive');
-  if (mustBePrime) {
-    // BigInteger specifies a false-positive probability of at most
-    // 2^-certainty for isProbablePrime().
-    // https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigInteger.html#isProbablePrime(int)
-    _checkData(
-      value.isProbablePrime(100),
-      'Invalid RSA private key: $name is not prime',
-    );
-  }
-
   final bytes = _copyUnsignedRsaBigInteger(arena, value, name);
   var result = BigInt.zero;
   for (final byte in bytes) {
@@ -485,6 +551,10 @@ void _validateRsaPrivateComponents({
   // third_party/boringssl/src/crypto/fipsmodule/rsa/rsa.cc.inc
   final one = BigInt.one;
   _validateRsaPublicComponents(n: n, e: e);
+  _checkData(
+    p > one && q > one,
+    'Invalid RSA private key: p and q must be greater than one',
+  );
   _checkData(p != q, 'Invalid RSA private key: p and q must differ');
   _checkData(
     p.isOdd && q.isOdd,
@@ -502,6 +572,10 @@ void _validateRsaPrivateComponents({
   );
   _checkData(dp == d % pMinusOne, 'Invalid RSA private key: invalid dp');
   _checkData(dq == d % qMinusOne, 'Invalid RSA private key: invalid dq');
+  _checkData(
+    q.gcd(p) == one,
+    'Invalid RSA private key: p and q are not coprime',
+  );
   _checkData(qi == q.modInverse(p), 'Invalid RSA private key: invalid qi');
 }
 

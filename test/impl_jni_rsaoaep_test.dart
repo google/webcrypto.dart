@@ -86,6 +86,44 @@ void main() {
     );
   }, skip: skipReason);
 
+  test('JCA RSA-OAEP retains imported private CRT values', () async {
+    final pkcs8 = await privateKey.exportPkcs8Key();
+    final imported = await jni_impl.webCryptImpl.rsaOaepPrivateKey
+        .importPkcs8Key(pkcs8, jni_impl.webCryptImpl.sha256);
+    final jwk = await imported.exportJsonWebKey();
+    for (final name in ['n', 'e', 'd', 'p', 'q', 'dp', 'dq', 'qi']) {
+      expect(jwk[name], isA<String>());
+    }
+
+    final fromJwk = await jni_impl.webCryptImpl.rsaOaepPrivateKey
+        .importJsonWebKey(jwk, jni_impl.webCryptImpl.sha256);
+    expect(await fromJwk.exportJsonWebKey(), jwk);
+    expect(await imported.exportPkcs8Key(), pkcs8);
+    final plaintext = Uint8List.fromList(utf8.encode('imported key'));
+    final ciphertext = await publicKey.encryptBytes(plaintext);
+    expect(await imported.decryptBytes(ciphertext), plaintext);
+    expect(await fromJwk.decryptBytes(ciphertext), plaintext);
+
+    final malformed = Uint8List.fromList(pkcs8);
+    malformed[malformed.length - 1] ^= 1; // Change the CRT coefficient.
+    await expectLater(
+      jni_impl.webCryptImpl.rsaOaepPrivateKey.importPkcs8Key(
+        malformed,
+        jni_impl.webCryptImpl.sha256,
+      ),
+      throwsA(isA<FormatException>()),
+    );
+
+    await expectLater(
+      jni_impl.webCryptImpl.rsaOaepPrivateKey.importJsonWebKey({
+        ...jwk,
+        'p': 'AQ',
+        'q': jwk['n'],
+      }, jni_impl.webCryptImpl.sha256),
+      throwsA(isA<FormatException>()),
+    );
+  }, skip: skipReason);
+
   test('JCA RSA-OAEP translates attacker-controlled failures', () async {
     final plaintext = Uint8List.fromList(utf8.encode('message'));
     final ciphertext = await publicKey.encryptBytes(

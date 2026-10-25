@@ -24,9 +24,10 @@ const _defaultChunkSize = 4096;
 /// explicitly.
 @pragma('vm:isolate-unsendable')
 final class _JcaKeyOwner {
-  _JcaKeyOwner(this.key);
+  _JcaKeyOwner(this.key, {this.rsaPrivateComponents});
 
   final jni.JObject key;
+  final _RsaPrivateComponents? rsaPrivateComponents;
 
   // TODO: Stress-test persistent-key churn. package:jni currently registers
   // JGlobalReference finalizers with externalSize 0, so JVM key memory does
