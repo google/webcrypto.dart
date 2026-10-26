@@ -28,6 +28,22 @@
 
 using namespace bssl;
 
+namespace {
+
+int X509_REQ_add0_attr(X509_REQ *req, X509_ATTRIBUTE *attr) {
+  if (req->req_info->attributes == nullptr) {
+    req->req_info->attributes = sk_X509_ATTRIBUTE_new_null();
+  }
+  if (req->req_info->attributes == nullptr ||
+      !sk_X509_ATTRIBUTE_push(req->req_info->attributes, attr)) {
+    return 0;
+  }
+
+  return 1;
+}
+
+}  // namespace
+
 long X509_REQ_get_version(const X509_REQ *req) {
   return ASN1_INTEGER_get(req->req_info->version);
 }
@@ -86,7 +102,7 @@ STACK_OF(X509_EXTENSION) *X509_REQ_get_extensions(const X509_REQ *req) {
   }
 
   const X509_ATTRIBUTE *attr = X509_REQ_get_attr(req, idx);
-  // TODO(davidben): |X509_ATTRIBUTE_get0_type| is not const-correct. It should
+  // TODO(davidben): `X509_ATTRIBUTE_get0_type` is not const-correct. It should
   // take and return a const pointer.
   const ASN1_TYPE *ext = X509_ATTRIBUTE_get0_type((X509_ATTRIBUTE *)attr, 0);
   if (!ext || ext->type != V_ASN1_SEQUENCE) {
@@ -167,18 +183,6 @@ X509_ATTRIBUTE *X509_REQ_delete_attr(X509_REQ *req, int loc) {
     return nullptr;
   }
   return sk_X509_ATTRIBUTE_delete(req->req_info->attributes, loc);
-}
-
-static int X509_REQ_add0_attr(X509_REQ *req, X509_ATTRIBUTE *attr) {
-  if (req->req_info->attributes == nullptr) {
-    req->req_info->attributes = sk_X509_ATTRIBUTE_new_null();
-  }
-  if (req->req_info->attributes == nullptr ||
-      !sk_X509_ATTRIBUTE_push(req->req_info->attributes, attr)) {
-    return 0;
-  }
-
-  return 1;
 }
 
 int X509_REQ_add1_attr(X509_REQ *req, const X509_ATTRIBUTE *attr) {
