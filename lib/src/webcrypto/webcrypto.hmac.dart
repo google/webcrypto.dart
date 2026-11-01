@@ -180,7 +180,7 @@ final class HmacSecretKey {
   ///
   /// Future<void> main() async {
   ///   // Generate a new random HMAC secret key.
-  ///   final key = await HmacSecretKey.generate(Hash.sha256);
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   /// }
   /// ```
   static Future<HmacSecretKey> generateKey(Hash hash, {int? length}) async {
@@ -348,7 +348,7 @@ final class HmacSecretKey {
   ///
   /// Future<void> main() async {
   ///   // Generate a new random HMAC secret key.
-  ///   final key = await HmacSecretKey.generate(Hash.sha256);
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   ///
   ///   // Extract the secret key.
   ///   final secretBytes = await key.exportRawKey();
@@ -373,7 +373,7 @@ final class HmacSecretKey {
   ///
   /// Future<void> main() async {
   ///   // Generate a new random HMAC secret key.
-  ///   final key = await HmacSecretKey.generate(Hash.sha256);
+  ///   final key = await HmacSecretKey.generateKey(Hash.sha256);
   ///
   ///   // Export the secret key.
   ///   final jwk = await key.exportJsonWebKey();
