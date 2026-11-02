@@ -142,7 +142,8 @@ final class _HmacSecretKeyImpl implements HmacSecretKeyImpl {
   }
 
   @override
-  Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
+  Future<Uint8List> signBytes(List<int> data) =>
+      signStream(Stream.value(Uint8List.fromList(data)));
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) {

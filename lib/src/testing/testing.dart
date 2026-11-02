@@ -36,6 +36,8 @@ import 'regression/aes_ctr_invalid_length.dart' as aes_ctr_invalid_length;
 import 'regression/aes_key_length.dart' as aes_key_length;
 import 'regression/issue_302_hmac_jwk_length.dart' as issue_302_hmac_jwk_length;
 import 'regression/hmac_signature_snapshot.dart' as hmac_signature_snapshot;
+import 'regression/sign_bytes_message_snapshot.dart'
+    as sign_bytes_message_snapshot;
 import 'regression/aes_gcm_invalid_tag_length.dart'
     as aes_gcm_invalid_tag_length;
 import 'regression/aes_cbc_iv_snapshot.dart' as aes_cbc_iv_snapshot;
@@ -87,6 +89,7 @@ void runAllTests(
     ...aes_key_length.tests(),
     ...issue_302_hmac_jwk_length.tests(),
     ...hmac_signature_snapshot.tests(),
+    ...sign_bytes_message_snapshot.tests(),
     ...aes_gcm_invalid_tag_length.tests(),
     ...aes_cbc_iv_snapshot.tests(),
     ...aes_cbc_data_snapshot.tests(),
