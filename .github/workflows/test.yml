@@ -134,7 +134,7 @@ jobs:
   android:
     name: Android emulator
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -149,6 +149,27 @@ jobs:
         run: |
           flutter config --no-analytics
       - run: flutter pub get
+      - name: Check Android LTO exports
+        run: |
+          NDK_DIR=$(find "$ANDROID_HOME/ndk" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          test -n "$NDK_DIR"
+          for ABI in x86_64 arm64-v8a armeabi-v7a; do
+            cmake -S src -B "build/android-lto-exports-$ABI" -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE="$NDK_DIR/build/cmake/android.toolchain.cmake" \
+              -DANDROID_ABI="$ABI" -DANDROID_PLATFORM=android-24 \
+              -DCMAKE_BUILD_TYPE=Release
+            cmake --build "build/android-lto-exports-$ABI" --parallel 4
+            python3 tool/check_android_exports.py \
+              "$NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-nm" \
+              "build/android-lto-exports-$ABI/libwebcrypto.so"
+          done
+          (cd example/webcrypto_demo_flutter_app && \
+            flutter build apk --release --target-platform android-arm64)
+          unzip -p example/webcrypto_demo_flutter_app/build/app/outputs/flutter-apk/app-release.apk \
+            lib/arm64-v8a/libwebcrypto.so > build/android-lto-release.so
+          python3 tool/check_android_exports.py \
+            "$NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-nm" \
+            build/android-lto-release.so
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
