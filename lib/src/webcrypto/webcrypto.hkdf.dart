@@ -91,5 +91,11 @@ final class HkdfSecretKey {
     Hash hash,
     List<int> salt,
     List<int> info,
-  ) => _impl.deriveBits(length, hash._impl, salt, info);
+  ) async {
+    if (length > 0xffffffff) {
+      throw operationError(hkdfLengthTooLong);
+    }
+    checkUnsignedLong(length, 'length');
+    return await _impl.deriveBits(length, hash._impl, salt, info);
+  }
 }

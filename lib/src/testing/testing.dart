@@ -50,6 +50,7 @@ import 'regression/hmac_empty_key.dart' as hmac_empty_key;
 import 'regression/issue_60_trailing_bytes.dart' as issue_60_trailing_bytes;
 import 'regression/hmac_large_generated_key.dart' as hmac_large_generated_key;
 import 'regression/jwk_base64url.dart' as jwk_base64url;
+import 'regression/kdf_invalid_length.dart' as kdf_invalid_length;
 import 'regression/jwk_export_use.dart' as jwk_export_use;
 import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
 import 'regression/rsa_modulus_length.dart' as rsa_modulus_length;
@@ -100,6 +101,7 @@ void runAllTests(
     ...derive_bits_zero_length.tests(),
     ...digest_input_snapshot.tests(),
     ...ecdh_invalid_length.tests(),
+    ...kdf_invalid_length.tests(),
     ...hmac_empty_key.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
     ...rsa_modulus_length.tests(),
