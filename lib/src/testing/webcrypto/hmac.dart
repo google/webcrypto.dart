@@ -42,22 +42,18 @@ final runner = TestRunner.symmetric<HmacSecretKey>(
   testData: _testData,
 );
 
-void main() async {
-  log('generate HMAC test case');
-  await runner.generate(
-    generateKeyParams: {'hash': hashToJson(Hash.sha384), 'length': 512},
-    importKeyParams: {'hash': hashToJson(Hash.sha384), 'length': 512},
-    signVerifyParams: {},
-    maxPlaintext: 80,
-  );
-  log('--------------------');
-
-  await runner.tests().runTests();
-}
+Future<void> main() => runner.tests(dumpGeneratedCases: true).runTests();
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes
 final _testData = [
+  {
+    "name": "generate HMAC-SHA-384 key",
+    "generateKeyParams": {"hash": "sha-384", "length": 512},
+    "plaintext": "dGVzdA==",
+    "importKeyParams": {"hash": "sha-384", "length": 512},
+    "signVerifyParams": {},
+  },
   {
     "name": "HS256 generated on boringssl/linux at 2020-01-17T17:22:02",
     "privateRawKeyData": "hJOnqFnCbZUjWwItPd5l1YW9mWC5jjjYT6h5twHEUdU=",

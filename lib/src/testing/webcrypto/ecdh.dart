@@ -57,44 +57,23 @@ final runner = TestRunner.asymmetric<EcdhPrivateKey, EcdhPublicKey>(
   testData: _testData,
 );
 
-void main() async {
-  log('generate ECDH test cases');
-
-  // P-256: up to 256 bits (32 bytes)
-  await runner.generate(
-    generateKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
-    importKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
-    deriveParams: {},
-    minDeriveLength: 256,
-    maxDeriveLength: 256,
-  );
-
-  // P-384: up to 384 bits (48 bytes)
-  await runner.generate(
-    generateKeyParams: {'curve': curveToJson(EllipticCurve.p384)},
-    importKeyParams: {'curve': curveToJson(EllipticCurve.p384)},
-    deriveParams: {},
-    minDeriveLength: 384,
-    maxDeriveLength: 384,
-  );
-
-  // P-521: up to 528 bits (66 bytes)
-  await runner.generate(
-    generateKeyParams: {'curve': curveToJson(EllipticCurve.p521)},
-    importKeyParams: {'curve': curveToJson(EllipticCurve.p521)},
-    deriveParams: {},
-    minDeriveLength: 528,
-    maxDeriveLength: 528,
-  );
-
-  log('--------------------');
-
-  await runner.tests().runTests();
-}
+Future<void> main() => runner.tests(dumpGeneratedCases: true).runTests();
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes
 final _testData = [
+  for (final (curve, length) in [
+    ("p-256", 256),
+    ("p-384", 384),
+    ("p-521", 528),
+  ])
+    {
+      "name": "generate ECDH $curve keys",
+      "generateKeyParams": {"curve": curve},
+      "importKeyParams": {"curve": curve},
+      "deriveParams": {},
+      "derivedLength": length,
+    },
   {
     "name": "generated on boringssl/linux at 2020-01-22T23:24:34",
     "privatePkcs8KeyData":
