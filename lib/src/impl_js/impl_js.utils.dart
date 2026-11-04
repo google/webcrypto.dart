@@ -161,6 +161,7 @@ Future<subtle.JSCryptoKey> _importJsonWebKey(
   String expectedType,
 ) {
   return _handleDomException(() async {
+    JsonWebKey.fromJson(jwk);
     final jwkObj = subtle.JsonWebKey.fromJson(jwk);
     final expectedUse = switch (algorithm.name) {
       'HMAC' || 'ECDSA' || 'RSA-PSS' || 'RSASSA-PKCS1-v1_5' => 'sig',
