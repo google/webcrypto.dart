@@ -239,6 +239,13 @@ for file in (
     key = classify_asm(file)
     if key is not None:
         asm_outputs[key].append(file)
+    # The fiat ADX assembly is guarded for both ELF and Mach-O (see the top of
+    # each file) and is referenced from C whenever OPENSSL_X86_64 is defined
+    # without OPENSSL_NO_ASM, so Apple x86_64 builds need it too.
+    # See https://github.com/google/webcrypto.dart/issues/446
+    normalized = file[4:] if file.startswith("src/") else file
+    if normalized.startswith("third_party/fiat/asm/"):
+        asm_outputs["apple_x86_64"].append(file)
 
 payload = {
     "crypto_sources": sorted(bcm.get("srcs", []) + crypto.get("srcs", [])),

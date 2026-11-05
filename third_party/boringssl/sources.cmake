@@ -321,6 +321,10 @@ set(crypto_sources_apple_x86_64
   ${BORINGSSL_ROOT}gen/crypto/md5-586-apple.S
   ${BORINGSSL_ROOT}gen/crypto/md5-x86_64-apple.S
   ${BORINGSSL_ROOT}gen/test_support/trampoline-x86_64-apple.S
+  ${BORINGSSL_ROOT}third_party/fiat/asm/fiat_curve25519_adx_mul.S
+  ${BORINGSSL_ROOT}third_party/fiat/asm/fiat_curve25519_adx_square.S
+  ${BORINGSSL_ROOT}third_party/fiat/asm/fiat_p256_adx_mul.S
+  ${BORINGSSL_ROOT}third_party/fiat/asm/fiat_p256_adx_sqr.S
 )
 
 set(crypto_sources_linux_aarch64
