@@ -27,9 +27,10 @@ const _dumpData = bool.fromEnvironment('webcrypto.dump', defaultValue: false);
 
 /// Dump data, if enabled with `dart -D webcrypto.dump=true <file>`.
 ///
-/// This can also be overwritten by manually tweaking the [_dumpData] variable.
-void dump(Map data) {
-  if (_dumpData) {
+/// Set [force] to dump data for a direct test run without changing the
+/// full-suite setting.
+void dump(Map data, {bool force = false}) {
+  if (_dumpData || force) {
     final json = const JsonEncoder.withIndent(
       '  ',
     ).convert(data).replaceAll('\n', '\n| ');

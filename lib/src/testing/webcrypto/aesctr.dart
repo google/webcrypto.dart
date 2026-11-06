@@ -56,21 +56,7 @@ final runner = TestRunner.symmetric<AesCtrSecretKey>(
   testData: _testData,
 );
 
-void main() async {
-  log('generate AES-CTR test case');
-  await runner.generate(
-    generateKeyParams: {'length': 256},
-    importKeyParams: {},
-    encryptDecryptParams: {
-      'counter': bytesToJson(List.generate(16, (i) => 0xfe)),
-      'length': 9,
-    },
-    maxPlaintext: 80,
-  );
-  log('--------------------');
-
-  await runner.tests().runTests();
-}
+Future<void> main() => runner.tests(dumpGeneratedCases: true).runTests();
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes
@@ -78,6 +64,16 @@ final _zeroAesCtrBlock = bytesToJson(Uint8List(16));
 final _largeZeroAesCtrPlaintext = bytesToJson(Uint8List(4097));
 
 final _testData = [
+  {
+    "name": "generate AES-256-CTR key",
+    "generateKeyParams": {"length": 256},
+    "plaintext": "dGVzdA==",
+    "importKeyParams": {},
+    "encryptDecryptParams": {
+      "counter": bytesToJson(List.generate(16, (i) => 0xfe)),
+      "length": 9,
+    },
+  },
   {
     "name": "A128CTR/64 generated on boringssl/linux at 2020-01-19T16:40:39",
     "privateRawKeyData": "VPhdE6z4820SUnBmesDBSw==",

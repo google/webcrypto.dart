@@ -57,27 +57,22 @@ final runner = TestRunner.symmetric<_ExportableHkdfSecretKey>(
   testData: _testData,
 );
 
-void main() async {
-  log('generate HkdfSecretKey test case');
-  await runner.generate(
-    generateKeyParams: {'length': 17},
-    importKeyParams: {},
-    deriveParams: {
-      'hash': hashToJson(Hash.sha512),
-      'salt': bytesToJson(List.generate(32, (i) => (i + i) % 256)),
-      'info': bytesToJson(List.generate(12, (i) => (i + i) % 256)),
-    },
-    minDeriveLength: 512,
-    maxDeriveLength: 512,
-  );
-  log('--------------------');
-
-  await runner.tests().runTests();
-}
+Future<void> main() => runner.tests(dumpGeneratedCases: true).runTests();
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes
 final _testData = [
+  {
+    "name": "generate HKDF key",
+    "generateKeyParams": {"length": 17},
+    "importKeyParams": {},
+    "deriveParams": {
+      "hash": "sha-512",
+      "salt": bytesToJson(List.generate(32, (i) => (i + i) % 256)),
+      "info": bytesToJson(List.generate(12, (i) => (i + i) % 256)),
+    },
+    "derivedLength": 512,
+  },
   {
     "name": "SHA-256/4096 generated on boringssl/linux at 2020-01-26T20:39:09",
     "privateRawKeyData":
