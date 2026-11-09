@@ -112,9 +112,9 @@ int i2d_X509_ALGOR(const X509_ALGOR *in, uint8_t **outp) {
   });
 }
 
-IMPLEMENT_EXTERN_ASN1_SIMPLE(X509_ALGOR, X509_ALGOR_new, X509_ALGOR_free,
-                             CBS_ASN1_SEQUENCE, x509_parse_algorithm,
-                             i2d_X509_ALGOR)
+IMPLEMENT_EXTERN_ASN1_PARSE_INTO(X509_ALGOR, X509_ALGOR_new, X509_ALGOR_free,
+                                 CBS_ASN1_SEQUENCE, x509_parse_algorithm,
+                                 x509_marshal_algorithm)
 
 X509_ALGOR *X509_ALGOR_dup(const X509_ALGOR *alg) {
   UniquePtr<X509_ALGOR> copy(X509_ALGOR_new());
@@ -209,15 +209,10 @@ int X509_ALGOR_set_md(X509_ALGOR *alg, const EVP_MD *md) {
                          nullptr);
 }
 
-// X509_ALGOR_cmp returns 0 if |a| and |b| are equal and non-zero otherwise.
 int X509_ALGOR_cmp(const X509_ALGOR *a, const X509_ALGOR *b) {
-  int rv;
-  rv = OBJ_cmp(a->algorithm, b->algorithm);
-  if (rv) {
-    return rv;
-  }
-  if (!a->parameter && !b->parameter) {
-    return 0;
+  int ret = OBJ_cmp(a->algorithm, b->algorithm);
+  if (ret != 0) {
+    return ret;
   }
   return ASN1_TYPE_cmp(a->parameter, b->parameter);
 }

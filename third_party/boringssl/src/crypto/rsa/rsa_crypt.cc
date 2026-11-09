@@ -31,7 +31,9 @@
 
 using namespace bssl;
 
-static void rand_nonzero(uint8_t *out, size_t len) {
+namespace {
+
+void rand_nonzero(uint8_t *out, size_t len) {
   RAND_bytes(out, len);
 
   for (size_t i = 0; i < len; i++) {
@@ -42,6 +44,8 @@ static void rand_nonzero(uint8_t *out, size_t len) {
     }
   }
 }
+
+}  // namespace
 
 int RSA_padding_add_PKCS1_OAEP_mgf1(uint8_t *to, size_t to_len,
                                     const uint8_t *from, size_t from_len,
@@ -220,8 +224,10 @@ err:
   return 0;
 }
 
-static int rsa_padding_add_PKCS1_type_2(uint8_t *to, size_t to_len,
-                                        const uint8_t *from, size_t from_len) {
+namespace {
+
+int rsa_padding_add_PKCS1_type_2(uint8_t *to, size_t to_len,
+                                 const uint8_t *from, size_t from_len) {
   // See RFC 8017, section 7.2.1.
   if (to_len < RSA_PKCS1_PADDING_SIZE) {
     OPENSSL_PUT_ERROR(RSA, RSA_R_KEY_SIZE_TOO_SMALL);
@@ -243,9 +249,9 @@ static int rsa_padding_add_PKCS1_type_2(uint8_t *to, size_t to_len,
   return 1;
 }
 
-static int rsa_padding_check_PKCS1_type_2(uint8_t *out, size_t *out_len,
-                                          size_t max_out, const uint8_t *from,
-                                          size_t from_len) {
+int rsa_padding_check_PKCS1_type_2(uint8_t *out, size_t *out_len,
+                                   size_t max_out, const uint8_t *from,
+                                   size_t from_len) {
   if (from_len == 0) {
     OPENSSL_PUT_ERROR(RSA, RSA_R_EMPTY_PUBLIC_KEY);
     return 0;
@@ -254,7 +260,7 @@ static int rsa_padding_check_PKCS1_type_2(uint8_t *out, size_t *out_len,
   // PKCS#1 v1.5 decryption. See "PKCS #1 v2.2: RSA Cryptography
   // Standard", section 7.2.2.
   if (from_len < RSA_PKCS1_PADDING_SIZE) {
-    // |from| is zero-padded to the size of the RSA modulus, a public value, so
+    // `from` is zero-padded to the size of the RSA modulus, a public value, so
     // this can be rejected in non-constant time.
     OPENSSL_PUT_ERROR(RSA, RSA_R_KEY_SIZE_TOO_SMALL);
     return 0;
@@ -278,16 +284,16 @@ static int rsa_padding_check_PKCS1_type_2(uint8_t *out, size_t *out_len,
   // We must have found the end of PS.
   valid_index &= ~looking_for_index;
 
-  // PS must be at least 8 bytes long, and it starts two bytes into |from|.
+  // PS must be at least 8 bytes long, and it starts two bytes into `from`.
   valid_index &= constant_time_ge_w(zero_index, 2 + 8);
 
   // Skip the zero byte.
   zero_index++;
 
   // NOTE: Although this logic attempts to be constant time, the API contracts
-  // of this function and |RSA_decrypt| with |RSA_PKCS1_PADDING| make it
+  // of this function and `RSA_decrypt` with `RSA_PKCS1_PADDING` make it
   // impossible to completely avoid Bleichenbacher's attack. Consumers should
-  // use |RSA_PADDING_NONE| and perform the padding check in constant-time
+  // use `RSA_PADDING_NONE` and perform the padding check in constant-time
   // combined with a swap to a random session key or other mitigation.
   CONSTTIME_DECLASSIFY(&valid_index, sizeof(valid_index));
   CONSTTIME_DECLASSIFY(&zero_index, sizeof(zero_index));
@@ -300,7 +306,7 @@ static int rsa_padding_check_PKCS1_type_2(uint8_t *out, size_t *out_len,
   const size_t msg_len = from_len - zero_index;
   if (msg_len > max_out) {
     // This shouldn't happen because this function is always called with
-    // |max_out| as the key size and |from_len| is bounded by the key size.
+    // `max_out` as the key size and `from_len` is bounded by the key size.
     OPENSSL_PUT_ERROR(RSA, RSA_R_PKCS_DECODING_ERROR);
     return 0;
   }
@@ -309,6 +315,8 @@ static int rsa_padding_check_PKCS1_type_2(uint8_t *out, size_t *out_len,
   *out_len = msg_len;
   return 1;
 }
+
+}  // namespace
 
 int RSA_public_encrypt(size_t flen, const uint8_t *from, uint8_t *to, RSA *rsa,
                        int padding) {
@@ -426,9 +434,10 @@ err:
   return ret;
 }
 
-static int rsa_default_decrypt(RSA *rsa, size_t *out_len, uint8_t *out,
-                               size_t max_out, const uint8_t *in, size_t in_len,
-                               int padding) {
+namespace {
+
+int rsa_default_decrypt(RSA *rsa, size_t *out_len, uint8_t *out, size_t max_out,
+                        const uint8_t *in, size_t in_len, int padding) {
   const unsigned rsa_size = RSA_size(rsa);
   uint8_t *buf = nullptr;
   int ret = 0;
@@ -490,6 +499,8 @@ err:
 
   return ret;
 }
+
+}  // namespace
 
 int RSA_decrypt(RSA *rsa, size_t *out_len, uint8_t *out, size_t max_out,
                 const uint8_t *in, size_t in_len, int padding) {

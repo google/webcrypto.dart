@@ -26,15 +26,16 @@
 #include <openssl/nid.h>
 #include <openssl/rand.h>
 
-#include "../bytestring/internal.h"
 #include "../internal.h"
 #include "internal.h"
 
 
 using namespace bssl;
 
-static int pkcs12_encode_password(const char *in, size_t in_len, uint8_t **out,
-                                  size_t *out_len) {
+namespace {
+
+int pkcs12_encode_password(const char *in, size_t in_len, uint8_t **out,
+                           size_t *out_len) {
   ScopedCBB cbb;
   if (!CBB_init(cbb.get(), in_len * 2)) {
     return 0;
@@ -60,6 +61,8 @@ static int pkcs12_encode_password(const char *in, size_t in_len, uint8_t **out,
   return 1;
 }
 
+}  // namespace
+
 int bssl::pkcs12_key_gen(const char *pass, size_t pass_len, const uint8_t *salt,
                          size_t salt_len, uint8_t id, uint32_t iterations,
                          size_t out_len, uint8_t *out, const EVP_MD *md) {
@@ -78,14 +81,14 @@ int bssl::pkcs12_key_gen(const char *pass, size_t pass_len, const uint8_t *salt,
   size_t pass_raw_len = 0, I_len = 0;
 
   {
-    // If |pass| is NULL, we use the empty string rather than {0, 0} as the raw
+    // If `pass` is NULL, we use the empty string rather than {0, 0} as the raw
     // password.
     if (pass != nullptr &&
         !pkcs12_encode_password(pass, pass_len, &pass_raw, &pass_raw_len)) {
       goto err;
     }
 
-    // In the spec, |block_size| is called "v", but measured in bits.
+    // In the spec, `block_size` is called "v", but measured in bits.
     size_t block_size = EVP_MD_block_size(md);
 
     // 1. Construct a string, D (the "diversifier"), by concatenating v/8 copies
@@ -186,11 +189,12 @@ err:
   return ret;
 }
 
-static int pkcs12_pbe_cipher_init(const struct pbe_suite *suite,
-                                  EVP_CIPHER_CTX *ctx, uint32_t iterations,
-                                  const char *pass, size_t pass_len,
-                                  const uint8_t *salt, size_t salt_len,
-                                  int is_encrypt) {
+namespace {
+
+int pkcs12_pbe_cipher_init(const struct pbe_suite *suite, EVP_CIPHER_CTX *ctx,
+                           uint32_t iterations, const char *pass,
+                           size_t pass_len, const uint8_t *salt,
+                           size_t salt_len, int is_encrypt) {
   const EVP_CIPHER *cipher = suite->cipher_func();
   const EVP_MD *md = suite->md_func();
 
@@ -210,9 +214,8 @@ static int pkcs12_pbe_cipher_init(const struct pbe_suite *suite,
   return ret;
 }
 
-static int pkcs12_pbe_decrypt_init(const struct pbe_suite *suite,
-                                   EVP_CIPHER_CTX *ctx, const char *pass,
-                                   size_t pass_len, CBS *param) {
+int pkcs12_pbe_decrypt_init(const struct pbe_suite *suite, EVP_CIPHER_CTX *ctx,
+                            const char *pass, size_t pass_len, CBS *param) {
   CBS pbe_param, salt;
   uint64_t iterations;
   if (!CBS_get_asn1(param, &pbe_param, CBS_ASN1_SEQUENCE) ||
@@ -233,7 +236,7 @@ static int pkcs12_pbe_decrypt_init(const struct pbe_suite *suite,
                                 0 /* decrypt */);
 }
 
-static const struct bssl::pbe_suite kBuiltinPBE[] = {
+static const struct pbe_suite kBuiltinPBE[] = {
     {
         NID_pbe_WithSHA1And40BitRC2_CBC,
         // 1.2.840.113549.1.12.1.6
@@ -272,10 +275,10 @@ static const struct bssl::pbe_suite kBuiltinPBE[] = {
     },
 };
 
-static const struct bssl::pbe_suite *get_pkcs12_pbe_suite(int pbe_nid) {
+const struct pbe_suite *get_pkcs12_pbe_suite(int pbe_nid) {
   for (const auto &pbe : kBuiltinPBE) {
     if (pbe.pbe_nid == pbe_nid &&
-        // If |cipher_func| or |md_func| are missing, this is a PBES2 scheme.
+        // If `cipher_func` or `md_func` are missing, this is a PBES2 scheme.
         pbe.cipher_func != nullptr && pbe.md_func != nullptr) {
       return &pbe;
     }
@@ -284,13 +287,15 @@ static const struct bssl::pbe_suite *get_pkcs12_pbe_suite(int pbe_nid) {
   return nullptr;
 }
 
+}  // namespace
+
 int bssl::pkcs12_pbe_encrypt_init(CBB *out, EVP_CIPHER_CTX *ctx, int alg_nid,
                                   const EVP_CIPHER *alg_cipher,
                                   uint32_t iterations, const char *pass,
                                   size_t pass_len, const uint8_t *salt,
                                   size_t salt_len) {
-  // TODO(davidben): OpenSSL has since extended |pbe_nid| to control either
-  // the PBES1 scheme or the PBES2 PRF. E.g. passing |NID_hmacWithSHA256| will
+  // TODO(davidben): OpenSSL has since extended `pbe_nid` to control either
+  // the PBES1 scheme or the PBES2 PRF. E.g. passing `NID_hmacWithSHA256` will
   // select PBES2 with HMAC-SHA256 as the PRF. Implement this if anything uses
   // it. See 5693a30813a031d3921a016a870420e7eb93ec90 in OpenSSL.
   if (alg_nid == -1) {
