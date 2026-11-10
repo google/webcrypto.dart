@@ -194,8 +194,7 @@ final class _RsaSsaPkcs1V15PublicKeyImpl
 
   @override
   Future<bool> verifyStream(List<int> signature, Stream<List<int>> data) async {
-    final signatureSnapshot = Uint8List.fromList(signature);
-    return await verifyBytes(signatureSnapshot, await _bufferStream(data));
+    return await verifyBytes(signature, await _bufferStream(data));
   }
 
   @override

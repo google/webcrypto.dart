@@ -51,6 +51,8 @@ part of 'webcrypto.dart';
 /// }
 /// ```
 /// {@endtemplate}
+///
+/// {@macro webcrypto.input-lifetimes}
 final class EcdhPrivateKey {
   final EcdhPrivateKeyImpl _impl;
 
@@ -275,6 +277,8 @@ final class EcdhPrivateKey {
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
+///
+/// {@macro webcrypto.input-lifetimes}
 final class EcdhPublicKey {
   final EcdhPublicKeyImpl _impl;
 

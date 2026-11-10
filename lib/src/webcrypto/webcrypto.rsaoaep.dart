@@ -86,6 +86,8 @@ Map<String, dynamic> _normalizeLegacyRsaOaepJwkAlg(
 /// [1]: https://www.rfc-editor.org/rfc/rfc3447
 /// [2]: https://www.rfc-editor.org/rfc/rfc5208
 /// [3]: https://www.rfc-editor.org/rfc/rfc7517
+///
+/// {@macro webcrypto.input-lifetimes}
 final class RsaOaepPrivateKey {
   final RsaOaepPrivateKeyImpl _impl;
 
@@ -363,6 +365,8 @@ final class RsaOaepPrivateKey {
 /// [1]: https://www.rfc-editor.org/rfc/rfc3447
 /// [2]: https://www.rfc-editor.org/rfc/rfc5280
 /// [3]: https://www.rfc-editor.org/rfc/rfc7517
+///
+/// {@macro webcrypto.input-lifetimes}
 final class RsaOaepPublicKey {
   final RsaOaepPublicKeyImpl _impl;
 

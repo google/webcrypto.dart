@@ -32,6 +32,8 @@ part of 'webcrypto.dart';
 /// [1]: https://csrc.nist.gov/pubs/sp/800/38/d/final
 /// [2]: https://www.rfc-editor.org/rfc/rfc7517
 /// [3]: https://en.wikipedia.org/wiki/Authenticated_encryption
+///
+/// {@macro webcrypto.input-lifetimes}
 final class AesGcmSecretKey {
   final AesGcmSecretKeyImpl _impl;
 

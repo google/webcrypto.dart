@@ -424,7 +424,6 @@ Future<bool> _verifyStream(
   Stream<List<int>> data, {
   void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
 }) {
-  final signatureSnapshot = Uint8List.fromList(signature);
   return _Scope.async((scope) async {
     // Create and initialize verification context
     final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
@@ -444,8 +443,8 @@ Future<bool> _verifyStream(
     // Verify signature
     final result = ssl.EVP_DigestVerifyFinal(
       ctx,
-      scope.dataAsPointer(signatureSnapshot),
-      signatureSnapshot.length,
+      scope.dataAsPointer(signature),
+      signature.length,
     );
     if (result != 1) {
       // TODO: We should always clear errors, when returning from any

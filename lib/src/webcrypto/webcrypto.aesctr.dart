@@ -28,6 +28,8 @@ part of 'webcrypto.dart';
 ///
 /// [1]: https://csrc.nist.gov/publications/detail/sp/800-38a/final
 /// [2]: https://www.rfc-editor.org/rfc/rfc7517
+///
+/// {@macro webcrypto.input-lifetimes}
 final class AesCtrSecretKey {
   final AesCtrSecretKeyImpl _impl;
 

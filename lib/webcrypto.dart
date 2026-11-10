@@ -14,6 +14,18 @@
 
 /// Cryptographic primitives for use on Dart VM and Dart in the browser.
 ///
+/// ## Input lifetimes
+///
+/// {@template webcrypto.input-lifetimes}
+/// Keep input lists and maps unchanged until the returned `Future` completes.
+/// Operations may read these inputs asynchronously; a call-time snapshot is
+/// not guaranteed, even if a particular backend happens to make a copy.
+///
+/// For methods returning a `Stream`, keep non-stream inputs (such as an IV or
+/// counter) unchanged until the output stream completes or cancellation of its
+/// subscription has completed.
+/// {@endtemplate}
+///
 /// TODO: Finish documentation of a public identifiers, so far the folliwng
 /// items have been documented:
 ///  * [fillRandomBytes]

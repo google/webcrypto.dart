@@ -50,6 +50,8 @@ part of 'webcrypto.dart';
 /// [1]: https://www.rfc-editor.org/rfc/rfc5869
 // TODO: It might be wise to use a random salt, then suggest that the non-secret
 //       salt is stored or exchanged...
+///
+/// {@macro webcrypto.input-lifetimes}
 final class HkdfSecretKey {
   final HkdfSecretKeyImpl _impl;
 
