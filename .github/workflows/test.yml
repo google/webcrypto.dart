@@ -110,7 +110,7 @@ jobs:
         working-directory: ./example/webcrypto_demo_flutter_app
   ios:
     name: iOS emulator (iPhone)
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -123,7 +123,7 @@ jobs:
           flutter config --no-analytics
       - uses: futureware-tech/simulator-action@v3
         with:
-          model: 'iPhone 15'
+          model: 'iPhone 16'
       - run: flutter pub get
       - name: Run integration tests
         uses: nick-fields/retry@v3
