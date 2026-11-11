@@ -126,10 +126,7 @@ final class _AesCbcSecretKeyImpl implements AesCbcSecretKeyImpl {
   @override
   Future<Uint8List> decryptBytes(List<int> data, List<int> iv) async =>
       await _bufferStream(
-        decryptStream(
-          Stream.value(Uint8List.fromList(data)),
-          Uint8List.fromList(iv),
-        ),
+        decryptStream(Stream.value(data), Uint8List.fromList(iv)),
       );
 
   @override
@@ -139,10 +136,7 @@ final class _AesCbcSecretKeyImpl implements AesCbcSecretKeyImpl {
   @override
   Future<Uint8List> encryptBytes(List<int> data, List<int> iv) async =>
       await _bufferStream(
-        encryptStream(
-          Stream.value(Uint8List.fromList(data)),
-          Uint8List.fromList(iv),
-        ),
+        encryptStream(Stream.value(data), Uint8List.fromList(iv)),
       );
 
   @override

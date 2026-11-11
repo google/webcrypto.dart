@@ -126,8 +126,7 @@ final class _RsaSsaPkcs1V15PrivateKeyImpl
   }
 
   @override
-  Future<Uint8List> signBytes(List<int> data) =>
-      signStream(Stream.value(Uint8List.fromList(data)));
+  Future<Uint8List> signBytes(List<int> data) => signStream(Stream.value(data));
 
   @override
   Future<Uint8List> signStream(Stream<List<int>> data) => _signStream(

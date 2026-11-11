@@ -48,6 +48,8 @@ part of 'webcrypto.dart';
 /// ```
 ///
 /// [1]: https://doi.org/10.6028/NIST.FIPS.180-4
+///
+/// {@macro webcrypto.input-lifetimes}
 final class HmacSecretKey {
   final HmacSecretKeyImpl _impl;
 

@@ -30,6 +30,8 @@ part of 'webcrypto.dart';
 /// to other methods in this library.
 ///
 /// [1]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf
+///
+/// {@macro webcrypto.input-lifetimes}
 abstract final class Hash {
   HashImpl get _impl;
 

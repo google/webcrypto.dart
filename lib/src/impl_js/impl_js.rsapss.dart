@@ -240,12 +240,7 @@ final class _RsaPssPublicKeyImpl implements RsaPssPublicKeyImpl {
     Stream<List<int>> data,
     int saltLength,
   ) async {
-    final signatureSnapshot = Uint8List.fromList(signature);
-    return await verifyBytes(
-      signatureSnapshot,
-      await _bufferStream(data),
-      saltLength,
-    );
+    return await verifyBytes(signature, await _bufferStream(data), saltLength);
   }
 
   @override

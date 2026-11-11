@@ -14,6 +14,9 @@
 
 part of 'webcrypto.dart';
 
+/// An ECDSA private key for signing messages.
+///
+/// {@macro webcrypto.input-lifetimes}
 final class EcdsaPrivateKey {
   final EcdsaPrivateKeyImpl _impl;
 
@@ -72,6 +75,9 @@ final class EcdsaPrivateKey {
   Future<Map<String, dynamic>> exportJsonWebKey() => _impl.exportJsonWebKey();
 }
 
+/// An ECDSA public key for verifying signatures.
+///
+/// {@macro webcrypto.input-lifetimes}
 final class EcdsaPublicKey {
   final EcdsaPublicKeyImpl _impl;
 

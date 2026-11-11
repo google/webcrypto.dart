@@ -60,6 +60,8 @@ part of 'webcrypto.dart';
 /// [1]: https://www.rfc-editor.org/rfc/rfc3447
 /// [2]: https://www.rfc-editor.org/rfc/rfc5208
 /// [3]: https://www.rfc-editor.org/rfc/rfc7517
+///
+/// {@macro webcrypto.input-lifetimes}
 final class RsassaPkcs1V15PrivateKey {
   final RsaSsaPkcs1V15PrivateKeyImpl _impl;
 
@@ -426,6 +428,8 @@ final class RsassaPkcs1V15PrivateKey {
 /// [1]: https://www.rfc-editor.org/rfc/rfc3447
 /// [2]: https://www.rfc-editor.org/rfc/rfc5280
 /// [3]: https://www.rfc-editor.org/rfc/rfc7517
+///
+/// {@macro webcrypto.input-lifetimes}
 final class RsassaPkcs1V15PublicKey {
   final RsaSsaPkcs1V15PublicKeyImpl _impl;
 

@@ -35,15 +35,10 @@ import 'regression/aes_cbc_invalid_iv.dart' as aes_cbc_invalid_iv;
 import 'regression/aes_ctr_invalid_length.dart' as aes_ctr_invalid_length;
 import 'regression/aes_key_length.dart' as aes_key_length;
 import 'regression/issue_302_hmac_jwk_length.dart' as issue_302_hmac_jwk_length;
-import 'regression/hmac_signature_snapshot.dart' as hmac_signature_snapshot;
-import 'regression/sign_bytes_message_snapshot.dart'
-    as sign_bytes_message_snapshot;
+import 'regression/input_buffers_unchanged.dart' as input_buffers_unchanged;
 import 'regression/aes_gcm_invalid_tag_length.dart'
     as aes_gcm_invalid_tag_length;
-import 'regression/aes_cbc_iv_snapshot.dart' as aes_cbc_iv_snapshot;
-import 'regression/aes_cbc_data_snapshot.dart' as aes_cbc_data_snapshot;
 import 'regression/derive_bits_zero_length.dart' as derive_bits_zero_length;
-import 'regression/digest_input_snapshot.dart' as digest_input_snapshot;
 import 'regression/ecdh_invalid_length.dart' as ecdh_invalid_length;
 import 'ecdh/derive_bits.dart' as ecdh_derive_bits;
 import 'regression/hmac_empty_key.dart' as hmac_empty_key;
@@ -55,7 +50,6 @@ import 'regression/rsa_oaep_sha1_jwk_alg.dart' as rsa_oaep_sha1_jwk_alg;
 import 'regression/rsa_modulus_length.dart' as rsa_modulus_length;
 import 'regression/rsa_private_jwk_oth.dart' as rsa_private_jwk_oth;
 import 'regression/rsa_pss_async_errors.dart' as rsa_pss_async_errors;
-import 'regression/rsa_signature_snapshot.dart' as rsa_signature_snapshot;
 
 /// Test runners from all test files except `digest.dart` and
 /// `random.dart`, which do not use [TestRunner].
@@ -88,17 +82,13 @@ void runAllTests(
     ...aes_ctr_invalid_length.tests(),
     ...aes_key_length.tests(),
     ...issue_302_hmac_jwk_length.tests(),
-    ...hmac_signature_snapshot.tests(),
-    ...sign_bytes_message_snapshot.tests(),
+    ...input_buffers_unchanged.tests(),
     ...aes_gcm_invalid_tag_length.tests(),
-    ...aes_cbc_iv_snapshot.tests(),
-    ...aes_cbc_data_snapshot.tests(),
     ...ecdh_derive_bits.tests(),
     ...issue_60_trailing_bytes.tests(),
     ...jwk_base64url.tests(),
     ...jwk_export_use.tests(),
     ...derive_bits_zero_length.tests(),
-    ...digest_input_snapshot.tests(),
     ...ecdh_invalid_length.tests(),
     ...hmac_empty_key.tests(),
     ...rsa_oaep_sha1_jwk_alg.tests(),
@@ -107,7 +97,6 @@ void runAllTests(
     if (detectedRuntime != 'firefox') ...hmac_large_generated_key.tests(),
     ...rsa_private_jwk_oth.tests(),
     ...rsa_pss_async_errors.tests(),
-    ...rsa_signature_snapshot.tests(),
   ];
 
   for (final (:name, :test) in allTests) {

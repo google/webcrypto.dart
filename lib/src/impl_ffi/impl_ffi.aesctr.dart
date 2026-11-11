@@ -241,7 +241,7 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
   ) async {
     _checkArguments(counter, length);
     return await _bufferStream(
-      decryptStream(Stream.value(Uint8List.fromList(data)), counter, length),
+      decryptStream(Stream.value(data), counter, length),
     );
   }
 
@@ -269,7 +269,7 @@ final class _AesCtrSecretKeyImpl implements AesCtrSecretKeyImpl {
   ) async {
     _checkArguments(counter, length);
     return await _bufferStream(
-      encryptStream(Stream.value(Uint8List.fromList(data)), counter, length),
+      encryptStream(Stream.value(data), counter, length),
     );
   }
 

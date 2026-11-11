@@ -49,6 +49,8 @@ part of 'webcrypto.dart';
 /// {@endtemplate}
 ///
 /// [1]: https://www.rfc-editor.org/rfc/rfc8018
+///
+/// {@macro webcrypto.input-lifetimes}
 final class Pbkdf2SecretKey {
   final Pbkdf2SecretKeyImpl _impl;
 
