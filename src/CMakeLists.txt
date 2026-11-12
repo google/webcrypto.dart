@@ -179,6 +179,18 @@ target_include_directories(
   ../third_party/boringssl/src/gen/
 )
 
+if(ANDROID)
+  # Dart resolves these functions by name at runtime. Export only the symbols
+  # used by FFI so LTO can remove the rest of BoringSSL.
+  target_compile_definitions(webcrypto PRIVATE
+    BORINGSSL_SHARED_LIBRARY BORINGSSL_IMPLEMENTATION)
+  set_property(TARGET webcrypto PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  set_property(TARGET webcrypto APPEND_STRING PROPERTY LINK_FLAGS
+    " -Wl,--version-script=\"${CMAKE_CURRENT_SOURCE_DIR}/android.exports\"")
+  set_property(TARGET webcrypto APPEND PROPERTY LINK_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/android.exports")
+endif()
+
 set_target_properties(
   webcrypto
 
