@@ -88,7 +88,8 @@ extension<T, A1, A2, A3, A4>
 /// Throw [OperationError] if [condition] is `false`.
 ///
 /// If [message] is given we use that, otherwise we use error from BoringSSL,
-/// and if nothing is available there we use [fallback].
+/// and if nothing is available there we use [fallback]. Clears the error queue
+/// on success as well, before a caller can suspend.
 void _checkOp(bool condition, {String? message, String? fallback}) {
   if (!condition) {
     // Always extract the error to ensure we clear the error queue.
@@ -96,6 +97,7 @@ void _checkOp(bool condition, {String? message, String? fallback}) {
     message ??= err ?? fallback ?? 'unknown error';
     throw operationError(message);
   }
+  ssl.ERR_clear_error();
 }
 
 /// Throw [OperationError] if [retval] is not `1`.
@@ -116,6 +118,7 @@ void _checkData(bool condition, {String? message, String? fallback}) {
     message ??= err ?? fallback ?? 'unknown error';
     throw FormatException(message);
   }
+  ssl.ERR_clear_error();
 }
 
 /// Throw [FormatException] if [retval] is `1`.
@@ -272,6 +275,14 @@ class _Scope implements Allocator {
     }
   }
 
+  void _releaseAndClear() {
+    try {
+      _release();
+    } finally {
+      ssl.ERR_clear_error();
+    }
+  }
+
   @override
   void free(ffi.Pointer pointer) {
     // Does nothing, use `release` instead.
@@ -284,9 +295,12 @@ class _Scope implements Allocator {
     assert(T is! Future, 'avoid nested async blocks');
     final scope = _Scope();
     try {
-      return await fn(scope);
+      final result = fn(scope);
+      // The callback may use BoringSSL before its first await.
+      ssl.ERR_clear_error();
+      return await result;
     } finally {
-      scope._release();
+      scope._releaseAndClear();
     }
   }
 
@@ -297,7 +311,7 @@ class _Scope implements Allocator {
     try {
       yield* fn(scope);
     } finally {
-      scope._release();
+      scope._releaseAndClear();
     }
   }
 
@@ -310,7 +324,7 @@ class _Scope implements Allocator {
     try {
       return fn(scope);
     } finally {
-      scope._release();
+      scope._releaseAndClear();
     }
   }
 }
@@ -446,13 +460,7 @@ Future<bool> _verifyStream(
       scope.dataAsPointer(signature),
       signature.length,
     );
-    if (result != 1) {
-      // TODO: We should always clear errors, when returning from any
-      //       function that uses BoringSSL.
-      // Note: In this case we could probably assert that error is just
-      //       signature related.
-      ssl.ERR_clear_error();
-    }
+    ssl.ERR_clear_error();
     return result == 1;
   });
 }
