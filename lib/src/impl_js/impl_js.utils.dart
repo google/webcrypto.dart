@@ -162,11 +162,18 @@ Future<subtle.JSCryptoKey> _importJsonWebKey(
 ) {
   return _handleDomException(() async {
     final jwkObj = subtle.JsonWebKey.fromJson(jwk);
-    // TODO: Validate expected 'use' the way we have it in the FFI implementation
+    final expectedUse = switch (algorithm.name) {
+      'HMAC' || 'ECDSA' || 'RSA-PSS' || 'RSASSA-PKCS1-v1_5' => 'sig',
+      'AES-CBC' || 'AES-CTR' || 'AES-GCM' || 'ECDH' || 'RSA-OAEP' => 'enc',
+      _ => throw UnsupportedError('Unsupported JWK algorithm'),
+    };
+    if (jwkObj.use != null && jwkObj.use != expectedUse) {
+      throw FormatException('JWK property "use" must be "$expectedUse"');
+    }
 
-    // Remove 'key_ops' and 'ext' as this library doesn't configuring
-    // _usages_ and _extractable_.
-    // Notice that we also strip 'key_ops' and 'ext' in [_exportJsonWebKey].
+    // Validate JWK metadata before omitting fields that the browser may
+    // interpret differently from the native implementation.
+    jwkObj.use = null;
     jwkObj.key_ops = null;
     jwkObj.ext = null;
     final k = await subtle.importJsonWebKey(
