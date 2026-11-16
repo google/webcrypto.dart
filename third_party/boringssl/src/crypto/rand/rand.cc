@@ -30,7 +30,7 @@ int RAND_bytes(uint8_t *buf, size_t len) {
 int RAND_pseudo_bytes(uint8_t *buf, size_t len) { return RAND_bytes(buf, len); }
 
 void RAND_seed(const void *buf, int num) {
-  // OpenSSH calls |RAND_seed| before jailing on the assumption that any needed
+  // OpenSSH calls `RAND_seed` before jailing on the assumption that any needed
   // file descriptors etc will be opened.
   uint8_t unused;
   RAND_bytes(&unused, sizeof(unused));
@@ -56,10 +56,14 @@ int RAND_poll() { return 1; }
 
 int RAND_status() { return 1; }
 
+namespace {
+
 static const struct rand_meth_st kSSLeayMethod = {
     RAND_seed, RAND_bytes,        RAND_cleanup,
     RAND_add,  RAND_pseudo_bytes, RAND_status,
 };
+
+}  // namespace
 
 RAND_METHOD *RAND_SSLeay() { return (RAND_METHOD *)&kSSLeayMethod; }
 

@@ -34,14 +34,14 @@ using namespace bssl;
 // state of the FIPS service indicator.
 struct fips_service_indicator_state {
   // lock_state records the number of times the indicator has been locked.
-  // When it is zero (i.e. |STATE_UNLOCKED|) then the indicator can be updated.
+  // When it is zero (i.e. `STATE_UNLOCKED`) then the indicator can be updated.
   uint64_t lock_state;
   // counter is the indicator state. It is incremented when an approved service
   // completes.
   uint64_t counter;
 };
 
-// service_indicator_get returns a pointer to the |fips_service_indicator_state|
+// service_indicator_get returns a pointer to the `fips_service_indicator_state`
 // for the current thread. It returns nullptr on error.
 //
 // FIPS 140-3 requires that the module should provide the service indicator
@@ -101,15 +101,15 @@ void bssl::FIPS_service_indicator_lock_state() {
     return;
   }
 
-  // |FIPS_service_indicator_lock_state| and
-  // |FIPS_service_indicator_unlock_state| should not under/overflow in normal
+  // `FIPS_service_indicator_lock_state` and
+  // `FIPS_service_indicator_unlock_state` should not under/overflow in normal
   // operation. They are still checked and errors added to facilitate testing in
   // service_indicator_test.cc. This should only happen if lock/unlock are
   // called in an incorrect order or multiple times in the same function.
   const uint64_t new_state = indicator->lock_state + 1;
   if (new_state < indicator->lock_state) {
     // Overflow. This would imply that our call stack length has exceeded a
-    // |uint64_t| which impossible on a 64-bit system.
+    // `uint64_t` which impossible on a 64-bit system.
     abort();
   }
 
@@ -201,8 +201,8 @@ static void evp_md_ctx_verify_service_indicator(const EVP_MD_CTX *ctx,
   // EVP_PKEY_RSA_PSS SPKIs aren't supported.
   if (pkey_type == EVP_PKEY_RSA) {
     // Message digest used in the private key should be of the same type
-    // as the given one, so we extract the MD type from the |EVP_PKEY|
-    // and compare it with the type in |ctx|.
+    // as the given one, so we extract the MD type from the `EVP_PKEY`
+    // and compare it with the type in `ctx`.
     const EVP_MD *pctx_md;
     if (!EVP_PKEY_CTX_get_signature_md(pctx, &pctx_md)) {
       goto err;
@@ -230,12 +230,11 @@ static void evp_md_ctx_verify_service_indicator(const EVP_MD_CTX *ctx,
     }
 
     // The approved RSA key sizes for signing are 2048, 3072 and 4096 bits.
-    // Note: |EVP_PKEY_size| returns the size in bytes.
-    size_t pkey_size = EVP_PKEY_size(FromOpaque(ctx->pctx)->pkey.get());
+    const int pkey_bits = EVP_PKEY_bits(pkey);
 
     // Check if the MD type and the RSA key size are approved.
     if (md_ok(md_type) &&
-        (pkey_size == 256 || pkey_size == 384 || pkey_size == 512)) {
+        (pkey_bits == 2048 || pkey_bits == 3072 || pkey_bits == 4096)) {
       FIPS_service_indicator_update_state();
     }
   } else if (pkey_type == EVP_PKEY_EC) {
@@ -250,6 +249,16 @@ static void evp_md_ctx_verify_service_indicator(const EVP_MD_CTX *ctx,
 err:
   // Ensure that junk errors aren't left on the queue.
   ERR_clear_error();
+}
+
+void bssl::CMAC_verify_service_indicator(const EVP_CIPHER_CTX *ctx) {
+  // Only AES-128 and AES-256 are tested with ACVP for CMAC.
+  switch (EVP_CIPHER_CTX_nid(ctx)) {
+    case NID_aes_128_cbc:
+    case NID_aes_256_cbc:
+      FIPS_service_indicator_update_state();
+      break;
+  }
 }
 
 void bssl::EC_KEY_keygen_verify_service_indicator(const EC_KEY *eckey) {
@@ -322,7 +331,7 @@ uint64_t bssl::FIPS_service_indicator_before_call() { return 0; }
 
 uint64_t bssl::FIPS_service_indicator_after_call() {
   // One is returned so that the return value is always greater than zero, the
-  // return value of |FIPS_service_indicator_before_call|. This makes everything
+  // return value of `FIPS_service_indicator_before_call`. This makes everything
   // report as "approved" in non-FIPS builds.
   return 1;
 }

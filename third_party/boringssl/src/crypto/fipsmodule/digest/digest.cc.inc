@@ -84,8 +84,20 @@ void EVP_MD_CTX_free(EVP_MD_CTX *ctx) {
 void EVP_MD_CTX_destroy(EVP_MD_CTX *ctx) { EVP_MD_CTX_free(ctx); }
 
 int EVP_DigestFinalXOF(EVP_MD_CTX *ctx, uint8_t *out, size_t len) {
-  OPENSSL_PUT_ERROR(DIGEST, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
-  return 0;
+  if (!EVP_DigestSqueeze(ctx, out, len)) {
+    return 0;
+  }
+  EVP_MD_CTX_cleanse(ctx);
+  return 1;
+}
+
+int EVP_DigestSqueeze(EVP_MD_CTX *ctx, unsigned char *out, size_t len) {
+  if (ctx->digest->squeeze == nullptr) {
+    OPENSSL_PUT_ERROR(DIGEST, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
+    return 0;
+  }
+  ctx->digest->squeeze(ctx, out, len);
+  return 1;
 }
 
 uint32_t EVP_MD_meth_get_flags(const EVP_MD *md) { return EVP_MD_flags(md); }
@@ -93,8 +105,8 @@ uint32_t EVP_MD_meth_get_flags(const EVP_MD *md) { return EVP_MD_flags(md); }
 void EVP_MD_CTX_set_flags(EVP_MD_CTX *ctx, int flags) {}
 
 int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in) {
-  // |in->digest| may be NULL if this is a signing |EVP_MD_CTX| for, e.g.,
-  // Ed25519 which does not hash with |EVP_MD_CTX|.
+  // `in->digest` may be NULL if this is a signing `EVP_MD_CTX` for, e.g.,
+  // Ed25519 which does not hash with `EVP_MD_CTX`.
   if (in == nullptr || (in->pctx == nullptr && in->digest == nullptr)) {
     OPENSSL_PUT_ERROR(DIGEST, DIGEST_R_INPUT_NOT_INITIALIZED);
     return 0;
@@ -128,9 +140,9 @@ int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in) {
 
 void EVP_MD_CTX_move(EVP_MD_CTX *out, EVP_MD_CTX *in) {
   EVP_MD_CTX_cleanup(out);
-  // While not guaranteed, |EVP_MD_CTX| is currently safe to move with |memcpy|.
+  // While not guaranteed, `EVP_MD_CTX` is currently safe to move with `memcpy`.
   // bssl-crypto currently relies on this, however, so if we change this, we
-  // need to box the |HMAC_CTX|. (Relying on this is only fine because we assume
+  // need to box the `HMAC_CTX`. (Relying on this is only fine because we assume
   // BoringSSL and bssl-crypto will always be updated atomically. We do not
   // allow any version skew between the two.)
   OPENSSL_memcpy(out, in, sizeof(EVP_MD_CTX));
@@ -149,14 +161,12 @@ int EVP_MD_CTX_reset(EVP_MD_CTX *ctx) {
 }
 
 int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *engine) {
-  if (ctx->digest != type) {
-    assert(type->ctx_size != 0);
-    assert(type->ctx_size <= sizeof(ctx->md_data));
-    ctx->digest = type;
-  }
+  EVP_MD_CTX_cleanup(ctx);
 
-  assert(ctx->pctx == nullptr || ctx->pctx_ops != nullptr);
-
+  assert(ctx->pctx == nullptr);
+  assert(type->ctx_size != 0);
+  assert(type->ctx_size <= sizeof(ctx->md_data));
+  ctx->digest = type;
   ctx->digest->init(ctx);
   return 1;
 }

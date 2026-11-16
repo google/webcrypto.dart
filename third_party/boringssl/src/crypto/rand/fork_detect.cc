@@ -56,14 +56,16 @@ using namespace bssl;
 
 #if defined(OPENSSL_FORK_DETECTION_WIPEONFORK)
 
-static bool wipeonfork(void *addr, size_t page_size) {
+namespace {
+
+bool wipeonfork(void *addr, size_t page_size) {
 #if defined(OPENSSL_LINUX)
   // Linux flavor, >=4.14.
   // Some versions of qemu (up to at least 5.0.0-rc4, see linux-user/syscall.c)
-  // ignore |madvise| calls and just return zero (i.e. success). But we need to
+  // ignore `madvise` calls and just return zero (i.e. success). But we need to
   // know whether MADV_WIPEONFORK actually took effect. Therefore try an invalid
-  // call to check that the implementation of |madvise| is actually rejecting
-  // unknown |advice| values.
+  // call to check that the implementation of `madvise` is actually rejecting
+  // unknown `advice` values.
   return madvise(addr, page_size, -1) != 0 &&
          madvise(addr, page_size, MADV_WIPEONFORK) == 0;
 #elif defined(MAP_INHERIT_ZERO)
@@ -75,14 +77,14 @@ static bool wipeonfork(void *addr, size_t page_size) {
 #endif
 }
 
-static int g_force_madv_wipeonfork;
-static int g_force_madv_wipeonfork_enabled;
-static CRYPTO_once_t g_fork_detect_once = CRYPTO_ONCE_INIT;
-static StaticMutex g_fork_detect_lock;
-static Atomic<uint32_t> *g_fork_detect_addr;
-static uint64_t g_fork_generation;
+int g_force_madv_wipeonfork;
+int g_force_madv_wipeonfork_enabled;
+CRYPTO_once_t g_fork_detect_once = CRYPTO_ONCE_INIT;
+StaticMutex g_fork_detect_lock;
+Atomic<uint32_t> *g_fork_detect_addr;
+uint64_t g_fork_generation;
 
-static void init_fork_detect() {
+void init_fork_detect() {
   if (g_force_madv_wipeonfork) {
     return;
   }
@@ -107,13 +109,15 @@ static void init_fork_detect() {
   g_fork_generation = 1;
 }
 
+}  // namespace
+
 uint64_t bssl::CRYPTO_get_fork_generation() {
   CRYPTO_once(&g_fork_detect_once, init_fork_detect);
 
   // In a single-threaded process, there are obviously no races because there's
   // only a single mutator in the address space.
   //
-  // In a multi-threaded environment, |CRYPTO_once| ensures that the flag byte
+  // In a multi-threaded environment, `CRYPTO_once` ensures that the flag byte
   // is initialised atomically, even if multiple threads enter this function
   // concurrently.
   //
@@ -123,8 +127,8 @@ uint64_t bssl::CRYPTO_get_fork_generation() {
 
   Atomic<uint32_t> *const flag_ptr = g_fork_detect_addr;
   if (flag_ptr == nullptr) {
-    // Our kernel is too old to support |MADV_WIPEONFORK| or
-    // |g_force_madv_wipeonfork| is set.
+    // Our kernel is too old to support `MADV_WIPEONFORK` or
+    // `g_force_madv_wipeonfork` is set.
     if (g_force_madv_wipeonfork && g_force_madv_wipeonfork_enabled) {
       // A constant generation number to simulate support, even if the kernel
       // doesn't support it.
@@ -143,7 +147,7 @@ uint64_t bssl::CRYPTO_get_fork_generation() {
   // avoids cacheline contention in the PRNG.
   uint64_t *const generation_ptr = &g_fork_generation;
   if (flag_ptr->load() != 0) {
-    // If we observe a non-zero flag, it is safe to read |generation_ptr|
+    // If we observe a non-zero flag, it is safe to read `generation_ptr`
     // without a lock. The flag and generation number are fixed for this copy of
     // the address space.
     return *generation_ptr;
@@ -162,8 +166,8 @@ uint64_t bssl::CRYPTO_get_fork_generation() {
       current_generation = 1;
     }
 
-    // We must update |generation_ptr| before |flag_ptr|. Other threads may
-    // observe |flag_ptr| without taking a lock.
+    // We must update `generation_ptr` before `flag_ptr`. Other threads may
+    // observe `flag_ptr` without taking a lock.
     *generation_ptr = current_generation;
     flag_ptr->store(1);
   }
@@ -178,10 +182,12 @@ void bssl::CRYPTO_fork_detect_force_madv_wipeonfork_for_testing(int on) {
 
 #elif defined(OPENSSL_FORK_DETECTION_PTHREAD_ATFORK)
 
-static CRYPTO_once_t g_pthread_fork_detection_once = CRYPTO_ONCE_INIT;
-static uint64_t g_atfork_fork_generation;
+namespace {
 
-static void we_are_forked() {
+CRYPTO_once_t g_pthread_fork_detection_once = CRYPTO_ONCE_INIT;
+uint64_t g_atfork_fork_generation;
+
+void we_are_forked() {
   // Immediately after a fork, the process must be single-threaded.
   uint64_t value = g_atfork_fork_generation + 1;
   if (value == 0) {
@@ -190,12 +196,14 @@ static void we_are_forked() {
   g_atfork_fork_generation = value;
 }
 
-static void init_pthread_fork_detection() {
+void init_pthread_fork_detection() {
   if (pthread_atfork(nullptr, nullptr, we_are_forked) != 0) {
     abort();
   }
   g_atfork_fork_generation = 1;
 }
+
+}  // namespace
 
 uint64_t bssl::CRYPTO_get_fork_generation() {
   CRYPTO_once(&g_pthread_fork_detection_once, init_pthread_fork_detection);
