@@ -25,27 +25,7 @@ part of 'webcrypto.dart';
 ///
 /// {@template Pbkdf2SecretKey:example}
 /// **Example**
-/// ```
-/// import 'dart:convert' show utf8, base64;
-/// import 'package:webcrypto/webcrypto.dart';
-///
-/// // Provide a password to be used for key derivation
-/// final key = await Pbkdf2SecretKey.importRawKey(utf8.decode(
-///   'my-password-in-plain-text',
-/// ));
-///
-/// // Derive a key from password
-/// final derivedKey = await Pbkdf2SecretKey.deriveBits(
-///   256, // number of bits to derive.
-///   Hash.sha256,
-///   utf8.decode('unique salt'),
-///   100000,
-/// );
-///
-/// // Print the derived key, this could also be used as basis for other new
-/// // symmetric cryptographic keys.
-/// print(base64.encode(derivedKey));
-/// ```
+/// {@example /example/webcrypto/pbkdf2/derive_bits.dart#example}
 /// {@endtemplate}
 ///
 /// [1]: https://www.rfc-editor.org/rfc/rfc8018
