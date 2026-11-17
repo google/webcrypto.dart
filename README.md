@@ -60,7 +60,21 @@ link a smaller library with only the BoringSSL functions that are used, which
 requires a C toolchain (like `gcc`, `clang`, Xcode, MSVC, or the Android NDK).
 Without one, the prebuilt library is bundled as is.
 
-To build BoringSSL from source instead, or for other targets, see the
+The prebuilt Linux libraries require glibc 2.34 or later (for example Ubuntu
+22.04, Debian 12, or RHEL 9). On older Linux distributions, or on ones with
+another C library, such as musl on Alpine Linux, build BoringSSL from source by
+adding this to the `pubspec.yaml` of your application:
+
+```yaml
+hooks:
+  user_defines:
+    boring:
+      buildMode: checkout
+```
+
+This requires CMake, Ninja, and a C compiler.
+
+To build BoringSSL from source for other reasons, or for other targets, see the
 [build modes](https://pub.dev/packages/boring#native-asset-build-modes) of
 `package:boring`.
 
