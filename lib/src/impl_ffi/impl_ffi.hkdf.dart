@@ -57,11 +57,9 @@ final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
     }
 
     final lengthInBytes = length ~/ 8;
-    const lengthTooLong =
-        'Length specified for HkdfSecretKey.deriveBits is too long';
     final maxLengthInBytes = 255 * ssl.EVP_MD_size(md);
     if (lengthInBytes > maxLengthInBytes) {
-      throw operationError(lengthTooLong);
+      throw operationError(hkdfLengthTooLong);
     }
 
     return _Scope.async((scope) async {
@@ -82,7 +80,7 @@ final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
         if (ERR_GET_LIB(packed_error) == ERR_LIB_HKDF &&
             ERR_GET_REASON(packed_error) == HKDF_R_OUTPUT_TOO_LARGE) {
           ssl.ERR_clear_error();
-          throw operationError(lengthTooLong);
+          throw operationError(hkdfLengthTooLong);
         }
         _checkOpIsOne(r, fallback: 'HKDF key derivation failed');
       }
