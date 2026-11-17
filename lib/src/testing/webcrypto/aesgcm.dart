@@ -68,6 +68,23 @@ void main() async {
 // ignore_for_file: prefer_single_quotes
 final _testData = [
   {
+    "name": "reject invalid key generation length",
+    "generateKeyParams": {"length": 64},
+    "errorOperation": "generateKey",
+    "expectedErrorType": "FormatException",
+    "expectedErrorMessage": "AES key length must be",
+  },
+  {
+    "name": "reject invalid encryption tag length",
+    "privateRawKeyData": "AAAAAAAAAAAAAAAAAAAAAA==",
+    "importKeyParams": {},
+    "plaintext": "AQID",
+    "encryptDecryptParams": {"iv": "AAECAwQFBgcICQoL", "tagLength": 384},
+    "errorOperation": "encryptBytes",
+    "expectedErrorType": "OperationError",
+    "expectedErrorMessage": "tagLength must be",
+  },
+  {
     "name":
         "A128GCM/iv-only generated on boringssl/linux at 2020-01-21T22:52:27",
     "privateRawKeyData": "3nle6RpFx77jwrksoNUb1Q==",
