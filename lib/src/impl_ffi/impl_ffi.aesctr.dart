@@ -59,7 +59,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
   // Heavily inspired by Chromium Web Crypto implementation, see:
   // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/aes_ctr.cc#144
 
-  return BoringArena.stream((scope) async* {
+  return _arenaStream((scope) async* {
     assert(counter.length == 16);
     assert(key.length == 16 || key.length == 32);
     final cipher = key.length == 16

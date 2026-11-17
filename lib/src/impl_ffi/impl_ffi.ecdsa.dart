@@ -92,7 +92,7 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
   _EvpPKey key,
   Uint8List signature,
 ) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     // TODO: Check if cbs is empty after parsing, consider using ECDSA_SIG_from_bytes instead (like chrome does)
     final ecdsa = ssl.ECDSA_SIG_parse(scope.cbs(signature));
     _checkOp(
@@ -139,7 +139,7 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
   _EvpPKey key,
   List<int> signature,
 ) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     // Read EC key and get the number of bytes required to encode R and S.
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');

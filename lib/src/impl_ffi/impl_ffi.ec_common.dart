@@ -66,7 +66,7 @@ String _ecCurveToJwkCrv(EllipticCurve curve) {
 
 /// Perform some post-import validation for EC keys.
 void _validateEllipticCurveKey(_EvpPKey key, EllipticCurve curve) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     _checkData(
       ssl.EVP_PKEY_id.invoke(key) == EVP_PKEY_EC,
       message: 'key is not an EC key',
@@ -94,7 +94,7 @@ void _validateEllipticCurveKey(_EvpPKey key, EllipticCurve curve) {
 }
 
 _EvpPKey _importPkcs8EcPrivateKey(List<int> keyData, EllipticCurve curve) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final cbs = scope.cbs(keyData);
     final k = ssl.EVP_parse_private_key(cbs);
 
@@ -108,7 +108,7 @@ _EvpPKey _importPkcs8EcPrivateKey(List<int> keyData, EllipticCurve curve) {
 }
 
 _EvpPKey _importSpkiEcPublicKey(List<int> keyData, EllipticCurve curve) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final cbs = scope.cbs(keyData);
     final k = ssl.EVP_parse_public_key(cbs);
 
@@ -169,7 +169,7 @@ _EvpPKey _importJwkEcPrivateOrPublicKey(
   // TODO: Reject keys with key_ops in inconsistent with isPrivateKey
   //       Also in the js implementation...
 
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final ec = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
     _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
     scope.register(ec, ssl.EC_KEY_free);
@@ -225,7 +225,7 @@ _EvpPKey _importJwkEcPrivateOrPublicKey(
 
 _EvpPKey _importRawEcPublicKey(List<int> keyData, EllipticCurve curve) {
   // See: https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/ec.cc#332
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     // Create EC_KEY for the curve
     final ec = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
     _checkOp(ec.address != 0, fallback: 'internal failure to use curve');
@@ -262,7 +262,7 @@ _EvpPKey _importRawEcPublicKey(List<int> keyData, EllipticCurve curve) {
 }
 
 Uint8List _exportRawEcPublicKey(_EvpPKey key) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
     scope.register(ec, ssl.EC_KEY_free);
@@ -287,7 +287,7 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
   required bool isPrivateKey,
   String? jwkUse,
 }) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, fallback: 'internal key type invariant error');
     scope.register(ec, ssl.EC_KEY_free);
@@ -338,7 +338,7 @@ Map<String, dynamic> _exportJwkEcPrivateOrPublicKey(
 }
 
 KeyPair<_EvpPKey, _EvpPKey> _generateEcKeyPair(EllipticCurve curve) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final ecPriv = ssl.EC_KEY_new_by_curve_name(_ecCurveToNID(curve));
     _checkOp(ecPriv.address != 0, fallback: 'internal failure to use curve');
     scope.register(ecPriv, ssl.EC_KEY_free);

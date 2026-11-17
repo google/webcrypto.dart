@@ -36,6 +36,27 @@ extension type _EvpPKey._(NativeHandle<EVP_PKEY> _handle)
 // failing call, using _checkOp / _checkData or ERR_clear_error, rather than
 // deferring it to a `finally` or BoringArena release that may run after an
 // `await`. In tests, checkErrorStack fails if errors are left behind.
+//
+// Every package using package:boring on a thread shares its queue, so other
+// code may leave errors behind, which _checkOp / _checkData would report for
+// webcrypto's next failure. So run all BoringSSL calls in _arena or
+// _arenaStream, which clear the queue first.
+
+/// Runs [computation] with a new [BoringArena], like [BoringArena.using],
+/// after clearing errors that other code left on BoringSSL's error queue.
+R _arena<R>(R Function(BoringArena scope) computation) {
+  ssl.ERR_clear_error();
+  return BoringArena.using(computation);
+}
+
+/// Returns the stream of [computation] with a new [BoringArena], like
+/// [BoringArena.stream], after clearing errors that other code left on
+/// BoringSSL's error queue when the stream is listened to.
+Stream<T> _arenaStream<T>(Stream<T> Function(BoringArena scope) computation) =>
+    BoringArena.stream((scope) {
+      ssl.ERR_clear_error();
+      return computation(scope);
+    });
 
 /// Throw [OperationError] if [condition] is `false`.
 ///
@@ -151,7 +172,7 @@ Future<Uint8List> _signStream(
   Stream<List<int>> data, {
   void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
 }) {
-  return BoringArena.using((scope) async {
+  return _arena((scope) async {
     final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
     final pctx = config != null
         ? scope<ffi.Pointer<EVP_PKEY_CTX>>()
@@ -186,7 +207,7 @@ Future<bool> _verifyStream(
   Stream<List<int>> data, {
   void Function(ffi.Pointer<EVP_PKEY_CTX> ctx)? config,
 }) {
-  return BoringArena.using((scope) async {
+  return _arena((scope) async {
     // Create and initialize verification context
     final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
     final pctx = config != null
@@ -221,7 +242,7 @@ Future<bool> _verifyStream(
 
 /// Export private [key] as PKCS8.
 Uint8List _exportPkcs8Key(_EvpPKey key) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final cbb = scope.cbb();
     _checkOpIsOne(ssl.EVP_marshal_private_key.invoke(cbb, key));
     return cbb.toBytes();
@@ -230,7 +251,7 @@ Uint8List _exportPkcs8Key(_EvpPKey key) {
 
 /// Export public [key] as SPKI.
 Uint8List _exportSpkiKey(_EvpPKey key) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final cbb = scope.cbb();
     _checkOpIsOne(ssl.EVP_marshal_public_key.invoke(cbb, key));
     return cbb.toBytes();
