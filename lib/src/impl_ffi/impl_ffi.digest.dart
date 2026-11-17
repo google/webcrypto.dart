@@ -42,7 +42,7 @@ abstract class _HashImpl implements HashImpl {
 
   @override
   Future<Uint8List> digestStream(Stream<List<int>> data) {
-    return BoringArena.run((scope) async {
+    return BoringArena.using((scope) async {
       final ctx = scope.create(ssl.EVP_MD_CTX_new, ssl.EVP_MD_CTX_free);
       // Initialize with hash function
       _checkOp(ssl.EVP_DigestInit(ctx, _md) == 1);

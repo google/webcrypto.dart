@@ -72,7 +72,7 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
 
     final lengthInBytes = length ~/ 8;
 
-    return BoringArena.run((scope) async {
+    return BoringArena.using((scope) async {
       final out = scope<ffi.Uint8>(lengthInBytes);
       _checkOpIsOne(
         await _PKCS5_PBKDF2_HMAC(

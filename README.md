@@ -52,12 +52,17 @@ see `doc/design-rationale-md`.
 
 ## System dependencies
 
-When you have a dependency on `package:webcrypto`, it will use
-[hooks](https://dart.dev/tools/hooks) to build BoringSSL. Thus, your system
-must have:
+On native platforms, `package:webcrypto` uses BoringSSL from
+[`package:boring`](https://pub.dev/packages/boring), which uses
+[hooks](https://dart.dev/tools/hooks) to bundle it. By default it downloads a
+prebuilt library for Linux, macOS, Windows, Android, and iOS. Release builds
+link a smaller library with only the BoringSSL functions that are used, which
+requires a C toolchain (like `gcc`, `clang`, Xcode, MSVC, or the Android NDK).
+Without one, the prebuilt library is bundled as is.
 
- * `cmake`, and,
- * a C compiler (like `gcc` or `clang`)
+To build BoringSSL from source instead, or for other targets, see the
+[build modes](https://pub.dev/packages/boring#native-asset-build-modes) of
+`package:boring`.
 
 ## Limitations
 This package has a few limitations compared to the

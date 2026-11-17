@@ -105,7 +105,7 @@ Future<Uint8List> _rsaOaepeEncryptOrDecryptBytes(
   List<int> data, {
   List<int>? label,
 }) async {
-  return BoringArena.run((scope) {
+  return BoringArena.using((scope) {
     final ctx = scope.create(
       () => ssl.EVP_PKEY_CTX_new.invoke(key, ffi.nullptr),
       ssl.EVP_PKEY_CTX_free,

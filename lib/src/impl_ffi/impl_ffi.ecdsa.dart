@@ -92,19 +92,19 @@ Uint8List _convertEcdsaDerSignatureToWebCryptoSignature(
   _EvpPKey key,
   Uint8List signature,
 ) {
-  return BoringArena.run((scope) {
+  return BoringArena.using((scope) {
     // TODO: Check if cbs is empty after parsing, consider using ECDSA_SIG_from_bytes instead (like chrome does)
     final ecdsa = ssl.ECDSA_SIG_parse(scope.cbs(signature));
     _checkOp(
       ecdsa.address != 0,
       message: 'internal error formatting signature',
     );
-    scope.using(ecdsa, ssl.ECDSA_SIG_free);
+    scope.register(ecdsa, ssl.ECDSA_SIG_free);
 
     // Read EC key and get the number of bytes required to encode R and S.
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
-    scope.using(ec, ssl.EC_KEY_free);
+    scope.register(ec, ssl.EC_KEY_free);
 
     final N = ssl.BN_num_bytes(
       ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(ec)),
@@ -139,11 +139,11 @@ Uint8List? _convertEcdsaWebCryptoSignatureToDerSignature(
   _EvpPKey key,
   List<int> signature,
 ) {
-  return BoringArena.run((scope) {
+  return BoringArena.using((scope) {
     // Read EC key and get the number of bytes required to encode R and S.
     final ec = ssl.EVP_PKEY_get1_EC_KEY.invoke(key);
     _checkOp(ec.address != 0, message: 'internal key type invariant violation');
-    scope.using(ec, ssl.EC_KEY_free);
+    scope.register(ec, ssl.EC_KEY_free);
 
     final N = ssl.BN_num_bytes(
       ssl.EC_GROUP_get0_order(ssl.EC_KEY_get0_group(ec)),
