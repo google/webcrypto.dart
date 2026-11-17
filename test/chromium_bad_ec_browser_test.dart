@@ -38,6 +38,14 @@ void main() {
     expect(vectors, hasLength(21));
   });
 
+  // https://github.com/google/webcrypto.dart/issues/459
+  const firefoxSkipReasons = <int, String>{
+    14: 'Private scalar does not match the public coordinates',
+    16: 'P-384 public point is not on the curve',
+    17: 'P-256 private scalar equals the curve order',
+    19: 'P-521 private scalar exceeds the curve order by 11',
+  };
+
   for (var index = 0; index < 21; index++) {
     test(
       'Chromium bad EC key vector $index',
@@ -79,8 +87,8 @@ void main() {
           reason: 'Chromium vector $index: ${vector['error']}',
         );
       },
-      onPlatform: {14, 16, 17, 19}.contains(index)
-          ? {'firefox': Skip('Firefox accepts this EC key')}
+      onPlatform: firefoxSkipReasons.containsKey(index)
+          ? {'firefox': Skip(firefoxSkipReasons[index]!)}
           : null,
     );
   }
