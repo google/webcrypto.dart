@@ -61,6 +61,32 @@ final class JsonWebKey {
     this.k,
   });
 
+  static void _verifyUseAndKeyOps(String? use, List<String>? keyOps) {
+    if (use == null || keyOps == null) {
+      return;
+    }
+
+    final allowedOps = switch (use) {
+      'enc' => const {
+        'encrypt',
+        'decrypt',
+        'wrapKey',
+        'unwrapKey',
+        'deriveKey',
+        'deriveBits',
+      },
+      'sig' => const {'sign', 'verify'},
+      _ => null,
+    };
+    if (allowedOps == null) {
+      return;
+    }
+
+    if (keyOps.any((op) => !allowedOps.contains(op))) {
+      throw FormatException('JWK properties "use" and "key_ops" conflict');
+    }
+  }
+
   static JsonWebKey fromJson(Map<String, dynamic> json) {
     const stringKeys = [
       'kty',
@@ -95,6 +121,7 @@ final class JsonWebKey {
       }
       key_ops = (json['key_ops'] as List).map((e) => e as String).toList();
     }
+    _verifyUseAndKeyOps(json['use'] as String?, key_ops);
 
     if (json.containsKey('ext') && json['ext'] is! bool) {
       throw FormatException('JWK entry "ext" must be boolean', json);

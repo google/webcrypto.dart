@@ -22,6 +22,7 @@ import 'dart:typed_data';
 import 'package:webcrypto/src/impl_interface/impl_interface.dart';
 
 import '../crypto_subtle.dart' as subtle;
+import '../jsonwebkey.dart' show JsonWebKey;
 
 part 'impl_js.aescbc.dart';
 part 'impl_js.aesctr.dart';
