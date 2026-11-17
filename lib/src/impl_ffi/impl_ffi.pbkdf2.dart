@@ -74,17 +74,15 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
 
     return _Scope.async((scope) async {
       final out = scope<ffi.Uint8>(lengthInBytes);
-      _checkOpIsOne(
-        await _PKCS5_PBKDF2_HMAC(
-          scope.dataAsPointer(_key),
-          _key.length,
-          scope.dataAsPointer(salt),
-          salt.length,
-          iterations,
-          md,
-          lengthInBytes,
-          out,
-        ),
+      await _PKCS5_PBKDF2_HMAC(
+        scope.dataAsPointer(_key),
+        _key.length,
+        scope.dataAsPointer(salt),
+        salt.length,
+        iterations,
+        md,
+        lengthInBytes,
+        out,
       );
       return out.copy(lengthInBytes);
     });
@@ -99,7 +97,7 @@ final class _Pbkdf2SecretKeyImpl implements Pbkdf2SecretKeyImpl {
 ///
 /// Using this auxiliary function to wrap the call should reduce the risk that
 /// unnecessary variables are copied into the closure passed to [Isolate.run].
-Future<int> _PKCS5_PBKDF2_HMAC(
+Future<void> _PKCS5_PBKDF2_HMAC(
   ffi.Pointer<ffi.Char> key,
   int keyLength,
   ffi.Pointer<ffi.Uint8> salt,
@@ -109,15 +107,17 @@ Future<int> _PKCS5_PBKDF2_HMAC(
   int lengthInBytes,
   ffi.Pointer<ffi.Uint8> out,
 ) async => await Isolate.run(
-  () => ssl.PKCS5_PBKDF2_HMAC(
-    key,
-    keyLength,
-    salt,
-    saltLength,
-    iterations,
-    md,
-    lengthInBytes,
-    out,
+  () => _checkOpIsOne(
+    ssl.PKCS5_PBKDF2_HMAC(
+      key,
+      keyLength,
+      salt,
+      saltLength,
+      iterations,
+      md,
+      lengthInBytes,
+      out,
+    ),
   ),
   debugName: 'PKCS5_PBKDF2_HMAC',
 );

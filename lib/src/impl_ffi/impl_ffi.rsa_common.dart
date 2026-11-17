@@ -265,9 +265,7 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
     final e = scope.createBN();
     _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
 
-    _checkOpIsOne(
-      await _RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr),
-    );
+    await _RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr);
 
     // Copy out the public RSA key
     final pubRSA = scope.create(
@@ -293,12 +291,12 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
 /// Using this auxiliary function to wrap the call should reduce the risk that
 /// unnecessary variables are copied into the closure passed to [Isolate.run].
 // ignore: non_constant_identifier_names
-Future<int> _RSA_generate_key_ex(
+Future<void> _RSA_generate_key_ex(
   ffi.Pointer<RSA> rsa,
   int bits,
   ffi.Pointer<BIGNUM> e,
   ffi.Pointer<BN_GENCB> cb,
 ) async => await Isolate.run(
-  () => ssl.RSA_generate_key_ex(rsa, bits, e, cb),
+  () => _checkOpIsOne(ssl.RSA_generate_key_ex(rsa, bits, e, cb)),
   debugName: 'RSA_generate_key_ex',
 );
