@@ -36,7 +36,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq clang cmake ninja-build pkg-config libgtk-3-dev xvfb > /dev/null
-      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
       - run: flutter pub get
       - run: dart test --exclude-tags browser-interop -p vm -r expanded
       - name: Demo app integration test
@@ -91,9 +91,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
       - run: flutter pub get
-      - uses: Telosnex/telosnex_ci_tools/actions/dart-test-browser@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/dart-test-browser@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
         with:
           platform: ${{ env.BROWSER }}
           compiler: ${{ env.COMPILER }}
@@ -143,9 +143,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
       - run: flutter pub get
-      - uses: Telosnex/telosnex_ci_tools/actions/ios-flutter-test@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/ios-flutter-test@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
         with:
           working-directory: example/webcrypto_demo_flutter_app
           target: integration_test/webcrypto_test.dart
@@ -159,9 +159,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
       - run: flutter pub get
-      - uses: Telosnex/telosnex_ci_tools/actions/android-emulator@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/android-emulator@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
         id: emulator
         with:
           api-level: '36'
@@ -184,8 +184,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
-      - uses: Telosnex/telosnex_ci_tools/actions/android-test-apks@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
+      - uses: Telosnex/telosnex_ci_tools/actions/android-test-apks@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
         with:
           working-directory: example/webcrypto_demo_flutter_app
           targets: integration_test/webcrypto_test.dart
@@ -199,11 +199,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
-      - uses: Telosnex/telosnex_ci_tools/actions/download-artifact@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/setup-flutter@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
+      - uses: Telosnex/telosnex_ci_tools/actions/download-artifact@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
         with:
           name: android-test-apks
           path: ${{ runner.temp }}/apks
-      - uses: Telosnex/telosnex_ci_tools/actions/android-arm64-container@93ab9b574e45c5cd2567fbea58acb3d76f7363ca # v0.5.22
+      - uses: Telosnex/telosnex_ci_tools/actions/android-arm64-container@d807dca8c92f4b85be742a04601a47654f0e41a0 # v0.5.23
         with:
           apks: ${{ runner.temp }}/apks
