@@ -54,19 +54,7 @@ final runner = TestRunner.asymmetric<EcdsaPrivateKey, EcdsaPublicKey>(
   testData: _testData,
 );
 
-void main() async {
-  log('generate ECDSA test case');
-  await runner.generate(
-    generateKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
-    importKeyParams: {'curve': curveToJson(EllipticCurve.p256)},
-    signVerifyParams: {'hash': hashToJson(Hash.sha256)},
-    maxPlaintext: 80,
-  );
-  log('--------------------');
-
-  // TODO: Test more curves and hashes
-  await runner.tests().runTests();
-}
+Future<void> main() => runner.tests(dumpGeneratedCases: true).runTests();
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes

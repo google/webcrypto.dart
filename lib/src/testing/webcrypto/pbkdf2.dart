@@ -57,29 +57,24 @@ final runner = TestRunner.symmetric<_ExportablePbkdf2SecretKey>(
   testData: _testData,
 );
 
-void main() async {
-  log('generate Pbkdf2SecretKey test case');
-  await runner.generate(
-    generateKeyParams: {'length': 91},
-    importKeyParams: {},
-    deriveParams: {
-      'hash': hashToJson(Hash.sha256),
-      'salt': bytesToJson(List.generate(42, (i) => (i + i) % 256)),
-      'iterations': 2000,
-    },
-    minDeriveLength: 256,
-    maxDeriveLength: 256,
-  );
-  log('--------------------');
-
-  await runner.tests().runTests();
-}
+Future<void> main() => runner.tests(dumpGeneratedCases: true).runTests();
 
 // TODO: Augments tests with test vectors from: https://www.rfc-editor.org/rfc/rfc6070
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes
 final _testData = [
+  {
+    "name": "generate PBKDF2 key",
+    "generateKeyParams": {"length": 91},
+    "importKeyParams": {},
+    "deriveParams": {
+      "hash": "sha-256",
+      "salt": bytesToJson(List.generate(42, (i) => (i + i) % 256)),
+      "iterations": 2000,
+    },
+    "derivedLength": 256,
+  },
   {
     "name": "SHA-384/2/512 generated on boringssl/linux at 2020-01-26T20:46:06",
     "privateRawKeyData": "kxoGkUuBRbVcRFx6TmdwN952GvTCwYxBoPkPdhTdZw==",

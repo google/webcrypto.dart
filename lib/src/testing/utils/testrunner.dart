@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:convert';
-import 'dart:math';
 import 'dart:async';
 
 import 'package:meta/meta.dart';
@@ -21,7 +20,6 @@ import 'package:webcrypto/webcrypto.dart';
 import 'detected_runtime.dart';
 import 'ffibonacci_chunked_stream.dart';
 import 'utils.dart';
-import 'lipsum.dart';
 import 'err_stack_stub.dart' if (dart.library.ffi) 'err_stack_ffi.dart';
 
 // Export utilities necessary for implementing a `TestRunner`.
@@ -488,109 +486,18 @@ class TestRunner<PrivateKey, PublicKey> {
     }
   }
 
-  Future<Map<String, dynamic>> generate({
-    required Map<String, dynamic> generateKeyParams,
-    required Map<String, dynamic> importKeyParams,
-    Map<String, dynamic> signVerifyParams = const {},
-    Map<String, dynamic> encryptDecryptParams = const {},
-    Map<String, dynamic> deriveParams = const {},
-    String plaintextTemplate = libsum,
-    int minPlaintext = 8,
-    int maxPlaintext = libsum.length,
-    int minDeriveLength = 4,
-    int maxDeriveLength = 512,
-  }) async {
-    check(minPlaintext <= maxPlaintext);
-    check(maxPlaintext <= plaintextTemplate.length);
-    final ts = DateTime.now().toIso8601String().split('.').first; // drop secs
-    final name = 'generated at $ts';
-
-    log('generating key-pair');
-    final pair = await _generateKeyPair(generateKeyParams);
-    final privateKey = pair.privateKey;
-    final publicKey = pair.publicKey;
-    check(privateKey != null);
-    check(publicKey != null);
-
-    List<int>? plaintext;
-    if (_signBytes != null || _encryptBytes != null) {
-      log('picking plaintext');
-      final rng = Random.secure();
-      final N = rng.nextInt(maxPlaintext - minPlaintext) + minPlaintext;
-      final offset = rng.nextInt(plaintextTemplate.length - N);
-      plaintext = utf8.encode(plaintextTemplate.substring(offset, offset + N));
-    }
-
-    List<int>? signature;
-    final signBytes = _signBytes;
-    if (signBytes != null) {
-      log('creating signature');
-      signature = await signBytes(
-        pair.privateKey,
-        plaintext!,
-        signVerifyParams,
-      );
-    }
-
-    List<int>? ciphertext;
-    final encryptBytes = _encryptBytes;
-    if (encryptBytes != null) {
-      log('creating ciphertext');
-      ciphertext = await encryptBytes(
-        pair.publicKey,
-        plaintext!,
-        encryptDecryptParams,
-      );
-    }
-
-    int? derivedLength;
-    List<int>? derivedBits;
-    final deriveBits = _deriveBits;
-    if (deriveBits != null) {
-      log('picking derivedLength');
-      final rng = Random.secure();
-      derivedLength = maxDeriveLength == minDeriveLength
-          ? maxDeriveLength
-          : rng.nextInt(maxDeriveLength - minDeriveLength) + minDeriveLength;
-
-      log('creating derivedBits');
-      derivedBits = await deriveBits(pair, derivedLength, deriveParams);
-    }
-
-    final c = await _exportGeneratedTestCase(
-      this,
-      name: name,
-      privateKey: privateKey,
-      publicKey: publicKey,
-      plaintext: plaintext,
-      signature: signature,
-      ciphertext: ciphertext,
-      derivedBits: derivedBits,
-      importKeyParams: importKeyParams,
-      signVerifyParams: signVerifyParams,
-      encryptDecryptParams: encryptDecryptParams,
-      derivedLength: derivedLength,
-      deriveParams: deriveParams,
-    );
-
-    // Log the generated test case. This makes it easy to copy/paste the test
-    // case into test files.
-    final json = const JsonEncoder.withIndent(
-      '  ',
-    ).convert(c.toJson()).replaceAll('\n', '\n| ');
-    log('| $json');
-
-    return c.toJson();
-  }
-
   /// Get test cases from [testData].
   ///
   /// If no [testData] is given the `testData` given when the [TestRunner] was
   /// created will be used.
   ///
+  /// Cases with `generateKeyParams` also create reusable vectors. Pass
+  /// `-Dwebcrypto.dump=true` or set [dumpGeneratedCases] to print them.
+  ///
   /// Returns a list of tuples with test name and test function.
   List<({String name, Future<void> Function() test})> tests({
     Iterable<Map<dynamic, dynamic>>? testData,
+    bool dumpGeneratedCases = false,
   }) {
     final tests = <({String name, Future<void> Function() test})>[];
     testData ??= _testData;
@@ -606,7 +513,7 @@ class TestRunner<PrivateKey, PublicKey> {
             await checkErrorStack(fn);
           },
         ));
-      });
+      }, dumpGeneratedCases: dumpGeneratedCases);
     }
     return tests;
   }
@@ -750,8 +657,9 @@ void _validateTestCase<PrivateKey, PublicKey>(
 void _runTests<PrivateKey, PublicKey>(
   TestRunner<PrivateKey, PublicKey> r,
   _TestCase c,
-  void Function(String name, FutureOr Function() fn) test,
-) {
+  void Function(String name, FutureOr Function() fn) test, {
+  bool dumpGeneratedCases = false,
+}) {
   test = _withTestDependency(test);
 
   test('validate test case', () => _validateTestCase(r, c));
@@ -1512,7 +1420,7 @@ void _runTests<PrivateKey, PublicKey>(
 
       // Log the generated test case. This makes it easy to copy/paste the test
       // case into test files.
-      dump(generated.toJson());
+      dump(generated.toJson(), force: dumpGeneratedCases);
     });
   }
 }

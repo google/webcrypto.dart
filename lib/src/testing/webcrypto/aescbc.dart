@@ -39,22 +39,20 @@ final runner = TestRunner.symmetric<AesCbcSecretKey>(
   testData: _testData,
 );
 
-void main() async {
-  log('generate AES-CBC test case');
-  await runner.generate(
-    generateKeyParams: {'length': 256},
-    importKeyParams: {},
-    encryptDecryptParams: {'iv': bytesToJson(List.generate(16, (i) => i * i))},
-    maxPlaintext: 80,
-  );
-  log('--------------------');
-
-  await runner.tests().runTests();
-}
+Future<void> main() => runner.tests(dumpGeneratedCases: true).runTests();
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes
 final _testData = [
+  {
+    "name": "generate AES-256-CBC key",
+    "generateKeyParams": {"length": 256},
+    "plaintext": "dGVzdA==",
+    "importKeyParams": {},
+    "encryptDecryptParams": {
+      "iv": bytesToJson(List.generate(16, (i) => i * i)),
+    },
+  },
   {
     "name": "A128CBC generated on boringssl/linux at 2020-01-17T22:56:41",
     "privateRawKeyData": "nJ0IrxKwen1VN2/rfLsmmA==",

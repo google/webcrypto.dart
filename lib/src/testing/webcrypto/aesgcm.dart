@@ -45,28 +45,39 @@ final runner = TestRunner.symmetric<AesGcmSecretKey>(
   testData: _testData,
 );
 
-void main() async {
-  log('generate AES-GCM test case');
-  await runner.generate(
-    generateKeyParams: {'length': 256},
-    importKeyParams: {},
-    encryptDecryptParams: {
-      'iv': bytesToJson(List.generate(16, (i) => i * i)),
-      'additionalData': bytesToJson(List.generate(32, (i) => i + 1)),
-      'tagLength': 32,
-    },
-    maxPlaintext: 80,
-    // TODO: Support test cases with invalid encryptDecryptParams for giving wrong additionalData
-  );
+Future<void> main() => runner
+    .tests(
+      testData: [..._testData, _shortTagTestData],
+      dumpGeneratedCases: true,
+    )
+    .runTests();
 
-  log('--------------------');
-
-  await runner.tests().runTests();
-}
+final _shortTagTestData = {
+  "name": "generate AES-256-GCM key with a 32-bit tag",
+  "generateKeyParams": {"length": 256},
+  "plaintext": "dGVzdA==",
+  "importKeyParams": {},
+  "encryptDecryptParams": {
+    "iv": bytesToJson(List.generate(16, (i) => i * i)),
+    "additionalData": bytesToJson(List.generate(32, (i) => i + 1)),
+    "tagLength": 32,
+  },
+};
 
 // Allow single quotes for hardcoded testData written as JSON:
 // ignore_for_file: prefer_single_quotes
 final _testData = [
+  {
+    "name": "generate AES-256-GCM key",
+    "generateKeyParams": {"length": 256},
+    "plaintext": "dGVzdA==",
+    "importKeyParams": {},
+    "encryptDecryptParams": {
+      "iv": bytesToJson(List.generate(16, (i) => i * i)),
+      "additionalData": bytesToJson(List.generate(32, (i) => i + 1)),
+      "tagLength": 128,
+    },
+  },
   {
     "name":
         "A128GCM/iv-only generated on boringssl/linux at 2020-01-21T22:52:27",
