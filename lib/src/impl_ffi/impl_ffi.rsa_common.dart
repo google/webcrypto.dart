@@ -15,7 +15,7 @@
 part of 'impl_ffi.dart';
 
 _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final cbs = scope.cbs(keyData);
     final k = ssl.EVP_parse_private_key(cbs);
 
@@ -39,7 +39,7 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
 }
 
 _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final cbs = scope.cbs(keyData);
     final k = ssl.EVP_parse_public_key(cbs);
 
@@ -68,7 +68,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
   required String expectedAlg,
   required String expectedUse,
 }) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     void checkJwk(
       bool condition,
       String prop, [
@@ -175,7 +175,7 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
   required String jwkAlg,
   required String jwkUse,
 }) {
-  return BoringArena.using((scope) {
+  return _arena((scope) {
     final rsa = ssl.EVP_PKEY_get1_RSA.invoke(key);
     _checkOp(rsa.address != 0, fallback: 'internal key type error');
     scope.register(rsa, ssl.RSA_free);
@@ -258,7 +258,7 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
     throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
   }
 
-  return BoringArena.using((scope) async {
+  return _arena((scope) async {
     // Generate private RSA key
     final privRSA = scope.createRSA();
 

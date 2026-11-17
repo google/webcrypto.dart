@@ -19,7 +19,7 @@ final class _RandomImpl implements RandomImpl {
 
   @override
   void fillRandomBytes(TypedData destination) {
-    return BoringArena.using((scope) {
+    return _arena((scope) {
       final dest = destination.buffer.asUint8List(
         destination.offsetInBytes,
         destination.lengthInBytes,

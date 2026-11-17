@@ -115,7 +115,7 @@ final class _EcdhPrivateKeyImpl implements EcdhPrivateKeyImpl {
       throw ArgumentError.value(length, 'length', 'must be non-negative');
     }
 
-    return BoringArena.using((scope) async {
+    return _arena((scope) async {
       final pubEcKey = ssl.EVP_PKEY_get1_EC_KEY.invoke(publicKey._key);
       _checkOp(pubEcKey.address != 0, fallback: 'not an ec key');
       scope.register(pubEcKey, ssl.EC_KEY_free);

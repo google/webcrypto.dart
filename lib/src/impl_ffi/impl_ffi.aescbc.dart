@@ -33,7 +33,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
   Stream<List<int>> source,
   List<int> iv,
 ) {
-  return BoringArena.stream((scope) async* {
+  return _arenaStream((scope) async* {
     assert(key.length == 16 || key.length == 32);
     final cipher = key.length == 16
         ? ssl.EVP_aes_128_cbc()

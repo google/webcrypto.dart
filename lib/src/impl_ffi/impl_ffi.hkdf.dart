@@ -64,7 +64,7 @@ final class _HkdfSecretKeyImpl implements HkdfSecretKeyImpl {
       throw operationError(lengthTooLong);
     }
 
-    return BoringArena.using((scope) async {
+    return _arena((scope) async {
       final out = scope<ffi.Uint8>(lengthInBytes);
       final r = ssl.HKDF(
         out,
