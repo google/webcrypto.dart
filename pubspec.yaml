@@ -31,9 +31,7 @@ dev_dependencies:
   yaml: ^3.0.0
   pem: ^2.0.6
   flutter_lints: ^6.0.0
-  # We only need format_coverage. 1.16.0 rejects the coverage JSON that
-  # package:test writes for Firefox.
-  coverage: ">=1.15.1 <1.16.0"
+  coverage: ^1.16.1s
 
 topics:
  - crypto
