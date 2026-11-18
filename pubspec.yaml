@@ -31,7 +31,7 @@ dev_dependencies:
   yaml: ^3.0.0
   pem: ^2.0.6
   flutter_lints: ^6.0.0
-  coverage: ^1.16.1s
+  coverage: ^1.16.1
 
 topics:
  - crypto
