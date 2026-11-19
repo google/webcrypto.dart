@@ -59,7 +59,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
   // Heavily inspired by Chromium Web Crypto implementation, see:
   // https://chromium.googlesource.com/chromium/src/+/43d62c50b705f88c67b14539e91fd8fd017f70c4/components/webcrypto/algorithms/aes_ctr.cc#144
 
-  return _Scope.stream((scope) async* {
+  return BoringArena.stream((scope) async* {
     assert(counter.length == 16);
     assert(key.length == 16 || key.length == 32);
     final cipher = key.length == 16
@@ -96,8 +96,8 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
         ctx,
         cipher,
         ffi.nullptr,
-        scope.dataAsPointer(key),
-        scope.dataAsPointer(counter),
+        scope.copyBytes(key),
+        scope.copyBytes(counter),
         encrypt ? 1 : 0,
       ),
     );
@@ -160,7 +160,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
             yield outData.sublist(0, outLen.value);
           }
 
-          final counterWrappedAround = scope.dataAsPointer<ffi.Uint8>(counter);
+          final counterWrappedAround = scope.copyBytes<ffi.Uint8>(counter);
           // Zero out the [length] right-most bits of [counterWrappedAround].
           final c = counterWrappedAround.asTypedList(16);
           final remainder_bits = length % 8;
@@ -176,7 +176,7 @@ Stream<Uint8List> _aesCtrEncryptOrDecrypt(
               ctx,
               cipher,
               ffi.nullptr,
-              scope.dataAsPointer(key),
+              scope.copyBytes(key),
               counterWrappedAround,
               encrypt ? 1 : 0,
             ),

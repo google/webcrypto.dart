@@ -33,7 +33,7 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
   Stream<List<int>> source,
   List<int> iv,
 ) {
-  return _Scope.stream((scope) async* {
+  return BoringArena.stream((scope) async* {
     assert(key.length == 16 || key.length == 32);
     final cipher = key.length == 16
         ? ssl.EVP_aes_128_cbc()
@@ -51,8 +51,8 @@ Stream<Uint8List> _aesCbcEncryptOrDecrypt(
         ctx,
         cipher,
         ffi.nullptr,
-        scope.dataAsPointer(key),
-        scope.dataAsPointer(iv),
+        scope.copyBytes(key),
+        scope.copyBytes(iv),
         encrypt ? 1 : 0,
       ),
     );

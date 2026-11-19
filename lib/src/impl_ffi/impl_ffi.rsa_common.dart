@@ -15,8 +15,8 @@
 part of 'impl_ffi.dart';
 
 _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
-  return _Scope.sync((scope) {
-    final cbs = scope.createCBS(keyData);
+  return BoringArena.using((scope) {
+    final cbs = scope.cbs(keyData);
     final k = ssl.EVP_parse_private_key(cbs);
 
     _checkData(k.address != 0, fallback: 'unable to parse key');
@@ -30,7 +30,7 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
 
     final rsa = ssl.EVP_PKEY_get1_RSA.invoke(key);
     _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
-    scope.defer(() => ssl.RSA_free(rsa));
+    scope.register(rsa, ssl.RSA_free);
 
     _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
 
@@ -39,8 +39,8 @@ _EvpPKey _importPkcs8RsaPrivateKey(List<int> keyData) {
 }
 
 _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
-  return _Scope.sync((scope) {
-    final cbs = scope.createCBS(keyData);
+  return BoringArena.using((scope) {
+    final cbs = scope.cbs(keyData);
     final k = ssl.EVP_parse_public_key(cbs);
 
     _checkData(k.address != 0, fallback: 'unable to parse key');
@@ -54,7 +54,7 @@ _EvpPKey _importSpkiRsaPublicKey(List<int> keyData) {
 
     final rsa = ssl.EVP_PKEY_get1_RSA.invoke(key);
     _checkData(rsa.address != 0, fallback: 'key is not an RSA key');
-    scope.defer(() => ssl.RSA_free(rsa));
+    scope.register(rsa, ssl.RSA_free);
 
     _checkData(ssl.RSA_check_key(rsa) == 1, fallback: 'invalid key');
 
@@ -68,7 +68,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
   required String expectedAlg,
   required String expectedUse,
 }) {
-  return _Scope.sync((scope) {
+  return BoringArena.using((scope) {
     void checkJwk(
       bool condition,
       String prop, [
@@ -106,7 +106,7 @@ _EvpPKey _importJwkRsaPrivateOrPublicKey(
         'must not have leading zeros',
       );
       return scope.create(
-        () => ssl.BN_bin2bn(scope.dataAsPointer(bin), bin.length, ffi.nullptr),
+        () => ssl.BN_bin2bn(scope.copyBytes(bin), bin.length, ffi.nullptr),
         ssl.BN_free,
       );
     }
@@ -175,10 +175,10 @@ Map<String, dynamic> _exportJwkRsaPrivateOrPublicKey(
   required String jwkAlg,
   required String jwkUse,
 }) {
-  return _Scope.sync((scope) {
+  return BoringArena.using((scope) {
     final rsa = ssl.EVP_PKEY_get1_RSA.invoke(key);
     _checkOp(rsa.address != 0, fallback: 'internal key type error');
-    scope.defer(() => ssl.RSA_free(rsa));
+    scope.register(rsa, ssl.RSA_free);
 
     String encodeBN(ffi.Pointer<BIGNUM> bn) {
       final N = ssl.BN_num_bytes(bn);
@@ -258,12 +258,14 @@ Future<KeyPair<_EvpPKey, _EvpPKey>> _generateRsaKeyPair(
     throw UnsupportedError('publicExponent is not supported, try 3 or 65537');
   }
 
-  return _Scope.async((scope) async {
+  return BoringArena.using((scope) async {
     // Generate private RSA key
     final privRSA = scope.createRSA();
 
     final e = scope.createBN();
-    _checkOpIsOne(ssl.BN_set_word(e, publicExponent.toInt()));
+    // Use BN_set_u64, not BN_set_word: package:boring binds BN_ULONG as
+    // Uint64, but it is 32 bits wide on 32-bit targets.
+    _checkOpIsOne(ssl.BN_set_u64(e, publicExponent.toInt()));
 
     _checkOpIsOne(
       await _RSA_generate_key_ex(privRSA, modulusLength, e, ffi.nullptr),
