@@ -12,5 +12,5 @@ sources:
   # commit is a week old.
   - name: google/webcrypto.dart
     branch: https://github.com/google/webcrypto.dart
-    pin: c90c76033eff946af53fa94b9226f1bcd2e9e41d
+    pin: 0fa20bdc3d790aee9caec65a9cf88b6e499c153d
     lag_days: 7
